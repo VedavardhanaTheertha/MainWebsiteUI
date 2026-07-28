@@ -1,0 +1,33 @@
+{
+  "name": "main-website-ui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/generate-content.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/generate-content.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "content:build": "node scripts/generate-content.mjs"
+  },
+  "dependencies": {
+    "framer-motion": "^12.42.2",
+    "js-yaml": "^5.2.2",
+    "lucide-react": "^1.27.0",
+    "next": "16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.12",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

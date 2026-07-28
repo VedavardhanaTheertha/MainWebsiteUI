@@ -1,0 +1,731 @@
+# English content for Shri Shiroor Matha website.
+# Single source of truth for English copy. content/kn.yml is the Kannada
+# counterpart — both files must share the same `id`/key values wherever
+# items are listed (validated at build time by scripts/generate-content.mjs).
+# All copy here is draft placeholder text written for this build, pending
+# review by the matha.
+
+meta:
+  siteName: "Shri Shiroor Matha"
+  tagline: "A living Madhwa tradition"
+  blessing: "|| ಶ್ರೀ ವಿಠ್ಠಲೋ ವಿಜಯತೇ ||"
+
+nav:
+  items:
+    - label: "Home"
+      href: "/"
+    - label: "Seva"
+      href: "/sevas"
+      children:
+        - label: "Volunteer"
+          href: "/seva/volunteer"
+        - label: "Donations"
+          href: "/seva/donations"
+        - label: "Top Sevas"
+          href: "/seva/top-sevas"
+        - label: "All Sevas"
+          href: "/seva/all-sevas"
+    - label: "Events"
+      href: "/events"
+    - label: "Library"
+      href: "/library"
+      children:
+        - label: "Slokas, Stotras & Mantras"
+          href: "/library/mantras"
+        - label: "Gita, Veda, Upanishads & Epics"
+          href: "/library/scriptures"
+        - label: "Dasara Padas"
+          href: "/library/dasara-padas"
+        - label: "Lectures & Videos"
+          href: "/library/lectures"
+        - label: "Rituals & Festivals"
+          href: "/library/rituals"
+    - label: "Projects"
+      href: "/projects"
+    - label: "Media"
+      href: "/media"
+      children:
+        - label: "Photos"
+          href: "/media/photos"
+        - label: "Videos"
+          href: "/media/videos"
+    - label: "Know the Story"
+      href: "/about"
+      children:
+        - label: "Guru Parampara"
+          href: "/about#guru-parampara"
+        - label: "Sadhana Stories"
+          href: "/history/stories"
+        - label: "Blogs & Articles"
+          href: "/history/articles"
+        - label: "Symbolism"
+          href: "/history/symbolism"
+        - label: "Remedies"
+          href: "/history/remedies"
+        - label: "Hindu Science"
+          href: "/history/science"
+        - label: "Pilgrim Guide"
+          href: "/history/pilgrim-guide"
+    - label: "Learn With Us"
+      href: "/learn"
+    - label: "Connect with Matha"
+      href: "/connect"
+
+bottomBar:
+  items:
+    - id: panchanga
+      label: "Panchanga"
+      href: "/panchanga"
+      icon: "Sun"
+    - id: donate
+      label: "Donate"
+      href: "/seva/donations"
+      icon: "HeartHandshake"
+    - id: library
+      label: "Library"
+      href: "/library"
+      icon: "BookOpen"
+    - id: volunteer
+      label: "Volunteer"
+      href: "/seva/volunteer"
+      icon: "Users"
+
+footer:
+  blessing: "|| ಶ್ರೀ ವಿಠ್ಠಲೋ ವಿಜಯತೇ ||"
+  address: "Car Street, Udupi, Karnataka 576101"
+  copyright: "© 2026 Paryāya Shri Shiroor Matha"
+  social:
+    - id: instagram
+      label: "Instagram"
+      href: "https://instagram.com/"
+    - id: facebook
+      label: "Facebook"
+      href: "https://facebook.com/"
+    - id: youtube
+      label: "YouTube"
+      href: "https://youtube.com/"
+    - id: whatsapp
+      label: "WhatsApp"
+      href: "https://whatsapp.com/"
+
+home:
+  hero:
+    heading: "Welcome to Shiroor Matha, a living Madhwa tradition"
+    subheading: "Experience the divine presence, timeless rituals, and spiritual wisdom that have guided generations."
+    ctaLabel: "Our Mission"
+    ctaHref: "/about"
+    image: "hero-welcome"
+
+  carousel1:
+    items:
+      - id: upcoming-events
+        tag: "THIS SEASON"
+        title: "Upcoming Events"
+        summary: "Rathotsava, Ekādashi & festival darshan"
+        href: "/events"
+        bg: "carousel-events"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: kainkarya-projects
+        tag: "KAINKARYA"
+        title: "Projects & Seva Works"
+        summary: "The go-shāla, annadāna hall & restoration"
+        href: "/projects"
+        bg: "carousel-projects"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: paryaya-significance
+        tag: "LIVING TRADITION"
+        title: "Significance of Paryāya"
+        summary: "The two-year cycle of Krishna's worship"
+        href: "/about#paryaya"
+        bg: "carousel-paryaya"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: guru-parampara
+        tag: "UNBROKEN LINEAGE"
+        title: "Guru Paramparā"
+        summary: "From Madhvāchārya to the present Swāmiji"
+        href: "/about#guru-parampara"
+        bg: "carousel-parampara"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: udupi-kashi
+        tag: "KĀSHI OF THE SOUTH"
+        title: "Udupi, Abode of Shiva"
+        summary: "Where Chandramaulīshvara is revered"
+        href: "/about#udupi"
+        bg: "carousel-udupi"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: rathotsava-2026
+        tag: "FESTIVAL"
+        title: "Rathotsava Darshan"
+        summary: "Join the chariot festival procession this week"
+        href: "/events"
+        bg: "carousel-rathotsava"
+        pinned_date: "2026-07-27"
+        launch_date: null
+        end_date: null
+      - id: krishnashtami-2026
+        tag: "FESTIVAL"
+        title: "Shri Krishna Janmashtami"
+        summary: "Special darshan timings and midnight abhisheka"
+        href: "/events"
+        bg: "carousel-janmashtami"
+        pinned_date: null
+        launch_date: "2026-09-01"
+        end_date: "2026-09-05"
+
+  quickNav:
+    items:
+      - id: events
+        label: "Events"
+        icon: "Calendar"
+        href: "/events"
+      - id: seva
+        label: "Seva"
+        icon: "HeartHandshake"
+        href: "/sevas"
+      - id: panchanga
+        label: "Panchanga"
+        icon: "Sun"
+        href: "/panchanga"
+      - id: library
+        label: "Library"
+        icon: "BookOpen"
+        href: "/library"
+      - id: media
+        label: "Media"
+        icon: "Images"
+        href: "/media"
+
+  promoCards:
+    - id: mantra-yajna
+      eyebrow: "Sankalpa"
+      title: "Krishna Mantra Lekhana Yajna"
+      body: "Write \"Shri Krishnaya Namaha\" and align your sankalpa with the sacred presence of Shri Krishna at Udupi."
+      ctaLabel: "Join the Yajna"
+      href: "/events/mantra-yajna"
+      image: "promo-yajna"
+    - id: solar-power
+      eyebrow: "Last Week"
+      title: "Solar Power Installed at the Matha"
+      body: "A new rooftop solar array now powers the annadāna hall and guest quarters, cutting the matha's energy costs."
+      ctaLabel: "Read the News"
+      href: "/history/articles"
+      image: "promo-solar"
+
+  seekingAnswers:
+    heading: "Seeking Answers"
+    tiles:
+      - id: navagraha
+        glyph: "ग्र"
+        question: "When the stars feel against you"
+        subtitle: "Navagraha dosha · planetary influence"
+        href: "/solutions"
+      - id: marriage
+        glyph: "ॐ"
+        question: "When love and peace feel far apart"
+        subtitle: "Marriage · family harmony"
+        href: "/solutions"
+      - id: wealth
+        glyph: "श्री"
+        question: "When effort brings no fruit"
+        subtitle: "Wealth · career · blocked progress"
+        href: "/solutions"
+      - id: general
+        glyph: "卐"
+        question: "When life feels heavy"
+        subtitle: "General wellbeing · peace of mind"
+        href: "/solutions"
+
+  secondaryLinks:
+    - id: chanting
+      label: "Sloka & Mantra Chanting"
+      href: "/chanting-player"
+    - id: directions
+      label: "Reach Shri Shiroor Matha"
+      href: "/directions"
+    - id: feedback
+      label: "Provide Feedback"
+      href: "/feedback"
+    - id: stories
+      label: "Let the World Know Your Story"
+      href: "/user-stories"
+
+about:
+  mission:
+    heading: "Our Mission"
+    body: "Shri Shiroor Matha exists to preserve and share the Madhwa tradition of Vedantic scholarship, devotion, and service — through daily worship, the education of students in the shastras, care for the community through seva and annadana, and faithful participation in the Paryaya system established by Shri Madhwacharyaru."
+
+  chiefSwamiji:
+    heading: "Current Spiritual Master"
+    name: "Sri Vedavardhana Teertharu"
+    title: "Chief Swamiji, Shri Shiroor Matha"
+    description: "Sri Vedavardhana Teertharu presently guides Shri Shiroor Matha, carrying forward the unbroken lineage of teachers descending from Shriman Madhwacharyaru. Under his guidance, the matha continues its tradition of scholarship, worship, and service to the community."
+    portrait: "chief-swamiji"
+
+  paryayaSignificance:
+    heading: "Significance of Paryāya"
+    body: "Paryāya is the two-year cycle in which each of the eight mathas of Udupi takes turn presiding over the worship of Shri Krishna at the Udupi Krishna Matha, a tradition established by Shri Madhwacharyaru himself. Shri Shiroor Matha is one of these eight ashta mathas."
+
+  udupi:
+    heading: "Kāshi of the South"
+    body: "Udupi is revered as the Kāshi of the South, home to the ancient Chandramaulīshvara and Anantheshvara temples alongside the Krishna Matha. It has been a center of Vedantic learning and pilgrimage for centuries."
+
+  guruparampara:
+    heading: "Guru Paramparā"
+    intro: "The sacred lineage of spiritual masters who have guided Shri Shiroor Matha through centuries of divine service and wisdom."
+    entries:
+      - order: 1
+        name: "Sri Madhwacharyaru"
+        title: "Founder of the Madhwa Tradition"
+        description: "The Divine Incarnation who established the path of pure devotion (Tatvavada) through his commentaries on the Brahma Sutras, Upanishads, Bhagavad Gita, and other sacred texts."
+        portrait: "guru-01"
+      - order: 2
+        name: "Sri Vamana Teertharu"
+        title: "Second in the Lineage"
+        description: "A direct disciple who carried forward the founder's teachings and established the early traditions of the matha."
+        portrait: "guru-02"
+      - order: 3
+        name: "Sri Vasudeva Teertharu"
+        title: "Third in the Lineage"
+        description: "Continued the tradition of scholarship and worship established by his predecessors."
+        portrait: "guru-03"
+      - order: 31
+        name: "Sri Vedavardhana Teertharu"
+        title: "Current Spiritual Master"
+        description: "Presently guides Shri Shiroor Matha, continuing the unbroken lineage of teachers descending from Shriman Madhwacharyaru."
+        portrait: "chief-swamiji"
+
+events:
+  heading: "Events"
+  intro: "Festivals, rituals, and community programs at Shri Shiroor Matha."
+  categories: ["Monthly", "Annual", "Special"]
+  list:
+    - id: rathotsava
+      title: "Rathotsava"
+      category: "Annual"
+      date: "2026-07-27"
+      image: "event-rathotsava"
+      description: "The annual chariot festival procession around the matha, with darshan and prasada for all devotees."
+    - id: ekadashi
+      title: "Ekādashi Observance"
+      category: "Monthly"
+      date: "2026-08-04"
+      image: "event-ekadashi"
+      description: "Monthly fasting and special worship observed on Ekādashi, with evening bhajans."
+    - id: krishnashtami
+      title: "Shri Krishna Janmashtami"
+      category: "Annual"
+      date: "2026-09-04"
+      image: "event-janmashtami"
+      description: "Midnight abhisheka and special darshan marking the birth of Shri Krishna."
+    - id: paryaya-transfer
+      title: "Paryaya Transfer Ceremony"
+      category: "Special"
+      date: "2027-01-18"
+      image: "event-paryaya"
+      description: "The ceremonial handover of Paryaya duties to the next matha in the eight-year cycle."
+    - id: annadana-anniversary
+      title: "Annadana Hall Anniversary"
+      category: "Special"
+      date: "2026-11-10"
+      image: "event-annadana"
+      description: "A day of special annadana marking the anniversary of the hall's founding."
+
+mantraYajna:
+  heading: "Krishna Mantra Lekhana Yajna"
+  subheading: "Sankalpa · Shri Krishnaya Namaha"
+  body: "Devotees are invited to write \"Shri Krishnaya Namaha\" in a dedicated register kept at the matha, aligning their sankalpa with the sacred presence of Shri Krishna at Udupi. Completed registers are offered at the sanctum during Paryaya festivities."
+  ctaLabel: "Join the Yajna"
+  image: "mantra-yajna-hero"
+
+seva:
+  heading: "Seva"
+  intro: "Tanu, mana, dhana — offer your time, devotion, or resources in service to the matha."
+  categories: ["Nitya", "Special"]
+  items:
+    - id: nitya-puja
+      name: "Nitya Puja"
+      category: "Nitya"
+      description: "Sponsor the daily worship rituals performed at the sanctum."
+      price: "₹501"
+      image: "seva-nitya-puja"
+      featured: true
+    - id: annadana-seva
+      name: "Annadana Seva"
+      category: "Nitya"
+      description: "Contribute toward a day's meals served at the Bhojana Shaala."
+      price: "₹1,101"
+      image: "seva-annadana"
+      featured: true
+    - id: go-seva
+      name: "Go Seva"
+      category: "Nitya"
+      description: "Support the care and feeding of cows at the matha's go-shāla."
+      price: "₹251"
+      image: "seva-go"
+      featured: true
+    - id: veda-parayana
+      name: "Veda Parayana Seva"
+      category: "Special"
+      description: "Sponsor a continuous recitation of the Vedas by resident scholars."
+      price: "₹2,101"
+      image: "seva-veda-parayana"
+      featured: true
+    - id: rathotsava-seva
+      name: "Rathotsava Seva"
+      category: "Special"
+      description: "Contribute toward the annual chariot festival arrangements."
+      price: "₹5,001"
+      image: "seva-rathotsava"
+      featured: false
+    - id: vastra-seva
+      name: "Vastra Seva"
+      category: "Special"
+      description: "Offer new vastra (garments) for the deity's daily adornment."
+      price: "₹751"
+      image: "seva-vastra"
+      featured: false
+
+sevaVolunteer:
+  heading: "Volunteer with Us"
+  intro: "Offer your time and skills in service to the matha's daily activities and festivals."
+  steps:
+    - "Choose an area you'd like to help with — kitchen, events, media, or guest services."
+    - "Share your availability and contact details with the seva desk."
+    - "The matha office will confirm your schedule ahead of your visit."
+  ctaLabel: "Register as a Volunteer"
+
+sevaDonations:
+  heading: "Donations"
+  intro: "Your contribution sustains the matha's daily worship, education, and community service."
+  upiId: "shiroor.matha@upi"
+  presetAmounts: [101, 501, 1101, 2101]
+
+panchanga:
+  heading: "Panchanga"
+  intro: "Today's almanac — tithi, nakshatra, and auspicious timings."
+  valid_for_date: "2026-07-27"
+  tithi: "Shukla Panchami"
+  nakshatra: "Uttara Phalguni"
+  sunrise: "06:12"
+  sunset: "18:47"
+  notes: "A day well-suited for beginning new undertakings."
+
+history:
+  pages:
+    - key: stories
+      title: "Sadhana Stories"
+      image: "history-stories"
+      intro: "Chronicles of devotion and perseverance from within the matha community."
+      entries:
+        - id: goshala-founding
+          title: "Founding the Go-shāla"
+          body: "Decades ago, a small group of devotees began caring for a handful of cows on land donated to the matha. Today the go-shāla shelters dozens, sustained entirely by seva contributions."
+        - id: annadana-tradition
+          title: "An Unbroken Annadana Tradition"
+          body: "The Bhojana Shaala has served meals to devotees and pilgrims without interruption for generations, a tradition the matha considers central to its mission."
+    - key: articles
+      title: "Blogs & Articles"
+      image: "history-articles"
+      intro: "News, reflections, and updates from the matha."
+      entries:
+        - id: solar-power
+          title: "Solar Power Installed at the Matha"
+          body: "A new rooftop solar array now powers the annadana hall and guest quarters, cutting the matha's energy costs and supporting its long-term sustainability goals."
+        - id: paryaya-preparations
+          title: "Preparing for the Next Paryaya"
+          body: "As the current Paryaya term nears its midpoint, preparations are already underway for the ceremonies marking the transition to the next matha in the cycle."
+    - key: symbolism
+      title: "Symbolism of Hindu Deities, Rituals & Sacred Icons"
+      image: "history-symbolism"
+      intro: "Understanding the meaning behind the icons and rituals of daily worship."
+      entries:
+        - id: shankha-chakra
+          title: "The Shankha and Chakra"
+          body: "The conch and discus carried by Vishnu represent sound and the cycle of time — two of his most recognizable attributes across Vaishnava iconography."
+        - id: tulasi
+          title: "The Tulasi Plant"
+          body: "Tulasi is central to Vaishnava worship, offered daily in puja and regarded as inseparable from devotion to Vishnu."
+    - key: remedies
+      title: "Problem Solving Mantras, Rituals & Targeted Sevas"
+      image: "history-remedies"
+      intro: "Traditional remedies drawn from shastra for common life challenges — see also the Solutions page for a devotee-friendly overview."
+      entries:
+        - id: navagraha-shanti
+          title: "Navagraha Shanti"
+          body: "A ritual performed to pacify adverse planetary influence, typically recommended after consultation with a family priest or astrologer."
+        - id: sudarshana-homa
+          title: "Sudarshana Homa"
+          body: "A fire ritual invoking Vishnu's protective aspect, performed for the removal of obstacles."
+    - key: science
+      title: "Hindu Science & Vedic Philosophy Research"
+      image: "history-science"
+      intro: "Exploring the intersections of traditional knowledge systems and contemporary inquiry."
+      entries:
+        - id: tatvavada-logic
+          title: "The Logical Structure of Tatvavada"
+          body: "Shri Madhwacharyaru's philosophy is distinguished by its systematic use of logical argument (nyaya) alongside scriptural authority."
+        - id: panchanga-astronomy
+          title: "Panchanga and Astronomical Calculation"
+          body: "The traditional almanac draws on centuries-old astronomical calculation methods, still maintained and cross-checked today."
+    - key: pilgrim-guide
+      title: "Pilgrim Guide"
+      image: "history-pilgrim-guide"
+      intro: "Practical information for devotees planning a visit to Shri Shiroor Matha and Udupi."
+      entries:
+        - id: getting-here
+          title: "Getting Here"
+          body: "Udupi is well connected by rail and road; the matha is a short walk from the Krishna Matha on Car Street."
+        - id: where-to-stay
+          title: "Where to Stay"
+          body: "Guest accommodation is available on the matha premises for pilgrims; advance booking through the matha office is recommended during festival periods."
+
+library:
+  heading: "Library"
+  intro: "Slokas, scriptures, dasara padas, lectures, and ritual guidance from the Madhwa tradition."
+  categories:
+    - key: mantras
+      title: "Slokas, Stotras & Mantras"
+      kn_label: "ಶ್ಲೋಕ ಮಂತ್ರ"
+      image: "library-mantras"
+      description: "Daily chants and devotional hymns, with audio where available."
+      items:
+        - id: vishnu-sahasranama
+          title: "Vishnu Sahasranama"
+          subtitle: "1000 names of Lord Vishnu"
+        - id: madhwa-vijaya
+          title: "Madhwa Vijaya"
+          subtitle: "Verses on the life of Shri Madhwacharyaru"
+        - id: dwadasha-stotra
+          title: "Dwadasha Stotra"
+          subtitle: "Twelve verses composed by Shri Madhwacharyaru"
+    - key: scriptures
+      title: "Gita, Veda, Upanishads & Epics"
+      kn_label: "ಗೀತೆ ವೇದ"
+      image: "library-scriptures"
+      description: "Core scriptural texts with commentary in the Madhwa tradition."
+      items:
+        - id: bhagavad-gita
+          title: "Bhagavad Gita Bhashya"
+          subtitle: "Shri Madhwacharyaru's commentary"
+        - id: brahma-sutra
+          title: "Brahma Sutra Bhashya"
+          subtitle: "Commentary on the Vedanta Sutras"
+        - id: mahabharata-tatparya
+          title: "Mahabharata Tatparya Nirnaya"
+          subtitle: "The essence of the Mahabharata"
+    - key: dasara-padas
+      title: "Dasara Padas"
+      kn_label: "ದಾಸರ ಪದ"
+      image: "library-dasara-padas"
+      description: "Devotional songs of the Haridasa saints, streamed as audio."
+      items:
+        - id: krishna-nee-begane
+          title: "Krishna Nee Begane Baaro"
+          subtitle: "Vyasatirtha"
+        - id: bhagyada-lakshmi-baramma
+          title: "Bhagyada Lakshmi Baramma"
+          subtitle: "Purandara Dasa"
+    - key: lectures
+      title: "Lectures & Videos"
+      kn_label: "ಉಪನ್ಯಾಸ"
+      image: "library-lectures"
+      description: "Recorded pravachanas and teachings from the matha's scholars."
+      items:
+        - id: tatvavada-intro
+          title: "Introduction to Tatvavada"
+          subtitle: "A primer on Madhwa philosophy"
+        - id: paryaya-history
+          title: "History of the Paryaya System"
+          subtitle: "How the eight mathas came to be"
+    - key: rituals
+      title: "Rituals & Festivals"
+      kn_label: "ಆಚರಣೆ ಹಬ್ಬ"
+      image: "library-rituals"
+      description: "Step-by-step guidance for performing rituals and observing festivals at home."
+      items:
+        - id: ekadashi-vidhi
+          title: "Ekādashi Vidhi"
+          subtitle: "How to observe the Ekādashi fast"
+        - id: griha-pravesha
+          title: "Griha Pravesha Puja"
+          subtitle: "Housewarming ritual guidance"
+
+media:
+  heading: "Media"
+  intro: "Photos and videos from festivals, rituals, and daily life at the matha."
+  photos:
+    - id: rathotsava-2025
+      caption: "Rathotsava procession, 2025"
+      image: "photo-rathotsava-2025"
+    - id: annadana-hall
+      caption: "Devotees at the annadana hall"
+      image: "photo-annadana-hall"
+    - id: veda-parayana
+      caption: "Veda Parayana in progress"
+      image: "photo-veda-parayana"
+    - id: go-shala
+      caption: "Cows at the go-shāla"
+      image: "photo-go-shala"
+  videos:
+    - id: paryaya-highlights
+      title: "Paryaya Ceremony Highlights"
+      thumbnail: "video-paryaya"
+    - id: daily-puja
+      title: "A Day of Worship at the Matha"
+      thumbnail: "video-daily-puja"
+
+projects:
+  heading: "Projects"
+  intro: "Ongoing and completed initiatives supported by devotee contributions."
+  list:
+    - id: go-shala-expansion
+      title: "Go-shāla Expansion"
+      status: "ongoing"
+      description: "Expanding shelter and grazing space to care for more cows."
+      image: "project-goshala"
+    - id: annadana-hall-restoration
+      title: "Annadana Hall Restoration"
+      status: "completed"
+      description: "Structural repairs and a new kitchen for the community dining hall."
+      image: "project-annadana-restoration"
+    - id: solar-installation
+      title: "Rooftop Solar Installation"
+      status: "completed"
+      description: "Solar panels now power the annadana hall and guest quarters."
+      image: "project-solar"
+    - id: digital-library
+      title: "Digital Library Archive"
+      status: "upcoming"
+      description: "Digitizing manuscripts and audio recordings for public access."
+      image: "project-digital-library"
+
+solutions:
+  heading: "Life Problems & Divine Solutions"
+  intro: "Traditional guidance and targeted sevas for common life challenges, rooted in shastra."
+  categories:
+    - id: navagraha
+      glyph: "ग्र"
+      title: "Navagraha Dosha"
+      description: "Remedies and sevas addressing adverse planetary influence."
+    - id: marriage
+      glyph: "ॐ"
+      title: "Marriage & Family Harmony"
+      description: "Guidance and rituals for restoring peace within relationships."
+    - id: wealth
+      glyph: "श्री"
+      title: "Wealth & Career"
+      description: "Sevas and mantras for overcoming blocked progress."
+    - id: general
+      glyph: "卐"
+      title: "General Wellbeing"
+      description: "Everyday practices for peace of mind and spiritual grounding."
+
+chantingPlayer:
+  heading: "Sloka & Mantra Chanting"
+  intro: "Listen along to daily chants and devotional slokas. Audio playback is coming soon — the player below is a preview of the planned layout."
+  items:
+    - id: gayatri-mantra
+      title: "Gayatri Mantra"
+      duration: "3:12"
+    - id: vishnu-sahasranama-chant
+      title: "Vishnu Sahasranama"
+      duration: "24:40"
+    - id: madhwa-vijaya-chant
+      title: "Madhwa Vijaya (excerpt)"
+      duration: "8:05"
+
+directions:
+  heading: "Reach Shri Shiroor Matha"
+  intro: "Shri Shiroor Matha is located on Car Street in the heart of Udupi, a short walk from the Krishna Matha."
+  rows:
+    - id: address
+      label: "Address"
+      value: "Car Street, Udupi, Karnataka 576101"
+      icon: "MapPin"
+    - id: phone
+      label: "Phone"
+      value: "+91 000 000 0000"
+      icon: "Phone"
+    - id: email
+      label: "Email"
+      value: "info@shiroormatha.org"
+      icon: "Mail"
+    - id: hours
+      label: "Darshan Hours"
+      value: "6:00 AM – 1:00 PM, 4:00 PM – 8:30 PM"
+      icon: "Clock"
+
+feedback:
+  heading: "Provide Feedback"
+  intro: "Share your experience or suggestions to help us serve devotees better."
+  fields:
+    - label: "Name"
+      type: "text"
+    - label: "Email"
+      type: "email"
+    - label: "Your Feedback"
+      type: "textarea"
+  submitLabel: "Submit Feedback"
+
+userStories:
+  heading: "Let the World Know Your Story"
+  intro: "Devotee experiences shared from the heart — submissions are reviewed before publishing."
+  stories:
+    - id: story-1
+      name: "A Devotee from Mumbai"
+      story: "My family has visited Shiroor Matha every year for the Paryaya festivities — the sense of continuity across generations is something words can't fully capture."
+      image: "story-1"
+    - id: story-2
+      name: "A Devotee from Bengaluru"
+      story: "The Veda Parayana seva we sponsored for my father's memory was conducted with such care. It meant a great deal to our family."
+      image: "story-2"
+  submitCtaLabel: "Share Your Story"
+  submitCtaHref: "/user-stories#submit"
+
+learn:
+  heading: "Learn With Us"
+  intro: "Structured learning paths in Madhwa philosophy, Sanskrit, and ritual practice."
+  items:
+    - id: tatvavada-course
+      title: "Foundations of Tatvavada"
+      description: "An introductory course on Madhwa philosophy for beginners."
+      href: "/library/scriptures"
+    - id: sanskrit-basics
+      title: "Sanskrit for Devotees"
+      description: "Learn to read and chant slokas with correct pronunciation."
+      href: "/library/mantras"
+    - id: ritual-practice
+      title: "Home Ritual Practice"
+      description: "Guidance for maintaining daily worship at home."
+      href: "/library/rituals"
+
+connect:
+  heading: "Connect with Matha"
+  intro: "Reach out to the matha office for general inquiries, seva bookings, or volunteering."
+  rows:
+    - id: address
+      label: "Visit"
+      value: "Car Street, Udupi, Karnataka 576101"
+      icon: "MapPin"
+    - id: phone
+      label: "Call"
+      value: "+91 000 000 0000"
+      icon: "Phone"
+    - id: email
+      label: "Email"
+      value: "info@shiroormatha.org"
+      icon: "Mail"
+    - id: hours
+      label: "Office Hours"
+      value: "9:00 AM – 6:00 PM, Monday–Saturday"
+      icon: "Clock"

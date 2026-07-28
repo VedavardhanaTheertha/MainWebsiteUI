@@ -1,0 +1,728 @@
+# Kannada content for Shri Shiroor Matha website — counterpart to content/en.yml.
+# Structural keys (id, href, dates) must match content/en.yml exactly; only
+# labels/text differ. Draft translation — pending native-speaker review.
+
+meta:
+  siteName: "ಶ್ರೀ ಶಿರೂರು ಮಠ"
+  tagline: "ಜೀವಂತ ಮಾಧ್ವ ಪರಂಪರೆ"
+  blessing: "|| ಶ್ರೀ ವಿಠ್ಠಲೋ ವಿಜಯತೇ ||"
+
+nav:
+  items:
+    - label: "ಮುಖಪುಟ"
+      href: "/"
+    - label: "ಸೇವೆ"
+      href: "/sevas"
+      children:
+        - label: "ಸ್ವಯಂಸೇವಕ"
+          href: "/seva/volunteer"
+        - label: "ದೇಣಿಗೆ"
+          href: "/seva/donations"
+        - label: "ಪ್ರಮುಖ ಸೇವೆಗಳು"
+          href: "/seva/top-sevas"
+        - label: "ಎಲ್ಲಾ ಸೇವೆಗಳು"
+          href: "/seva/all-sevas"
+    - label: "ಕಾರ್ಯಕ್ರಮಗಳು"
+      href: "/events"
+    - label: "ಗ್ರಂಥಾಲಯ"
+      href: "/library"
+      children:
+        - label: "ಶ್ಲೋಕ, ಸ್ತೋತ್ರ ಮತ್ತು ಮಂತ್ರಗಳು"
+          href: "/library/mantras"
+        - label: "ಗೀತೆ, ವೇದ, ಉಪನಿಷತ್ ಮತ್ತು ಮಹಾಕಾವ್ಯಗಳು"
+          href: "/library/scriptures"
+        - label: "ದಾಸರ ಪದಗಳು"
+          href: "/library/dasara-padas"
+        - label: "ಉಪನ್ಯಾಸಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು"
+          href: "/library/lectures"
+        - label: "ಆಚರಣೆಗಳು ಮತ್ತು ಹಬ್ಬಗಳು"
+          href: "/library/rituals"
+    - label: "ಯೋಜನೆಗಳು"
+      href: "/projects"
+    - label: "ಮಾಧ್ಯಮ"
+      href: "/media"
+      children:
+        - label: "ಫೋಟೋಗಳು"
+          href: "/media/photos"
+        - label: "ವೀಡಿಯೊಗಳು"
+          href: "/media/videos"
+    - label: "ಮಠದ ಕಥೆ"
+      href: "/about"
+      children:
+        - label: "ಗುರು ಪರಂಪರೆ"
+          href: "/about#guru-parampara"
+        - label: "ಸಾಧನಾ ಕಥೆಗಳು"
+          href: "/history/stories"
+        - label: "ಬ್ಲಾಗ್ ಮತ್ತು ಲೇಖನಗಳು"
+          href: "/history/articles"
+        - label: "ಸಂಕೇತಗಳು"
+          href: "/history/symbolism"
+        - label: "ಪರಿಹಾರಗಳು"
+          href: "/history/remedies"
+        - label: "ಹಿಂದೂ ವಿಜ್ಞಾನ"
+          href: "/history/science"
+        - label: "ಯಾತ್ರಾ ಮಾರ್ಗದರ್ಶಿ"
+          href: "/history/pilgrim-guide"
+    - label: "ನಮ್ಮೊಂದಿಗೆ ಕಲಿಯಿರಿ"
+      href: "/learn"
+    - label: "ಮಠವನ್ನು ಸಂಪರ್ಕಿಸಿ"
+      href: "/connect"
+
+bottomBar:
+  items:
+    - id: panchanga
+      label: "ಪಂಚಾಂಗ"
+      href: "/panchanga"
+      icon: "Sun"
+    - id: donate
+      label: "ದೇಣಿಗೆ"
+      href: "/seva/donations"
+      icon: "HeartHandshake"
+    - id: library
+      label: "ಗ್ರಂಥಾಲಯ"
+      href: "/library"
+      icon: "BookOpen"
+    - id: volunteer
+      label: "ಸ್ವಯಂಸೇವಕ"
+      href: "/seva/volunteer"
+      icon: "Users"
+
+footer:
+  blessing: "|| ಶ್ರೀ ವಿಠ್ಠಲೋ ವಿಜಯತೇ ||"
+  address: "ಕಾರ್ ಸ್ಟ್ರೀಟ್, ಉಡುಪಿ, ಕರ್ನಾಟಕ 576101"
+  copyright: "© 2026 ಪರ್ಯಾಯ ಶ್ರೀ ಶಿರೂರು ಮಠ"
+  social:
+    - id: instagram
+      label: "ಇನ್‌ಸ್ಟಾಗ್ರಾಂ"
+      href: "https://instagram.com/"
+    - id: facebook
+      label: "ಫೇಸ್‌ಬುಕ್"
+      href: "https://facebook.com/"
+    - id: youtube
+      label: "ಯೂಟ್ಯೂಬ್"
+      href: "https://youtube.com/"
+    - id: whatsapp
+      label: "ವಾಟ್ಸಪ್"
+      href: "https://whatsapp.com/"
+
+home:
+  hero:
+    heading: "ಶಿರೂರು ಮಠಕ್ಕೆ ಸ್ವಾಗತ, ಜೀವಂತ ಮಾಧ್ವ ಪರಂಪರೆ"
+    subheading: "ಪೀಳಿಗೆಗಳನ್ನು ಮಾರ್ಗದರ್ಶನ ಮಾಡಿದ ದೈವಿಕ ಸಾನ್ನಿಧ್ಯ, ಶಾಶ್ವತ ಆಚರಣೆಗಳು ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕ ಜ್ಞಾನವನ್ನು ಅನುಭವಿಸಿ."
+    ctaLabel: "ನಮ್ಮ ಧ್ಯೇಯ"
+    ctaHref: "/about"
+    image: "hero-welcome"
+
+  carousel1:
+    items:
+      - id: upcoming-events
+        tag: "ಈ ಋತುವಿನಲ್ಲಿ"
+        title: "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳು"
+        summary: "ರಥೋತ್ಸವ, ಏಕಾದಶಿ ಮತ್ತು ಹಬ್ಬದ ದರ್ಶನ"
+        href: "/events"
+        bg: "carousel-events"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: kainkarya-projects
+        tag: "ಕೈಂಕರ್ಯ"
+        title: "ಯೋಜನೆಗಳು ಮತ್ತು ಸೇವಾ ಕಾರ್ಯಗಳು"
+        summary: "ಗೋಶಾಲೆ, ಅನ್ನದಾನ ಸಭಾಂಗಣ ಮತ್ತು ಪುನಃಸ್ಥಾಪನೆ"
+        href: "/projects"
+        bg: "carousel-projects"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: paryaya-significance
+        tag: "ಜೀವಂತ ಪರಂಪರೆ"
+        title: "ಪರ್ಯಾಯದ ಮಹತ್ವ"
+        summary: "ಶ್ರೀಕೃಷ್ಣನ ಪೂಜೆಯ ಎರಡು ವರ್ಷಗಳ ಚಕ್ರ"
+        href: "/about#paryaya"
+        bg: "carousel-paryaya"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: guru-parampara
+        tag: "ಅಖಂಡ ಪರಂಪರೆ"
+        title: "ಗುರು ಪರಂಪರೆ"
+        summary: "ಮಧ್ವಾಚಾರ್ಯರಿಂದ ಇಂದಿನ ಸ್ವಾಮೀಜಿಯವರೆಗೆ"
+        href: "/about#guru-parampara"
+        bg: "carousel-parampara"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: udupi-kashi
+        tag: "ದಕ್ಷಿಣದ ಕಾಶಿ"
+        title: "ಉಡುಪಿ, ಶಿವನ ನೆಲೆ"
+        summary: "ಚಂದ್ರಮೌಳೀಶ್ವರನನ್ನು ಪೂಜಿಸುವ ಸ್ಥಳ"
+        href: "/about#udupi"
+        bg: "carousel-udupi"
+        pinned_date: null
+        launch_date: null
+        end_date: null
+      - id: rathotsava-2026
+        tag: "ಹಬ್ಬ"
+        title: "ರಥೋತ್ಸವ ದರ್ಶನ"
+        summary: "ಈ ವಾರದ ರಥಯಾತ್ರೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಿ"
+        href: "/events"
+        bg: "carousel-rathotsava"
+        pinned_date: "2026-07-27"
+        launch_date: null
+        end_date: null
+      - id: krishnashtami-2026
+        tag: "ಹಬ್ಬ"
+        title: "ಶ್ರೀ ಕೃಷ್ಣ ಜನ್ಮಾಷ್ಟಮಿ"
+        summary: "ವಿಶೇಷ ದರ್ಶನ ಸಮಯ ಮತ್ತು ಮಧ್ಯರಾತ್ರಿ ಅಭಿಷೇಕ"
+        href: "/events"
+        bg: "carousel-janmashtami"
+        pinned_date: null
+        launch_date: "2026-09-01"
+        end_date: "2026-09-05"
+
+  quickNav:
+    items:
+      - id: events
+        label: "ಕಾರ್ಯಕ್ರಮಗಳು"
+        icon: "Calendar"
+        href: "/events"
+      - id: seva
+        label: "ಸೇವೆ"
+        icon: "HeartHandshake"
+        href: "/sevas"
+      - id: panchanga
+        label: "ಪಂಚಾಂಗ"
+        icon: "Sun"
+        href: "/panchanga"
+      - id: library
+        label: "ಗ್ರಂಥಾಲಯ"
+        icon: "BookOpen"
+        href: "/library"
+      - id: media
+        label: "ಮಾಧ್ಯಮ"
+        icon: "Images"
+        href: "/media"
+
+  promoCards:
+    - id: mantra-yajna
+      eyebrow: "ಸಂಕಲ್ಪ"
+      title: "ಕೃಷ್ಣ ಮಂತ್ರ ಲೇಖನ ಯಜ್ಞ"
+      body: "\"ಶ್ರೀ ಕೃಷ್ಣಾಯ ನಮಃ\" ಎಂದು ಬರೆದು ಉಡುಪಿಯ ಶ್ರೀಕೃಷ್ಣನ ದಿವ್ಯ ಸಾನ್ನಿಧ್ಯದೊಂದಿಗೆ ನಿಮ್ಮ ಸಂಕಲ್ಪವನ್ನು ಜೋಡಿಸಿ."
+      ctaLabel: "ಯಜ್ಞದಲ್ಲಿ ಸೇರಿ"
+      href: "/events/mantra-yajna"
+      image: "promo-yajna"
+    - id: solar-power
+      eyebrow: "ಕಳೆದ ವಾರ"
+      title: "ಮಠದಲ್ಲಿ ಸೌರಶಕ್ತಿ ಅಳವಡಿಕೆ"
+      body: "ಹೊಸ ಮೇಲ್ಛಾವಣಿ ಸೌರ ವ್ಯವಸ್ಥೆಯು ಈಗ ಅನ್ನದಾನ ಸಭಾಂಗಣ ಮತ್ತು ಅತಿಥಿ ಗೃಹಕ್ಕೆ ವಿದ್ಯುತ್ ನೀಡುತ್ತಿದೆ."
+      ctaLabel: "ಸುದ್ದಿ ಓದಿ"
+      href: "/history/articles"
+      image: "promo-solar"
+
+  seekingAnswers:
+    heading: "ಉತ್ತರಗಳನ್ನು ಹುಡುಕುತ್ತಿರುವಿರಾ"
+    tiles:
+      - id: navagraha
+        glyph: "ग्र"
+        question: "ಗ್ರಹಗಳು ಪ್ರತಿಕೂಲವಾಗಿ ಕಂಡಾಗ"
+        subtitle: "ನವಗ್ರಹ ದೋಷ · ಗ್ರಹ ಪ್ರಭಾವ"
+        href: "/solutions"
+      - id: marriage
+        glyph: "ॐ"
+        question: "ಪ್ರೀತಿ ಮತ್ತು ಶಾಂತಿ ದೂರವಾದಂತೆ ಅನಿಸಿದಾಗ"
+        subtitle: "ವಿವಾಹ · ಕುಟುಂಬ ಸಾಮರಸ್ಯ"
+        href: "/solutions"
+      - id: wealth
+        glyph: "श्री"
+        question: "ಪ್ರಯತ್ನಕ್ಕೆ ಫಲ ಸಿಗದಿದ್ದಾಗ"
+        subtitle: "ಸಂಪತ್ತು · ವೃತ್ತಿ · ನಿರ್ಬಂಧಿತ ಪ್ರಗತಿ"
+        href: "/solutions"
+      - id: general
+        glyph: "卐"
+        question: "ಬದುಕು ಭಾರವಾಗಿ ಕಂಡಾಗ"
+        subtitle: "ಸಾಮಾನ್ಯ ಯೋಗಕ್ಷೇಮ · ಮನಶ್ಶಾಂತಿ"
+        href: "/solutions"
+
+  secondaryLinks:
+    - id: chanting
+      label: "ಶ್ಲೋಕ ಮತ್ತು ಮಂತ್ರ ಪಠಣ"
+      href: "/chanting-player"
+    - id: directions
+      label: "ಶ್ರೀ ಶಿರೂರು ಮಠ ತಲುಪುವುದು"
+      href: "/directions"
+    - id: feedback
+      label: "ಪ್ರತಿಕ್ರಿಯೆ ನೀಡಿ"
+      href: "/feedback"
+    - id: stories
+      label: "ನಿಮ್ಮ ಕಥೆಯನ್ನು ಜಗತ್ತಿಗೆ ತಿಳಿಸಿ"
+      href: "/user-stories"
+
+about:
+  mission:
+    heading: "ನಮ್ಮ ಧ್ಯೇಯ"
+    body: "ಶ್ರೀ ಶಿರೂರು ಮಠವು ಮಾಧ್ವ ಪರಂಪರೆಯ ವೇದಾಂತ ಅಧ್ಯಯನ, ಭಕ್ತಿ ಮತ್ತು ಸೇವೆಯನ್ನು ಸಂರಕ್ಷಿಸಿ ಹಂಚಿಕೊಳ್ಳಲು ಇದೆ — ದೈನಂದಿನ ಪೂಜೆ, ಶಾಸ್ತ್ರಗಳಲ್ಲಿ ವಿದ್ಯಾರ್ಥಿಗಳ ಶಿಕ್ಷಣ, ಸೇವೆ ಮತ್ತು ಅನ್ನದಾನದ ಮೂಲಕ ಸಮುದಾಯದ ಆರೈಕೆ, ಮತ್ತು ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರು ಸ್ಥಾಪಿಸಿದ ಪರ್ಯಾಯ ವ್ಯವಸ್ಥೆಯಲ್ಲಿ ನಿಷ್ಠೆಯ ಪಾಲ್ಗೊಳ್ಳುವಿಕೆಯ ಮೂಲಕ."
+
+  chiefSwamiji:
+    heading: "ಪ್ರಸ್ತುತ ಆಧ್ಯಾತ್ಮಿಕ ಗುರುಗಳು"
+    name: "ಶ್ರೀ ವೇದವರ್ಧನ ತೀರ್ಥರು"
+    title: "ಪೀಠಾಧಿಪತಿ, ಶ್ರೀ ಶಿರೂರು ಮಠ"
+    description: "ಶ್ರೀ ವೇದವರ್ಧನ ತೀರ್ಥರು ಪ್ರಸ್ತುತ ಶ್ರೀ ಶಿರೂರು ಮಠವನ್ನು ಮುನ್ನಡೆಸುತ್ತಿದ್ದು, ಶ್ರೀಮನ್ ಮಧ್ವಾಚಾರ್ಯರಿಂದ ಬಂದ ಅಖಂಡ ಗುರುಪರಂಪರೆಯನ್ನು ಮುಂದುವರಿಸುತ್ತಿದ್ದಾರೆ."
+    portrait: "chief-swamiji"
+
+  paryayaSignificance:
+    heading: "ಪರ್ಯಾಯದ ಮಹತ್ವ"
+    body: "ಪರ್ಯಾಯವು ಉಡುಪಿಯ ಎಂಟು ಮಠಗಳಲ್ಲಿ ಪ್ರತಿಯೊಂದೂ ಸರದಿಯಂತೆ ಉಡುಪಿ ಶ್ರೀಕೃಷ್ಣ ಮಠದ ಪೂಜೆಯ ಜವಾಬ್ದಾರಿ ವಹಿಸಿಕೊಳ್ಳುವ ಎರಡು ವರ್ಷಗಳ ಚಕ್ರ. ಇದನ್ನು ಸ್ವತಃ ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರು ಸ್ಥಾಪಿಸಿದರು. ಶ್ರೀ ಶಿರೂರು ಮಠವು ಈ ಎಂಟು ಅಷ್ಟಮಠಗಳಲ್ಲಿ ಒಂದಾಗಿದೆ."
+
+  udupi:
+    heading: "ದಕ್ಷಿಣದ ಕಾಶಿ"
+    body: "ಉಡುಪಿಯನ್ನು ದಕ್ಷಿಣದ ಕಾಶಿ ಎಂದು ಪೂಜಿಸಲಾಗುತ್ತದೆ, ಇಲ್ಲಿ ಪುರಾತನ ಚಂದ್ರಮೌಳೀಶ್ವರ ಮತ್ತು ಅನಂತೇಶ್ವರ ದೇವಾಲಯಗಳು ಶ್ರೀಕೃಷ್ಣ ಮಠದೊಂದಿಗೆ ನೆಲೆಸಿವೆ. ಶತಮಾನಗಳಿಂದ ಇದು ವೇದಾಂತ ಅಧ್ಯಯನ ಮತ್ತು ಯಾತ್ರೆಯ ಕೇಂದ್ರವಾಗಿದೆ."
+
+  guruparampara:
+    heading: "ಗುರು ಪರಂಪರೆ"
+    intro: "ಶತಮಾನಗಳ ದಿವ್ಯ ಸೇವೆ ಮತ್ತು ಜ್ಞಾನದ ಮೂಲಕ ಶ್ರೀ ಶಿರೂರು ಮಠವನ್ನು ಮುನ್ನಡೆಸಿದ ಆಧ್ಯಾತ್ಮಿಕ ಗುರುಗಳ ಪವಿತ್ರ ಪರಂಪರೆ."
+    entries:
+      - order: 1
+        name: "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರು"
+        title: "ಮಾಧ್ವ ಪರಂಪರೆಯ ಸ್ಥಾಪಕರು"
+        description: "ಬ್ರಹ್ಮಸೂತ್ರ, ಉಪನಿಷತ್, ಭಗವದ್ಗೀತೆ ಮತ್ತು ಇತರ ಪವಿತ್ರ ಗ್ರಂಥಗಳ ಭಾಷ್ಯಗಳ ಮೂಲಕ ಶುದ್ಧ ಭಕ್ತಿಯ ಮಾರ್ಗವನ್ನು (ತತ್ವವಾದ) ಸ್ಥಾಪಿಸಿದ ದಿವ್ಯ ಅವತಾರ."
+        portrait: "guru-01"
+      - order: 2
+        name: "ಶ್ರೀ ವಾಮನ ತೀರ್ಥರು"
+        title: "ಪರಂಪರೆಯಲ್ಲಿ ಎರಡನೆಯವರು"
+        description: "ಸ್ಥಾಪಕರ ಬೋಧನೆಗಳನ್ನು ಮುಂದುವರಿಸಿ ಮಠದ ಆರಂಭಿಕ ಸಂಪ್ರದಾಯಗಳನ್ನು ಸ್ಥಾಪಿಸಿದ ನೇರ ಶಿಷ್ಯರು."
+        portrait: "guru-02"
+      - order: 3
+        name: "ಶ್ರೀ ವಾಸುದೇವ ತೀರ್ಥರು"
+        title: "ಪರಂಪರೆಯಲ್ಲಿ ಮೂರನೆಯವರು"
+        description: "ತಮ್ಮ ಪೂರ್ವಾಧಿಕಾರಿಗಳು ಸ್ಥಾಪಿಸಿದ ಜ್ಞಾನ ಮತ್ತು ಪೂಜಾ ಸಂಪ್ರದಾಯವನ್ನು ಮುಂದುವರಿಸಿದರು."
+        portrait: "guru-03"
+      - order: 31
+        name: "ಶ್ರೀ ವೇದವರ್ಧನ ತೀರ್ಥರು"
+        title: "ಪ್ರಸ್ತುತ ಆಧ್ಯಾತ್ಮಿಕ ಗುರುಗಳು"
+        description: "ಶ್ರೀಮನ್ ಮಧ್ವಾಚಾರ್ಯರಿಂದ ಬಂದ ಅಖಂಡ ಗುರುಪರಂಪರೆಯನ್ನು ಮುಂದುವರಿಸುತ್ತಾ, ಪ್ರಸ್ತುತ ಶ್ರೀ ಶಿರೂರು ಮಠವನ್ನು ಮುನ್ನಡೆಸುತ್ತಿದ್ದಾರೆ."
+        portrait: "chief-swamiji"
+
+events:
+  heading: "ಕಾರ್ಯಕ್ರಮಗಳು"
+  intro: "ಶ್ರೀ ಶಿರೂರು ಮಠದಲ್ಲಿ ಹಬ್ಬಗಳು, ಆಚರಣೆಗಳು ಮತ್ತು ಸಮುದಾಯ ಕಾರ್ಯಕ್ರಮಗಳು."
+  categories: ["Monthly", "Annual", "Special"]
+  list:
+    - id: rathotsava
+      title: "ರಥೋತ್ಸವ"
+      category: "Annual"
+      date: "2026-07-27"
+      image: "event-rathotsava"
+      description: "ಮಠದ ಸುತ್ತ ವಾರ್ಷಿಕ ರಥಯಾತ್ರೆ, ಎಲ್ಲಾ ಭಕ್ತರಿಗೆ ದರ್ಶನ ಮತ್ತು ಪ್ರಸಾದ."
+    - id: ekadashi
+      title: "ಏಕಾದಶಿ ಆಚರಣೆ"
+      category: "Monthly"
+      date: "2026-08-04"
+      image: "event-ekadashi"
+      description: "ಏಕಾದಶಿಯಂದು ಆಚರಿಸುವ ಮಾಸಿಕ ಉಪವಾಸ ಮತ್ತು ವಿಶೇಷ ಪೂಜೆ, ಸಂಜೆ ಭಜನೆಗಳೊಂದಿಗೆ."
+    - id: krishnashtami
+      title: "ಶ್ರೀ ಕೃಷ್ಣ ಜನ್ಮಾಷ್ಟಮಿ"
+      category: "Annual"
+      date: "2026-09-04"
+      image: "event-janmashtami"
+      description: "ಶ್ರೀಕೃಷ್ಣನ ಜನ್ಮವನ್ನು ಸ್ಮರಿಸುವ ಮಧ್ಯರಾತ್ರಿ ಅಭಿಷೇಕ ಮತ್ತು ವಿಶೇಷ ದರ್ಶನ."
+    - id: paryaya-transfer
+      title: "ಪರ್ಯಾಯ ಹಸ್ತಾಂತರ ಸಮಾರಂಭ"
+      category: "Special"
+      date: "2027-01-18"
+      image: "event-paryaya"
+      description: "ಎಂಟು ವರ್ಷಗಳ ಚಕ್ರದಲ್ಲಿ ಮುಂದಿನ ಮಠಕ್ಕೆ ಪರ್ಯಾಯ ಜವಾಬ್ದಾರಿಯ ಸಮಾರಂಭದ ಹಸ್ತಾಂತರ."
+    - id: annadana-anniversary
+      title: "ಅನ್ನದಾನ ಸಭಾಂಗಣ ವಾರ್ಷಿಕೋತ್ಸವ"
+      category: "Special"
+      date: "2026-11-10"
+      image: "event-annadana"
+      description: "ಸಭಾಂಗಣದ ಸ್ಥಾಪನೆಯ ವಾರ್ಷಿಕೋತ್ಸವವನ್ನು ಗುರುತಿಸುವ ವಿಶೇಷ ಅನ್ನದಾನ ದಿನ."
+
+mantraYajna:
+  heading: "ಕೃಷ್ಣ ಮಂತ್ರ ಲೇಖನ ಯಜ್ಞ"
+  subheading: "ಸಂಕಲ್ಪ · ಶ್ರೀ ಕೃಷ್ಣಾಯ ನಮಃ"
+  body: "ಭಕ್ತರು ಮಠದಲ್ಲಿ ಇರಿಸಲಾದ ವಿಶೇಷ ರಿಜಿಸ್ಟರ್‌ನಲ್ಲಿ \"ಶ್ರೀ ಕೃಷ್ಣಾಯ ನಮಃ\" ಎಂದು ಬರೆಯಲು ಆಹ್ವಾನಿಸಲಾಗಿದೆ, ಉಡುಪಿಯ ಶ್ರೀಕೃಷ್ಣನ ದಿವ್ಯ ಸಾನ್ನಿಧ್ಯದೊಂದಿಗೆ ಸಂಕಲ್ಪವನ್ನು ಜೋಡಿಸುತ್ತಾ. ಪೂರ್ಣಗೊಂಡ ರಿಜಿಸ್ಟರ್‌ಗಳನ್ನು ಪರ್ಯಾಯ ಆಚರಣೆಗಳ ಸಮಯದಲ್ಲಿ ಗರ್ಭಗುಡಿಯಲ್ಲಿ ಅರ್ಪಿಸಲಾಗುತ್ತದೆ."
+  ctaLabel: "ಯಜ್ಞದಲ್ಲಿ ಸೇರಿ"
+  image: "mantra-yajna-hero"
+
+seva:
+  heading: "ಸೇವೆ"
+  intro: "ತನು, ಮನ, ಧನ — ನಿಮ್ಮ ಸಮಯ, ಭಕ್ತಿ ಅಥವಾ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಮಠದ ಸೇವೆಗೆ ಅರ್ಪಿಸಿ."
+  categories: ["Nitya", "Special"]
+  items:
+    - id: nitya-puja
+      name: "ನಿತ್ಯ ಪೂಜೆ"
+      category: "Nitya"
+      description: "ಗರ್ಭಗುಡಿಯಲ್ಲಿ ನಡೆಯುವ ದೈನಂದಿನ ಪೂಜಾ ವಿಧಿಗಳನ್ನು ಪ್ರಾಯೋಜಿಸಿ."
+      price: "₹501"
+      image: "seva-nitya-puja"
+      featured: true
+    - id: annadana-seva
+      name: "ಅನ್ನದಾನ ಸೇವೆ"
+      category: "Nitya"
+      description: "ಭೋಜನ ಶಾಲೆಯಲ್ಲಿ ಬಡಿಸುವ ಒಂದು ದಿನದ ಊಟಕ್ಕೆ ಕೊಡುಗೆ ನೀಡಿ."
+      price: "₹1,101"
+      image: "seva-annadana"
+      featured: true
+    - id: go-seva
+      name: "ಗೋ ಸೇವೆ"
+      category: "Nitya"
+      description: "ಮಠದ ಗೋಶಾಲೆಯಲ್ಲಿ ಹಸುಗಳ ಆರೈಕೆ ಮತ್ತು ಆಹಾರಕ್ಕೆ ಬೆಂಬಲ ನೀಡಿ."
+      price: "₹251"
+      image: "seva-go"
+      featured: true
+    - id: veda-parayana
+      name: "ವೇದ ಪಾರಾಯಣ ಸೇವೆ"
+      category: "Special"
+      description: "ನಿವಾಸಿ ವಿದ್ವಾಂಸರಿಂದ ವೇದಗಳ ನಿರಂತರ ಪಠಣವನ್ನು ಪ್ರಾಯೋಜಿಸಿ."
+      price: "₹2,101"
+      image: "seva-veda-parayana"
+      featured: true
+    - id: rathotsava-seva
+      name: "ರಥೋತ್ಸವ ಸೇವೆ"
+      category: "Special"
+      description: "ವಾರ್ಷಿಕ ರಥೋತ್ಸವದ ಏರ್ಪಾಡುಗಳಿಗೆ ಕೊಡುಗೆ ನೀಡಿ."
+      price: "₹5,001"
+      image: "seva-rathotsava"
+      featured: false
+    - id: vastra-seva
+      name: "ವಸ್ತ್ರ ಸೇವೆ"
+      category: "Special"
+      description: "ದೇವರ ದೈನಂದಿನ ಅಲಂಕಾರಕ್ಕಾಗಿ ಹೊಸ ವಸ್ತ್ರವನ್ನು ಅರ್ಪಿಸಿ."
+      price: "₹751"
+      image: "seva-vastra"
+      featured: false
+
+sevaVolunteer:
+  heading: "ನಮ್ಮೊಂದಿಗೆ ಸ್ವಯಂಸೇವೆ"
+  intro: "ಮಠದ ದೈನಂದಿನ ಚಟುವಟಿಕೆಗಳು ಮತ್ತು ಹಬ್ಬಗಳಿಗೆ ನಿಮ್ಮ ಸಮಯ ಮತ್ತು ಕೌಶಲ್ಯಗಳನ್ನು ಅರ್ಪಿಸಿ."
+  steps:
+    - "ನೀವು ಸಹಾಯ ಮಾಡಲು ಬಯಸುವ ಕ್ಷೇತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ — ಅಡುಗೆಮನೆ, ಕಾರ್ಯಕ್ರಮಗಳು, ಮಾಧ್ಯಮ ಅಥವಾ ಅತಿಥಿ ಸೇವೆಗಳು."
+    - "ನಿಮ್ಮ ಲಭ್ಯತೆ ಮತ್ತು ಸಂಪರ್ಕ ವಿವರಗಳನ್ನು ಸೇವಾ ಡೆಸ್ಕ್‌ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ."
+    - "ಮಠದ ಕಚೇರಿ ನಿಮ್ಮ ಭೇಟಿಗೆ ಮುಂಚಿತವಾಗಿ ನಿಮ್ಮ ವೇಳಾಪಟ್ಟಿಯನ್ನು ದೃಢಪಡಿಸುತ್ತದೆ."
+  ctaLabel: "ಸ್ವಯಂಸೇವಕರಾಗಿ ನೋಂದಾಯಿಸಿ"
+
+sevaDonations:
+  heading: "ದೇಣಿಗೆಗಳು"
+  intro: "ನಿಮ್ಮ ಕೊಡುಗೆ ಮಠದ ದೈನಂದಿನ ಪೂಜೆ, ಶಿಕ್ಷಣ ಮತ್ತು ಸಮುದಾಯ ಸೇವೆಯನ್ನು ಉಳಿಸಿಕೊಳ್ಳುತ್ತದೆ."
+  upiId: "shiroor.matha@upi"
+  presetAmounts: [101, 501, 1101, 2101]
+
+panchanga:
+  heading: "ಪಂಚಾಂಗ"
+  intro: "ಇಂದಿನ ಪಂಚಾಂಗ — ತಿಥಿ, ನಕ್ಷತ್ರ ಮತ್ತು ಶುಭ ಸಮಯಗಳು."
+  valid_for_date: "2026-07-27"
+  tithi: "ಶುಕ್ಲ ಪಂಚಮಿ"
+  nakshatra: "ಉತ್ತರ ಫಲ್ಗುಣಿ"
+  sunrise: "06:12"
+  sunset: "18:47"
+  notes: "ಹೊಸ ಕಾರ್ಯಗಳನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸೂಕ್ತವಾದ ದಿನ."
+
+history:
+  pages:
+    - key: stories
+      title: "ಸಾಧನಾ ಕಥೆಗಳು"
+      image: "history-stories"
+      intro: "ಮಠದ ಸಮುದಾಯದೊಳಗಿನ ಭಕ್ತಿ ಮತ್ತು ಪರಿಶ್ರಮದ ಚರಿತ್ರೆಗಳು."
+      entries:
+        - id: goshala-founding
+          title: "ಗೋಶಾಲೆಯ ಸ್ಥಾಪನೆ"
+          body: "ದಶಕಗಳ ಹಿಂದೆ, ಒಂದು ಸಣ್ಣ ಭಕ್ತರ ಗುಂಪು ಮಠಕ್ಕೆ ದಾನವಾಗಿ ನೀಡಿದ ಭೂಮಿಯಲ್ಲಿ ಕೆಲವು ಹಸುಗಳ ಆರೈಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿತು. ಇಂದು ಗೋಶಾಲೆಯು ಸಂಪೂರ್ಣವಾಗಿ ಸೇವಾ ಕೊಡುಗೆಗಳಿಂದ ಪೋಷಿಸಲ್ಪಟ್ಟ ಡಜನ್‌ಗಟ್ಟಲೆ ಹಸುಗಳಿಗೆ ಆಶ್ರಯ ನೀಡುತ್ತದೆ."
+        - id: annadana-tradition
+          title: "ಅವಿಚ್ಛಿನ್ನ ಅನ್ನದಾನ ಪರಂಪರೆ"
+          body: "ಭೋಜನ ಶಾಲೆಯು ಪೀಳಿಗೆಗಳಿಂದ ಅಡೆತಡೆಯಿಲ್ಲದೆ ಭಕ್ತರಿಗೆ ಮತ್ತು ಯಾತ್ರಿಕರಿಗೆ ಊಟವನ್ನು ಬಡಿಸಿದೆ, ಇದನ್ನು ಮಠವು ತನ್ನ ಧ್ಯೇಯದ ಕೇಂದ್ರವೆಂದು ಪರಿಗಣಿಸುತ್ತದೆ."
+    - key: articles
+      title: "ಬ್ಲಾಗ್ ಮತ್ತು ಲೇಖನಗಳು"
+      image: "history-articles"
+      intro: "ಮಠದಿಂದ ಸುದ್ದಿಗಳು, ಚಿಂತನೆಗಳು ಮತ್ತು ನವೀಕರಣಗಳು."
+      entries:
+        - id: solar-power
+          title: "ಮಠದಲ್ಲಿ ಸೌರಶಕ್ತಿ ಅಳವಡಿಕೆ"
+          body: "ಹೊಸ ಮೇಲ್ಛಾವಣಿ ಸೌರ ವ್ಯವಸ್ಥೆಯು ಈಗ ಅನ್ನದಾನ ಸಭಾಂಗಣ ಮತ್ತು ಅತಿಥಿ ಗೃಹಕ್ಕೆ ವಿದ್ಯುತ್ ನೀಡುತ್ತಿದೆ, ಮಠದ ವೆಚ್ಚವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ ಮತ್ತು ದೀರ್ಘಕಾಲೀನ ಸುಸ್ಥಿರತೆಯ ಗುರಿಗಳನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ."
+        - id: paryaya-preparations
+          title: "ಮುಂದಿನ ಪರ್ಯಾಯಕ್ಕೆ ಸಿದ್ಧತೆ"
+          body: "ಪ್ರಸ್ತುತ ಪರ್ಯಾಯ ಅವಧಿಯು ಅರ್ಧದಷ್ಟು ಸಮೀಪಿಸುತ್ತಿದ್ದಂತೆ, ಚಕ್ರದಲ್ಲಿ ಮುಂದಿನ ಮಠಕ್ಕೆ ಪರಿವರ್ತನೆಯನ್ನು ಗುರುತಿಸುವ ಸಮಾರಂಭಗಳಿಗೆ ಸಿದ್ಧತೆಗಳು ಈಗಾಗಲೇ ನಡೆಯುತ್ತಿವೆ."
+    - key: symbolism
+      title: "ಹಿಂದೂ ದೇವತೆಗಳು, ಆಚರಣೆಗಳು ಮತ್ತು ಪವಿತ್ರ ಸಂಕೇತಗಳ ಅರ್ಥ"
+      image: "history-symbolism"
+      intro: "ದೈನಂದಿನ ಪೂಜೆಯ ಸಂಕೇತಗಳು ಮತ್ತು ಆಚರಣೆಗಳ ಹಿಂದಿನ ಅರ್ಥವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳುವುದು."
+      entries:
+        - id: shankha-chakra
+          title: "ಶಂಖ ಮತ್ತು ಚಕ್ರ"
+          body: "ವಿಷ್ಣುವು ಧರಿಸುವ ಶಂಖ ಮತ್ತು ಚಕ್ರವು ಶಬ್ದ ಮತ್ತು ಕಾಲದ ಚಕ್ರವನ್ನು ಪ್ರತಿನಿಧಿಸುತ್ತದೆ — ವೈಷ್ಣವ ಪ್ರತಿಮಾಶಾಸ್ತ್ರದಲ್ಲಿ ಅವನ ಅತ್ಯಂತ ಗುರುತಿಸಬಹುದಾದ ಗುಣಲಕ್ಷಣಗಳಲ್ಲಿ ಎರಡು."
+        - id: tulasi
+          title: "ತುಳಸಿ ಸಸ್ಯ"
+          body: "ತುಳಸಿಯು ವೈಷ್ಣವ ಪೂಜೆಯ ಕೇಂದ್ರವಾಗಿದೆ, ಪ್ರತಿದಿನ ಪೂಜೆಯಲ್ಲಿ ಅರ್ಪಿಸಲ್ಪಡುತ್ತದೆ ಮತ್ತು ವಿಷ್ಣು ಭಕ್ತಿಯಿಂದ ಅವಿಭಾಜ್ಯವೆಂದು ಪರಿಗಣಿಸಲಾಗುತ್ತದೆ."
+    - key: remedies
+      title: "ಸಮಸ್ಯೆ ಪರಿಹಾರ ಮಂತ್ರಗಳು, ಆಚರಣೆಗಳು ಮತ್ತು ಗುರಿಪಡಿಸಿದ ಸೇವೆಗಳು"
+      image: "history-remedies"
+      intro: "ಶಾಸ್ತ್ರದಿಂದ ಸಾಮಾನ್ಯ ಜೀವನ ಸವಾಲುಗಳಿಗೆ ಸಾಂಪ್ರದಾಯಿಕ ಪರಿಹಾರಗಳು — ಭಕ್ತ-ಸ್ನೇಹಿ ಅವಲೋಕನಕ್ಕಾಗಿ ಪರಿಹಾರಗಳ ಪುಟವನ್ನೂ ನೋಡಿ."
+      entries:
+        - id: navagraha-shanti
+          title: "ನವಗ್ರಹ ಶಾಂತಿ"
+          body: "ಪ್ರತಿಕೂಲ ಗ್ರಹ ಪ್ರಭಾವವನ್ನು ಶಮನಗೊಳಿಸಲು ನಡೆಸುವ ಆಚರಣೆ, ಸಾಮಾನ್ಯವಾಗಿ ಕುಟುಂಬ ಪುರೋಹಿತರು ಅಥವಾ ಜ್ಯೋತಿಷಿಗಳ ಸಮಾಲೋಚನೆಯ ನಂತರ ಶಿಫಾರಸು ಮಾಡಲಾಗುತ್ತದೆ."
+        - id: sudarshana-homa
+          title: "ಸುದರ್ಶನ ಹೋಮ"
+          body: "ಅಡೆತಡೆಗಳ ನಿವಾರಣೆಗಾಗಿ ನಡೆಸುವ ವಿಷ್ಣುವಿನ ರಕ್ಷಣಾತ್ಮಕ ಅಂಶವನ್ನು ಆವಾಹಿಸುವ ಅಗ್ನಿ ಆಚರಣೆ."
+    - key: science
+      title: "ಹಿಂದೂ ವಿಜ್ಞಾನ ಮತ್ತು ವೈದಿಕ ತತ್ವಶಾಸ್ತ್ರ ಸಂಶೋಧನೆ"
+      image: "history-science"
+      intro: "ಸಾಂಪ್ರದಾಯಿಕ ಜ್ಞಾನ ವ್ಯವಸ್ಥೆಗಳು ಮತ್ತು ಸಮಕಾಲೀನ ವಿಚಾರಣೆಯ ಛೇದನಗಳನ್ನು ಅನ್ವೇಷಿಸುವುದು."
+      entries:
+        - id: tatvavada-logic
+          title: "ತತ್ವವಾದದ ತಾರ್ಕಿಕ ರಚನೆ"
+          body: "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರ ತತ್ವಶಾಸ್ತ್ರವು ಗ್ರಂಥಪ್ರಮಾಣದ ಜೊತೆಗೆ ತಾರ್ಕಿಕ ವಾದದ (ನ್ಯಾಯ) ವ್ಯವಸ್ಥಿತ ಬಳಕೆಯಿಂದ ಗುರುತಿಸಲ್ಪಡುತ್ತದೆ."
+        - id: panchanga-astronomy
+          title: "ಪಂಚಾಂಗ ಮತ್ತು ಖಗೋಳ ಗಣನೆ"
+          body: "ಸಾಂಪ್ರದಾಯಿಕ ಪಂಚಾಂಗವು ಶತಮಾನಗಳಷ್ಟು ಹಳೆಯದಾದ ಖಗೋಳ ಗಣನಾ ವಿಧಾನಗಳನ್ನು ಆಧರಿಸಿದೆ, ಇಂದಿಗೂ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ ಮತ್ತು ಪರಿಶೀಲಿಸಲ್ಪಡುತ್ತದೆ."
+    - key: pilgrim-guide
+      title: "ಯಾತ್ರಾ ಮಾರ್ಗದರ್ಶಿ"
+      image: "history-pilgrim-guide"
+      intro: "ಶ್ರೀ ಶಿರೂರು ಮಠ ಮತ್ತು ಉಡುಪಿಗೆ ಭೇಟಿ ನೀಡಲು ಯೋಜಿಸುತ್ತಿರುವ ಭಕ್ತರಿಗೆ ಪ್ರಾಯೋಗಿಕ ಮಾಹಿತಿ."
+      entries:
+        - id: getting-here
+          title: "ಇಲ್ಲಿಗೆ ತಲುಪುವುದು"
+          body: "ಉಡುಪಿಯು ರೈಲು ಮತ್ತು ರಸ್ತೆಯ ಮೂಲಕ ಚೆನ್ನಾಗಿ ಸಂಪರ್ಕ ಹೊಂದಿದೆ; ಮಠವು ಕಾರ್ ಸ್ಟ್ರೀಟ್‌ನಲ್ಲಿರುವ ಶ್ರೀಕೃಷ್ಣ ಮಠದಿಂದ ಸ್ವಲ್ಪ ದೂರದಲ್ಲಿದೆ."
+        - id: where-to-stay
+          title: "ಎಲ್ಲಿ ಉಳಿಯುವುದು"
+          body: "ಯಾತ್ರಿಕರಿಗೆ ಮಠದ ಆವರಣದಲ್ಲಿ ಅತಿಥಿ ವಸತಿ ಲಭ್ಯವಿದೆ; ಹಬ್ಬದ ಅವಧಿಯಲ್ಲಿ ಮಠದ ಕಚೇರಿಯ ಮೂಲಕ ಮುಂಚಿತವಾಗಿ ಕಾಯ್ದಿರಿಸುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡಲಾಗುತ್ತದೆ."
+
+library:
+  heading: "ಗ್ರಂಥಾಲಯ"
+  intro: "ಮಾಧ್ವ ಪರಂಪರೆಯಿಂದ ಶ್ಲೋಕಗಳು, ಗ್ರಂಥಗಳು, ದಾಸರ ಪದಗಳು, ಉಪನ್ಯಾಸಗಳು ಮತ್ತು ಆಚರಣಾ ಮಾರ್ಗದರ್ಶನ."
+  categories:
+    - key: mantras
+      title: "ಶ್ಲೋಕ, ಸ್ತೋತ್ರ ಮತ್ತು ಮಂತ್ರಗಳು"
+      kn_label: "ಶ್ಲೋಕ ಮಂತ್ರ"
+      image: "library-mantras"
+      description: "ದೈನಂದಿನ ಪಠಣಗಳು ಮತ್ತು ಭಕ್ತಿಗೀತೆಗಳು, ಲಭ್ಯವಿರುವಲ್ಲಿ ಆಡಿಯೊದೊಂದಿಗೆ."
+      items:
+        - id: vishnu-sahasranama
+          title: "ವಿಷ್ಣು ಸಹಸ್ರನಾಮ"
+          subtitle: "ವಿಷ್ಣುವಿನ 1000 ನಾಮಗಳು"
+        - id: madhwa-vijaya
+          title: "ಮಧ್ವ ವಿಜಯ"
+          subtitle: "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರ ಜೀವನದ ಪದ್ಯಗಳು"
+        - id: dwadasha-stotra
+          title: "ದ್ವಾದಶ ಸ್ತೋತ್ರ"
+          subtitle: "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರು ರಚಿಸಿದ ಹನ್ನೆರಡು ಶ್ಲೋಕಗಳು"
+    - key: scriptures
+      title: "ಗೀತೆ, ವೇದ, ಉಪನಿಷತ್ ಮತ್ತು ಮಹಾಕಾವ್ಯಗಳು"
+      kn_label: "ಗೀತೆ ವೇದ"
+      image: "library-scriptures"
+      description: "ಮಾಧ್ವ ಪರಂಪರೆಯ ವ್ಯಾಖ್ಯಾನದೊಂದಿಗೆ ಪ್ರಮುಖ ಗ್ರಂಥಗಳು."
+      items:
+        - id: bhagavad-gita
+          title: "ಭಗವದ್ಗೀತಾ ಭಾಷ್ಯ"
+          subtitle: "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರ ವ್ಯಾಖ್ಯಾನ"
+        - id: brahma-sutra
+          title: "ಬ್ರಹ್ಮಸೂತ್ರ ಭಾಷ್ಯ"
+          subtitle: "ವೇದಾಂತ ಸೂತ್ರಗಳ ವ್ಯಾಖ್ಯಾನ"
+        - id: mahabharata-tatparya
+          title: "ಮಹಾಭಾರತ ತಾತ್ಪರ್ಯ ನಿರ್ಣಯ"
+          subtitle: "ಮಹಾಭಾರತದ ಸಾರ"
+    - key: dasara-padas
+      title: "ದಾಸರ ಪದಗಳು"
+      kn_label: "ದಾಸರ ಪದ"
+      image: "library-dasara-padas"
+      description: "ಹರಿದಾಸ ಸಂತರ ಭಕ್ತಿಗೀತೆಗಳು, ಆಡಿಯೊವಾಗಿ ಲಭ್ಯ."
+      items:
+        - id: krishna-nee-begane
+          title: "ಕೃಷ್ಣ ನೀ ಬೇಗನೆ ಬಾರೋ"
+          subtitle: "ವ್ಯಾಸತೀರ್ಥ"
+        - id: bhagyada-lakshmi-baramma
+          title: "ಭಾಗ್ಯದ ಲಕ್ಷ್ಮೀ ಬಾರಮ್ಮ"
+          subtitle: "ಪುರಂದರ ದಾಸ"
+    - key: lectures
+      title: "ಉಪನ್ಯಾಸಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು"
+      kn_label: "ಉಪನ್ಯಾಸ"
+      image: "library-lectures"
+      description: "ಮಠದ ವಿದ್ವಾಂಸರ ಪ್ರವಚನಗಳು ಮತ್ತು ಬೋಧನೆಗಳ ಧ್ವನಿಮುದ್ರಣ."
+      items:
+        - id: tatvavada-intro
+          title: "ತತ್ವವಾದದ ಪರಿಚಯ"
+          subtitle: "ಮಾಧ್ವ ತತ್ವಶಾಸ್ತ್ರದ ಪ್ರಾಥಮಿಕ ಪಾಠ"
+        - id: paryaya-history
+          title: "ಪರ್ಯಾಯ ವ್ಯವಸ್ಥೆಯ ಇತಿಹಾಸ"
+          subtitle: "ಎಂಟು ಮಠಗಳು ಹೇಗೆ ಸ್ಥಾಪನೆಯಾದವು"
+    - key: rituals
+      title: "ಆಚರಣೆಗಳು ಮತ್ತು ಹಬ್ಬಗಳು"
+      kn_label: "ಆಚರಣೆ ಹಬ್ಬ"
+      image: "library-rituals"
+      description: "ಮನೆಯಲ್ಲಿ ಆಚರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಮತ್ತು ಹಬ್ಬಗಳನ್ನು ಆಚರಿಸಲು ಹಂತ ಹಂತದ ಮಾರ್ಗದರ್ಶನ."
+      items:
+        - id: ekadashi-vidhi
+          title: "ಏಕಾದಶಿ ವಿಧಿ"
+          subtitle: "ಏಕಾದಶಿ ಉಪವಾಸವನ್ನು ಹೇಗೆ ಆಚರಿಸುವುದು"
+        - id: griha-pravesha
+          title: "ಗೃಹ ಪ್ರವೇಶ ಪೂಜೆ"
+          subtitle: "ಗೃಹಪ್ರವೇಶ ಆಚರಣಾ ಮಾರ್ಗದರ್ಶನ"
+
+media:
+  heading: "ಮಾಧ್ಯಮ"
+  intro: "ಮಠದ ಹಬ್ಬಗಳು, ಆಚರಣೆಗಳು ಮತ್ತು ದೈನಂದಿನ ಜೀವನದ ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು."
+  photos:
+    - id: rathotsava-2025
+      caption: "ರಥೋತ್ಸವ ಮೆರವಣಿಗೆ, 2025"
+      image: "photo-rathotsava-2025"
+    - id: annadana-hall
+      caption: "ಅನ್ನದಾನ ಸಭಾಂಗಣದಲ್ಲಿ ಭಕ್ತರು"
+      image: "photo-annadana-hall"
+    - id: veda-parayana
+      caption: "ವೇದ ಪಾರಾಯಣ ನಡೆಯುತ್ತಿದೆ"
+      image: "photo-veda-parayana"
+    - id: go-shala
+      caption: "ಗೋಶಾಲೆಯಲ್ಲಿ ಹಸುಗಳು"
+      image: "photo-go-shala"
+  videos:
+    - id: paryaya-highlights
+      title: "ಪರ್ಯಾಯ ಸಮಾರಂಭದ ಮುಖ್ಯಾಂಶಗಳು"
+      thumbnail: "video-paryaya"
+    - id: daily-puja
+      title: "ಮಠದಲ್ಲಿ ಒಂದು ದಿನದ ಪೂಜೆ"
+      thumbnail: "video-daily-puja"
+
+projects:
+  heading: "ಯೋಜನೆಗಳು"
+  intro: "ಭಕ್ತರ ಕೊಡುಗೆಗಳಿಂದ ಬೆಂಬಲಿತ ನಡೆಯುತ್ತಿರುವ ಮತ್ತು ಪೂರ್ಣಗೊಂಡ ಯೋಜನೆಗಳು."
+  list:
+    - id: go-shala-expansion
+      title: "ಗೋಶಾಲೆ ವಿಸ್ತರಣೆ"
+      status: "ongoing"
+      description: "ಹೆಚ್ಚಿನ ಹಸುಗಳನ್ನು ಆರೈಕೆ ಮಾಡಲು ಆಶ್ರಯ ಮತ್ತು ಮೇಯುವ ಸ್ಥಳವನ್ನು ವಿಸ್ತರಿಸುವುದು."
+      image: "project-goshala"
+    - id: annadana-hall-restoration
+      title: "ಅನ್ನದಾನ ಸಭಾಂಗಣ ಪುನಃಸ್ಥಾಪನೆ"
+      status: "completed"
+      description: "ಸಮುದಾಯ ಊಟದ ಸಭಾಂಗಣಕ್ಕೆ ರಚನಾತ್ಮಕ ದುರಸ್ತಿ ಮತ್ತು ಹೊಸ ಅಡುಗೆಮನೆ."
+      image: "project-annadana-restoration"
+    - id: solar-installation
+      title: "ಮೇಲ್ಛಾವಣಿ ಸೌರ ಅಳವಡಿಕೆ"
+      status: "completed"
+      description: "ಸೌರ ಫಲಕಗಳು ಈಗ ಅನ್ನದಾನ ಸಭಾಂಗಣ ಮತ್ತು ಅತಿಥಿ ಗೃಹಕ್ಕೆ ವಿದ್ಯುತ್ ನೀಡುತ್ತವೆ."
+      image: "project-solar"
+    - id: digital-library
+      title: "ಡಿಜಿಟಲ್ ಗ್ರಂಥಾಲಯ ಆರ್ಕೈವ್"
+      status: "upcoming"
+      description: "ಸಾರ್ವಜನಿಕ ಪ್ರವೇಶಕ್ಕಾಗಿ ಹಸ್ತಪ್ರತಿಗಳು ಮತ್ತು ಆಡಿಯೊ ಧ್ವನಿಮುದ್ರಣಗಳ ಡಿಜಿಟಲೀಕರಣ."
+      image: "project-digital-library"
+
+solutions:
+  heading: "ಜೀವನ ಸಮಸ್ಯೆಗಳು ಮತ್ತು ದೈವಿಕ ಪರಿಹಾರಗಳು"
+  intro: "ಶಾಸ್ತ್ರದಲ್ಲಿ ಬೇರೂರಿರುವ ಸಾಮಾನ್ಯ ಜೀವನ ಸವಾಲುಗಳಿಗೆ ಸಾಂಪ್ರದಾಯಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಗುರಿಪಡಿಸಿದ ಸೇವೆಗಳು."
+  categories:
+    - id: navagraha
+      glyph: "ग्र"
+      title: "ನವಗ್ರಹ ದೋಷ"
+      description: "ಪ್ರತಿಕೂಲ ಗ್ರಹ ಪ್ರಭಾವವನ್ನು ಪರಿಹರಿಸುವ ಪರಿಹಾರಗಳು ಮತ್ತು ಸೇವೆಗಳು."
+    - id: marriage
+      glyph: "ॐ"
+      title: "ವಿವಾಹ ಮತ್ತು ಕುಟುಂಬ ಸಾಮರಸ್ಯ"
+      description: "ಸಂಬಂಧಗಳಲ್ಲಿ ಶಾಂತಿಯನ್ನು ಪುನಃಸ್ಥಾಪಿಸುವ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಆಚರಣೆಗಳು."
+    - id: wealth
+      glyph: "श्री"
+      title: "ಸಂಪತ್ತು ಮತ್ತು ವೃತ್ತಿ"
+      description: "ನಿರ್ಬಂಧಿತ ಪ್ರಗತಿಯನ್ನು ಜಯಿಸಲು ಸೇವೆಗಳು ಮತ್ತು ಮಂತ್ರಗಳು."
+    - id: general
+      glyph: "卐"
+      title: "ಸಾಮಾನ್ಯ ಯೋಗಕ್ಷೇಮ"
+      description: "ಮನಶ್ಶಾಂತಿ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕ ನೆಲೆಗಾಗಿ ದೈನಂದಿನ ಅಭ್ಯಾಸಗಳು."
+
+chantingPlayer:
+  heading: "ಶ್ಲೋಕ ಮತ್ತು ಮಂತ್ರ ಪಠಣ"
+  intro: "ದೈನಂದಿನ ಪಠಣಗಳು ಮತ್ತು ಭಕ್ತಿ ಶ್ಲೋಕಗಳನ್ನು ಆಲಿಸಿ. ಆಡಿಯೊ ಪ್ಲೇಬ್ಯಾಕ್ ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ — ಕೆಳಗಿನ ಪ್ಲೇಯರ್ ಯೋಜಿತ ವಿನ್ಯಾಸದ ಪೂರ್ವವೀಕ್ಷಣೆಯಾಗಿದೆ."
+  items:
+    - id: gayatri-mantra
+      title: "ಗಾಯತ್ರಿ ಮಂತ್ರ"
+      duration: "3:12"
+    - id: vishnu-sahasranama-chant
+      title: "ವಿಷ್ಣು ಸಹಸ್ರನಾಮ"
+      duration: "24:40"
+    - id: madhwa-vijaya-chant
+      title: "ಮಧ್ವ ವಿಜಯ (ಆಯ್ದ ಭಾಗ)"
+      duration: "8:05"
+
+directions:
+  heading: "ಶ್ರೀ ಶಿರೂರು ಮಠ ತಲುಪುವುದು"
+  intro: "ಶ್ರೀ ಶಿರೂರು ಮಠವು ಉಡುಪಿಯ ಹೃದಯಭಾಗದ ಕಾರ್ ಸ್ಟ್ರೀಟ್‌ನಲ್ಲಿದೆ, ಶ್ರೀಕೃಷ್ಣ ಮಠದಿಂದ ಸ್ವಲ್ಪ ದೂರದಲ್ಲಿ."
+  rows:
+    - id: address
+      label: "ವಿಳಾಸ"
+      value: "ಕಾರ್ ಸ್ಟ್ರೀಟ್, ಉಡುಪಿ, ಕರ್ನಾಟಕ 576101"
+      icon: "MapPin"
+    - id: phone
+      label: "ದೂರವಾಣಿ"
+      value: "+91 000 000 0000"
+      icon: "Phone"
+    - id: email
+      label: "ಇಮೇಲ್"
+      value: "info@shiroormatha.org"
+      icon: "Mail"
+    - id: hours
+      label: "ದರ್ಶನ ಸಮಯ"
+      value: "6:00 AM – 1:00 PM, 4:00 PM – 8:30 PM"
+      icon: "Clock"
+
+feedback:
+  heading: "ಪ್ರತಿಕ್ರಿಯೆ ನೀಡಿ"
+  intro: "ಭಕ್ತರಿಗೆ ಉತ್ತಮವಾಗಿ ಸೇವೆ ಸಲ್ಲಿಸಲು ನಿಮ್ಮ ಅನುಭವ ಅಥವಾ ಸಲಹೆಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ."
+  fields:
+    - label: "ಹೆಸರು"
+      type: "text"
+    - label: "ಇಮೇಲ್"
+      type: "email"
+    - label: "ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ"
+      type: "textarea"
+  submitLabel: "ಪ್ರತಿಕ್ರಿಯೆ ಸಲ್ಲಿಸಿ"
+
+userStories:
+  heading: "ನಿಮ್ಮ ಕಥೆಯನ್ನು ಜಗತ್ತಿಗೆ ತಿಳಿಸಿ"
+  intro: "ಹೃದಯದಿಂದ ಹಂಚಿಕೊಂಡ ಭಕ್ತರ ಅನುಭವಗಳು — ಪ್ರಕಟಿಸುವ ಮೊದಲು ಸಲ್ಲಿಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ."
+  stories:
+    - id: story-1
+      name: "ಮುಂಬೈನ ಒಬ್ಬ ಭಕ್ತ"
+      story: "ನನ್ನ ಕುಟುಂಬವು ಪ್ರತಿ ವರ್ಷ ಪರ್ಯಾಯ ಆಚರಣೆಗಳಿಗೆ ಶಿರೂರು ಮಠಕ್ಕೆ ಭೇಟಿ ನೀಡುತ್ತದೆ — ಪೀಳಿಗೆಗಳಾದ್ಯಂತ ನಿರಂತರತೆಯ ಭಾವನೆಯನ್ನು ಪದಗಳಲ್ಲಿ ಸಂಪೂರ್ಣವಾಗಿ ಸೆರೆಹಿಡಿಯಲಾಗದು."
+      image: "story-1"
+    - id: story-2
+      name: "ಬೆಂಗಳೂರಿನ ಒಬ್ಬ ಭಕ್ತ"
+      story: "ನನ್ನ ತಂದೆಯ ಸ್ಮರಣಾರ್ಥ ನಾವು ಪ್ರಾಯೋಜಿಸಿದ ವೇದ ಪಾರಾಯಣ ಸೇವೆಯನ್ನು ಅಷ್ಟು ಕಾಳಜಿಯಿಂದ ನಡೆಸಲಾಯಿತು. ಇದು ನಮ್ಮ ಕುಟುಂಬಕ್ಕೆ ಬಹಳಷ್ಟು ಅರ್ಥವನ್ನು ನೀಡಿತು."
+      image: "story-2"
+  submitCtaLabel: "ನಿಮ್ಮ ಕಥೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ"
+  submitCtaHref: "/user-stories#submit"
+
+learn:
+  heading: "ನಮ್ಮೊಂದಿಗೆ ಕಲಿಯಿರಿ"
+  intro: "ಮಾಧ್ವ ತತ್ವಶಾಸ್ತ್ರ, ಸಂಸ್ಕೃತ ಮತ್ತು ಆಚರಣಾ ಅಭ್ಯಾಸದಲ್ಲಿ ರಚನಾತ್ಮಕ ಕಲಿಕಾ ಮಾರ್ಗಗಳು."
+  items:
+    - id: tatvavada-course
+      title: "ತತ್ವವಾದದ ಅಡಿಪಾಯಗಳು"
+      description: "ಆರಂಭಿಕರಿಗೆ ಮಾಧ್ವ ತತ್ವಶಾಸ್ತ್ರದ ಪರಿಚಯಾತ್ಮಕ ಕೋರ್ಸ್."
+      href: "/library/scriptures"
+    - id: sanskrit-basics
+      title: "ಭಕ್ತರಿಗೆ ಸಂಸ್ಕೃತ"
+      description: "ಸರಿಯಾದ ಉಚ್ಚಾರಣೆಯೊಂದಿಗೆ ಶ್ಲೋಕಗಳನ್ನು ಓದಲು ಮತ್ತು ಪಠಿಸಲು ಕಲಿಯಿರಿ."
+      href: "/library/mantras"
+    - id: ritual-practice
+      title: "ಮನೆ ಆಚರಣಾ ಅಭ್ಯಾಸ"
+      description: "ಮನೆಯಲ್ಲಿ ದೈನಂದಿನ ಪೂಜೆಯನ್ನು ನಿರ್ವಹಿಸುವ ಮಾರ್ಗದರ್ಶನ."
+      href: "/library/rituals"
+
+connect:
+  heading: "ಮಠವನ್ನು ಸಂಪರ್ಕಿಸಿ"
+  intro: "ಸಾಮಾನ್ಯ ವಿಚಾರಣೆಗಳು, ಸೇವಾ ಬುಕಿಂಗ್‌ಗಳು ಅಥವಾ ಸ್ವಯಂಸೇವೆಗಾಗಿ ಮಠದ ಕಚೇರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ."
+  rows:
+    - id: address
+      label: "ಭೇಟಿ ನೀಡಿ"
+      value: "ಕಾರ್ ಸ್ಟ್ರೀಟ್, ಉಡುಪಿ, ಕರ್ನಾಟಕ 576101"
+      icon: "MapPin"
+    - id: phone
+      label: "ಕರೆ ಮಾಡಿ"
+      value: "+91 000 000 0000"
+      icon: "Phone"
+    - id: email
+      label: "ಇಮೇಲ್"
+      value: "info@shiroormatha.org"
+      icon: "Mail"
+    - id: hours
+      label: "ಕಚೇರಿ ಸಮಯ"
+      value: "9:00 AM – 6:00 PM, ಸೋಮವಾರ–ಶನಿವಾರ"
+      icon: "Clock"
