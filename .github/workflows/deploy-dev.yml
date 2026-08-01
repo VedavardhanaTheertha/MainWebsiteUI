@@ -1,0 +1,64 @@
+# Builds and publishes the development site to GitHub Pages.
+#
+# Deliberately thin: all build logic lives in build/build.mjs so it can be run
+# and debugged locally. See build/README.md and docs/ARCHITECTURE.md §7.
+name: Deploy dev site
+
+on:
+  # Every push to a development branch updates the development website.
+  push:
+    branches: [Design2code, dev]
+
+  # Daily rebuild. Content can be date-scheduled (launch_date / end_date), and a
+  # static site's HTML would otherwise stay frozen at whenever it was last built.
+  # Doubles as a canary that the build still works when nobody has pushed.
+  schedule:
+    - cron: "0 21 * * *"
+
+  # Allows a build to be triggered by hand from the Actions tab.
+  workflow_dispatch:
+
+# Required for the deploy step to publish to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a newer commit supersede an in-flight run.
+concurrency:
+  group: pages-dev
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SITE_ENV: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build and verify
+        run: node build/build.mjs dev
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

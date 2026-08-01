@@ -1,0 +1,19 @@
+# Normalise line endings so Windows and Linux contributors do not produce diffs
+# that consist entirely of invisible line-ending changes.
+* text=auto eol=lf
+
+# Binary assets — never normalise these.
+*.png binary
+*.jpg binary
+*.JPG binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp4 binary
+*.pdf binary
