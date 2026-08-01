@@ -27,3 +27,16 @@ update `docs/KT.md`. Documentation that lies is worse than none, because people 
 
 Run `npm run build:dev` and read the verification output. It reports hardcoded content
 and brand-term leaks that a passing type-check will not catch.
+
+**A passing local build does not prove CI will pass.** Local builds run against the
+working directory, which includes files git ignores; CI only gets what is committed. A
+`.gitignore` rule once excluded the whole `build/` directory, so every local build passed
+while CI failed instantly on a missing script.
+
+Before trusting a build, reproduce what CI actually checks out:
+
+```bash
+git clone . /tmp/ci-check && cd /tmp/ci-check && npm ci && node build/build.mjs dev
+```
+
+If a file is needed at build time, confirm `git ls-files` lists it.

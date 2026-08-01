@@ -23,8 +23,11 @@
 # generated per environment by scripts/generate-content.mjs (see config/site.yml)
 /public/robots.txt
 
-# production
-/build
+# NOTE: do not add "/build" here. It came from the create-next-app template,
+# where it meant a build output directory. This project keeps its build SCRIPTS
+# in build/ and its build OUTPUT in out/ (ignored above). Ignoring /build kept
+# build/build.mjs out of the repository entirely, so CI checked out a tree with
+# no build script and failed immediately.
 
 # misc
 .DS_Store
