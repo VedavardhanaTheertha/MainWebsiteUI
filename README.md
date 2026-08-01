@@ -84,7 +84,7 @@ deployed preview exactly.
 | `npm run build:dev` | Full preview build + verification, into `out/` |
 | `npm run build:prod` | Full production build + verification |
 
-See [docs/KT.md](docs/KT.md) for everything else.
+See [docs/KT.md](docs/KT.md) for everything   else.
 
 ---
 
