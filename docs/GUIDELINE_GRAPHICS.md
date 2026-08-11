@@ -1,0 +1,40 @@
+# Graphics Guidelines
+
+This document explains how to contribute icons, images, and other graphic assets.
+
+## 1. Use Respectful Imagery
+
+- Choose images consistent with the Matha’s spiritual and cultural values.
+- Avoid imagery that may be inappropriate for religious or devotional contexts.
+
+## 2. Keep Graphics Simple and Clear
+
+- Prefer simple iconography that supports content meaning.
+- Use consistent styling for buttons, icons, and feature graphics.
+
+## 3. Follow Licensing Rules
+
+- Only use graphics that you have permission to publish.
+- Prefer open-source or royalty-free assets when possible.
+- Credit any licensed resources clearly.
+
+## 4. Optimize for Web Performance
+
+- Compress images without reducing quality unnecessarily.
+- Use modern formats like WebP when supported.
+- Keep file sizes small for faster page load times.
+
+## 5. Provide Source Files
+
+- When possible, include editable source files such as SVGs or design files.
+- Keep naming consistent and descriptive.
+
+## 6. Use Accessible Colors and Contrast
+
+- Ensure icons and illustrations remain visible against backgrounds.
+- Avoid low-contrast color combinations.
+
+## 7. Store Assets in the Correct Location
+
+- Save images and media in the project’s designated assets folder.
+- Keep icon sets organized by purpose or page.

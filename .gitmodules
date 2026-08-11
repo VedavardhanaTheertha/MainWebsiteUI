@@ -1,0 +1,6 @@
+[submodule "library"]
+	path = library
+	url = https://github.com/VedavardhanaTheertha/WebsiteLibrary
+[submodule "test_media"]
+	path = test_media
+	url = https://github.com/VedavardhanaTheertha/WebsiteTestMedia
