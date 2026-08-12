@@ -52,6 +52,8 @@ Preserving and sharing our sacred heritage requires a collective effort. Serving
 
 ## 🚀 How to Get Started
 
+- **General contribution guide:** Read [CONTRIBUTING.md](CONTRIBUTING.md).
+
 Choose the path that best aligns with your background and interests:
 
 ### ✍️ Content & Scholarship

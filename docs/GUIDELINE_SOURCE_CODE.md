@@ -50,3 +50,11 @@ This document explains the source code contribution practices for the Matha webs
 - For Organization users: Branch from `main` or the appropriate base branch.
 - For Organization users: Use descriptive branch names like `feature/add-events` or `fix/content-links`.
 - Rebase or squash commits when necessary to keep history clear.
+
+## 9. Pull Request Checklist
+
+- Is working repository/branch in Sync with the latest `main` branch?
+- Is contribution small and single-purpose?
+- Is the commit message has clear description explaining purpose?
+- Is the list files changed verified?
+- Does the commit message has reference to related issues or discussions?
