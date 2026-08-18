@@ -39,7 +39,7 @@ Open the link and look at the site — that is the whole review process.
 | **Scope** | The website's frontend source code, its build, and contributor documentation |
 | **Content** | Devotional and library content lives in [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) |
 | **Languages** | English and Kannada, with more addable by dropping in one file |
-| **Routes** | 34 page files, including a dynamic blog route |
+| **Pages** | 36, built from 34 route files (the blog route expands per article) |
 | **Stack** | Next.js 16, React 19, Tailwind CSS 4 — exported as plain static files |
 | **Hosting** | GitHub Pages (preview) · Cloudflare Pages (live, not yet connected) |
 
