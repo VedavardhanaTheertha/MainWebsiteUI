@@ -4,13 +4,41 @@ This document explains how to contribute translations or add support for new lan
 
 ## 1. Identify the Target Language
 
-- Confirm whether the repository already has a section for the language you want to add.
-- If the language does not exist yet, choose an appropriate two-letter code for the folder or file extension.
+- Look in `content/languages/` to see which languages already exist. Today that is
+  `en.json` (English) and `kn.json` (Kannada).
+- If yours is not there, choose its [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)
+  — `hi` for Hindi, `ta` for Tamil, and so on.
 
-## 2. Create Language Files or Folders
+## 2. Create the Language File
 
-- Add a new folder such as `language/kn/` or `language/hi/` if the repository structure supports language-specific directories.
-- Alternatively, add language-specific Markdown files such as `page.en.md` and `page.kn.md`.
+**One language is one file.** Copy `content/languages/en.json` to
+`content/languages/<code>.json` and translate the values — never the keys.
+
+```bash
+cp content/languages/en.json content/languages/hi.json
+```
+
+Set the `_language` block at the top to describe your language:
+
+```json
+{
+  "_language": {
+    "code": "hi",
+    "name": "Hindi",
+    "native_name": "हिन्दी",
+    "label": "HI",
+    "short_label": "Hi"
+  },
+  ...
+}
+```
+
+English (`en`) is the fallback language and must contain every key; any key you leave
+out of your file falls back to it, so a partial translation is safe to submit.
+
+**You do not need to register the file anywhere.** The build scans
+`content/languages/` and discovers it — that is why adding a language requires no code
+change. Confirm with `npm run build:dev`.
 
 ## 3. Translate Page Metadata
 
@@ -33,15 +61,26 @@ This document explains how to contribute translations or add support for new lan
 - For sacred verses and devotional names, add transliteration if the target audience may not read the original script.
 - Include the original script alongside transliteration and translation where possible.
 
-## 6. Update Navigation or Language Switcher
+## 6. Navigation and the Language Switcher
 
-- If the website has a language selector or navigation menu, add the new language entry in the relevant configuration files.
-- Consult maintainers before changing global navigation settings.
+**Nothing to do.** The language switcher is built from whatever files exist in
+`content/languages/`, using the `_language` block in each. Your language appears in it
+automatically. If it does not, the `_language` block is malformed — compare it against
+`en.json`.
 
 ## 7. Preview the Translation
 
-- Check the rendered Markdown to confirm headings, sections, and formatting remain intact.
-- Validate any links or special characters.
+```bash
+npm run dev
+```
+
+Open <http://localhost:3000/MainWebsiteUI/> and switch to your language with the
+switcher. Note that the preview substitutes placeholder text by default; to see real
+wording, run `SITE_ENV=prod npm run dev` (`$env:SITE_ENV = "prod"; npm run dev` in
+PowerShell). See [DEVELOPER.md](DEVELOPER.md) §4.
+
+- Check that headings, lists and formatting still render correctly.
+- Validate links and any special characters or conjunct glyphs in your script.
 
 ## 8. Document Your Contribution
 

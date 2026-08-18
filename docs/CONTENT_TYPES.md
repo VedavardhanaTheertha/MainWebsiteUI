@@ -1,6 +1,20 @@
 # Content Types
 
-This document describes the all types of content used in the Matha website and how each type is intended to be structured. **All contents should be of Madhwa Siddantha**. Use Content repository [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) for updates
+This document describes all the types of content used in the Matha website and how each
+type is intended to be structured. **All content should be of Madhwa Siddantha.**
+
+> **Which repository does your change belong in?**
+>
+> | You are changing | Repository | Path |
+> |---|---|---|
+> | Words shown on a page of the website | **this one** | `content/languages/<code>.json` |
+> | A blog article | **this one** | `content/blog/<slug>/` |
+> | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
+>
+> As the site is built today, **everything it displays comes from `content/` in this
+> repository**; nothing in the build reads WebsiteLibrary yet. The library pages render
+> category tiles from `content/languages/*.json`. Wiring the corpus into the site is
+> still to be done — see [STATUS.md](STATUS.md).
 
 ## 1. Sacred Texts & Scriptures
 

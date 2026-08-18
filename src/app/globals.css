@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens sourced from the authoritative design reference:
+ * Design/July24/Shiroor Matha Mobile Website 1.html
+ * Saffron/gold/ink/cream/parchment palette — replaces the earlier stale
+ * navy/magenta token set. Defined under @theme so Tailwind v4 generates
+ * matching utilities (bg-saffron-600, text-ink-800, text-primary, etc.).
+ */
+@theme {
+  /* Saffron */
+  --color-saffron-50: #fff3e3;
+  --color-saffron-100: #ffe1c0;
+  --color-saffron-200: #ffcf8b;
+  --color-saffron-300: #f2994a;
+  --color-saffron-400: #e07b20;
+  --color-saffron-500: #d4720a;
+  --color-saffron-600: #c4520a;
+  --color-saffron-700: #b85e08;
+  --color-saffron-800: #964405;
+  --color-saffron-900: #7a2e00;
+
+  /* Gold */
+  --color-gold-100: #f5ead8;
+  --color-gold-300: #edd5a0;
+  --color-gold-500: #c89a4e;
+  --color-gold-700: #a67c2e;
+
+  /* Ink (text / near-black warm greys) */
+  --color-ink-900: #1a1108;
+  --color-ink-800: #261b12;
+  --color-ink-700: #3d2b1a;
+  --color-ink-600: #5c4a38;
+  --color-ink-500: #7c6b54;
+  --color-ink-400: #9a8a72;
+  --color-ink-300: #b6a890;
+  --color-ink-200: #d8cbb4;
+
+  /* Paper / cream / parchment / sand */
+  --color-paper: #ffffff;
+  --color-cream: #fbf3e7;
+  --color-cream-soft: #fceedb;
+  --color-cream-hi: #fff8e8;
+  --color-parchment: #ede0cc;
+  --color-sand: #f5ebe0;
+  --color-sand-deep: #e8d9c0;
+
+  /* Lines / borders */
+  --color-line: #ede0cc;
+  --color-line-soft: #f0e6d6;
+  --color-line-strong: #e0cfb3;
+
+  /* Semantic status colors */
+  --color-success-500: #1f8a5b;
+  --color-success-50: #e7f3ec;
+  --color-community-500: #25d366;
+  --color-warning-500: #c98a1e;
+  --color-warning-50: #faf0d9;
+  --color-danger-500: #c0492f;
+  --color-danger-50: #f8e7e2;
+  --color-info-500: #2b6cb0;
+  --color-info-50: #e7eef7;
+
+  /* Semantic text colors */
+  --color-text-primary: var(--color-ink-800);
+  --color-text-secondary: var(--color-ink-600);
+  --color-text-muted: var(--color-ink-400);
+  --color-text-inverse: #fff8e8;
+  --color-text-on-brand: #ffffff;
+  --color-text-brand: var(--color-saffron-600);
+
+  /* Fonts — script-appropriate stacks, switched via html[lang] below.
+     var(--font-marcellus) etc. come from next/font (see layout.tsx), which
+     self-hosts and generates the actual @font-face rules. */
+  --font-display: var(--font-marcellus), 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body: var(--font-montserrat), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sanskrit: var(--font-noto-devanagari), var(--font-marcellus), serif;
+  --font-kannada: var(--font-noto-kannada), var(--font-montserrat), sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Spacing scale */
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+
+  /* Radius scale */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(38, 27, 18, .06);
+  --shadow-sm: 0 2px 8px -2px rgba(38, 27, 18, .12);
+  --shadow-md: 0 10px 30px -12px rgba(38, 27, 18, .20);
+  --shadow-lg: 0 24px 60px -20px rgba(38, 27, 18, .30);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, .5);
+}
+
+:root {
+  background-color: var(--color-cream);
+  color: var(--color-text-primary);
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+/* Kannada content renders in a script-appropriate font once the language toggle
+   switches — see LanguageContext, which sets document.documentElement.lang. */
+html[lang="kn"] body {
+  font-family: var(--font-kannada);
+}
+html[lang="kn"] h1, html[lang="kn"] h2, html[lang="kn"] h3,
+html[lang="kn"] h4, html[lang="kn"] h5, html[lang="kn"] h6 {
+  font-family: var(--font-kannada);
+}
+
+/* Ken Burns animation */
+@keyframes kenburns {
+  0%   { transform: scale(1) translate(0, 0); }
+  50%  { transform: scale(1.08) translate(-1%, 1%); }
+  100% { transform: scale(1) translate(0, 0); }
+}
+
+.animate-kenburns {
+  animation: kenburns 20s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kenburns {
+    animation: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Gradient gold text utility */
+.text-gradient-gold {
+  background: linear-gradient(90deg, var(--color-saffron-600), var(--color-gold-700));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gold gradient background */
+.bg-gradient-gold {
+  background: linear-gradient(135deg, var(--color-saffron-600), var(--color-gold-700));
+}
+
+/* ── Decorative temple border art ── */
+@keyframes borderSlide {
+  from { background-position-x: 0px; }
+  to   { background-position-x: 80px; }
+}
+
+.border-art {
+  height: 48px;
+  width: 100%;
+  background-color: var(--color-cream);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='48'%3E%3Crect x='0' y='0' width='80' height='5' fill='%23820300'/%3E%3Crect x='0' y='7' width='80' height='1.5' fill='%23FF9800'/%3E%3Cpolygon points='8,5 72,5 40,42' fill='%23820300'/%3E%3Cpolygon points='20,5 60,5 40,30' fill='%23FF9800' opacity='0.4'/%3E%3Ccircle cx='40' cy='42' r='3' fill='%23FF9800'/%3E%3Cpolygon points='8,2 12,5 8,8 4,5' fill='%23FF9800'/%3E%3Cpolygon points='72,2 76,5 72,8 68,5' fill='%23FF9800'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  animation: borderSlide 5s linear infinite;
+  flex-shrink: 0;
+}
+
+.border-art-flip {
+  height: 48px;
+  width: 100%;
+  background-color: var(--color-cream);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='48'%3E%3Crect x='0' y='43' width='80' height='5' fill='%23820300'/%3E%3Crect x='0' y='39.5' width='80' height='1.5' fill='%23FF9800'/%3E%3Cpolygon points='8,43 72,43 40,6' fill='%23820300'/%3E%3Cpolygon points='20,43 60,43 40,18' fill='%23FF9800' opacity='0.4'/%3E%3Ccircle cx='40' cy='6' r='3' fill='%23FF9800'/%3E%3Cpolygon points='8,40 12,43 8,46 4,43' fill='%23FF9800'/%3E%3Cpolygon points='72,40 76,43 72,46 68,43' fill='%23FF9800'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center top;
+  animation: borderSlide 5s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-saffron-600);
+  border-radius: 3px;
+}
+
+/* Blog article body — styles the HTML that the content build generates from
+   Markdown. Scoped to .blog-body so it cannot affect any other page. */
+.blog-body p {
+  margin-bottom: 1.15rem;
+  line-height: 1.75;
+}
+.blog-body h2,
+.blog-body h3 {
+  font-family: var(--font-marcellus), serif;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+.blog-body h2 {
+  font-size: 1.4rem;
+}
+.blog-body h3 {
+  font-size: 1.15rem;
+}
+.blog-body ul {
+  list-style: disc;
+  padding-left: 1.35rem;
+  margin-bottom: 1.15rem;
+}
+.blog-body li {
+  margin-bottom: 0.4rem;
+  line-height: 1.7;
+}
+.blog-body a {
+  color: var(--color-text-brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
