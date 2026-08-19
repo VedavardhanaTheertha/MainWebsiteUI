@@ -1,6 +1,20 @@
 # Content Contribution Guidelines
 
-This document explains how to contribute content in a way that preserves spiritual integrity, clarity, and consistency. Use Content repository [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) for updates.
+This document explains how to contribute content in a way that preserves spiritual
+integrity, clarity, and consistency.
+
+> **Which repository does your change belong in?**
+>
+> | You are changing | Repository | Path |
+> |---|---|---|
+> | Words shown on a page of the website | **this one** | `content/languages/<code>.json` |
+> | A blog article | **this one** | `content/blog/<slug>/` |
+> | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
+>
+> As the site is built today, **everything it displays comes from `content/` in this
+> repository**; nothing in the build reads WebsiteLibrary yet. The library pages render
+> category tiles from `content/languages/*.json`. Wiring the corpus into the site is
+> still to be done — see [STATUS.md](STATUS.md).
 
 ## 1. Respect the Tradition
 

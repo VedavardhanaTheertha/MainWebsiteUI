@@ -1,0 +1,71 @@
+# Build check for the canonical branch.
+#
+# Deliberately does NOT deploy. `deploy-dev.yml` publishes the GitHub Pages
+# preview from the development branches, and it builds with SITE_ENV=dev, which
+# substitutes placeholder text and emits noindex. Pointing that workflow at
+# `main` as well would mean a push to main overwrites the preview the reviewers
+# are looking at, and would publish main under dev's placeholder settings.
+# Production deploys to Cloudflare Pages, which is not connected yet
+# (config/site.yml, environments.prod).
+#
+# So main's job here is to prove the committed tree still builds. Both
+# environments are built, because they differ in more than a flag: prod renders
+# real content and is indexable, so a fault can exist in one and not the other.
+#
+# All build logic lives in build/build.mjs and can be run locally:
+#     node build/build.mjs dev
+#     node build/build.mjs prod
+# See build/README.md and docs/ARCHITECTURE.md §7.
+name: Verify build
+
+on:
+  push:
+    branches: [main]
+
+  # Run on PRs into main as well, so a change is checked before it merges
+  # rather than after. docs/GUIDELINE_SOURCE_CODE.md §7 expects review to
+  # happen before merge; this gives the reviewer a build result to look at.
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      # Submodules are intentionally not checked out. `library` and `test_media`
+      # hold content and media; nothing under src/, build/, scripts/ or config/
+      # reads them, so the build does not need them and fetching them would only
+      # make CI slower and able to fail for reasons unrelated to this repo.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Advisory, not a gate. `npm run lint` currently reports 8 errors and 15
+      # warnings on code that predates this workflow (6 react/no-unescaped-entities,
+      # 2 react-hooks/set-state-in-effect, across 6 files under src/). Making it
+      # blocking would fail main on its first push for faults this workflow did not
+      # introduce. It still runs, so the count is visible in the log and someone can
+      # watch it go down. Remove continue-on-error once the existing errors are fixed.
+      - name: Lint (advisory)
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build and verify (dev)
+        run: node build/build.mjs dev
+
+      - name: Build and verify (prod)
+        run: node build/build.mjs prod

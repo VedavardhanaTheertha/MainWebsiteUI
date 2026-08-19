@@ -6,6 +6,51 @@ This project serves as a digital bridge connecting devotees globally with the sp
 
 ---
 
+## 👀 See it running
+
+**You do not need to install anything to review the site.**
+
+| | Link |
+|---|---|
+| **Development preview** | https://vedavardhanatheertha.github.io/MainWebsiteUI/ |
+| **Build status** | [Actions tab](../../actions) |
+
+Every push to a development branch rebuilds and republishes the preview automatically.
+Open the link and look at the site — that is the whole review process.
+
+> ### ⚠️ Why the preview shows "content goes here"
+>
+> The preview deliberately shows **placeholder text** instead of the real wording, like
+> `en·hero title — content goes here`. **This is intentional, not a bug.**
+>
+> - It keeps the preview out of search results, so it can never compete with the live
+>   site or confuse someone searching for the Matha.
+> - It proves the design is separate from the wording. Any real text appearing there
+>   means somebody hardcoded it by mistake — the build reports those automatically.
+>
+> **Review layout, spacing, images, colours and navigation in the preview.** The real
+> wording lives in [`content/languages/en.json`](content/languages/en.json) and can be
+> read directly. Images are real in the preview; only text is substituted.
+
+### What is in this repository
+
+| | |
+|---|---|
+| **Scope** | The website's frontend source code, its build, and contributor documentation |
+| **Content** | Devotional and library content lives in [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) |
+| **Languages** | English and Kannada, with more addable by dropping in one file |
+| **Pages** | 36, built from 34 route files (the blog route expands per article) |
+| **Stack** | Next.js 16, React 19, Tailwind CSS 4 — exported as plain static files |
+| **Hosting** | GitHub Pages (preview) · Cloudflare Pages (live, not yet connected) |
+
+### The one idea behind the whole thing
+
+**Content is data. Code is structure.** No page or component contains the words shown on
+screen, or a list of languages, or a list of articles. The build scans folders and finds
+them. This is what lets a contributor add a language or an article without touching code.
+
+---
+
 ## 🌟 Vision Statement
 
 > **"To create a timeless, open, and globally accessible digital sanctuary that preserves, illuminates, and disseminates the sacred traditions, scholarly heritage, and spiritual wisdom of the matha—empowering devotees, scholars, and future generations worldwide through collaborative technology and community devotion."**
@@ -72,6 +117,26 @@ Choose the path that best aligns with your background and interests:
 - **Set Up Your Environment:** Read [Developer Environment Setup](docs/DEVELOPER.md).
 - **Review Code Guidelines:** Read [Software Contribution Guidelines](docs/GUIDELINE_SOURCE_CODE.md).
 - **Submit Pull Requests:** Follow [How to Contribute to Source Code](docs/CONTRIBUTE_SOURCE_CODE.md).
+- **Understand the design:** Read [Architecture](docs/ARCHITECTURE.md) — how the site is
+  built and why it is built that way.
+- **Day-to-day work:** Read [KT](docs/KT.md). For what is done and what remains, see
+  [STATUS](docs/STATUS.md).
+
+```bash
+npm install
+npm run dev
+```
+
+Then open **http://localhost:3000/MainWebsiteUI/** — note the path; it mirrors the
+deployed preview exactly.
+
+| Command | Does |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build:dev` | Full preview build + verification, into `out/` |
+| `npm run build:prod` | Full production build + verification |
+| `npm run lint` | ESLint |
+
 
 ### 🎨 UI/UX & Graphic Design
 

@@ -1,0 +1,69 @@
+# Builds and publishes the development site to GitHub Pages.
+#
+# Deliberately thin: all build logic lives in build/build.mjs so it can be run
+# and debugged locally. See build/README.md and docs/ARCHITECTURE.md §7.
+name: Deploy dev site
+
+on:
+  # Every push to a development branch updates the development website.
+  push:
+    branches: [Design2code, dev]
+
+  # Daily rebuild. Content can be date-scheduled (launch_date / end_date), and a
+  # static site's HTML would otherwise stay frozen at whenever it was last built.
+  # Doubles as a canary that the build still works when nobody has pushed.
+  schedule:
+    - cron: "0 21 * * *"
+
+  # Allows a build to be triggered by hand from the Actions tab.
+  workflow_dispatch:
+
+# Required for the deploy step to publish to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a newer commit supersede an in-flight run.
+concurrency:
+  group: pages-dev
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SITE_ENV: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build and verify
+        run: node build/build.mjs dev
+
+      # Deliberately no actions/configure-pages step here. It fails when Pages is
+      # not yet enabled on the repository, which would make the whole build job
+      # look broken when the code is fine. Its only real job is exporting a base
+      # path for frameworks that auto-detect one, and we set ours explicitly in
+      # next.config.ts from config/site.yml. Keeping it out means the build
+      # succeeds and uploads its artifact regardless of Pages configuration, and
+      # only the deploy job below fails if Pages is not set up.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
