@@ -1,72 +1,72 @@
 # How to Add or Update Content
 
-> **Which repository does your change belong in?**
->
-> | You are changing | Repository | Path |
-> |---|---|---|
-> | Words shown on a page of the website | **this one** | `content/languages/<code>.json` |
-> | A blog article | **this one** | `content/blog/<slug>/` |
-> | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
->
-> The Bhakti page is generated from the `library` Git submodule. Blog articles and UI
-> text are built from this repository's `content/` tree.
+This project has three distinct content workflows. Choose the one that matches the
+material; they are not interchangeable.
 
-This document explains the contribution workflow for adding new devotional, educational, or heritage content.
+| Content | Repository and location | Format |
+|---|---|---|
+| Website labels, page copy, forms, and page metadata | This repository: `content/languages/<code>.json` | JSON |
+| Blog/news articles | This repository: `content/blog/<slug>/` | JSON metadata plus Markdown bodies |
+| Bhakti/library corpus | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary), checked out here as `library/` | Corpus metadata plus Markdown |
 
-## 1. Find the Right Location
+## Website UI text
 
-- Browse the repository structure to locate the section that best fits your content.
-- If you are contributing a stotra, article, or historical write-up, add it under the appropriate content folder.
+1. Edit the value of the appropriate key in `content/languages/en.json`; do not rename
+   keys or put display text in `src/`.
+2. Update translated values where possible. A translation may omit unfinished keys;
+   those keys fall back to the default language and are reported during generation.
+3. Keep the `_language` descriptor intact. See
+   [How to Add or Update Languages](./CONTRIBUTE_LANGUAGE.md) when adding a language.
+4. Run `npm run ci` for a local code checkout, or explain in the pull request when local
+   validation was not possible.
 
-## 2. Create or Update a Markdown File
+The generator discovers language JSON files automatically. No component, registry, or
+type file needs to be updated for a content-only change.
 
-- Create a new `.md` file with a descriptive filename.
-- Use the naming convention that matches existing content pages, if any.
-- If you are updating existing content, edit the Markdown file directly.
+## Blog or news article
 
-## 3. Add Metadata and Frontmatter
+1. Create `content/blog/<slug>/`, where `<slug>` is lowercase words separated by
+   hyphens and becomes the URL segment.
+2. Add `meta.json` with a required ISO `YYYY-MM-DD` date. Optional shared fields are
+   `hero` and `tags`.
+3. Add the default-language Markdown file. Its first line must be one level-one title;
+   the remaining Markdown is the body. Do **not** add frontmatter.
+4. Add optional translations as `<code>.md`. When one is absent, that article falls
+   back to the default-language Markdown.
+5. Put new optimized article media under the tracked `public/articles/` directory and
+   reference it as `/articles/<descriptive-file>.webp`. Existing older assets remain
+   directly under `public/` and `public/slide/`; do not move them as part of an article.
+   Do not use `public/media/`; that directory does not exist.
+6. Record new text and media provenance in `ASSET_PROVENANCE.md`.
+7. Run `npm run ci`.
 
-- If the site uses frontmatter metadata, include:
-  - title
-  - date or publication date
-  - author or contributor
-  - language
-  - category or section
-- If frontmatter is not required, simply ensure the document begins with a clear title.
+The build discovers article folders and creates listing, route, sitemap, and canonical
+output automatically. Missing `meta.json`, an invalid date, a missing default-language
+file, or a missing first-line title fails generation. Raw HTML is disabled and rendered
+Markdown is sanitized.
 
-## 4. Write the Content
+## WebsiteLibrary corpus
 
-- Follow the editorial guidelines in `docs/GUIDELINE_CONTENT.md`.
-- Keep sections clearly labeled and structured.
-- Use headings, lists, and short paragraphs.
-- Add translations or notes if the content has multiple language versions.
+Bhakti corpus changes belong in the
+[WebsiteLibrary repository](https://github.com/VedavardhanaTheertha/WebsiteLibrary), not
+in generated files under `src/gen/` and not as a blog post here.
 
-## 5. Add Supporting Resources
+1. Follow the corpus structure already present in WebsiteLibrary's `dasasahitya/`
+   directory: Markdown source files are indexed by its `metadata.json`.
+2. Update both the Markdown and the corresponding metadata entry in the library
+   repository. Preserve its identifiers and required schema.
+3. Submit and review that change in WebsiteLibrary first.
+4. A later MainWebsiteUI change may advance the `library` submodule reference. Run
+   `git submodule update --init --recursive` and `npm run ci` when validating that
+   integration.
 
-- If the content references audio, images, or documents, include a clear credit and file name.
-- Ensure that attached media is stored in the appropriate repository location.
-- Record its creator, source, license or permission evidence, modifications, and review
-  date in `ASSET_PROVENANCE.md`.
+The MainWebsiteUI build reads `library/dasasahitya/metadata.json`, sanitizes each listed
+Markdown file, and generates disposable output under `src/gen/bhakti/`.
 
-## 6. Preview and Validate
+## Review requirements
 
-- Preview the Markdown locally if you can.
-- Check that links, headings, and formatting render correctly.
-
-## 7. Submit a Pull Request
-
-- Create a branch for your changes.
-- Add a descriptive commit message.
-- Open a pull request with a summary of what you added or updated.
-- Include links to any related issues or discussions.
-
-## 8. Ask for a Review
-
-- Request review from maintainers or contributors familiar with the Matha’s tradition.
-- If your content is devotional or scholarly, ask for a second pair of eyes on meaning and accuracy.
-
-## 9. Update Based on Feedback
-
-- Respond to comments in the pull request.
-- Revise the content to address any review suggestions.
-- Keep the contribution focused and well-organized.
+- Follow the [content guidelines](./GUIDELINE_CONTENT.md).
+- Ask a subject-matter reviewer to check devotional, historical, and scholarly claims.
+- Verify links, spelling, title hierarchy, permissions, and attribution.
+- Keep each pull request focused on one content purpose and describe translations that
+   are intentionally partial.

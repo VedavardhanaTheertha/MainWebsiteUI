@@ -23,7 +23,8 @@ integrity, clarity, and consistency.
 ## 2. Follow a Structured Format
 
 - Use Markdown headings to create a clear structure.
-- Separate metadata from body content if the site uses frontmatter or content metadata.
+- For blog posts, keep shared metadata in `meta.json` and begin each language Markdown
+  file with its level-one title; this project does not use frontmatter.
 - Keep paragraphs concise and readable.
 
 ## 3. Cite Sources
@@ -48,7 +49,7 @@ integrity, clarity, and consistency.
 - Check that links point to valid resources.
 - Confirm that media files are licensed or free to use if referenced.
 - Add or update the exact `ASSET_PROVENANCE.md` entry; public availability is not
-	evidence of permission.
+  evidence of permission.
 
 ## 7. Preserve Cultural Sensitivity
 

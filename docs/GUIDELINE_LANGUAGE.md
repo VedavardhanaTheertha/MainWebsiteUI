@@ -1,53 +1,42 @@
 # Language Contribution Guidelines
 
-This document explains how to contribute translations and language content for the Matha website.
+## Accuracy and cultural care
 
-## 1. Language Quality
+- Use fluent, natural language rather than literal word-for-word substitution.
+- Preserve meaning, devotional tone, sacred names, established titles, and the Matha's
+  preferred terminology. Add transliteration or a short explanation when it genuinely
+  helps the target audience.
+- Ask a fluent reviewer with relevant cultural or subject knowledge to check the work.
+- Do not introduce new factual claims while translating.
 
-- Use fluent, natural language in the target language.
-- Avoid literal word-for-word translations when they reduce meaning.
-- Preserve the tone and spirit of the original content.
+## Interface JSON
 
-## 2. Maintain Consistency
+- Store one interface language in `content/languages/<code>.json`; the filename code is
+  what the build auto-discovers.
+- Preserve keys, nesting, value types, paths, identifiers, dates, and URLs. Translate
+  only visitor-facing values.
+- Keep `_language.name`, `_language.native_name`, `_language.label`, and
+  `_language.short_label` readable and consistent. Keep `_language.code` aligned with
+  the filename even though the filename is authoritative.
+- Partial object translations are supported: omitted keys fall back to the configured
+  default language and are reported by the generator. Arrays are all-or-nothing values;
+  they do not merge item by item.
 
-- Use consistent terminology for names, titles, and devotional phrases.
-- Ensure place names, rituals, and proper nouns remain stable across translations.
-- When possible, use established transliteration standards for Sanskrit or Kannada terms.
+## Blog Markdown
 
-## 3. Translate All Relevant Sections
+- Put an article translation in `content/blog/<slug>/<code>.md`; do not place article
+  prose in the interface JSON.
+- Begin with exactly one level-one translated title and continue with the body. Do not
+  add frontmatter; shared article metadata stays in `meta.json`.
+- Preserve heading order, link destinations, quotations, citations, and verse layout.
+  An absent article translation falls back to the default-language Markdown.
 
-- Translate headings, paragraph text, captions, and metadata.
-- If the original content includes scripture or verses, provide transliteration and meaning consistently.
+## Readability and encoding
 
-## 4. Label Language Files Clearly
+- Save JSON and Markdown as UTF-8 and use Unicode characters directly.
+- Prefer clear sentences, paragraph breaks, and lists; test wrapping at mobile widths.
+- Use consistent spelling and transliteration throughout a contribution.
+- Run `npm run ci` and disclose whether linguistic review is complete.
 
-- Use language codes such as `en`, `kn`, or `hi` where appropriate.
-- Store translated content in a language-specific folder or file naming pattern.
-- Keep related translations together so maintainers can review them easily.
-
-## 5. Preserve Sacred Names and Terms
-
-- Do not translate sacred names or terms unnecessarily.
-- Use transliteration and provide explanation only when needed.
-- Respect how the Matha prefers to represent titles and names.
-
-## 6. Follow Accessibility and Readability Standards
-
-- Keep sentences shorter when they are translated into longer languages.
-- Use paragraph breaks and lists to improve readability.
-- Avoid dense text blocks.
-
-## 7. Review Cultural Context
-
-- Verify that cultural references are preserved accurately.
-- If a direct translation may confuse readers, add a brief explanatory note.
-
-## 8. Use Unicode Encoding
-
-- Ensure all text is saved in UTF-8 encoding.
-- Avoid special characters that may not render correctly.
-
-## 9. Coordinate with Contributors
-
-- If you are adding a new language, discuss the folder structure with maintainers.
-- When updating translations for a published page, check the English source and keep the meaning aligned.
+For exact file-creation steps, see
+[How to Add or Update Languages](./CONTRIBUTE_LANGUAGE.md).

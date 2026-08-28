@@ -56,20 +56,12 @@ you've forked the repo, clone your fork instead.)
 Existing checkouts must run `git submodule update --init --recursive`. The Bhakti
 generator requires the library submodule and fails with this instruction when absent.
 
-### Branches, as they actually exist today
+### Branch model
 
-| Branch | Purpose per the docs | CI trigger | Currently exists on `origin`? |
-|---|---|---|---|
-| `main` | Canonical source: the code, its build, and contributor docs | ✅ (`verify.yml` — build check, no deploy) | ✅ |
-| `dev` | Preview source; deploys to GitHub Pages | ✅ (`deploy-dev.yml`) | ❌ not currently pushed |
-| `Design2code` | — | ✅ (`deploy-dev.yml`) | ✅ — this is the active work branch |
-
-`ARCHITECTURE.md` §6 describes a `dev` branch as the preview source. In the repository
-as checked out, that branch doesn't exist yet — active work happens on
-`Design2code`, which `.github/workflows/deploy-dev.yml` builds and deploys to GitHub
-Pages identically to how `dev` would. Branch from `main` — it now carries the full
-source, its build, and the contributor docs; check `git branch -a` if you're unsure
-which branches exist.
+`main` is the single canonical branch. Use a short-lived branch for each change, open a
+pull request into `main`, and delete the branch after merge. Both the permanent GitHub
+Pages preview and the future production deployment build reviewed `main` revisions with
+different environment settings.
 
 Branch and PR conventions live in [`CONTRIBUTING.md`](../CONTRIBUTING.md) and
 [`GUIDELINE_SOURCE_CODE.md`](./GUIDELINE_SOURCE_CODE.md). §9 below adds the
@@ -86,10 +78,10 @@ build-specific checks this project needs on top of them.
 | | Link |
 |---|---|
 | **Development preview** | https://vedavardhanatheertha.github.io/MainWebsiteUI/ |
-| **Build status** | [Actions tab](../../actions) |
+| **Build status** | [GitHub Actions](https://github.com/VedavardhanaTheertha/MainWebsiteUI/actions) |
 
-Every push to a development branch rebuilds and republishes the preview automatically.
-Open the preview to review the current site without a local setup.
+Every push to `main` rebuilds and republishes the permanent preview automatically. Open
+the preview to review the latest merged revision without a local setup.
 
 The hosted preview deliberately shows placeholder text such as
 `en·hero title — content goes here` instead of real wording. This is intentional:
@@ -140,7 +132,7 @@ SITE_ENV=prod npm run dev              # bash
 | **Scope** | The website's frontend source code, build, and contributor documentation |
 | **Content** | Devotional and library content comes from [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) |
 | **Languages** | Languages are discovered by adding one correctly structured language file |
-| **Pages** | 36 exported pages, with article routes expanding from discovered content |
+| **Pages** | Filesystem routes plus article routes discovered from content at build time |
 | **Stack** | Next.js 16, React 19, and Tailwind CSS 4, exported as static files |
 | **Hosting** | GitHub Pages preview; Cloudflare Pages production is not yet connected |
 
@@ -173,9 +165,10 @@ CI runs the scripts under `build/`; developers can run the same pipeline locally
 
 | File | Purpose |
 |---|---|
-| `build.mjs` | Runs the whole build: clean → generate content → export static site → verify |
+| `build.mjs` | Runs the whole build: clean → generate → export → normalize canonicals → verify |
 | `clean.mjs` | Removes stale outputs before generation |
 | `markdown.mjs` | Parses and sanitizes blog and Bhakti Markdown |
+| `write-canonicals.mjs` | Derives each page's production canonical from its exported HTML path |
 | `verify.mjs` | Checks the built output before it is published |
 
 ### Why build logic lives outside CI
@@ -234,18 +227,21 @@ in `node build/build.mjs prod`, takes precedence over `SITE_ENV`.
 
 `build/verify.mjs` checks that:
 
-1. `robots.txt` matches the selected environment's indexing policy.
-2. Non-production pages carry a `noindex` directive.
-3. Non-production pages contain no real content.
-4. Institution brand terms do not leak into a placeholder build.
-5. `sitemap.xml` contains one canonical production URL per exported page.
+1. The generated web manifest uses environment-correct paths.
+2. `robots.txt` matches the selected environment's indexing policy.
+3. Non-production pages carry a `noindex` directive.
+4. Every non-error HTML file has exactly one production canonical matching its route;
+  generated error documents have none.
+5. Non-production HTML and the manifest contain no exact default-language JSON prose
+  of at least 30 characters.
+6. Institution brand terms do not leak into placeholder HTML or the manifest.
+7. `sitemap.xml` contains one canonical production URL per non-error exported page.
 
-The content check is especially important: generated placeholder content contains no
-real text, so real prose in the exported development site indicates that display text
-was hardcoded in a component. Content and brand leaks fail the build because
-`build.fail_on_hardcoded_content` is enabled in `config/site.yml`. Route metadata,
-arrays, and server-rendered copy must therefore use the same generated content module
-as client-visible content.
+The content comparison is an important backstop, not a complete source lint. It catches
+exact default-language JSON prose at least 30 characters long and configured brand terms
+in rendered HTML and the manifest. Short, changed, non-default-language, client-only,
+or unrendered literals may evade it. Those matches fail when
+`build.fail_on_hardcoded_content` is enabled; source review remains required.
 
 Every full build removes `.next/`, `out/`, `dist/`, `src/gen/`, and the generated
 `public/robots.txt` before regeneration. The library submodule is required; initialize
@@ -298,9 +294,6 @@ Build-wide flags also live there:
 - `build.brand_terms` — words that must never appear on a non-production page, checked
   at any length (unlike general prose, which needs 30+ characters to count — see
   `build/verify.mjs`).
-- `build.daily_rebuild` / `daily_rebuild_hour` — GitHub Actions also rebuilds on a
-  cron schedule, independent of pushes; see `.github/workflows/deploy-dev.yml`.
-
 To add a third environment, add an entry under `environments:` in `config/site.yml` —
 no code change needed (`build/build.mjs`, `next.config.ts`, and
 `scripts/generate-content.mjs` all read the file at build time).
@@ -373,7 +366,7 @@ values when you want the fallback report to accurately show remaining work.
   ```json
   {
     "date": "2026-07-14",
-    "hero": "/media/example.jpg",
+    "hero": "/articles/<descriptive-file>.webp",
     "tags": ["news", "projects"]
   }
   ```
@@ -386,8 +379,9 @@ values when you want the fallback report to accurately show remaining work.
   The first paragraph goes here.
   ```
 
-4. Put article images under `public/media/` and reference them from the repository root,
-  for example `/media/example.jpg`.
+4. Put new optimized article media under `public/articles/` and reference it as
+  `/articles/<descriptive-file>.webp`. Older assets remain directly under `public/` or
+  existing subdirectories such as `public/slide/`; `public/media/` does not exist.
 5. Optionally add a Markdown file for each translation using its language code.
 6. Add every new content or media asset to `ASSET_PROVENANCE.md`.
 7. Run `npm run build:dev` and `npm run build:prod`.
@@ -432,11 +426,9 @@ rules in `ARCHITECTURE.md` §12.
   pipeline, update `docs/ARCHITECTURE.md` in the same PR.**
 - **If your change alters how a contributor does something day-to-day, update
   `docs/DEVELOPER.md` in the same PR.**
-- Before opening the PR:
-  1. `npm run lint`
-  2. `npm run build:dev` — read the `[verify]` output, not just the exit code
-  3. For anything you're not 100% sure built from committed files, run the clean-clone
-     check in §6
+- Before opening the PR, run `npm run ci` and read both `[verify]` reports, not just the
+  exit code. For anything you're not certain built from committed files, also run the
+  clean-clone check in §6.
 - No file under `src/` should name a language code or a blog post slug (§8) — grep for
   the language codes in `content/languages/` and the slugs in `content/blog/` if
   you're unsure whether you've introduced one.
@@ -468,7 +460,8 @@ Automated checks are blocking in CI:
   A `prod` build with `content_mode: real` skips those placeholder-specific checks by
   design.
 
-Run lint, typecheck, unit tests, and both builds before a PR. CI does the same.
+Run `npm run ci` before a PR. CI performs the same lint, typecheck, unit-test, and
+verified-build gates.
 
 ---
 
@@ -476,8 +469,21 @@ Run lint, typecheck, unit tests, and both builds before a PR. CI does the same.
 
 | Branch | Target | How | Status |
 |---|---|---|---|
-| `dev` (or, today, `Design2code` — see §3) | GitHub Pages | `.github/workflows/deploy-dev.yml`, automatic on push, plus a daily cron rebuild at 21:00 UTC (`config/site.yml: build.daily_rebuild_hour`) | ✅ working |
+| `main` | GitHub Pages preview | `.github/workflows/deploy-dev.yml`, placeholder build on merge and daily | ✅ working |
 | `main` | Cloudflare Pages | — | ⏳ designed for, not yet connected |
+
+The permanent preview always represents `main`; feature branches are validated by the
+pull-request workflow but do not replace the shared preview. The Pages workflow runs:
+
+- After every push to `main`, publishing the newly reviewed revision.
+- Daily at 21:00 UTC from the default branch (`main`). Today this is a build canary.
+  Once `src/lib/scheduler.ts` is used by rendered content, it will also refresh
+  date-sensitive static output.
+- Manually from the Actions tab. Checkout is explicitly pinned to `main`, so a manual
+  run cannot accidentally publish an unreviewed feature branch.
+
+The cron expression in `.github/workflows/deploy-dev.yml` is the sole schedule source;
+environment configuration does not duplicate workflow timing.
 
 There is no workflow file in this repo for a production/Cloudflare deploy — only
 `deploy-dev.yml` exists under `.github/workflows/`. Cloudflare Pages connects directly
@@ -494,8 +500,8 @@ both builds pass. Roll back with a reviewed revert or a known-good artifact
 redeployment; never rewrite shared history.
 
 The GitHub Pages deploy job deliberately has no `actions/configure-pages` step — see
-the comment in `deploy-dev.yml` and the commit `87851c4` — because it fails when Pages
-isn't yet enabled on the repo, which would make a correct build look broken.
+the explanation in `deploy-dev.yml` — because it fails when Pages is not enabled on the
+repository, which would make a correct build look broken.
 
 ---
 
@@ -521,8 +527,9 @@ You're probably hitting `localhost:3000` without the `/MainWebsiteUI` base path 
 §4.
 
 For content images, confirm the file is under `public/`, reference it without the
-`public` prefix (for example, `/media/photo.jpg`), and match filename capitalization
-and extension exactly. Windows may hide a capitalization error that fails on Linux.
+`public` prefix (new article media uses `/articles/<file>`), and match filename
+capitalization and extension exactly. Windows may hide a capitalization error that
+fails on Linux.
 
 **The build reports missing language keys.**
 This is informational. Missing keys fall back to the default language; the report shows

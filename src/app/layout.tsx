@@ -52,9 +52,9 @@ export const metadata: Metadata = {
   description: content[defaultLang].meta_description,
   keywords: content[defaultLang].meta_keywords,
   icons: { icon: "/favicon.ico" },
-  // Point search engines at production even when this build is served elsewhere.
+  // Resolves relative page metadata against the intended production origin.
+  // Per-route canonicals are normalized from exported paths by the build pipeline.
   metadataBase: new URL(siteConfig.productionUrl),
-  alternates: { canonical: "/" },
   robots: siteConfig.indexable
     ? { index: true, follow: true }
     : { index: false, follow: false, nocache: true },

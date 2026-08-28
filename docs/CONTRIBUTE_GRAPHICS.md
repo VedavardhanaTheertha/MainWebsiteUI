@@ -20,10 +20,12 @@ This document explains how to add and update graphic assets for the website.
 
 ## 4. Add Assets to the Repository
 
-- Place files in the designated media or assets folder.
-- Keep the folder structure organized by category.
+- Put new article media in `public/articles/`. Existing assets remain directly under
+  `public/` and in existing subdirectories such as `public/slide/`; do not reorganize
+  unrelated binaries. There is no `public/media/` directory.
+- Reference public files from the site root, without the `public` prefix.
 - Add an `ASSET_PROVENANCE.md` row with the creator/rightsholder, source, exact license
-	or permission evidence, modifications, contributor, and review date.
+  or permission evidence, modifications, contributor, and review date.
 
 ## 5. Update References in the Site
 

@@ -1,12 +1,9 @@
 # Build check for the canonical branch.
 #
-# Deliberately does NOT deploy. `deploy-dev.yml` publishes the GitHub Pages
-# preview from the development branches, and it builds with SITE_ENV=dev, which
-# substitutes placeholder text and emits noindex. Pointing that workflow at
-# `main` as well would mean a push to main overwrites the preview the reviewers
-# are looking at, and would publish main under dev's placeholder settings.
-# Production deploys to Cloudflare Pages, which is not connected yet
-# (config/site.yml, environments.prod).
+# Deliberately does NOT deploy. `deploy-dev.yml` publishes the permanent GitHub
+# Pages placeholder preview from reviewed `main`; pull-request branches are verified
+# here but do not replace that shared preview. The `prod` configuration targets a
+# future Cloudflare Pages deployment, which is planned but not connected.
 #
 # So main's job here is to prove the committed tree still builds. Both
 # environments are built, because they differ in more than a flag: prod renders

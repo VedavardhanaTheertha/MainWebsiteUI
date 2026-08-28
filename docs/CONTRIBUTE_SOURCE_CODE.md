@@ -1,52 +1,33 @@
 # How to Contribute Source Code
 
-This document explains the workflow for contributing code to the Matha website.
+The project uses one canonical branch: `main`. Contributors work on short-lived
+branches and open pull requests back to `main`.
 
-## 1. Choose a Task
+## Workflow
 
-- Pick an open issue or propose a new feature.
-- If you are fixing a bug, reproduce the issue locally first.
+1. Choose or propose a focused task. Reproduce a reported defect before changing it.
+2. Follow the [Developer Guide](./DEVELOPER.md) to install dependencies and initialize
+   submodules.
+3. Create a descriptive short-lived branch from current `main`. Fork contributors use
+   the same branch model in their fork.
+4. Make the smallest coherent change. Keep visitor-facing text in `content/`, preserve
+   accessibility, and add tests for new logic.
+5. Update architecture documentation for structure, content-system, environment, or
+   pipeline changes; update developer documentation when contributor steps change.
+6. Run the mandatory local gate:
 
-## 2. Create a Branch
+   ```bash
+   npm run ci
+   ```
 
-- Create a descriptive branch from the latest main branch.
-  ```bash
-git checkout main
-git pull
- git checkout -b feature/your-change
-  ```
+   This runs lint, type checking, unit tests, and verified development and production
+   builds. Read the verification output rather than relying only on the exit code.
+7. Open a pull request into `main`. Explain the problem, approach, user impact,
+   validation, documentation, accessibility, security, and asset provenance as
+   applicable.
+8. Obtain maintainer review and all required checks. Address feedback without rewriting
+   shared protected history, then merge using the repository's allowed merge method.
 
-## 3. Make Your Changes
-
-- Implement the feature or fix in the correct module.
-- Add comments only when necessary.
-- Keep your code aligned with existing patterns.
-
-## 4. Test Your Work
-
-- Run the local development server.
-- Confirm the change works and the page renders correctly.
-- Run tests if available.
-
-## 5. Document the Change
-
-- Update docs, or comments for behavior changes.
-- Add notes for any configuration or environment changes.
-
-## 6. Commit and Push
-
-- Use meaningful commit messages.
-- Keep each commit focused on a single logical change.
-- Push your branch to the repository.
-
-## 7. Open a Pull Request
-
-- Describe the problem and your solution.
-- List the files changed and any special steps to test.
-- Reference related issues if applicable.
-
-## 8. Review and Merge
-
-- Respond to review feedback.
-- Update the branch if requested.
-- Merge once approvals are received.
+The authoritative commands, environment behavior, troubleshooting, clean-checkout
+check, and deployment details are maintained in the
+[Developer Guide](./DEVELOPER.md), rather than duplicated here.

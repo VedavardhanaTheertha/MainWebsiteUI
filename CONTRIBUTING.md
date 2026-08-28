@@ -1,6 +1,8 @@
 # Contributing to the Matha Website
 
-Thank you for your interest in contributing to the the Matha website. This project is built as a collaborative, community-driven repository that preserves devotional content, translations, design, and the website code itself.
+Thank you for your interest in contributing to the Matha website. This collaborative
+repository develops the website and helps preserve reviewed devotional content,
+translations, and design materials.
 
 ## Contribution Overview
 
@@ -8,7 +10,7 @@ Contributions are welcome across several areas:
 
 - **Content** — devotional articles, stotras, dasa padas, heritage write-ups, library-style content, etc.
 - **Source code** — bug fixes, new website features, and developer tooling.
-- **Languages** — localization and multi-lingual support.
+- **Languages** — localization and multilingual support.
 - **UI/UX and graphics** — visual design, layout improvements, icons, and media assets.
 - **Issues and ideas** — bug reports, feature suggestions, and general improvement proposals.
 
@@ -21,10 +23,11 @@ Contributions are welcome across several areas:
 - Use meaningful branch names and commit messages.
 - Document what changed and why in your pull request.
 - Be respectful and constructive when discussing changes.
-- Test your changes locally and provide details. whenever not possible, mention all validations done to ensure quality.
+- Test changes locally and provide details. When that is not possible, state which
+  validations were and were not completed.
 - Use a short-lived branch from `main`; avoid long-running integration branches.
 - Record source, rights holder, license/permission, and modifications for new content
-	or media in `ASSET_PROVENANCE.md`.
+  or media in `ASSET_PROVENANCE.md`.
 
 ## Review and Follow-Up
 
@@ -34,8 +37,7 @@ Contributions are welcome across several areas:
 - Merge only after maintainer approval and all required checks pass.
 - Roll back with a reviewed revert or a known-good redeployment.
 
-Before requesting review, run `npm run lint`, `npm run typecheck`, `npm run test:unit`,
-`npm run build:dev`, and `npm run build:prod`, and read the verification output.
+Before requesting review, run `npm run ci` and read both build-verification reports.
 
 ## Additional Notes
 

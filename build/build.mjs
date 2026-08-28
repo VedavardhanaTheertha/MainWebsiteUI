@@ -81,6 +81,7 @@ run("cleaning stale output", path.join(rootDir, "build", "clean.mjs"));
 run("generating Bhakti", path.join(rootDir, "build", "build-bhakti-content.mjs"));
 run("generating website content", path.join(rootDir, "scripts", "generate-content.mjs"));
 run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build"]);
+run("normalizing canonical URLs", path.join(rootDir, "build", "write-canonicals.mjs"));
 run("verifying output", path.join(rootDir, "build", "verify.mjs"));
 
 console.log(`\n[build] done — static site written to out/`);

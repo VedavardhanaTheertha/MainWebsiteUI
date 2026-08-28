@@ -1,94 +1,58 @@
 # How to Add or Update Languages
 
-This document explains how to contribute translations or add support for new languages.
+Website interface translations are JSON files in `content/languages/`. Blog article
+translations are separate Markdown files in each article folder.
 
-## 1. Identify the Target Language
+## Add an interface language
 
-- Look in `content/languages/` to see which languages already exist. Today that is
-  `en.json` (English) and `kn.json` (Kannada).
-- If yours is not there, choose its [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)
-  — `hi` for Hindi, `ta` for Tamil, and so on.
+1. Choose a stable language code and create `content/languages/<code>.json`. The file
+   name is authoritative: the build scans all JSON files and uses `<code>` for the
+   generated language map and HTML language value. No registry change is needed.
+2. Start with this descriptor:
 
-## 2. Create the Language File
+   ```json
+   {
+     "_language": {
+       "code": "hi",
+       "name": "Hindi",
+       "native_name": "हिन्दी",
+       "label": "HI",
+       "short_label": "Hi"
+     }
+   }
+   ```
 
-**One language is one file.** Copy `content/languages/en.json` to
-`content/languages/<code>.json` and translate the values — never the keys.
+   `name`, `native_name`, `label`, and `short_label` control switcher labels. The
+   descriptor's `code` should match the filename for clarity, although discovery uses
+   the filename. When a descriptor label is absent, the generator falls back to the
+   name, filename code, or uppercase code as appropriate.
+3. Add translated keys using the same nesting and value types as the default-language
+   JSON. Never translate key names, paths, identifiers, dates, or URLs.
+4. A partial file is valid. Missing object keys are deep-merged from the default
+   language and reported during generation. Arrays are replaced as complete values,
+   not merged item by item, so translate or omit an entire array.
+5. Run `npm run ci`. To inspect real wording locally, run `SITE_ENV=prod npm run dev`
+   (PowerShell: `$env:SITE_ENV = "prod"; npm run dev`). The default development
+   environment intentionally shows placeholders.
 
-```bash
-cp content/languages/en.json content/languages/hi.json
-```
+The configured default language must remain complete because every other interface
+language falls back to it. For a partial translation, omit unfinished keys rather than
+copying default-language text; this keeps the fallback report useful.
 
-Set the `_language` block at the top to describe your language:
+## Update an interface translation
 
-```json
-{
-  "_language": {
-    "code": "hi",
-    "name": "Hindi",
-    "native_name": "हिन्दी",
-    "label": "HI",
-    "short_label": "Hi"
-  },
-  ...
-}
-```
+- Edit values only, preserving JSON syntax, keys, nesting, and value types.
+- Save the file as UTF-8 and review long labels at mobile widths.
+- Compare devotional terms, names, punctuation, numbers, and links with the source.
+- State in the pull request whether review was performed by a fluent speaker.
 
-English (`en`) is the fallback language and must contain every key; any key you leave
-out of your file falls back to it, so a partial translation is safe to submit.
+## Translate a blog article
 
-**You do not need to register the file anywhere.** The build scans
-`content/languages/` and discovers it — that is why adding a language requires no code
-change. Confirm with `npm run build:dev`.
+Interface JSON does not contain blog bodies. In `content/blog/<slug>/`, add
+`<code>.md` beside the required default-language Markdown file. The first line must be
+`# Translated title`; the remainder is the translated body. Do not add frontmatter.
+Shared date, hero, and tags remain in that article's `meta.json`. If a language-specific
+Markdown file is absent, the article falls back to the default-language version.
 
-## 3. Translate Page Metadata
-
-- Ensure translated pages include the same metadata fields as the original.
-- Translate:`
-  - title
-  - summary
-  - category
-  - author or contributor details
-  - publication date, if applicable
-
-## 4. Translate the Main Text
-
-- Translate headings, body text, lists, and captions.
-- Keep the flow and meaning consistent with the source content.
-- Use the guidance from `docs/GUIDELINE_LANGUAGE.md`.
-
-## 5. Add Transliteration When Appropriate
-
-- For sacred verses and devotional names, add transliteration if the target audience may not read the original script.
-- Include the original script alongside transliteration and translation where possible.
-
-## 6. Navigation and the Language Switcher
-
-**Nothing to do.** The language switcher is built from whatever files exist in
-`content/languages/`, using the `_language` block in each. Your language appears in it
-automatically. If it does not, the `_language` block is malformed — compare it against
-`en.json`.
-
-## 7. Preview the Translation
-
-```bash
-npm run dev
-```
-
-Open <http://localhost:3000/MainWebsiteUI/> and switch to your language with the
-switcher. Note that the preview substitutes placeholder text by default; to see real
-wording, run `SITE_ENV=prod npm run dev` (`$env:SITE_ENV = "prod"; npm run dev` in
-PowerShell). See [DEVELOPER.md](DEVELOPER.md) §4.
-
-- Check that headings, lists and formatting still render correctly.
-- Validate links and any special characters or conjunct glyphs in your script.
-
-## 8. Document Your Contribution
-
-- In the pull request, explain the new language support or translation update.
-- List the files you added or changed.
-- Note whether the translation covers the full page or only a subset.
-
-## 9. Request Review
-
-- Ask a reviewer who is fluent in both the source and target languages to validate the translation.
-- Seek feedback on meaning, tone, and cultural accuracy.
+See the [language quality guidelines](./GUIDELINE_LANGUAGE.md) and the
+[content workflow](./CONTRIBUTE_CONTENT.md) before submitting.

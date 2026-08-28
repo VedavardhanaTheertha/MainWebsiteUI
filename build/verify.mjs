@@ -5,10 +5,12 @@
 //
 //   1. robots.txt matches the environment's indexing policy
 //   2. non-production pages carry a noindex directive
-//   3. non-production pages contain no real content
-//   4. non-production pages contain none of the institution's brand terms
+//   3. every page has its route-specific production canonical URL
+//   4. non-production pages contain no real content
+//   5. non-production pages contain none of the institution's brand terms
+//   6. the web manifest exists and uses environment-correct paths
 //
-// Check 3 is the one that makes the architecture self-policing. In a placeholder
+// The content checks make the architecture partly self-policing. In a placeholder
 // build the generated content module contains no real text at all, so any real
 // sentence appearing in the output can only have come from a string hardcoded in
 // a component — exactly the mistake the content system exists to prevent.
@@ -23,6 +25,7 @@ import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "js-yaml";
+import { canonicalForRoute, routeForHtml } from "./canonical-utils.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outDir = path.join(rootDir, "out");
@@ -101,14 +104,41 @@ if (!existsSync(outDir)) {
 }
 
 const htmlFiles = collectHtmlFiles(outDir);
-const sitemapEligibleHtmlFiles = htmlFiles.filter(
-  (file) => !["404.html", "_not-found.html"].includes(path.basename(file)),
-);
+const sitemapEligibleHtmlFiles = htmlFiles.filter((file) => routeForHtml(outDir, file) !== null);
 if (!htmlFiles.length) {
   problems.push("out/ contains no HTML files — the export produced nothing.");
 }
 
-// ── Check 2: sitemap uses the canonical production origin ───────────────────
+// ── Check 2: web manifest is generated for the selected environment ─────────
+
+const manifestFile = path.join(outDir, "manifest.webmanifest");
+if (!existsSync(manifestFile)) {
+  problems.push("out/manifest.webmanifest is missing.");
+} else {
+  try {
+    const manifest = JSON.parse(readFileSync(manifestFile, "utf8"));
+    const basePath = environment.base_path ?? "";
+    const expectedRoot = basePath ? `${basePath}/` : "/";
+    if (manifest.start_url !== expectedRoot) {
+      problems.push(
+        `manifest start_url must be "${expectedRoot}" in the ${envName} environment.`
+      );
+    }
+    if (manifest.scope !== expectedRoot) {
+      problems.push(`manifest scope must be "${expectedRoot}" in the ${envName} environment.`);
+    }
+    const invalidIcon = (manifest.icons ?? []).find(
+      (icon) => typeof icon.src !== "string" || !icon.src.startsWith(`${basePath}/`)
+    );
+    if (!manifest.icons?.length || invalidIcon) {
+      problems.push(`manifest icons must use the ${envName} environment base path.`);
+    }
+  } catch (error) {
+    problems.push(`manifest.webmanifest is invalid JSON: ${error.message}`);
+  }
+}
+
+// ── Check 3: sitemap uses the canonical production origin ───────────────────
 
 const sitemapFile = path.join(outDir, "sitemap.xml");
 if (!existsSync(sitemapFile)) {
@@ -134,7 +164,30 @@ if (!existsSync(sitemapFile)) {
   }
 }
 
-// ── Check 3: robots.txt matches the environment ──────────────────────────────
+// ── Check 4: each HTML file has the route-specific production canonical ──────
+
+for (const file of htmlFiles) {
+  const relative = path.relative(outDir, file);
+  const route = routeForHtml(outDir, file);
+  const html = readFileSync(file, "utf8");
+  const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)"\s*\/?\s*>/gi)]
+    .map((match) => match[1]);
+
+  if (route === null) {
+    if (canonicals.length) problems.push(`${relative} is an error document and must not declare a canonical URL.`);
+    continue;
+  }
+
+  const expected = canonicalForRoute(config.site.production_url, route);
+  if (canonicals.length !== 1 || canonicals[0] !== expected) {
+    problems.push(
+      `${relative} must contain exactly one canonical URL, "${expected}"` +
+        (canonicals.length ? ` (found: ${canonicals.join(", ")}).` : " (found none).")
+    );
+  }
+}
+
+// ── Check 5: robots.txt matches the environment ──────────────────────────────
 
 const robotsFile = path.join(outDir, "robots.txt");
 if (!existsSync(robotsFile)) {
@@ -150,7 +203,7 @@ if (!existsSync(robotsFile)) {
   }
 }
 
-// ── Check 3: noindex on non-production pages ─────────────────────────────────
+// ── Check 6: noindex on non-production pages ─────────────────────────────────
 
 if (!environment.indexable) {
   const missing = htmlFiles.filter((file) => !/noindex/i.test(readFileSync(file, "utf8")));
@@ -162,7 +215,7 @@ if (!environment.indexable) {
   }
 }
 
-// ── Check 4: no real content in a placeholder build ──────────────────────────
+// ── Check 7: no real content in a placeholder build ──────────────────────────
 
 if (environment.content_mode !== "real") {
   const defaultLangFile = path.join(
@@ -172,8 +225,9 @@ if (environment.content_mode !== "real") {
   );
   const realProse = collectRealProse(JSON.parse(readFileSync(defaultLangFile, "utf8")));
 
+  const contentFiles = existsSync(manifestFile) ? [...htmlFiles, manifestFile] : htmlFiles;
   const leaks = [];
-  for (const file of htmlFiles) {
+  for (const file of contentFiles) {
     const text = decodeEntities(readFileSync(file, "utf8"));
     for (const phrase of realProse) {
       if (text.includes(phrase)) {
@@ -194,7 +248,7 @@ if (environment.content_mode !== "real") {
       .slice(0, 10)
       .map(([phrase, files]) => {
         const preview = phrase.length > 70 ? `${phrase.slice(0, 70)}…` : phrase;
-        return `    "${preview}"\n      in ${files.length} page(s), e.g. ${files[0]}`;
+        return `    "${preview}"\n      in ${files.length} output file(s), e.g. ${files[0]}`;
       });
 
     const summary =
@@ -208,13 +262,14 @@ if (environment.content_mode !== "real") {
   }
 }
 
-// ── Check 5: brand terms must not appear outside production ──────────────────
+// ── Check 8: brand terms must not appear outside production ──────────────────
 
 if (environment.content_mode !== "real") {
   const brandTerms = config.build?.brand_terms ?? [];
   const hits = new Map();
 
-  for (const file of htmlFiles) {
+  const contentFiles = existsSync(manifestFile) ? [...htmlFiles, manifestFile] : htmlFiles;
+  for (const file of contentFiles) {
     const text = decodeEntities(readFileSync(file, "utf8"));
     for (const term of brandTerms) {
       if (text.includes(term)) {
@@ -226,7 +281,7 @@ if (environment.content_mode !== "real") {
 
   if (hits.size) {
     const lines = [...hits.entries()].map(
-      ([term, files]) => `    "${term}" — ${files.length} page(s), e.g. ${files[0]}`
+      ([term, files]) => `    "${term}" — ${files.length} output file(s), e.g. ${files[0]}`
     );
     const summary =
       `brand terms found in a ${envName} build — these identify the institution and\n` +
