@@ -1,0 +1,22 @@
+{
+  "name": "shiroor-matha-library-ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "text:generate": "node build/generate-placeholder-text.mjs",
+    "content:build": "npm run text:generate && node build/build-content.mjs",
+    "dev": "npm run content:build && vite",
+    "build": "npm run build:production",
+    "build:production": "npm run content:build && vite build --mode production",
+    "build:stage": "npm run content:build && vite build --mode stage",
+    "preview": "vite preview",
+    "test": "node --test build/*.test.mjs"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.3"
+  }
+}

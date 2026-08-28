@@ -1,0 +1,16 @@
+export const tabs = [
+  {
+    id: "dasasahitya",
+    text: {
+      en: {
+        label: "Dasa Sahitya",
+        description: "Explore a growing collection of Kannada devotional literature.",
+      },
+      kn: {
+        label: "ದಾಸ ಸಾಹಿತ್ಯ",
+        description: "ಕನ್ನಡ ಭಕ್ತಿ ಸಾಹಿತ್ಯದ ಬೆಳೆಯುತ್ತಿರುವ ಸಂಗ್ರಹವನ್ನು ಅನ್ವೇಷಿಸಿ.",
+      },
+    },
+    sourceDirectory: "dasasahitya",
+  },
+];
