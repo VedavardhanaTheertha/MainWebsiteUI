@@ -49,14 +49,6 @@ export default function BlogPage() {
   return (
     <>
       <div className="px-5 py-8 min-h-[70vh]">
-        <div className="max-w-xl mx-auto mb-6">
-          <p className="font-body text-[11px] tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-2">
-            {content[defaultLang].blog_eyebrow}
-          </p>
-          <h1 className="font-display font-bold text-[var(--color-text-primary)] text-3xl sm:text-4xl">
-            {content[defaultLang].blog_title}
-          </h1>
-        </div>
         <BlogIndex />
       </div>
       <SiteFooter />

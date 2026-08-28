@@ -18,6 +18,7 @@
   "scripts": {
     "predev": "npm run content:build",
     "dev": "next dev",
+    "dev:local": "node build/dev.mjs local",
     "prebuild": "npm run content:build",
     "build": "next build",
     "start": "next start",
@@ -31,6 +32,7 @@
     "test:unit": "node --test build/*.test.mjs",
     "content:validate": "npm run content:build",
     "ci": "npm run lint && npm run typecheck && npm run test:unit && npm run build:dev && npm run build:prod",
+    "build:local": "node build/build.mjs local",
     "build:dev": "node build/build.mjs dev",
     "build:prod": "node build/build.mjs prod",
     "verify": "node build/verify.mjs"

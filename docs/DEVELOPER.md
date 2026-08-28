@@ -97,31 +97,20 @@ real in the preview; only text is substituted.
 
 ```bash
 npm ci
-npm run dev
+npm run dev:local
 ```
 
 Open:
 
 ```
-http://localhost:3000/MainWebsiteUI/
+http://localhost:3000/
 ```
 
-**The trailing path matters.** It comes from `base_path: "/MainWebsiteUI"` for the
-`dev` environment in `config/site.yml`, because GitHub Pages serves this project from
-`https://<user>.github.io/MainWebsiteUI/`. Plain `http://localhost:3000` 404s — that's
-expected.
-
-**What you should see:** placeholder text everywhere, e.g. *"en·hero title — content
-goes here"*, not real Shiroor Matha wording. That's intentional — see §7. To see real
-content locally instead:
-
-```bash
-$env:SITE_ENV = "prod"; npm run dev    # PowerShell
-```
-
-```bash
-SITE_ENV=prod npm run dev              # bash
-```
+`dev:local` is cross-platform and selects the root-based, non-indexable `local`
+environment. A bar at the top switches between real and placeholder copy while retaining
+the active language; the choice is remembered in that browser. Real copy is the initial
+mode. Use `npm run dev` only when reproducing the hosted GitHub Pages preview; that URL is
+`http://localhost:3000/MainWebsiteUI/` and contains placeholders only.
 
 ---
 
@@ -190,6 +179,8 @@ around `build.mjs`. This keeps the build portable and provides two practical ben
 | `npm run typecheck` | Generate content, then `tsc --noEmit` | pass/fail |
 | `npm run test:unit` | Content utility and Markdown security tests | pass/fail |
 | `npm run dev` | content:build, then `next dev` | a running dev server |
+| `npm run dev:local` | Generate both copy variants with `SITE_ENV=local`, then `next dev` | root-based local server with copy selector |
+| `npm run build:local` | Full verified, non-indexable local build with both copy variants | `out/` (local/switchable build) |
 | `npm run build:dev` | `node build/build.mjs dev` — full pipeline: generate content → `next build` → verify | `out/` (dev/placeholder build) |
 | `npm run build:prod` | same pipeline with `SITE_ENV=prod` | `out/` (production/real-content build) |
 | `npm run verify` | `build/verify.mjs` against an existing `out/` | pass/fail report, no rebuild |
@@ -202,7 +193,7 @@ using a push to test the pipeline.
 
 ### Environment variable
 
-`SITE_ENV` selects the environment (`dev` or `prod`, defined in `config/site.yml`).
+`SITE_ENV` selects the environment (`local`, `dev`, or `prod`, defined in `config/site.yml`).
 It defaults to `dev` when unset — showing real content is an explicit opt-in, never
 the default. `npm run build:dev` / `build:prod` set it for you via their `node
 build/build.mjs <env>` argument; set it yourself only when running `next dev` or
@@ -280,12 +271,12 @@ Everything environment-specific is in [`config/site.yml`](../config/site.yml) �
 in `src/` should ever branch on environment name directly. Full design rationale:
 [ARCHITECTURE.md §6](./ARCHITECTURE.md#6-environments).
 
-| Setting | `dev` | `prod` |
-|---|---|---|
-| `base_path` | `/MainWebsiteUI` | `""` |
-| `content_mode` | `placeholder` | `real` |
-| `indexable` | `false` | `true` |
-| Hosted on | GitHub Pages | Cloudflare Pages (not yet connected — see §11) |
+| Setting | `local` | `dev` | `prod` |
+|---|---|---|---|
+| `base_path` | `""` | `/MainWebsiteUI` | `""` |
+| `content_mode` | `switchable` | `placeholder` | `real` |
+| `indexable` | `false` | `false` | `true` |
+| Hosted on | Not hosted | GitHub Pages | Cloudflare Pages (not yet connected — see §11) |
 
 Build-wide flags also live there:
 
@@ -294,7 +285,7 @@ Build-wide flags also live there:
 - `build.brand_terms` — words that must never appear on a non-production page, checked
   at any length (unlike general prose, which needs 30+ characters to count — see
   `build/verify.mjs`).
-To add a third environment, add an entry under `environments:` in `config/site.yml` —
+To add another environment, add an entry under `environments:` in `config/site.yml` —
 no code change needed (`build/build.mjs`, `next.config.ts`, and
 `scripts/generate-content.mjs` all read the file at build time).
 
@@ -317,7 +308,7 @@ never a literal in `src/`. This is stated in `AGENTS.md` and is not optional.
   Both are discovered from the filesystem by `scripts/generate-content.mjs` — see
   [ARCHITECTURE.md §3](./ARCHITECTURE.md#3-core-principle--content-is-data-structure-is-code).
 - This is **enforced by the build**, not just a convention: `build/verify.mjs` scans
-  every non-production page for real prose and for the brand terms in
+  placeholder-build pages and generated content for real prose and for the brand terms in
   `config/site.yml`, and fails the build on any hit (§7).
 - Before claiming a change is content-clean, run `npm run build:dev` and read the
   `[verify]` output — a passing type-check does not catch a hardcoded string.
@@ -393,21 +384,16 @@ HTML is sanitized, and links are limited to safe relative URLs plus `http`, `htt
 
 ### 8.4 Placeholder and real-content previews
 
-Development uses generated placeholders so search engines cannot index a duplicate of
-the production site and so hardcoded content becomes detectable. Placeholders are padded
-to approximately the real text length, making them suitable for layout review.
+The hosted development environment uses generated placeholders so search engines cannot
+index a duplicate of production and so hardcoded content remains detectable. Placeholders
+are padded to approximately the real text length, making them suitable for layout review.
 
-Use the default `npm run dev` for layout work. To review actual wording locally, use:
-
-```bash
-SITE_ENV=prod npm run dev
-```
-
-On Windows PowerShell:
-
-```powershell
-$env:SITE_ENV = "prod"; npm run dev
-```
+Use `npm run dev:local` to compare actual and placeholder wording with the on-page
+selector. It preserves the current language and persists the selected copy mode. The
+local build is still `noindex` with a disallowing robots file. Because this is a static
+export, metadata and legacy Server Component markup that reads generated content directly
+remain real; client components consuming `useLang()` switch immediately. See
+[ARCHITECTURE.md §6.4](./ARCHITECTURE.md#64-switchable-local-content).
 
 ---
 

@@ -6,6 +6,11 @@
     "label": "ಕನ್ನಡ",
     "short_label": "ಕ"
   },
+  "local_preview": {
+    "label": "ಸ್ಥಳೀಯ ಪಠ್ಯ ಮುನ್ನೋಟ",
+    "real": "ನೈಜ ಪಠ್ಯ",
+    "placeholder": "ಮಾದರಿ ಪಠ್ಯ"
+  },
   "nav_home": "ಮನೆ",
   "nav_about": "ಬಗ್ಗೆ",
   "nav_sevas": "ಸೇವೆಗಳು",

@@ -5,6 +5,7 @@
 // reproduce a CI build exactly:
 //
 //     node build/build.mjs dev
+//     node build/build.mjs local
 //     node build/build.mjs prod
 //
 // The environment is taken from the first argument, falling back to SITE_ENV and

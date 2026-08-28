@@ -238,16 +238,16 @@ exact initialization command rather than an opaque file-not-found error.
 
 ## 6. Environments
 
-Two environments. A third (`stage`) was considered and deliberately deferred — see §10.
+Three build environments separate local copy review from hosted preview and production.
 
-| | **dev** | **prod** |
-|---|---|---|
-| Hosted on | GitHub Pages | Cloudflare Pages planned; not connected |
-| Source revision | Reviewed `main` | Reviewed `main` |
-| Content shown | Placeholders | Real content |
-| `robots.txt` | `Disallow: /` | Allow |
-| `noindex` meta tag | Yes | No |
-| Canonical URL | Points to production | Self |
+| | **local** | **dev** | **prod** |
+|---|---|---|---|
+| Purpose | Local UI and copy testing | Hosted GitHub Pages preview | Live Cloudflare Pages build |
+| Base path | Site root | `/MainWebsiteUI` | Site root |
+| Content shown | Runtime-selectable real or placeholders | Placeholders only | Real only |
+| `robots.txt` | `Disallow: /` | `Disallow: /` | Allow |
+| `noindex` meta tag | Yes | Yes | No |
+| Canonical URL | Points to production | Points to production | Self |
 
 ### 6.1 Placeholder content in dev
 
@@ -299,6 +299,28 @@ limits documented in §3 and §7.1.
 a misconfigured deployment, gets placeholders. Showing real content requires explicitly
 opting in. The system fails safe rather than failing open.
 
+### 6.4 Switchable local content
+
+The `local` environment uses `content_mode: switchable`. Generation emits both merged real
+content and its placeholder transform into that local bundle, with real content as the
+server-rendered and hydration default. A local-only control inside `LanguageProvider`
+selects the variant and persists the choice in `localStorage`; the external-store server
+snapshot remains real, preventing a hydration mismatch. Changing copy mode does not change
+the selected language. The control labels are translated content under `local_preview` and
+are exempt from placeholder transformation so the control remains understandable.
+
+The `dev` and `prod` generators emit only their selected variant. Their generated switchable
+fields are `null`, and the control renders nothing. Thus dev still cannot acquire real copy
+through a client preference, while production does not carry placeholder content.
+
+Static export executes Server Components at build time. Consequently the local selector
+updates client components that consume `useLang()` (including generated blog article copy),
+while legacy route markup that reads `content[defaultLang]` directly remains at the local
+real default. Metadata, manifests, and initial exported HTML also deliberately remain real
+in local mode. Completing runtime switching for those legacy routes requires migrating their
+display markup to client components using `useLang()`; query or cookie selection cannot
+change pre-exported HTML without generating a second route tree.
+
 ---
 
 ## 7. Build and deployment
@@ -318,7 +340,8 @@ The generator performs the following jobs:
 1. **Discovers languages** by scanning `content/languages/*.json`; emits the list.
 2. **Merges** each language over `en.json`; warns about keys that fell back.
 3. **Discovers blog posts** by scanning `content/blog/*/`; emits the index and routes.
-4. **Applies the environment transform** — placeholder substitution when not `prod`.
+4. **Applies the environment transform** — placeholder-only for `dev`, real-only for
+  `prod`, and both variants for switchable `local` builds.
 5. **Discovers static routes** from page files plus blog folders for `sitemap.xml`.
 
 After Next.js exports the site, `write-canonicals.mjs` maps each HTML output path back
@@ -345,7 +368,8 @@ still point to the production origin.
 
 Every full build first removes `.next/`, `out/`, `dist/`, `src/gen/`, and generated
 `robots.txt`, preventing stale routes or one environment's output from contaminating
-another. CI gates lint, typecheck, unit tests, and both environment builds. The Pages
+another. CI gates lint, typecheck, unit tests, and the deployment builds. Local builds are
+an additional developer gate. The Pages
 deployment repeats lint, typecheck, tests, and the verified dev build before publishing.
 
 ### 7.2 Preview source and scheduled rebuilds
