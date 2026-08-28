@@ -27,8 +27,9 @@ function formatDate(iso: string, lang: string): string {
  * with raw HTML disabled and sanitized it through an explicit allowlist.
  */
 export default function BlogArticleView({ post }: { post: BlogPost }) {
-  const { lang, tr } = useLang();
-  const article = post.articles[lang] ?? post.articles[defaultLang];
+  const { lang, tr, blogPosts } = useLang();
+  const activePost = blogPosts.find((candidate) => candidate.slug === post.slug) ?? post;
+  const article = activePost.articles[lang] ?? activePost.articles[defaultLang];
 
   return (
     <article className="max-w-2xl mx-auto w-full px-5 py-8">
@@ -41,15 +42,15 @@ export default function BlogArticleView({ post }: { post: BlogPost }) {
       </Link>
 
       <p className="font-body text-[11px] uppercase tracking-widest text-[var(--color-text-brand)] font-semibold">
-        {formatDate(post.date, lang)}
+        {formatDate(activePost.date, lang)}
       </p>
       <h1 className="font-display font-bold text-[var(--color-text-primary)] text-3xl sm:text-4xl leading-tight mt-2 mb-6">
         {article.title}
       </h1>
 
-      {post.hero && (
+      {activePost.hero && (
         <div className="relative w-full aspect-[16/9] rounded-[8px] overflow-hidden mb-7">
-          <Image src={post.hero} alt="" fill sizes="(max-width: 768px) 100vw, 672px" className="object-cover" />
+          <Image src={activePost.hero} alt="" fill sizes="(max-width: 768px) 100vw, 672px" className="object-cover" />
         </div>
       )}
 
@@ -58,9 +59,9 @@ export default function BlogArticleView({ post }: { post: BlogPost }) {
         dangerouslySetInnerHTML={{ __html: article.html }}
       />
 
-      {post.tags.length > 0 && (
+      {activePost.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-[var(--color-line)]">
-          {post.tags.map((tag) => (
+          {activePost.tags.map((tag) => (
             <span
               key={tag}
               className="font-body text-[11px] uppercase tracking-wider text-[var(--color-text-secondary)] bg-[var(--color-saffron-50)] border border-[var(--color-line)] rounded-full px-3 py-1"

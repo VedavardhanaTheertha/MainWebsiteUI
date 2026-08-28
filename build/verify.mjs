@@ -26,6 +26,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "js-yaml";
 import { canonicalForRoute, routeForHtml } from "./canonical-utils.mjs";
+import { describeContentMode } from "./environment-utils.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outDir = path.join(rootDir, "out");
@@ -42,6 +43,7 @@ if (!environment) {
   console.error(`[verify] SITE_ENV="${envName}" is not defined in config/site.yml`);
   process.exit(1);
 }
+const mode = describeContentMode(environment.content_mode);
 
 const problems = [];
 const warnings = [];
@@ -215,9 +217,36 @@ if (!environment.indexable) {
   }
 }
 
-// ── Check 7: no real content in a placeholder build ──────────────────────────
+// ── Check 7: local selector is emitted only for switchable builds ───────────
 
-if (environment.content_mode !== "real") {
+const localToggleFiles = htmlFiles.filter((file) =>
+  readFileSync(file, "utf8").includes("data-local-content-toggle")
+);
+if (mode.switchable && localToggleFiles.length !== htmlFiles.length) {
+  problems.push("the local content selector must appear on every page in a switchable build.");
+}
+if (!mode.switchable && localToggleFiles.length) {
+  problems.push(`the local content selector must not appear in the ${envName} build.`);
+}
+
+const generatedContentFile = path.join(rootDir, "src", "gen", "content.ts");
+if (mode.switchable && existsSync(generatedContentFile)) {
+  const generatedContent = readFileSync(generatedContentFile, "utf8");
+  if (!generatedContent.includes("localPlaceholderContent") || !generatedContent.includes("·")) {
+    problems.push("a switchable build must contain the generated placeholder variant.");
+  }
+}
+if (!mode.switchable && existsSync(generatedContentFile)) {
+  const generatedContent = readFileSync(generatedContentFile, "utf8");
+  if (!/localPlaceholderContent = null/.test(generatedContent) ||
+      !/localPlaceholderBlogPosts: BlogPost\[\] \| null = null/.test(generatedContent)) {
+    problems.push(`the ${envName} bundle must not contain switchable alternate content.`);
+  }
+}
+
+// ── Check 8: no real content in a placeholder build ──────────────────────────
+
+if (mode.contentMode === "placeholder") {
   const defaultLangFile = path.join(
     rootDir,
     config.content.languages_dir,
@@ -225,7 +254,13 @@ if (environment.content_mode !== "real") {
   );
   const realProse = collectRealProse(JSON.parse(readFileSync(defaultLangFile, "utf8")));
 
-  const contentFiles = existsSync(manifestFile) ? [...htmlFiles, manifestFile] : htmlFiles;
+  // Include the generated module to prove real content was not merely hidden from
+  // rendered HTML while remaining available in the development client bundle.
+  const contentFiles = [
+    ...htmlFiles,
+    ...(existsSync(manifestFile) ? [manifestFile] : []),
+    ...(existsSync(generatedContentFile) ? [generatedContentFile] : []),
+  ];
   const leaks = [];
   for (const file of contentFiles) {
     const text = decodeEntities(readFileSync(file, "utf8"));
@@ -262,13 +297,17 @@ if (environment.content_mode !== "real") {
   }
 }
 
-// ── Check 8: brand terms must not appear outside production ──────────────────
+// ── Check 9: brand terms must not appear in placeholder builds ───────────────
 
-if (environment.content_mode !== "real") {
+if (mode.contentMode === "placeholder") {
   const brandTerms = config.build?.brand_terms ?? [];
   const hits = new Map();
 
-  const contentFiles = existsSync(manifestFile) ? [...htmlFiles, manifestFile] : htmlFiles;
+  const contentFiles = [
+    ...htmlFiles,
+    ...(existsSync(manifestFile) ? [manifestFile] : []),
+    ...(existsSync(generatedContentFile) ? [generatedContentFile] : []),
+  ];
   for (const file of contentFiles) {
     const text = decodeEntities(readFileSync(file, "utf8"));
     for (const term of brandTerms) {

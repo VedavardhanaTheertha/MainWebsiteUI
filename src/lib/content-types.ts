@@ -444,6 +444,11 @@ export interface BlogPost {
 export interface ContentShape extends LegacyFlatKeys {
   /** Self-description of the language file. Metadata, not display content. */
   _language?: LanguageDescriptor;
+  local_preview: {
+    label: string;
+    real: string;
+    placeholder: string;
+  };
   nav: NavItem[];
   footer: FooterShape;
   home: HomeShape;

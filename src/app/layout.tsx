@@ -11,6 +11,7 @@ import QRModal from "@/components/QRModal";
 import VolunteerModal from "@/components/VolunteerModal";
 import DonateModal from "@/components/DonateModal";
 import YajnaAnnouncement from "@/components/YajnaAnnouncement";
+import LocalContentToggle from "@/components/LocalContentToggle";
 
 const marcellus = Marcellus({
   subsets: ["latin"],
@@ -72,6 +73,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">
         <LanguageProvider>
+          <LocalContentToggle />
           {/* Top utility bar — language switcher, centre sloka, social icons */}
           <TopBar />
           {/* Desktop sticky header */}

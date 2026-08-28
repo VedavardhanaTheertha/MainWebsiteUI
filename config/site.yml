@@ -30,6 +30,14 @@ content:
   blog_dir: "content/blog"
 
 environments:
+  # ── Local testing — root URL, selectable copy ─────────────────────────────
+  local:
+    base_path: ""
+    # switchable = bundle real and placeholder variants. The local-only UI
+    # selects one at runtime; server-rendered output starts with real content.
+    content_mode: "switchable"
+    indexable: false
+
   # ── Development — GitHub Pages ────────────────────────────────────────────
   dev:
     # Sub-path the site is served from. GitHub Pages serves project sites at
@@ -58,9 +66,9 @@ build:
   # See docs/ARCHITECTURE.md §11.
   fail_on_hardcoded_content: true
 
-  # Words that identify the institution. These must never appear in a non-production
+  # Words that identify the institution. These must never appear in a placeholder
   # build at any length — they are what someone would search for, and the whole point
-  # of the placeholder environment is that only the live site can be found that way.
+  # of the hosted development environment is that only the live site can be found that way.
   # Checked separately from general prose, which is only matched above a length
   # threshold to avoid false positives on common words.
   brand_terms:
