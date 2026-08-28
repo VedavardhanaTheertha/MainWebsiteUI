@@ -34,9 +34,9 @@ This document explains the source code contribution practices for the Matha webs
 
 ## 6. Test Changes
 
-- Run existing tests when available.
+- Run the mandatory local gate, `npm run ci`, before requesting review.
 - Add unit or integration tests for new logic.
-- Verify the site builds successfully.
+- Read the post-build verification output and report any check that could not be run.
 
 ## 7. Review and Iterate
 
@@ -46,15 +46,20 @@ This document explains the source code contribution practices for the Matha webs
 
 ## 8. Version Control Practices
 
-- For External users: Fork and create pull requests
-- For Organization users: Branch from `main` or the appropriate base branch.
-- For Organization users: Use descriptive branch names like `feature/add-events` or `fix/content-links`.
-- Rebase or squash commits when necessary to keep history clear.
+- `main` is the single canonical branch. Use a descriptive, short-lived branch and open
+  a pull request into `main`; fork contributors follow the same model in their fork.
+- Never rewrite a shared protected branch. Use the repository's allowed merge method
+  after required review and checks pass.
+- Keep commits and pull requests focused; avoid unrelated changes.
 
 ## 9. Pull Request Checklist
 
-- Is working repository/branch in Sync with the latest `main` branch?
-- Is contribution small and single-purpose?
-- Is the commit message has clear description explaining purpose?
-- Is the list files changed verified?
-- Does the commit message has reference to related issues or discussions?
+- Is the branch based on current `main` and is the contribution focused?
+- Did `npm run ci` pass, including both verified builds?
+- Are new behaviors tested and relevant documentation updated?
+- Does the pull request clearly explain purpose, changed behavior, validation, and
+  related issues?
+- Have accessibility, security, and asset rights been considered where applicable?
+
+See the [Developer Guide](./DEVELOPER.md) for commands, environment behavior, and
+troubleshooting; do not duplicate those operational details here.

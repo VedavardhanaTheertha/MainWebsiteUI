@@ -17,6 +17,8 @@ This document explains how to contribute icons, images, and other graphic assets
 - Only use graphics that you have permission to publish.
 - Prefer open-source or royalty-free assets when possible.
 - Credit any licensed resources clearly.
+- Record every asset in `ASSET_PROVENANCE.md`; do not infer rights from online
+  availability, institutional subject matter, or AI generation.
 
 ## 4. Optimize for Web Performance
 
@@ -36,5 +38,6 @@ This document explains how to contribute icons, images, and other graphic assets
 
 ## 7. Store Assets in the Correct Location
 
-- Save images and media in the project’s designated assets folder.
-- Keep icon sets organized by purpose or page.
+- Store new article media in `public/articles/`; retain existing assets in their current
+  locations under `public/` unless a separately reviewed migration is required.
+- Reference assets from the site root and use descriptive, lowercase filenames.

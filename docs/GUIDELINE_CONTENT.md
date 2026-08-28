@@ -1,6 +1,18 @@
 # Content Contribution Guidelines
 
-This document explains how to contribute content in a way that preserves spiritual integrity, clarity, and consistency. Use Content repository [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) for updates.
+This document explains how to contribute content in a way that preserves spiritual
+integrity, clarity, and consistency.
+
+> **Which repository does your change belong in?**
+>
+> | You are changing | Repository | Path |
+> |---|---|---|
+> | Words shown on a page of the website | **this one** | `content/languages/<code>.json` |
+> | A blog article | **this one** | `content/blog/<slug>/` |
+> | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
+>
+> The Bhakti page is generated from the `library` Git submodule. UI labels and blog
+> articles come from this repository's `content/` tree. Initialize submodules recursively.
 
 ## 1. Respect the Tradition
 
@@ -11,7 +23,8 @@ This document explains how to contribute content in a way that preserves spiritu
 ## 2. Follow a Structured Format
 
 - Use Markdown headings to create a clear structure.
-- Separate metadata from body content if the site uses frontmatter or content metadata.
+- For blog posts, keep shared metadata in `meta.json` and begin each language Markdown
+  file with its level-one title; this project does not use frontmatter.
 - Keep paragraphs concise and readable.
 
 ## 3. Cite Sources
@@ -35,6 +48,8 @@ This document explains how to contribute content in a way that preserves spiritu
 - Verify factual accuracy in dates, names, and traditions.
 - Check that links point to valid resources.
 - Confirm that media files are licensed or free to use if referenced.
+- Add or update the exact `ASSET_PROVENANCE.md` entry; public availability is not
+  evidence of permission.
 
 ## 7. Preserve Cultural Sensitivity
 
@@ -46,6 +61,7 @@ This document explains how to contribute content in a way that preserves spiritu
 
 - Store all content in Markdown or structured text formats compatible with the website.
 - Do not embed complex HTML, scripts, or layout-specific instructions inside content files.
+- Raw HTML is disabled. Links may use relative paths, `http`, `https`, or `mailto` only.
 - Keep media references separate from content when possible.
 
 ## 9. Collaboration and Feedback

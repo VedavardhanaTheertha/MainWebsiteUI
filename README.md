@@ -1,8 +1,13 @@
-# Shri Shiroor Matha — Official Website Source repository
+# Shri Shiroor Matha — Official Website Source Repository
 
 Welcome to the official open-source repository for the website of [**Shri Shiroor Matha**](https://www.shiroormatha.org/), one of the Ashta Mathas of Udupi established by Jagadguru Shri Madhwacharya.
 
-This project serves as a digital bridge connecting devotees globally with the spiritual heritage, daily rituals, scholarly traditions, and cultural initiatives of the Matha. By making this project entirely open-source, we ensure that its spiritual content, library materials, and core web technology remain community-owned, transparent, and enduring for generations to come.
+This project aims to connect devotees globally with the spiritual heritage, daily rituals,
+scholarly traditions, and cultural initiatives of the Matha. The code and documentation
+contributed under Apache-2.0 are open source. That does not establish community ownership
+or publication rights for pre-existing devotional works, institutional names and logos,
+photographs, or media; those materials remain subject to the provenance and rights review
+described in [ASSET_PROVENANCE.md](ASSET_PROVENANCE.md).
 
 ---
 
@@ -12,11 +17,11 @@ This project serves as a digital bridge connecting devotees globally with the sp
 
 ### Key Pillars Supporting the Vision
 
-- **Universal Accessibility:** Delivering a seamless, multi-lingual, and mobile-first experience so that every devotee—regardless of location, device, or background—can connect with the Matha’s daily rituals, teachings, and heritage.
+- **Universal Accessibility:** Delivering a seamless, multilingual, and mobile-first experience so that every devotee—regardless of location, device, or background—can connect with the Matha’s daily rituals, teachings, and heritage.
 
-- **Living Digital Library:** Cultivating a open-source repository of stotras, dasa padas, articles, historical archives, and traditional knowledge that grows dynamically through collective devotion and contribution.
+- **Living Digital Library:** Cultivating an accessible repository of stotras, dasa padas, articles, historical archives, and traditional knowledge that grows through reviewed contributions with documented rights.
 
-- **Community-Owned & Enduring:** Grounding the platform in open-source principles to ensure that the preservation of spiritual heritage remains transparent, resilient, and community-driven for generations to come.
+- **Community-Driven & Enduring:** Grounding the code and documentation in open-source principles while recording the separate ownership and permissions of cultural and media assets.
 
 - **Harmonious Blend of Tradition & Technology:** Utilizing modern, high-performance static web technologies while honoring the sacred ethos and cultural integrity of Madhwa philosophy.
 
@@ -42,7 +47,7 @@ Preserving and sharing our sacred heritage requires a collective effort. Serving
 
 - **Modern Tech Stack:** Work with a clean, high-performance tech stack.
 - **Clean Architecture:** Participate in a project designed around a "Content as Data, Code as Structure" paradigm, built for speed, security, and static export reliability.
-- **High-Impact Features:** Build search functionality for the digital library, interactive event calendars, photo galleries, audio player integrations, interactive learning tools for a global audience and new ides for the community.
+- **High-Impact Features:** Build search functionality for the digital library, interactive event calendars, photo galleries, audio integrations, learning tools for a global audience, and new ideas for the community.
 
 ### 🎨 For Designers & Media Artists
 
@@ -72,6 +77,9 @@ Choose the path that best aligns with your background and interests:
 - **Set Up Your Environment:** Read [Developer Environment Setup](docs/DEVELOPER.md).
 - **Review Code Guidelines:** Read [Software Contribution Guidelines](docs/GUIDELINE_SOURCE_CODE.md).
 - **Submit Pull Requests:** Follow [How to Contribute to Source Code](docs/CONTRIBUTE_SOURCE_CODE.md).
+- **Understand the design:** Read [Architecture](docs/ARCHITECTURE.md) — how the site is
+  built, why it is built that way, and its known gaps.
+- **Day-to-day work:** Read the [Developer Guide](docs/DEVELOPER.md).
 
 ### 🎨 UI/UX & Graphic Design
 
@@ -87,4 +95,8 @@ Choose the path that best aligns with your background and interests:
 
 ## 📜 License
 
-This repository and all community-contributed materials are published under open-source terms. See the [LICENSE](LICENSE) file for complete details.
+Code and documentation intentionally contributed here are available under
+[Apache-2.0](LICENSE). That license does not establish rights to every pre-existing
+devotional work, institutional name/logo, photograph, or media file. See
+[ASSET_PROVENANCE.md](ASSET_PROVENANCE.md); existing content/media remains pending a
+rights audit, and new assets require recorded provenance.
