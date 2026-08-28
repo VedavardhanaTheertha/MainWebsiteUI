@@ -1,22 +1,40 @@
 {
-  "name": "shiroor-matha-library-ui",
-  "version": "1.0.0",
+  "name": "shiroor-matha",
+  "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "text:generate": "node build/generate-placeholder-text.mjs",
-    "content:build": "npm run text:generate && node build/build-content.mjs",
-    "dev": "npm run content:build && vite",
-    "build": "npm run build:production",
-    "build:production": "npm run content:build && vite build --mode production",
-    "build:stage": "npm run content:build && vite build --mode stage",
-    "preview": "vite preview",
-    "test": "node --test build/*.test.mjs"
+    "predev": "npm run content:build",
+    "dev": "next dev",
+    "prebuild": "npm run content:build",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "dasa:build": "node build/build-content.mjs",
+    "content:build": "npm run dasa:build && node scripts/generate-content.mjs",
+    "test": "node --test build/*.test.mjs",
+    "build:dev": "node build/build.mjs dev",
+    "build:prod": "node build/build.mjs prod",
+    "verify": "node build/verify.mjs"
   },
   "dependencies": {
-    "markdown-it": "^14.1.0"
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^1.21.0",
+    "markdown-it": "^14.1.0",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "vite": "^7.1.3"
+    "@tailwindcss/postcss": "^4",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "js-yaml": "^4.1.0",
+    "playwright": "^1.61.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

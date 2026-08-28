@@ -64,7 +64,8 @@ async function buildTab(tab) {
 }
 
 await Promise.all([
-  rm(dataRoot, { recursive: true, force: true }),
+  ...tabs.map((tab) => rm(path.join(dataRoot, tab.id), { recursive: true, force: true })),
+  rm(path.join(dataRoot, "tabs.json"), { force: true }),
   rm(legacyDataRoot, { recursive: true, force: true }),
 ]);
 await mkdir(dataRoot, { recursive: true });
@@ -81,5 +82,5 @@ await writeFile(
 );
 
 console.log(
-  `Built ${manifest.reduce((total, tab) => total + tab.itemCount, 0)} items across ${manifest.length} tabs.`,
+  `Built ${manifest.reduce((total, tab) => total + tab.itemCount, 0)} items across ${manifest.length} collections.`,
 );

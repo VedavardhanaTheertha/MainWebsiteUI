@@ -1,0 +1,81 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Central site configuration.
+#
+# This file controls how the site is built and deployed for each environment.
+# It exists so that environment behaviour can be changed WITHOUT editing any
+# code in src/ — which is what keeps the design safe from accidental change.
+#
+# Read by:  build/build.mjs, scripts/generate-content.mjs, next.config.ts
+# See:      docs/ARCHITECTURE.md §6 (Environments)
+# ─────────────────────────────────────────────────────────────────────────────
+
+site:
+  name: "Shri Shiroor Matha"
+
+  # The language every other language falls back to. Its file
+  # (content/languages/<code>.json) must contain every key.
+  default_language: "en"
+
+  # Canonical address of the live site. Non-production builds point their
+  # canonical link here, so search engines credit production rather than dev.
+  # TODO: replace with the real domain once it is registered.
+  production_url: "https://shiroormatha.org"
+
+content:
+  # Folders scanned at build time. Adding a file to either of these is all a
+  # contributor has to do — nothing needs registering in code.
+  languages_dir: "content/languages"
+  blog_dir: "content/blog"
+
+environments:
+  # ── Development — GitHub Pages ────────────────────────────────────────────
+  dev:
+    # Sub-path the site is served from. GitHub Pages serves project sites at
+    # https://<user>.github.io/<repo>/, so the repository name is required here.
+    # Must match the repository name exactly, or every asset and link 404s.
+    # Set to "" if you later move dev to a custom domain at the root.
+    base_path: "/MainWebsiteUI"
+
+    # placeholder = real text is replaced with generated stand-ins.
+    # real        = actual content is shown.
+    content_mode: "placeholder"
+
+    # false = emit noindex + robots.txt disallow, so this environment can never
+    # compete with production in search results.
+    indexable: false
+
+  # ── Production — Cloudflare Pages ─────────────────────────────────────────
+  prod:
+    base_path: ""
+    content_mode: "real"
+    indexable: true
+
+build:
+  # Rebuild once a day even when nothing has been pushed. Two reasons:
+  #   1. Content can be date-scheduled (launch_date / end_date / pinned_date),
+  #      and a static site's HTML is otherwise frozen at build time.
+  #   2. It acts as a canary that the build still works.
+  daily_rebuild: true
+
+  # UTC hour for the daily rebuild (0-23). 21:00 UTC is ~02:30 IST.
+  daily_rebuild_hour: 21
+
+  # Fail the build when real content is found in a placeholder build, which
+  # would mean text was hardcoded in a component instead of using content/.
+  # Set to true once the remaining hardcoded strings have been migrated.
+  # See docs/ARCHITECTURE.md §11.
+  fail_on_hardcoded_content: false
+
+  # Words that identify the institution. These must never appear in a non-production
+  # build at any length — they are what someone would search for, and the whole point
+  # of the placeholder environment is that only the live site can be found that way.
+  # Checked separately from general prose, which is only matched above a length
+  # threshold to avoid false positives on common words.
+  brand_terms:
+    - "Shiroor"
+    - "Shirooru"
+    - "Shri Krishna Matha"
+    - "Paryaya"
+    - "Paryāya"
+    - "ಶಿರೂರು"
+    - "ಶ್ರೀ ಶಿರೂರು ಮಠ"
