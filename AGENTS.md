@@ -21,7 +21,7 @@ filesystem at build time by `scripts/generate-content.mjs`.
 
 Any change to the structure, content system, environments, or build pipeline **must**
 update `docs/ARCHITECTURE.md` in the same change. Changes to how contributors do things
-update `docs/KT.md`. Documentation that lies is worse than none, because people trust it.
+update `docs/DEVELOPER.md`. Documentation that lies is worse than none, because people trust it.
 
 ## Before claiming something works
 

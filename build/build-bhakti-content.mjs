@@ -1,9 +1,9 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import MarkdownIt from "markdown-it";
 import { collection } from "./collection.config.mjs";
 import { removeSearchTags, validateMetadata } from "./content-utils.mjs";
+import { renderMarkdown } from "./markdown.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const libraryRoot = path.join(projectRoot, "library");
@@ -12,7 +12,6 @@ const previousCollectionRoot = path.join(dataRoot, "dasasahitya");
 const previousGeneratedRoot = path.join(projectRoot, "src", "generated-content");
 const legacyGeneratedRoot = path.join(projectRoot, "src", "generated");
 const legacyDataRoot = path.join(projectRoot, "website-data");
-const markdown = new MarkdownIt({ html: false, linkify: true, typographer: true });
 
 async function buildCollection({ id, sourceDirectory }) {
   const collectionOutput = path.join(dataRoot, id);
@@ -20,7 +19,14 @@ async function buildCollection({ id, sourceDirectory }) {
 
   const sourceRoot = path.join(libraryRoot, sourceDirectory);
   const metadataPath = path.join(sourceRoot, "metadata.json");
-  await access(metadataPath);
+  try {
+    await access(metadataPath);
+  } catch {
+    throw new Error(
+      `Required library content is missing at ${path.relative(projectRoot, metadataPath)}. ` +
+        "Initialize submodules with: git submodule update --init --recursive",
+    );
+  }
 
   const metadata = JSON.parse(await readFile(metadataPath, "utf8"));
   validateMetadata(metadata, id);
@@ -33,7 +39,7 @@ async function buildCollection({ id, sourceDirectory }) {
     const sourcePath = path.join(sourceRoot, song.sourceFile);
     const source = await readFile(sourcePath, "utf8");
     const contentFile = `content/${song.id}.html`;
-    const html = markdown.render(removeSearchTags(source));
+    const html = renderMarkdown(removeSearchTags(source));
 
     await writeFile(path.join(collectionOutput, contentFile), html, "utf8");
     catalog.push({

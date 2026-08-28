@@ -22,13 +22,20 @@ Contributions are welcome across several areas:
 - Document what changed and why in your pull request.
 - Be respectful and constructive when discussing changes.
 - Test your changes locally and provide details. whenever not possible, mention all validations done to ensure quality.
+- Use a short-lived branch from `main`; avoid long-running integration branches.
+- Record source, rights holder, license/permission, and modifications for new content
+	or media in `ASSET_PROVENANCE.md`.
 
 ## Review and Follow-Up
 
 - Respond to review comments promptly.
 - Update your branch if requested.
-- Preserve a clean history by squashing or rebasing when appropriate.
-- Merge only after approvals and final verification.
+- Preserve a clear history; never rewrite a shared protected branch.
+- Merge only after maintainer approval and all required checks pass.
+- Roll back with a reviewed revert or a known-good redeployment.
+
+Before requesting review, run `npm run lint`, `npm run typecheck`, `npm run test:unit`,
+`npm run build:dev`, and `npm run build:prod`, and read the verification output.
 
 ## Additional Notes
 

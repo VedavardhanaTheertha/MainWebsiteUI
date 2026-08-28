@@ -1,6 +1,5 @@
 import SiteFooter from "@/components/SiteFooter";
 
-const TODAY = "Friday, 25 July 2026";
 const PANCH = [
   { label: "Tithi", value: "Shukla Saptami" },
   { label: "Nakshatra", value: "Pushya" },
@@ -16,7 +15,7 @@ export default function PanchangaPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 lg:py-10">
       <p className="font-body text-[10.5px] tracking-[.18em] uppercase text-[var(--color-text-brand)] font-bold">25 Jul 2026</p>
-      <h1 className="font-display text-2xl text-[var(--color-text-primary)] mt-1 mb-6">Today's Panchānga</h1>
+      <h1 className="font-display text-2xl text-[var(--color-text-primary)] mt-1 mb-6">Today&apos;s Panchānga</h1>
 
       <div className="bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] shadow-[var(--shadow-sm)] mb-4">
         {PANCH.map((row) => (

@@ -18,7 +18,9 @@ site:
 
   # Canonical address of the live site. Non-production builds point their
   # canonical link here, so search engines credit production rather than dev.
-  # TODO: replace with the real domain once it is registered.
+  # This is the intended canonical production origin. Domain ownership, DNS,
+  # HTTPS and the Cloudflare Pages custom-domain binding must be verified by a
+  # maintainer before launch; changing it requires rebuilding production.
   production_url: "https://shiroormatha.org"
 
 content:
@@ -62,9 +64,8 @@ build:
 
   # Fail the build when real content is found in a placeholder build, which
   # would mean text was hardcoded in a component instead of using content/.
-  # Set to true once the remaining hardcoded strings have been migrated.
   # See docs/ARCHITECTURE.md §11.
-  fail_on_hardcoded_content: false
+  fail_on_hardcoded_content: true
 
   # Words that identify the institution. These must never appear in a non-production
   # build at any length — they are what someone would search for, and the whole point

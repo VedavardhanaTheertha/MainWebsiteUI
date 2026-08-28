@@ -87,7 +87,7 @@ export default function DonateModal() {
               <p className="font-body text-[12px] text-[var(--color-text-secondary)]">
                 UPI ID: <span className="font-semibold text-[var(--color-text-brand)]">shiroor.matha@upi</span>
               </p>
-              <p className="font-body text-[10px] text-[var(--color-text-secondary)]/50 mt-1 mb-5">All donations go directly to Matha's Seva fund</p>
+              <p className="font-body text-[10px] text-[var(--color-text-secondary)]/50 mt-1 mb-5">All donations go directly to Matha&apos;s Seva fund</p>
               <div className="border-t border-[var(--color-saffron-600)] pt-4">
                 <button onClick={() => setMode("material")}
                   className="w-full flex items-center justify-between border border-[var(--color-saffron-600)] hover:border-[var(--color-saffron-600)] hover:bg-[var(--color-saffron-100)] rounded-xl px-4 py-3 transition-all group">
@@ -105,7 +105,7 @@ export default function DonateModal() {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 Back
               </button>
-              <p className="font-body text-[13px] text-[var(--color-text-secondary)] mb-3">Select what you'd like to offer:</p>
+              <p className="font-body text-[13px] text-[var(--color-text-secondary)] mb-3">Select what you&apos;d like to offer:</p>
               <div className="space-y-2">
                 {materialOptions.map(m => (
                   <button key={m.id} onClick={() => openMaterialForm(m)}

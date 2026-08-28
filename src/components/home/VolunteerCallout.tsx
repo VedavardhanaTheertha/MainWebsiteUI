@@ -7,7 +7,6 @@ const roles = {
   en: ["Logistics", "Guest Services", "Digital & Media", "Annadaana Support"],
   kn: ["ಸಾಮಾನು ನಿರ್ವಹಣೆ", "ಅತಿಥಿ ಸೇವೆ", "ಡಿಜಿಟಲ್ & ಮಾಧ್ಯಮ", "ಅನ್ನದಾನ ಸಹಾಯ"],
 };
-const roleIcons = ["", "", "", ""];
 
 export default function VolunteerCallout() {
   const { lang, tr } = useLang();
@@ -31,7 +30,7 @@ export default function VolunteerCallout() {
             </p>
 
             <div className="flex flex-wrap gap-2.5 mb-8">
-              {roles[lang].map((role, i) => (
+              {roles[lang].map((role) => (
                 <span
                   key={role}
                   className="inline-flex items-center gap-1.5 font-body text-sm text-[var(--color-text-brand)] bg-white/8 border border-white/10 rounded-full px-4 py-1.5"

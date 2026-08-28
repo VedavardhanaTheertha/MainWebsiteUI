@@ -7,7 +7,8 @@ is, why each decision was made, and what is planned next.
 > the build pipeline **must** be reflected here in the same pull request. If this
 > document and the code disagree, the document is a bug.
 
-For *how to do things* (add a language, add a blog post, deploy), see [KT.md](./KT.md).
+For *how to do things* (add a language, add a blog post, deploy), see
+[DEVELOPER.md](./DEVELOPER.md).
 
 **Status legend used throughout:** ✅ Built · 🚧 In progress · 📋 Planned
 
@@ -99,12 +100,13 @@ Shirooru/
 │
 ├── docs/
 │   ├── ARCHITECTURE.md         ← this file — the design contract
-│   └── KT.md                   ← knowledge transfer / how-to guide
+│   └── DEVELOPER.md            ← setup, knowledge transfer, and how-to guide
 │
 ├── build/
 │   ├── build.mjs               ← the real build logic (runs locally and in CI)
-│   ├── verify.mjs              ← post-build checks (noindex, no leaked content)
-│   └── README.md
+│   ├── clean.mjs               ← removes generated output before each build
+│   ├── markdown.mjs            ← shared parser and sanitizer boundary
+│   └── verify.mjs              ← post-build checks (noindex, no leaked content)
 │
 ├── scripts/
 │   └── generate-content.mjs    ← scans content/, emits src/gen/
@@ -117,6 +119,8 @@ Shirooru/
 │   └── gen/                    ← generated website data. Never hand-edited. Gitignored.
 │
 ├── public/media/               ← image files that content JSON points to
+├── library/                    ← required devotional-content Git submodule
+├── test_media/                 ← recursively initialized media submodule
 │
 └── .github/workflows/
     └── deploy-dev.yml          ← thin CI wrapper that calls build/build.mjs
@@ -182,6 +186,11 @@ UI strings, which JSON handles perfectly. A thousand-word article crammed into a
 JSON string (`"body": "para one\n\npara two..."`) is painful to write and easy to break.
 Markdown is the correct tool for prose. Different content types, different formats.
 
+Both blog and Bhakti Markdown use `markdown-it` with raw HTML disabled, followed by
+`sanitize-html` with explicit tag, attribute, and URL-protocol allowlists. Relative,
+`http`, `https`, and `mailto` links are accepted. Security tests cover raw HTML,
+JavaScript/data/protocol-relative URLs, encoded and malformed payloads, and quotes.
+
 **Validation is deliberately stricter here than for translations.** A post missing a
 title or date **fails the build**, because that is an authoring mistake with no sensible
 fallback — unlike a missing translation key, which has one.
@@ -194,6 +203,19 @@ A contributor adding a post supplies both the Markdown file and the image in the
 pull request. Images are pre-optimised at authoring time, because static export has no
 image-optimisation service at runtime (see `next.config.ts`).
 
+Local storage is an interim delivery model. The original image set was approximately
+94 MiB and was compressed to approximately 5.3 MiB; the current `public/` tree remains
+approximately 5.3 MiB. The target architecture is to serve photographs from an image
+CDN while retaining only icons and essential interface assets in this repository. Pages
+should include dimensions and a small blurred preview so layout remains stable while the
+full image loads.
+
+The CDN provider and URL/content contract are not yet finalized. Cloudflare is the
+current recommendation because production hosting is planned there, but implementation
+must wait for an explicit decision covering ownership, cost, cache invalidation,
+availability, asset provenance, and contributor workflow. Until then, new local images
+must be optimized before review and recorded in `ASSET_PROVENANCE.md`.
+
 ### 5.4 Bhakti collection
 
 `build/build-bhakti-content.mjs` converts the Markdown and metadata from the library submodule's
@@ -203,6 +225,8 @@ development and production builds. Its page labels, controls, and metadata are s
 `library.bhakti.page` in each `content/languages/<lang>.json` file and follow the same fallback
 and placeholder rules as the rest of the website UI. The collection is exposed through
 `/library/bhakti`; there is no separate Dasa Sahitya navigation item or route.
+CI initializes submodules recursively. A missing library checkout fails early with the
+exact initialization command rather than an opaque file-not-found error.
 
 ---
 
@@ -283,12 +307,13 @@ config/site.yml          ─┘            ↑                                  
                                                                                   verify.mjs
 ```
 
-The generator performs four jobs:
+The generator performs following jobs:
 
 1. **Discovers languages** by scanning `content/languages/*.json`; emits the list.
 2. **Merges** each language over `en.json`; warns about keys that fell back.
 3. **Discovers blog posts** by scanning `content/blog/*/`; emits the index and routes.
 4. **Applies the environment transform** — placeholder substitution when not `prod`.
+5. **Discovers static routes** from page files plus blog folders for `sitemap.xml`.
 
 `verify.mjs` then checks the built output:
 
@@ -299,6 +324,12 @@ The generator performs four jobs:
 4. Non-production pages contain none of the **brand terms** listed in
    `config/site.yml` — matched at *any* length, because a name like "Shiroor" is short
    but is precisely what someone would search for. Check 3 alone would miss it.
+5. `sitemap.xml` has one canonical production URL per exported HTML page.
+
+Every full build first removes `.next/`, `out/`, `dist/`, `src/gen/`, and generated
+`robots.txt`, preventing stale routes or one environment's output from contaminating
+another. CI gates lint, typecheck, unit tests, and both environment builds. The Pages
+deployment repeats lint, typecheck, tests, and the verified dev build before publishing.
 
 ### 7.2 Build triggers
 
@@ -361,7 +392,7 @@ components rather than as a separate design artefact.
 
 | Layer | Choice | Note |
 |---|---|---|
-| Framework | Next.js 16 (App Router) | `output: "export"` — fully static |
+| Framework | Next.js 16.3.2 (App Router) | `output: "export"` — fully static |
 | UI | React 19 | |
 | Styling | Tailwind CSS v4 | |
 | Animation | Framer Motion | |
@@ -391,6 +422,8 @@ deliberate from what was accidental.
 | **Placeholders generated, not hand-written** | A hand-maintained dev content file would drift as keys are added. Generation keeps it permanently in sync at zero maintenance cost. |
 | **`SITE_ENV` defaults to `dev`** | Real content requires opting in, so misconfiguration cannot leak production content or create duplicate search-engine entries. |
 | **Build logic in `build/`, not in CI YAML** | Runnable locally for debugging; avoids CI provider lock-in. |
+| **No web manifest yet** | The previous manifest referenced missing assets and untranslated literals, so it was removed rather than shipping broken install metadata. |
+| **No Playwright suite yet** | The unused dependency was removed. Add it only with reliable static-output smoke/accessibility tests. |
 | **`stage` environment deferred** | Three environment names were originally planned, but only two deploy targets exist. Adding stage later is a small, known change: a third `SITE_ENV` value and a deploy target. |
 | **Git history left intact** | The pre-open-source history is untidy but honest. Rewriting it would destroy the record for cosmetic gain. Leftover test files were removed going forward. |
 
@@ -411,34 +444,28 @@ deliberate from what was accidental.
 - Environment-aware `robots.txt`, `noindex`, and canonical URL
 - `base_path` handling so GitHub Pages project URLs resolve correctly
 
-🚧 **The main outstanding gap — hardcoded content**
+✅ **Detected hardcoded-content migration and enforcement**
 
-**182 occurrences of brand terms across 50 files** are still written directly into
-`.tsx` files rather than coming from `content/`. The shared header and footer have been
-migrated, which removed the terms from every page at once; the remainder sit in
-individual pages.
+All prose and institution-brand terms detected in the rendered placeholder site now
+come from `content/languages/*.json`, including route metadata, page-level arrays, and
+content rendered by server components. `build.fail_on_hardcoded_content` is `true`, so
+either class of leak fails a development build instead of producing a warning.
 
-Current state, as reported by `build/verify.mjs` on a dev build:
-
-| Term | Pages affected |
-|---|---|
-| `Shiroor` | 28 |
-| `Paryaya` | 12 |
-| `Shri Krishna Matha` | 1 |
-| `Shirooru` | 0 (fixed) |
-
-There are also 16 distinct longer prose strings hardcoded in pages such as `about`,
-`contact`, `history/*` and `library/*`.
-
-**Until this is finished, `build.fail_on_hardcoded_content` in `config/site.yml` stays
-`false`**, so these are reported as warnings rather than failing the build. Flip it to
-`true` once the migration is complete — that is what turns the rule into a guarantee.
+Page metadata is grouped under `page_metadata`; page-specific structured copy is under
+`pages`. Server components read the generated default-language content directly, while
+interactive components continue to use `useLang()`. Both paths receive placeholder
+content in development builds.
 
 📋 **Planned — agreed, not yet built**
 
-- Migrate the remaining hardcoded content above into `content/languages/`
 - Migrate the image paths still hardcoded inside `.tsx` components
+- Move photographs to the selected image CDN, generate blurred previews, and retain only
+  icons and essential interface assets in the repository; provider selection remains an
+  open prerequisite (see §5.3)
 - Desktop responsive adaptation across all pages
+- Complete a pre-launch, page-by-page comparison against the source mobile design. The
+  implementation was derived from that design, but visual fidelity has not yet been
+  verified screen by screen.
 - Auto-generated content key reference (replacing the comments lost in the YAML→JSON move)
 - Wire up `src/lib/scheduler.ts` — it is written and tested-by-design but **not currently
   called anywhere**, so date-scheduled content is not yet active (see §7.2)
@@ -459,11 +486,27 @@ There are also 16 distinct longer prose strings hardcoded in pages such as `abou
   comparison per page would catch design drift automatically, which matters because
   "exactly the same design" is a stated project requirement.
 - **Performance budget in CI.** Fail the build if page weight or image size regresses.
-- **Sitemap and structured data** for production, to help the real site rank properly.
+- **Structured data** for production after canonical institutional facts are approved.
+
+## 12. Supply chain, licensing, and releases
+
+`package-lock.json` is authoritative and CI uses `npm ci`. Dependabot covers npm and
+GitHub Actions. Dependency Review blocks newly introduced moderate-or-higher
+advisories; CodeQL and OpenSSF Scorecard run with explicit permissions.
+
+Development is trunk-based: short-lived branches target `main`, require review and all
+checks, then are deleted. Releases will use immutable Semantic Versioning tags; until a
+formal release, changes stay under `Unreleased`. Rollback is a
+reviewed revert or redeployment of the last known-good revision, never history rewrite.
+
+Apache-2.0 covers code and documentation contributed under it. It does not establish
+rights to pre-existing devotional content, institutional names/logos, photographs, or
+media. New content/media requires an `ASSET_PROVENANCE.md` entry and rights evidence;
+the existing inventory remains explicitly unaudited and must be cleared before launch.
 
 ---
 
-## 12. How to keep this document alive
+## 13. How to keep this document alive
 
 This document is only useful if it stays true. Two mechanisms:
 

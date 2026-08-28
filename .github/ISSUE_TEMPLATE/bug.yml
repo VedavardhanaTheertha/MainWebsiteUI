@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a reproducible defect in the site, content build, or tooling.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, personal data, or vulnerability details. Use private security reporting for vulnerabilities.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the observed and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide the smallest repeatable set of steps, route, environment, and inputs.
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Revision or deployment URL
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation attempted
+      description: Include browser/OS and relevant command output.

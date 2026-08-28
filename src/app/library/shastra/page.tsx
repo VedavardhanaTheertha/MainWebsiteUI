@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import LibraryCategoryPage from "@/components/library/LibraryCategoryPage";
+import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = {
-  title: "Shāstra Vidya | Library | Shri Shiroor Matha",
-  description: "The scriptural knowledge of the Dvaita tradition.",
+  ...content[defaultLang].page_metadata.library_shastra,
+  description: content[defaultLang].library.shastra.desc,
 };
 
 export default function Page() {

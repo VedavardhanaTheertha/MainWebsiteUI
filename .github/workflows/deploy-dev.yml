@@ -1,7 +1,7 @@
 # Builds and publishes the development site to GitHub Pages.
 #
 # Deliberately thin: all build logic lives in build/build.mjs so it can be run
-# and debugged locally. See build/README.md and docs/ARCHITECTURE.md §7.
+# and debugged locally. See docs/DEVELOPER.md §6 and docs/ARCHITECTURE.md §7.
 name: Deploy dev site
 
 on:
@@ -18,11 +18,8 @@ on:
   # Allows a build to be triggered by hand from the Actions tab.
   workflow_dispatch:
 
-# Required for the deploy step to publish to GitHub Pages.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Never let two deploys race; let a newer commit supersede an in-flight run.
 concurrency:
@@ -32,20 +29,33 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       SITE_ENV: dev
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          submodules: recursive
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: npm
 
       - run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:unit
+
       - name: Build and verify
-        run: node build/build.mjs dev
+        run: npm run build:dev
 
       # Deliberately no actions/configure-pages step here. It fails when Pages is
       # not yet enabled on the repository, which would make the whole build job
@@ -61,6 +71,11 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

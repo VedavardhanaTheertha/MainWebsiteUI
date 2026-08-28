@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import {
   content,
   languages,
@@ -25,6 +25,7 @@ const LanguageContext = createContext<LangCtx>({
 });
 
 const STORAGE_KEY = "shiroor-lang";
+const LANGUAGE_EVENT = "site-language-change";
 
 /**
  * Narrows an arbitrary stored string to a language this build actually contains.
@@ -42,20 +43,29 @@ function isKnownLang(value: string | null): value is Lang {
  * requires no change to this file.
  */
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(defaultLang);
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (isKnownLang(stored)) setLangState(stored);
-  }, []);
+  const lang = useSyncExternalStore(
+    (notify) => {
+      window.addEventListener("storage", notify);
+      window.addEventListener(LANGUAGE_EVENT, notify);
+      return () => {
+        window.removeEventListener("storage", notify);
+        window.removeEventListener(LANGUAGE_EVENT, notify);
+      };
+    },
+    () => {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      return isKnownLang(stored) ? stored : defaultLang;
+    },
+    () => defaultLang,
+  );
 
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
 
   const setLang = (l: Lang) => {
-    setLangState(l);
     window.localStorage.setItem(STORAGE_KEY, l);
+    window.dispatchEvent(new Event(LANGUAGE_EVENT));
   };
 
   return (

@@ -63,7 +63,7 @@ export default function VolunteerModal() {
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-saffron-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <h3 className="font-display font-bold text-[var(--color-text-primary)] text-xl mb-2">Registered! 🙏</h3>
-            <p className="font-body text-[var(--color-text-secondary)] text-sm">Thank you for offering your Seva. We'll reach out shortly.</p>
+            <p className="font-body text-[var(--color-text-secondary)] text-sm">Thank you for offering your Seva. We&apos;ll reach out shortly.</p>
             <button onClick={handleClose} className="mt-6 font-body text-sm font-semibold text-white bg-[var(--color-saffron-600)] px-6 py-2.5 rounded-full hover:bg-[var(--color-saffron-700)] transition-colors">Close</button>
           </div>
         ) : (

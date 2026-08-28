@@ -101,11 +101,40 @@ if (!existsSync(outDir)) {
 }
 
 const htmlFiles = collectHtmlFiles(outDir);
+const sitemapEligibleHtmlFiles = htmlFiles.filter(
+  (file) => !["404.html", "_not-found.html"].includes(path.basename(file)),
+);
 if (!htmlFiles.length) {
   problems.push("out/ contains no HTML files — the export produced nothing.");
 }
 
-// ── Check 2: robots.txt matches the environment ──────────────────────────────
+// ── Check 2: sitemap uses the canonical production origin ───────────────────
+
+const sitemapFile = path.join(outDir, "sitemap.xml");
+if (!existsSync(sitemapFile)) {
+  problems.push("out/sitemap.xml is missing.");
+} else {
+  const sitemap = readFileSync(sitemapFile, "utf8");
+  const productionOrigin = new URL(config.site.production_url).origin;
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  if (!locations.length) problems.push("sitemap.xml contains no URLs.");
+  const wrongOrigin = locations.find((location) => {
+    try {
+      return new URL(location).origin !== productionOrigin;
+    } catch {
+      return true;
+    }
+  });
+  if (wrongOrigin) problems.push(`sitemap.xml contains a non-canonical URL: ${wrongOrigin}`);
+  if (locations.length !== sitemapEligibleHtmlFiles.length) {
+    problems.push(
+      `sitemap.xml lists ${locations.length} URL(s), but the export contains ` +
+        `${sitemapEligibleHtmlFiles.length} indexable page(s).`
+    );
+  }
+}
+
+// ── Check 3: robots.txt matches the environment ──────────────────────────────
 
 const robotsFile = path.join(outDir, "robots.txt");
 if (!existsSync(robotsFile)) {

@@ -1,9 +1,8 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Refund Policy | Shri Shiroor Matha",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.refund;
 
 // TODO: Have legal counsel review and finalise before launch
 export default function RefundPage() {
@@ -24,9 +23,7 @@ export default function RefundPage() {
               1. Donations (General)
             </h2>
             <p>
-              All voluntary donations to Shri Shiroor Matha are generally non-refundable, as they are
-              offered to a religious institution for charitable purposes. However, in the case of a duplicate
-              payment or technical error, we will process a full refund within 7–10 business days.
+              {content[defaultLang].pages.detected.refund_donations}
             </p>
           </section>
 

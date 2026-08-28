@@ -16,7 +16,7 @@ export default function StoryPage({ storyKey }: { storyKey: keyof StoriesShape }
       <div className="max-w-3xl mx-auto lg:max-w-5xl">
         <div className="px-4 py-3">
           <Link href="/" className="inline-block font-body text-[var(--color-text-brand)] text-xs hover:underline">
-            ← Home
+            ← {tr.nav_home}
           </Link>
         </div>
 

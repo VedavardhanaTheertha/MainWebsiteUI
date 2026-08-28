@@ -1,9 +1,8 @@
 ﻿import SiteFooter from "@/components/SiteFooter";
 import type { Metadata } from "next";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Connect with Matha | Shri Shiroor Matha",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.connect;
 
 const socials = [
   {
@@ -46,9 +45,9 @@ const socials = [
   },
   {
     name: "YouTube",
-    handle: "@Shiroormatha",
+    handle: content[defaultLang].pages.detected.connect_youtube_handle,
     audience: "7K+",
-    href: "https://www.youtube.com/@Shiroormatha",
+    href: "https://www.youtube.com/@shiroormatha",
     color: "#FF0000",
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-full h-full">
@@ -60,7 +59,7 @@ const socials = [
   },
   {
     name: "WhatsApp",
-    handle: "Shiroor Matha Channel",
+    handle: content[defaultLang].pages.detected.connect_whatsapp_handle,
     audience: "6K+",
     href: "https://chat.whatsapp.com/PLACEHOLDER",
     color: "#25D366",
@@ -86,7 +85,7 @@ export default function ConnectPage() {
           <div id="contacts" className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-xl p-6">
             <h2 className="font-display font-bold text-[var(--color-text-primary)] text-lg mb-4">Contacts</h2>
             <div className="space-y-3 font-body text-sm text-[var(--color-text-secondary)]">
-              <p><strong className="text-[var(--color-text-primary)]">Address:</strong><br/>Shri Shiroor Matha, Car Street, Udupi, Karnataka - 576101</p>
+              <p><strong className="text-[var(--color-text-primary)]">Address:</strong><br/>{content[defaultLang].pages.detected.connect_address}</p>
               <p><strong className="text-[var(--color-text-primary)]">Phone:</strong> +91 820 252 0000</p>
               <p><strong className="text-[var(--color-text-primary)]">Email:</strong> shiroormutt@gmail.com</p>
               <p><strong className="text-[var(--color-text-primary)]">Office Hours:</strong> 6:00 AM — 8:00 PM (all days)</p>
@@ -143,7 +142,7 @@ export default function ConnectPage() {
         {/* Newsletter */}
         <div id="subscriptions" className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-xl p-6">
           <h2 className="font-display font-bold text-[var(--color-text-primary)] text-lg mb-2">Newsletter</h2>
-          <p className="font-body text-[var(--color-text-secondary)] text-sm mb-4">Subscribe to receive updates, newsletters, and daily slokas from Shri Shiroor Matha.</p>
+          <p className="font-body text-[var(--color-text-secondary)] text-sm mb-4">{content[defaultLang].pages.detected.connect_newsletter}</p>
           <div className="flex gap-2">
             <input
               type="email"

@@ -23,8 +23,8 @@ function formatDate(iso: string, lang: string): string {
  * language when that post has not been translated yet.
  *
  * The body is HTML produced from Markdown by the content build step. It is
- * inserted with dangerouslySetInnerHTML, which is safe here because the source
- * is a repository file reviewed through a pull request, never user input.
+ * inserted with dangerouslySetInnerHTML after the content build has parsed it
+ * with raw HTML disabled and sanitized it through an explicit allowlist.
  */
 export default function BlogArticleView({ post }: { post: BlogPost }) {
   const { lang, tr } = useLang();

@@ -22,6 +22,8 @@ This document explains how to add and update graphic assets for the website.
 
 - Place files in the designated media or assets folder.
 - Keep the folder structure organized by category.
+- Add an `ASSET_PROVENANCE.md` row with the creator/rightsholder, source, exact license
+	or permission evidence, modifications, contributor, and review date.
 
 ## 5. Update References in the Site
 

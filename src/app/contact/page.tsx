@@ -1,43 +1,12 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import ContactRows from "@/components/ContactRows";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Contact & Branches | Shri Shiroor Matha, Udupi",
-  description:
-    "Contact information and branch locations for Shri Shiroor Matha.",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.contact;
 
 // TODO: Verify all contact details and branch locations with management
-const branches = [
-  {
-    name: "Shri Shiroor Matha — Main Campus",
-    type: "Main",
-    address: "Car Street, Udupi — 576 101, Karnataka, India",
-    phone: "+91-820-2520-XXX", // TODO: Replace with real number
-    email: "info@shiroormatha.org", // TODO: Replace with real email
-    hours: "6:00 AM – 12:30 PM · 5:00 PM – 9:00 PM",
-    mapLink: "#", // TODO: Replace with real Google Maps link
-  },
-  {
-    name: "Shri Shiroor Matha — Bengaluru Branch",
-    type: "Branch",
-    address: "JP Nagar, Bengaluru — 560 078, Karnataka, India", // TODO: Verify address
-    phone: "+91-80-XXXX-XXXX", // TODO: Replace
-    email: "bangalore@shiroormatha.org", // TODO
-    hours: "7:00 AM – 11:00 AM · 6:00 PM – 8:00 PM",
-    mapLink: "#",
-  },
-  {
-    name: "Shri Shiroor Matha — Mumbai Branch",
-    type: "Branch",
-    address: "Matunga (West), Mumbai — 400 016, Maharashtra, India", // TODO: Verify
-    phone: "+91-22-XXXX-XXXX", // TODO
-    email: "mumbai@shiroormatha.org", // TODO
-    hours: "7:00 AM – 11:00 AM · 6:00 PM – 8:00 PM",
-    mapLink: "#",
-  },
-];
+const branches = content[defaultLang].pages.contact.branches;
 
 export default function ContactPage() {
   return (
@@ -51,7 +20,7 @@ export default function ContactPage() {
           Contact & Branches
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-base max-w-xl mx-auto">
-          Reach out to us — we&apos;re here to help with sevas, volunteering, events, and general enquiries.
+          {content[defaultLang].contact_subtitle}
         </p>
       </div>
 
@@ -59,7 +28,7 @@ export default function ContactPage() {
         {/* Reach Shri Shiroor Matha — matches the design reference's .m-contact rows */}
         <section aria-labelledby="reach-heading" className="mb-14 max-w-md">
           <h2 id="reach-heading" className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-6">
-            Reach Shri Shiroor Matha
+            {content[defaultLang].pages.contact.reach_title}
           </h2>
           <ContactRows />
         </section>
@@ -156,7 +125,7 @@ export default function ContactPage() {
             Send Us a Message
           </h2>
           <p className="font-body text-[var(--color-text-brand)]/70 text-sm mb-6">
-            For seva bookings, volunteering, donations, or any other enquiry, write to us at:
+            {content[defaultLang].contact_enquiry_sub}
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <a

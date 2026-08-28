@@ -15,7 +15,7 @@
 # All build logic lives in build/build.mjs and can be run locally:
 #     node build/build.mjs dev
 #     node build/build.mjs prod
-# See build/README.md and docs/ARCHITECTURE.md §7.
+# See docs/DEVELOPER.md §6 and docs/ARCHITECTURE.md §7.
 name: Verify build
 
 on:
@@ -34,38 +34,39 @@ permissions:
   contents: read
 
 concurrency:
-  group: verify-${{ github.ref }}
+  group: verify-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      # Submodules are intentionally not checked out. `library` and `test_media`
-      # hold content and media; nothing under src/, build/, scripts/ or config/
-      # reads them, so the build does not need them and fetching them would only
-      # make CI slower and able to fail for reasons unrelated to this repo.
-      - uses: actions/checkout@v4
+      # The Bhakti generator reads the library submodule, so every checkout must
+      # initialize nested content recursively.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          submodules: recursive
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: npm
 
       - run: npm ci
 
-      # Advisory, not a gate. `npm run lint` currently reports 8 errors and 15
-      # warnings on code that predates this workflow (6 react/no-unescaped-entities,
-      # 2 react-hooks/set-state-in-effect, across 6 files under src/). Making it
-      # blocking would fail main on its first push for faults this workflow did not
-      # introduce. It still runs, so the count is visible in the log and someone can
-      # watch it go down. Remove continue-on-error once the existing errors are fixed.
-      - name: Lint (advisory)
+      - name: Lint
         run: npm run lint
-        continue-on-error: true
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:unit
 
       - name: Build and verify (dev)
-        run: node build/build.mjs dev
+        run: npm run build:dev
 
       - name: Build and verify (prod)
-        run: node build/build.mjs prod
+        run: npm run build:prod

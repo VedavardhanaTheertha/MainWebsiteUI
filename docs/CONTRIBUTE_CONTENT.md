@@ -8,10 +8,8 @@
 > | A blog article | **this one** | `content/blog/<slug>/` |
 > | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
 >
-> As the site is built today, **everything it displays comes from `content/` in this
-> repository**; nothing in the build reads WebsiteLibrary yet. The library pages render
-> category tiles from `content/languages/*.json`. Wiring the corpus into the site is
-> still to be done — see [STATUS.md](STATUS.md).
+> The Bhakti page is generated from the `library` Git submodule. Blog articles and UI
+> text are built from this repository's `content/` tree.
 
 This document explains the contribution workflow for adding new devotional, educational, or heritage content.
 
@@ -47,6 +45,8 @@ This document explains the contribution workflow for adding new devotional, educ
 
 - If the content references audio, images, or documents, include a clear credit and file name.
 - Ensure that attached media is stored in the appropriate repository location.
+- Record its creator, source, license or permission evidence, modifications, and review
+  date in `ASSET_PROVENANCE.md`.
 
 ## 6. Preview and Validate
 
