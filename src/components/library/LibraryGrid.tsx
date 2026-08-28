@@ -11,7 +11,7 @@ export default function LibraryGrid() {
   const lib = tr.library;
 
   return (
-    <div className="grid grid-cols-2 gap-3 mt-3.5 max-w-3xl mx-auto lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 mt-3.5 max-w-4xl mx-auto lg:grid-cols-5">
       {CATEGORY_ORDER.map((key) => {
         const cat = lib[key];
         return (

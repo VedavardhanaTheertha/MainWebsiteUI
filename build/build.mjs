@@ -77,7 +77,8 @@ console.log(`  indexable   : ${environment.indexable}`);
 console.log(`  base path   : ${environment.base_path || "(site root)"}`);
 console.log("─".repeat(70));
 
-run("generating content", path.join(rootDir, "scripts", "generate-content.mjs"));
+run("generating Bhakti", path.join(rootDir, "build", "build-bhakti-content.mjs"));
+run("generating website content", path.join(rootDir, "scripts", "generate-content.mjs"));
 run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build"]);
 run("verifying output", path.join(rootDir, "build", "verify.mjs"));
 

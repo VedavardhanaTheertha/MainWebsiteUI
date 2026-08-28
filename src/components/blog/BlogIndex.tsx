@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { blogPosts, defaultLang } from "@/generated/content";
+import { blogPosts, defaultLang } from "@/gen/content";
 import { useLang } from "@/context/LanguageContext";
 
 /** Renders a post's date in the reader's language, falling back to the raw value. */

@@ -16,9 +16,10 @@
 # next.js
 /.next/
 /out/
+/dist/
 
 # generated from content/ — run `npm run content:build` to regenerate
-/src/generated/
+/src/gen/
 
 # generated per environment by scripts/generate-content.mjs (see config/site.yml)
 /public/robots.txt

@@ -125,12 +125,12 @@ config/        site.yml — environments, build flags, brand terms
 docs/          this guide, ARCHITECTURE.md, KT.md, STATUS.md, and the
                CONTRIBUTE_*/GUIDELINE_* contributor guides
 build/         build.mjs (runs the full build) and verify.mjs (checks the output)
-scripts/       generate-content.mjs — turns content/ into src/generated/content.ts
+scripts/       generate-content.mjs — turns content/ into src/gen/content.ts
 src/app/       Next.js routes — structure only, never content
 src/components/  reusable UI — structure only, never content
 src/lib/       shared logic: content-types.ts, nav-types.ts, scheduler.ts
 src/context/   LanguageContext.tsx — the useLang() provider (see §8)
-src/generated/ build output of scripts/generate-content.mjs — gitignored, never hand-edit
+src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
 library/       submodule → WebsiteLibrary (devotional content; not needed to build)
 test_media/    submodule → WebsiteTestMedia (media fixtures; not needed to build)
@@ -151,7 +151,7 @@ keeping build logic out of CI YAML; this section is commands, outputs, and failu
 
 | Command | Runs | Produces |
 |---|---|---|
-| `npm run content:build` | `scripts/generate-content.mjs` only | `src/generated/content.ts`, `public/robots.txt` |
+| `npm run content:build` | Bhakti and website content generators | `src/gen/`, `public/robots.txt` |
 | `npm run dev` | content:build, then `next dev` | a running dev server |
 | `npm run build:dev` | `node build/build.mjs dev` — full pipeline: generate content → `next build` → verify | `out/` (dev/placeholder build) |
 | `npm run build:prod` | same pipeline with `SITE_ENV=prod` | `out/` (production/real-content build) |

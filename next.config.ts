@@ -42,6 +42,9 @@ const basePath = environment.base_path ?? "";
 
 const nextConfig: NextConfig = {
   output: "export",
+  turbopack: {
+    root: process.cwd(),
+  },
   // Static export has no server, so next/image's optimization API route isn't
   // available — serve pre-optimized WebP/AVIF assets as-is instead (see
   // content decision: images are pre-optimized at authoring time).

@@ -1,4 +1,4 @@
-// Hand-authored shape for the generated content object (src/generated/content.ts).
+// Hand-authored shape for the generated content object (src/gen/content.ts).
 // The codegen script emits plain JS object literals from YAML — this interface
 // gives both locales one common, widened type (rather than each locale inferring
 // its own literal-string type from `as const`, which made content.en and
@@ -235,10 +235,36 @@ export interface LibraryCategory {
   items: LibraryCategoryItem[];
 }
 
+export interface BhaktiPageContent {
+  metadata_title: string;
+  metadata_description: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  search_label: string;
+  search_placeholder: string;
+  collection: string;
+  works: string;
+  showing_template: string;
+  no_results: string;
+  show_all: string;
+  show_less: string;
+  collapse: string;
+  expand: string;
+  by: string;
+  ankita: string;
+  back: string;
+  reading: string;
+}
+
+export interface BhaktiCategory extends LibraryCategory {
+  page: BhaktiPageContent;
+}
+
 export interface LibraryShape {
   mantra: LibraryCategory;
   shastra: LibraryCategory;
-  bhakti: LibraryCategory;
+  bhakti: BhaktiCategory;
   jnana: LibraryCategory;
   dharma: LibraryCategory;
   eyebrow: string;

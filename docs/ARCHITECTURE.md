@@ -107,14 +107,14 @@ Shirooru/
 │   └── README.md
 │
 ├── scripts/
-│   └── generate-content.mjs    ← scans content/, emits src/generated/
+│   └── generate-content.mjs    ← scans content/, emits src/gen/
 │
 ├── src/
 │   ├── app/                    ← routes. Structure only — never content.
 │   ├── components/             ← UI. Structure only — never content.
 │   ├── lib/                    ← shared logic (scheduler, types)
 │   ├── context/                ← language provider
-│   └── generated/              ← build output. Never hand-edited. Gitignored.
+│   └── gen/                    ← generated website data. Never hand-edited. Gitignored.
 │
 ├── public/media/               ← image files that content JSON points to
 │
@@ -194,6 +194,16 @@ A contributor adding a post supplies both the Markdown file and the image in the
 pull request. Images are pre-optimised at authoring time, because static export has no
 image-optimisation service at runtime (see `next.config.ts`).
 
+### 5.4 Bhakti collection
+
+`build/build-bhakti-content.mjs` converts the Markdown and metadata from the library submodule's
+`dasasahitya` source directory into `src/gen/bhakti/`. The site has one Bhakti collection, so no
+tab manifest is generated. `src/gen/` is disposable, Gitignored build output and is recreated before
+development and production builds. Its page labels, controls, and metadata are stored under
+`library.bhakti.page` in each `content/languages/<lang>.json` file and follow the same fallback
+and placeholder rules as the rest of the website UI. The collection is exposed through
+`/library/bhakti`; there is no separate Dasa Sahitya navigation item or route.
+
 ---
 
 ## 6. Environments
@@ -267,7 +277,7 @@ opting in. The system fails safe rather than failing open.
 
 ```
 content/languages/*.json ─┐
-content/blog/*/          ─┼─→ generate-content.mjs ─→ src/generated/ ─→ next build ─→ out/
+content/blog/*/          ─┼─→ generate-content.mjs ─→ src/gen/ ─→ next build ─→ out/
 config/site.yml          ─┘            ↑                                                │
                                    SITE_ENV                                             ↓
                                                                                   verify.mjs

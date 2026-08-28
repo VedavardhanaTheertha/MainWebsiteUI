@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SiteFooter from "@/components/SiteFooter";
 import BlogArticleView from "@/components/blog/BlogArticleView";
-import { blogPosts, content, defaultLang } from "@/generated/content";
+import { blogPosts, content, defaultLang } from "@/gen/content";
 
 /**
  * Tells the static export which article pages to build — one per folder found

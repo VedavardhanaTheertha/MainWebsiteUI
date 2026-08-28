@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { defaultLang } from "@/generated/content";
+import { defaultLang } from "@/gen/content";
 import type { BlogPost } from "@/lib/content-types";
 import { useLang } from "@/context/LanguageContext";
 

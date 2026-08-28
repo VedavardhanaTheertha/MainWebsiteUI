@@ -988,26 +988,30 @@
     "bhakti": {
       "title": "Bhakti Gāna",
       "kn": "ಭಕ್ತಿ ಗಾನ",
-      "img": "/slide/KRAJ0835.JPG",
-      "desc": "Devotional songs of the Haridāsa tradition.",
-      "items": [
-        {
-          "name": "Dāsara Padagalu",
-          "sub": "Songs of the Haridāsas"
-        },
-        {
-          "name": "Purandara Dāsa",
-          "sub": "The father of Carnatic music"
-        },
-        {
-          "name": "Kanaka Dāsa",
-          "sub": "Devotee-poet of Udupi"
-        },
-        {
-          "name": "Ugābhoga",
-          "sub": "Free-verse devotion"
-        }
-      ]
+      "img": "/lord-vitthala.jpeg",
+      "desc": "Kannada devotional compositions of the Haridasa tradition.",
+      "items": [],
+      "page": {
+        "metadata_title": "Bhakti Gāna | Shri Shiroor Matha",
+        "metadata_description": "Search and read Kannada devotional compositions from the Haridasa tradition.",
+        "eyebrow": "Devotional Literature",
+        "title": "Bhakti Gāna",
+        "description": "Explore a growing collection of Kannada devotional literature.",
+        "search_label": "Search the Bhakti collection",
+        "search_placeholder": "Search by title, author, ankita, or keyword…",
+        "collection": "Collection",
+        "works": "Dasa compositions",
+        "showing_template": "Showing {shown} of {total} works",
+        "no_results": "No works match your search.",
+        "show_all": "Show all",
+        "show_less": "Show less",
+        "collapse": "Collapse results",
+        "expand": "Expand results",
+        "by": "By",
+        "ankita": "Ankita",
+        "back": "Back to results",
+        "reading": "Reading"
+      }
     },
     "jnana": {
       "title": "Jnāna Kosha",
