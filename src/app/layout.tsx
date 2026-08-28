@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Marcellus, Montserrat, Noto_Sans_Kannada, Noto_Serif_Devanagari } from "next/font/google";
 import "./globals.css";
-import { siteConfig, defaultLang, content } from "@/generated/content";
+import { siteConfig, defaultLang, content } from "@/gen/content";
 import { LanguageProvider } from "@/context/LanguageContext";
 import TopBar from "@/components/TopBar";
 import SiteHeader from "@/components/SiteHeader";

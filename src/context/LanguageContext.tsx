@@ -7,7 +7,7 @@ import {
   defaultLang,
   type Lang,
   type ContentShape,
-} from "@/generated/content";
+} from "@/gen/content";
 
 interface LangCtx {
   lang: Lang;

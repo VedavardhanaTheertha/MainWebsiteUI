@@ -3,14 +3,14 @@
 //
 // Scans content/languages/ and content/blog/, merges every language over the
 // default language, optionally replaces all real text with placeholders, and
-// emits src/generated/content.ts for the app to import.
+// emits src/gen/content.ts for the app to import.
 //
 // Nothing in src/ lists languages or blog posts by name — this script discovers
 // them from the filesystem, which is what lets a contributor add a language or
 // an article by adding a single file.
 //
 // Runs automatically via the "predev"/"prebuild" npm scripts.
-// Never edit src/generated/content.ts directly — edit content/ instead.
+// Never edit src/gen/content.ts directly — edit content/ instead.
 //
 // See docs/ARCHITECTURE.md §5 (content system) and §6 (environments).
 // ─────────────────────────────────────────────────────────────────────────────
@@ -460,7 +460,7 @@ const renderedPosts = blogPosts.map((post) => ({
 
 writeRobots(env, config);
 
-const outDir = path.join(rootDir, "src", "generated");
+const outDir = path.join(rootDir, "src", "gen");
 mkdirSync(outDir, { recursive: true });
 
 const langUnion = languageCodes.map((c) => `"${c}"`).join(" | ");

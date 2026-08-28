@@ -2,7 +2,7 @@
 
 import { Fragment } from "react";
 import { useLang } from "@/context/LanguageContext";
-import type { Lang } from "@/generated/content";
+import type { Lang } from "@/gen/content";
 import { openVolunteerModal } from "@/hooks/useVolunteerModal";
 import { openDonateModal } from "@/hooks/useDonateModal";
 

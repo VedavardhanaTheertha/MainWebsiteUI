@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import type { Lang } from "@/generated/content";
+import type { Lang } from "@/gen/content";
 import type { NavItem } from "@/lib/nav-types";
 
 export default function MobileHeader() {

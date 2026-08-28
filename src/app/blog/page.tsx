@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import BlogIndex from "@/components/blog/BlogIndex";
-import { blogPosts, content, defaultLang } from "@/generated/content";
+import { blogPosts, content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = {
   title: `${content[defaultLang].blog_title} | ${content[defaultLang].meta_title}`,

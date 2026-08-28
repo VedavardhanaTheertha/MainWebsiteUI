@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/generate-content.mjs",
+    "predev": "npm run content:build",
     "dev": "next dev",
-    "prebuild": "node scripts/generate-content.mjs",
+    "prebuild": "npm run content:build",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "content:build": "node scripts/generate-content.mjs",
+    "bhakti:build": "node build/build-bhakti-content.mjs",
+    "content:build": "npm run bhakti:build && node scripts/generate-content.mjs",
+    "test": "node --test build/*.test.mjs",
     "build:dev": "node build/build.mjs dev",
     "build:prod": "node build/build.mjs prod",
     "verify": "node build/verify.mjs"
@@ -17,6 +19,7 @@
   "dependencies": {
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.21.0",
+    "markdown-it": "^14.1.0",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
