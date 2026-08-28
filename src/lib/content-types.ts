@@ -357,6 +357,56 @@ export interface StoriesShape {
   pilgrim: StoryEntry;
 }
 
+export interface PageMetadataEntry {
+  title: string;
+  description?: string;
+}
+
+export interface EventPageItem {
+  date: string;
+  displayDate: string;
+  category: string;
+  title: string;
+  location: string;
+  time: string;
+  description: string;
+  thisWeek: boolean;
+}
+
+export interface PagesShape {
+  detected: Record<string, string>;
+  about: {
+    title: string;
+    subtitle: string;
+    founder_alt: string;
+    founder_caption: string;
+    founding_paragraphs: string[];
+    pontiff_alt: string;
+    pontiff_name: string;
+    pontiff_line: string;
+    pontiff_paragraphs: string[];
+    parampara_intro: string;
+    parampara_note: string;
+    parampara: string[];
+  };
+  contact: {
+    reach_title: string;
+    branches: Array<{ name: string; type: string; address: string; phone: string; email: string; hours: string; mapLink: string }>;
+  };
+  events: { items: EventPageItem[] };
+  media_subtitle: string;
+  projects: {
+    eyebrow: string;
+    completed: Array<{ name: string; year: string; desc: string }>;
+    ongoing: Array<{ name: string; desc: string; progress: number }>;
+    upcoming: Array<{ name: string; desc: string }>;
+    vision: string;
+  };
+  terms: { acceptance: string; donations: string; property: string; disclaimer: string };
+  v2: Record<string, string>;
+  volunteer_question: string;
+}
+
 // One entry per file found in content/languages/. Produced by the content build
 // step, which discovers languages from the filesystem — no locale is named in
 // application code, so adding a language means adding a file and nothing else.
@@ -394,6 +444,11 @@ export interface BlogPost {
 export interface ContentShape extends LegacyFlatKeys {
   /** Self-description of the language file. Metadata, not display content. */
   _language?: LanguageDescriptor;
+  local_preview: {
+    label: string;
+    real: string;
+    placeholder: string;
+  };
   nav: NavItem[];
   footer: FooterShape;
   home: HomeShape;
@@ -404,5 +459,7 @@ export interface ContentShape extends LegacyFlatKeys {
   learn: ImageListItem[];
   volunteer_ops: ImageListItem[];
   donation: DonationShape;
+  page_metadata: Record<string, PageMetadataEntry>;
+  pages: PagesShape;
   stories: StoriesShape;
 }

@@ -6,6 +6,11 @@
     "label": "EN",
     "short_label": "En"
   },
+  "local_preview": {
+    "label": "Local copy preview",
+    "real": "Real copy",
+    "placeholder": "Placeholder copy"
+  },
   "site_name": "Shirooru Matha",
   "logo_alt": "Shri Shiroor Matha",
   "blog_eyebrow": "From the Matha",
@@ -1333,6 +1338,187 @@
         "icon": "nut"
       }
     ]
+  },
+  "page_metadata": {
+    "about": {
+      "title": "About | Shri Shiroor Matha, Udupi",
+      "description": "The founding story, history, and Guru Parampara of Shri Shiroor Matha — an 800+ year lineage of devotion in Udupi."
+    },
+    "connect": {
+      "title": "Connect with Matha | Shri Shiroor Matha"
+    },
+    "contact": {
+      "title": "Contact & Branches | Shri Shiroor Matha, Udupi",
+      "description": "Contact information and branch locations for Shri Shiroor Matha."
+    },
+    "events": {
+      "title": "Events | Shri Shiroor Matha, Udupi",
+      "description": "Upcoming and past events at Shri Shiroor Matha during the Paryaya 2026-2028 term."
+    },
+    "yajna": {
+      "title": "Krishna Mantra Lekhana Yajna — Shri Shiroor Matha",
+      "description": "Join the sacred Krishna Mantra Lekhana Yajna during Paryaya 2026-2028. Write Shri Krishnaya Namaha and offer your devotion."
+    },
+    "history_articles": {
+      "title": "Blogs & Articles | Shri Shiroor Matha",
+      "description": "Reflections, news and reading from Shri Shiroor Matha."
+    },
+    "library": {
+      "title": "Library | Shri Shiroor Matha",
+      "description": "Sacred texts, chants, devotional songs, wisdom archives, and ritual guides from Shri Shiroor Matha."
+    },
+    "library_mantra": {
+      "title": "Mantra Nāda | Library | Shri Shiroor Matha"
+    },
+    "library_shastra": {
+      "title": "Shāstra Vidya | Library | Shri Shiroor Matha"
+    },
+    "media_photos": {
+      "title": "Photos | Media | Shri Shiroor Matha",
+      "description": "Photo gallery of ceremonies, seva activities, and sacred moments at Shri Shiroor Matha."
+    },
+    "media_videos": {
+      "title": "Videos | Media | Shri Shiroor Matha",
+      "description": "Video repository of ceremonies, pravachanas, and sacred moments at Shri Shiroor Matha."
+    },
+    "privacy": {
+      "title": "Privacy Policy | Shri Shiroor Matha"
+    },
+    "refund": {
+      "title": "Refund Policy | Shri Shiroor Matha"
+    },
+    "all_sevas": {
+      "title": "All Sevas | Shri Shiroor Matha, Udupi",
+      "description": "Every form of service offered at Shri Shiroor Matha — body, mind and wealth. Browse all sevas by category."
+    },
+    "donations": {
+      "title": "Donations | Shri Shiroor Matha, Udupi",
+      "description": "Support Shri Shiroor Matha with a monetary donation or by offering materials — rice, ghee, oil, and more."
+    },
+    "sevas": {
+      "title": "Sevas & Donations | Shri Shiroor Matha, Udupi",
+      "description": "Offer a seva at Shri Shiroor Matha. Browse all 97 sevas across Krishna Sannidhi, Annadaana, Navagraha, and more."
+    },
+    "top_seva": {
+      "title": "Maha Annadaana Seva | Shri Shiroor Matha",
+      "description": "Offer the sacred Maha Annadaana Seva at Shri Shiroor Matha — feed thousands of devotees in the name of the Divine."
+    },
+    "story": {
+      "title": "Know the Story — Shri Shiroor Matha",
+      "description": "The sacred history of Krishna Mutt, Shiroor Matha, Annadana, Go Pooja and the significance of Paryaya."
+    },
+    "terms": {
+      "title": "Terms of Service | Shri Shiroor Matha"
+    },
+    "volunteer": {
+      "title": "Volunteer | Shri Shiroor Matha, Udupi",
+      "description": "Join the volunteer family of Shri Shiroor Matha during Paryaya 2026–2028. Offer your time and skills to the Divine."
+    }
+  },
+  "pages": {
+    "detected": {
+      "connect_address": "Shri Shiroor Matha, Car Street, Udupi, Karnataka - 576101",
+      "connect_newsletter": "Subscribe to receive updates, newsletters, and daily slokas from Shri Shiroor Matha.",
+      "connect_youtube_handle": "@Shiroormatha",
+      "connect_whatsapp_handle": "Shiroor Matha Channel",
+      "refund_donations": "All voluntary donations to Shri Shiroor Matha are generally non-refundable, as they are offered to a religious institution for charitable purposes. However, in the case of a duplicate payment or technical error, we will process a full refund within 7–10 business days.",
+      "privacy_updates": "To communicate about events, updates, and the Paryaya (with your consent)",
+      "yajna_eyebrow": "PARYAYA 2026-2028 — SPECIAL YAJNA",
+      "yajna_intro": "Mantra Lekhana is the sacred practice of writing the divine name of Lord Krishna repeatedly as an act of devotion and meditation. During the auspicious Paryaya 2026-2028, Shri Shiroor Matha invites all devotees to participate in a collective Yajna — writing Shri Krishnaya Namaha to accumulate one crore (1,00,00,000) writings as a collective offering to Lord Udupi Sri Krishna.",
+      "yajna_step4": "Participants who visit the Matha during Paryaya will receive Prasada as blessings from Pujya Swamiji.",
+      "top_seva_significance": "By sponsoring the Maha Annadaana Seva at Shri Shiroor Matha, you participate in feeding thousands of pilgrims, devotees, scholars, and the needy who visit the Matha during Paryaya 2026-2028.",
+      "volunteer_role": "Run cultural programs, teach children about the tradition, and involve the next generation in the Paryaya celebrations.",
+      "volunteer_why": "Volunteering at the Matha during Paryaya is seva — not work. You carry forward an 800-year tradition with every hour you give.",
+      "significance_annadaana": "\"Annam Brahma\" — food is God. This is not poetry; it is the lived theology of Shri Shiroor Matha, practiced without interruption for over eight centuries. Every day, regardless of season, occasion, or crisis, the Bhojana Shala doors open and meals are served. Not to a select few, but to whoever arrives — pilgrim, scholar, traveller, or the simply hungry.",
+      "significance_paryaya": "During Paryaya, this tradition scales to feed thousands daily. Supporting Annadaana — whether for fifty or five hundred people — is to become part of an unbroken chain of compassion stretching back to the 13th century.",
+      "significance_founding": "The story of Shri Shiroor Matha begins with Sri Madhwacharya (1238–1317 CE), the philosopher-saint who established the Dvaita Vedanta school and created the Ashta Mathas of Udupi — eight monasteries entrusted with the continuous worship of Lord Krishna.",
+      "significance_lineage": "Among these eight, Shri Shiroor Matha has maintained an unbroken apostolic succession for over 36 generations — each Swamiji chosen, trained, and consecrated to carry the living flame of the tradition forward. The Paryaya system — wherein each Matha takes a two-year turn as the presiding institution in Udupi — ensures this flame is continuously tended.",
+      "significance_poojas": "At Shri Shiroor Matha, poojas are performed with extraordinary precision according to Madhwa Sampradaya traditions. The Nitya Pooja at dawn is a meditation on new beginnings. The Maha Pooja at noon is a celebration of the Divine in full radiance. The evening Chandan Pooja — where the deity is anointed with fragrant sandalwood paste — carries the cooling, calming quality of surrender."
+    },
+    "about": {
+      "title": "Shri Shiroor Matha",
+      "subtitle": "Over 800 years. 30+ generations. One unbroken flame of devotion to Lord Krishna.",
+      "founder_alt": "Sri Madhwacharya — founder of Dvaita Vedanta and the Ashta Mathas of Udupi",
+      "founder_caption": "Sri Madhwacharya (1238–1317 CE)",
+      "founding_paragraphs": [
+        "Sri Madhwacharya, the philosopher-saint who systematised the Dvaita (dualist) school of Vedanta, established eight monasteries (Ashta Mathas) in Udupi to ensure the perpetual worship of Lord Krishna. Each Matha was entrusted with a unique set of duties and a portion of the temple worship — a system of rotating stewardship called Paryaya.",
+        "Shri Shiroor Matha is one of these eight sacred institutions. Its lineage — the Guru Parampara — runs in an unbroken chain from Sri Madhwacharya himself to the current Swamiji, spanning over thirty generations and eight centuries of living tradition.",
+        "The Paryaya system, unique in the world of Hindu monasticism, means that every twelve years, Shri Shiroor Matha assumes the role of presiding institution at the Udupi Sri Krishna Temple — a responsibility involving the complete management of temple worship, Annadaana, and spiritual programming for two full years.",
+        "The 2026–2028 Paryaya is that sacred moment — and devotees worldwide are invited to participate, support, and witness."
+      ],
+      "pontiff_alt": "His Holiness Swamiji — current pontiff of Shri Shiroor Matha",
+      "pontiff_name": "His Holiness Shri Vidyavallabesha Theertha Swamiji",
+      "pontiff_line": "30th in the Guru Parampara · Paryaya 2026–2028",
+      "pontiff_paragraphs": [
+        "His Holiness was initiated into Sanyasa in the sacred tradition of Sri Madhwacharya, receiving the monastic name and lineage that places him in direct spiritual succession from the founder of Dvaita Vedanta. Under his guidance, Shri Shiroor Matha has experienced a renaissance of Vedic learning, expanded Annadaana programs, and deepened outreach to devotees worldwide.",
+        "Renowned for his scholarship in Sanskrit, Vedanta, and Kannada literature, Swamiji has authored numerous texts on Madhwa philosophy. He is equally known for his accessibility — welcoming devotees of all backgrounds who seek guidance, solace, or simply the blessing of his presence.",
+        "The Paryaya 2026–2028 is the culmination of decades of preparation — and an opportunity for devotees to witness, support, and participate in a tradition that has endured for eight unbroken centuries."
+      ],
+      "parampara_intro": "An unbroken lineage of 30+ Swamijis, each carrying forward the flame from Sri Madhwacharya to the present day.",
+      "parampara_note": "* Placeholder Parampara — to be verified and completed with management before launch.",
+      "parampara": [
+        "Sri Madhwacharya (1238–1317)", "Sri Padmanabha Theertha", "Sri Narahari Theertha", "Sri Madhava Theertha", "Sri Akshobhya Theertha", "Sri Jaya Theertha", "Sri Vidyadhiraja Theertha", "Sri Kavindra Theertha", "Sri Vageesha Theertha", "Sri Ramachandra Theertha", "Sri Vidyanidhi Theertha", "Sri Rajendra Theertha", "Sri Vijayndra Theertha", "Sri Sudhindra Theertha", "Sri Raghavendra Swami", "Sri Yogindra Theertha", "Sri Surottama Theertha", "Sri Veerendraindra Theertha", "Sri Sumathindra Theertha", "Sri Upendra Theertha", "Sri Satyananda Theertha", "Sri Vishnu Theertha (Shiroor lineage begins)", "Sri Narayana Theertha", "Sri Lakshmi Narayana Theertha", "Sri Satya Prajña Theertha", "Sri Vidyavallabesha Theertha I", "Sri Sudhindra Theertha II", "Sri Lakshmivara Theertha", "Sri Vidyasagara Theertha", "Sri Vidyavallabesha Theertha (Current Swamiji)"
+      ]
+    },
+    "contact": {
+      "reach_title": "Reach Shri Shiroor Matha",
+      "branches": [
+        { "name": "Shri Shiroor Matha — Main Campus", "type": "Main", "address": "Car Street, Udupi — 576 101, Karnataka, India", "phone": "+91-820-2520-XXX", "email": "info@shiroormatha.org", "hours": "6:00 AM – 12:30 PM · 5:00 PM – 9:00 PM", "mapLink": "#" },
+        { "name": "Shri Shiroor Matha — Bengaluru Branch", "type": "Branch", "address": "JP Nagar, Bengaluru — 560 078, Karnataka, India", "phone": "+91-80-XXXX-XXXX", "email": "bangalore@shiroormatha.org", "hours": "7:00 AM – 11:00 AM · 6:00 PM – 8:00 PM", "mapLink": "#" },
+        { "name": "Shri Shiroor Matha — Mumbai Branch", "type": "Branch", "address": "Matunga (West), Mumbai — 400 016, Maharashtra, India", "phone": "+91-22-XXXX-XXXX", "email": "mumbai@shiroormatha.org", "hours": "7:00 AM – 11:00 AM · 6:00 PM – 8:00 PM", "mapLink": "#" }
+      ]
+    },
+    "events": {
+      "items": [
+        { "date": "2026-06-30", "displayDate": "30 June 2026", "category": "Pooja", "title": "Ashadha Shukravara Pooja", "location": "Shri Shiroor Matha, Udupi", "time": "7:00 AM", "description": "Special pooja observed every Friday of Ashadha month with floral offerings and bhajans.", "thisWeek": true },
+        { "date": "2026-07-02", "displayDate": "2 July 2026", "category": "Pravachana", "title": "Swamiji Pravachana — Bhagavata", "location": "Matha Auditorium, Udupi", "time": "5:30 PM", "description": "Evening discourse by Pujya Swamiji on the tenth canto of Shrimad Bhagavata.", "thisWeek": true },
+        { "date": "2026-07-04", "displayDate": "4 July 2026", "category": "Annadaana", "title": "Ashadha Annadaana Seva", "location": "Bhojana Shala, Shiroor Matha", "time": "11:30 AM", "description": "Community meal offering during the sacred Ashadha month — open to all devotees.", "thisWeek": true },
+        { "date": "2026-07-05", "displayDate": "5 July 2026", "category": "Utsava", "title": "Ashadha Ekadashi Celebrations", "location": "Udupi Sri Krishna Temple", "time": "6:00 AM onwards", "description": "Auspicious Ekadashi fasting day with Vishnu Sahasranama parayana and special Abhisheka.", "thisWeek": true },
+        { "date": "2026-07-05", "displayDate": "5 July 2026", "category": "Parayana", "title": "Vishnu Sahasranama Parayana", "location": "Shri Shiroor Matha, Udupi", "time": "4:00 PM", "description": "Group recitation of the thousand names of Lord Vishnu on Ekadashi.", "thisWeek": true },
+        { "date": "2026-07-12", "displayDate": "12 July 2026", "category": "Utsava", "title": "Paryaya Rathotsava", "location": "Udupi Sri Krishna Temple", "time": "6:00 AM onwards", "description": "The grand chariot festival — Lord Krishna's processional journey through the streets of Udupi, drawing lakhs of devotees.", "thisWeek": false },
+        { "date": "2026-07-15", "displayDate": "15 July 2026", "category": "Festival", "title": "Guru Purnima Celebrations", "location": "Shri Shiroor Matha, Udupi", "time": "8:00 AM", "description": "Offer prayers to the Guru lineage — special puja and ashirvachana by Pujya Swamiji.", "thisWeek": false },
+        { "date": "2026-08-16", "displayDate": "16 August 2026", "category": "Festival", "title": "Krishnashtami Mahotsava", "location": "Shri Shiroor Matha, Udupi", "time": "From midnight", "description": "Grand celebration of Lord Krishna's birth anniversary with Abhisheka, Alankaara, special poojas, and Annadaana.", "thisWeek": false },
+        { "date": "2026-10-15", "displayDate": "15 October 2026", "category": "Parayana", "title": "Dvaadashastuti Utsava", "location": "Shri Shiroor Matha, Udupi", "time": "9:00 AM", "description": "Annual recitation of the sacred twelve-verse hymn praising Lord Vishnu.", "thisWeek": false },
+        { "date": "2026-11-30", "displayDate": "30 November 2026", "category": "Annadaana", "title": "Karthika Annadaana Mahotsava", "location": "Bhojana Shala, Shiroor Matha", "time": "11:00 AM", "description": "Mass Annadaana on the auspicious Karthika month — feeding over 5,000 devotees in a single sitting.", "thisWeek": false },
+        { "date": "2027-01-14", "displayDate": "14 January 2027", "category": "Festival", "title": "Makara Sankranti Celebrations", "location": "Shri Shiroor Matha, Udupi", "time": "6:00 AM", "description": "Celebration of the harvest festival with sesame-jaggery offerings and special Nitya Pooja.", "thisWeek": false }
+      ]
+    },
+    "media_subtitle": "Photos and videos from Paryaya 2026–2028 ceremonies, seva activities, and sacred moments.",
+    "projects": {
+      "eyebrow": "PARYAYA 2026-2028",
+      "completed": [
+        { "name": "Matha Gopura Renovation", "year": "2024", "desc": "Restored the 200-year-old gopura of Shri Shiroor Matha with traditional Agama shilpa shastra methods." },
+        { "name": "Vedic School Expansion", "year": "2023", "desc": "Extended the Veda Pathashala to accommodate 40 more students with modern facilities." }
+      ],
+      "ongoing": [
+        { "name": "Go Shala Expansion", "desc": "Expanding the sacred cow shelter to house 50 additional Gir cows for Go Pooja seva.", "progress": 60 },
+        { "name": "Vedic Library Digitization", "desc": "Digitizing over 5,000 rare palm-leaf manuscripts and texts for preservation and public access.", "progress": 35 }
+      ],
+      "upcoming": [
+        { "name": "Annadana Hall Construction", "desc": "New hall to serve 2,000 devotees simultaneously during peak Paryaya periods." },
+        { "name": "Pilgrim Rest House", "desc": "250-room pilgrim accommodation complex near the Matha." }
+      ],
+      "vision": "Shri Shiroor Matha envisions a future where every devotee has access to spiritual education, every pilgrim finds a warm welcome, and every generation inherits the treasure of Madhwa Vedanta. Paryaya 2026-2028 is a step toward that eternal goal."
+    },
+    "terms": {
+      "acceptance": "By accessing or using the Shri Shiroor Matha website (shiroormatha.org), you agree to these Terms of Service. If you do not agree, please do not use the site.",
+      "donations": "All seva offerings and donations made through this website are voluntary contributions to Shri Krishna Matha Paryaya Shri Shiroor Matha, a religious institution. Payments are processed securely.",
+      "property": "All content on this website — including text, images, logos, and design — is the property of Shri Shiroor Matha or used with permission. You may not reproduce, distribute, or create derivative works without written permission.",
+      "disclaimer": "This website is provided “as is” without warranties of any kind. Shri Shiroor Matha does not guarantee the accuracy of all content and reserves the right to update information at any time."
+    },
+    "v2": {
+      "menu_story": "Shiroor Mutt Story",
+      "slide_label": "PARYAYA 2026–2028",
+      "slide_headline": "Shri Shiroor Matha Leads the Sacred Paryaya",
+      "slide_body": "Every 14 years, Shri Shiroor Matha takes the helm — upholding centuries of tradition, scholarship, and devotion to Sri Krishna.",
+      "slide_link": "About Paryaya",
+      "header_name": "Shri Shiroor Matha",
+      "header_tagline": "Udupi · Paryaya 2026–2028",
+      "volunteer_sub": "Be part of the sacred service during Paryaya 2026–28. Serve the divine by serving the devotees.",
+      "heritage_title": "Paryaya Heritage Project",
+      "heritage_sub": "Contribute to the restoration and beautification of Shri Shiroor Matha's sacred spaces during the auspicious Paryaya 2026–28. Leave a legacy for generations to come."
+    },
+    "volunteer_question": "Questions? Email us at volunteer@shiroor.matha.in"
   },
   "stories": {
     "parampara": {

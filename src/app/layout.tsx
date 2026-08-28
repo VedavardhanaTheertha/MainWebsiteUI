@@ -11,6 +11,7 @@ import QRModal from "@/components/QRModal";
 import VolunteerModal from "@/components/VolunteerModal";
 import DonateModal from "@/components/DonateModal";
 import YajnaAnnouncement from "@/components/YajnaAnnouncement";
+import LocalContentToggle from "@/components/LocalContentToggle";
 
 const marcellus = Marcellus({
   subsets: ["latin"],
@@ -52,9 +53,9 @@ export const metadata: Metadata = {
   description: content[defaultLang].meta_description,
   keywords: content[defaultLang].meta_keywords,
   icons: { icon: "/favicon.ico" },
-  // Point search engines at production even when this build is served elsewhere.
+  // Resolves relative page metadata against the intended production origin.
+  // Per-route canonicals are normalized from exported paths by the build pipeline.
   metadataBase: new URL(siteConfig.productionUrl),
-  alternates: { canonical: "/" },
   robots: siteConfig.indexable
     ? { index: true, follow: true }
     : { index: false, follow: false, nocache: true },
@@ -72,6 +73,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">
         <LanguageProvider>
+          <LocalContentToggle />
           {/* Top utility bar — language switcher, centre sloka, social icons */}
           <TopBar />
           {/* Desktop sticky header */}

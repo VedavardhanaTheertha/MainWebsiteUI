@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import StoryPage from "@/components/StoryPage";
+import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = {
-  title: "Hindu Science & Philosophy | Shri Shiroor Matha",
-  description: "Where the wisdom of the Vedas meets enquiry and reason.",
+  title: content[defaultLang].stories.science.title,
+  description: content[defaultLang].stories.science.intro,
 };
 
 export default function Page() {

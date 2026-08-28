@@ -1,8 +1,9 @@
 ﻿"use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useLang } from "@/context/LanguageContext";
 
 // ─── DATA ────────────────────────────────────────────────────
 
@@ -14,10 +15,9 @@ const sevasMenu = [
   "Annadaana Seva",
 ];
 
-const blogMenu = [
+const baseBlogMenu = [
   "Krishna Mutt History",
   "Know Our Swamiji",
-  "Shiroor Mutt Story",
   "Significance of Pooja",
   "Events",
   "Milestones",
@@ -31,7 +31,7 @@ const contactMenu = [
   { icon: "📍", label: "Address" },
 ];
 
-const slides = [
+const baseSlides = [
   {
     id: "krishna", bg: "/krishna.jpg",
     label: "UDUPI SRI KRISHNA MATHA",
@@ -47,25 +47,9 @@ const slides = [
     link: "Meet Swamiji",
     isQuote: true,
   },
-  {
-    id: "shiroor", bg: "/shiroor-mutt.jpg",
-    label: "PARYAYA 2026–2028",
-    headline: "Shri Shiroor Matha Leads the Sacred Paryaya",
-    body: "Every 14 years, Shri Shiroor Matha takes the helm — upholding centuries of tradition, scholarship, and devotion to Sri Krishna.",
-    link: "About Paryaya",
-  },
 ];
 
 const AUTO_MS = 5500;
-
-const railCards = [
-  { title: "Wanna Volunteer?", sub: "Be part of the sacred service during Paryaya", btn: "Get Involved", img: "/swamiji.jpg" },
-  { title: "Upcoming Events", sub: "Rathotsava, Krishnashtami & more this year", btn: "Explore", img: "/shiroor-mutt.jpg" },
-  { title: "Significance of Sevas", sub: "Understand the spiritual depth of each offering", btn: "Know More", img: "/krishna.jpg" },
-  { title: "Kotilekhana", sub: "Register for the sacred Kotilekhana participation", btn: "Register Now", img: "/fb.JPG" },
-  { title: "Plan Your Visit", sub: "Darshan timings, directions & accommodation", btn: "Find Out More", img: "/shiroor-mutt.jpg" },
-  { title: "Offer a Seva", sub: "97 sevas available — connect with the divine", btn: "Start My Journey", img: "/krishna.jpg" },
-];
 
 // ─── TOP BAR ─────────────────────────────────────────────────
 
@@ -149,15 +133,17 @@ function Chevron() {
 }
 
 function HeaderV2() {
+  const { tr } = useLang();
+  const blogMenu = [baseBlogMenu[0], baseBlogMenu[1], tr.pages.v2.menu_story, ...baseBlogMenu.slice(2)];
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-parchment)]/96 backdrop-blur-sm border-b border-[var(--color-saffron-600)]">
       <div className="max-w-[1400px] mx-auto px-5 lg:px-8 h-16 flex items-center justify-between gap-6">
         {/* Logo */}
         <Link href="/v2" className="flex items-center gap-3 shrink-0">
-          <Image src="/main-logo.png" alt="Shri Shiroor Matha" width={40} height={40} className="object-contain" />
+          <Image src="/main-logo.png" alt={tr.pages.v2.header_name} width={40} height={40} className="object-contain" />
           <div className="leading-tight hidden sm:block">
-            <p className="font-display font-semibold text-[14px] text-[var(--color-text-primary)]">Shri Shiroor Matha</p>
-            <p className="font-body text-[10px] text-[var(--color-text-secondary)]">Udupi · Paryaya 2026–2028</p>
+            <p className="font-display font-semibold text-[14px] text-[var(--color-text-primary)]">{tr.pages.v2.header_name}</p>
+            <p className="font-body text-[10px] text-[var(--color-text-secondary)]">{tr.pages.v2.header_tagline}</p>
           </div>
         </Link>
 
@@ -228,11 +214,19 @@ function HeaderV2() {
 // ─── HERO CAROUSEL ────────────────────────────────────────────
 
 function HeroV2() {
+  const { tr } = useLang();
+  const slides = useMemo(() => [...baseSlides, {
+    id: "institution", bg: "/shiroor-mutt.jpg",
+    label: tr.pages.v2.slide_label,
+    headline: tr.pages.v2.slide_headline,
+    body: tr.pages.v2.slide_body,
+    link: tr.pages.v2.slide_link,
+  }], [tr.pages.v2]);
   const [active, setActive] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const goNext = useCallback(() => setActive((p) => (p + 1) % slides.length), []);
-  const goPrev = useCallback(() => setActive((p) => (p - 1 + slides.length) % slides.length), []);
+  const goNext = useCallback(() => setActive((p) => (p + 1) % slides.length), [slides.length]);
+  const goPrev = useCallback(() => setActive((p) => (p - 1 + slides.length) % slides.length), [slides.length]);
 
   useEffect(() => {
     timerRef.current = setTimeout(goNext, AUTO_MS);
@@ -343,10 +337,10 @@ function HeroV2() {
 
 // ─── CARD GRID (fixed 4 cards, no scroll) ────────────────────
 
-const gridCards = [
+const baseGridCards = [
   {
     title: "Wanna Volunteer?",
-    sub: "Be part of the sacred service during Paryaya 2026–28. Serve the divine by serving the devotees.",
+    sub: "",
     btn: "Get Involved",
     img: "/swamiji.jpg",
   },
@@ -362,15 +356,15 @@ const gridCards = [
     btn: "Offer Seva",
     img: "/shiroor-mutt.jpg",
   },
-  {
-    title: "Paryaya Heritage Project",
-    sub: "Contribute to the restoration and beautification of Shri Shiroor Matha's sacred spaces during the auspicious Paryaya 2026–28. Leave a legacy for generations to come.",
-    btn: "Know More",
-    img: "/fb.JPG",
-  },
 ];
 
 function CardGrid() {
+  const { tr } = useLang();
+  const gridCards = [
+    { ...baseGridCards[0], sub: tr.pages.v2.volunteer_sub },
+    ...baseGridCards.slice(1),
+    { title: tr.pages.v2.heritage_title, sub: tr.pages.v2.heritage_sub, btn: "Know More", img: "/fb.JPG" },
+  ];
   return (
     <div className="w-full bg-[#F5ECD8] py-10 px-4 lg:px-8">
       <div className="max-w-[1400px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-5">

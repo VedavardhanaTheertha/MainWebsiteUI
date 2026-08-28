@@ -3,26 +3,7 @@
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 
-// TODO: Replace all placeholder stats and events with real data from management
-const stats = {
-  en: [
-    { value: "800+", label: "Years of Legacy" },
-    { value: "36+", label: "Generations of Swamijis" },
-    { value: "10,000+", label: "Devotees Fed Daily" },
-    { value: "97", label: "Seva Offerings" },
-    { value: "₹2 Cr+", label: "Annadaana in 2024" },
-    { value: "2026", label: "Current Paryaya Year" },
-  ],
-  kn: [
-    { value: "800+", label: "ವರ್ಷಗಳ ಪರಂಪರೆ" },
-    { value: "36+", label: "ತಲೆಮಾರಿನ ಸ್ವಾಮಿಗಳು" },
-    { value: "10,000+", label: "ದಿನನಿತ್ಯ ಊಟ ಮಾಡುವ ಭಕ್ತರು" },
-    { value: "97", label: "ಸೇವೆಗಳು" },
-    { value: "₹2 ಕೋಟಿ+", label: "2024ರ ಅನ್ನದಾನ" },
-    { value: "2026", label: "ಪ್ರಸ್ತುತ ಪರ್ಯಾಯ ವರ್ಷ" },
-  ],
-};
-
+// TODO: Replace all placeholder events with real data from management
 const upcomingEvents = {
   en: [
     {
@@ -83,7 +64,6 @@ const categoryColors: Record<string, string> = {
 
 export default function MilestonesEvents() {
   const { lang, tr } = useLang();
-  const currentStats = stats[lang];
   const currentEvents = upcomingEvents[lang];
 
   return (

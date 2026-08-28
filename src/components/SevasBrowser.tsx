@@ -3,7 +3,7 @@
 import { useState, useMemo, useId } from "react";
 import Image from "next/image";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
-import { sevas, type SevaCategory } from "@/data/sevas";
+import { sevas } from "@/data/sevas";
 
 const categoryImg: Record<string, string> = {
   "Krishna Sannidhi":     "/krishna.jpg",
@@ -136,7 +136,7 @@ export default function SevasBrowser() {
       {/* Search results */}
       {filteredResults !== null ? (
         <div>
-          <p className="font-body text-xs text-[var(--color-text-secondary)]/60 mb-3">{filteredResults.length} results for "{query}"</p>
+          <p className="font-body text-xs text-[var(--color-text-secondary)]/60 mb-3">{filteredResults.length} results for &quot;{query}&quot;</p>
           {filteredResults.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {filteredResults.map((seva) => (

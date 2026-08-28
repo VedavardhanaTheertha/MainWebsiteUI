@@ -3,12 +3,9 @@ import Image from "next/image";
 import SevasBrowser from "@/components/SevasBrowser";
 import Top4SevaRail from "@/components/Top4SevaRail";
 import SiteFooter from "@/components/SiteFooter";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Sevas & Donations | Shri Shiroor Matha, Udupi",
-  description:
-    "Offer a seva at Shri Shiroor Matha. Browse all 97 sevas across Krishna Sannidhi, Annadaana, Navagraha, and more.",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.sevas;
 
 export default function SevasPage() {
   return (
@@ -35,7 +32,7 @@ export default function SevasPage() {
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-sm lg:text-base max-w-xl mx-auto">
           <span className="lg:hidden">Express your love for the Divine.</span>
-          <span className="hidden lg:inline">97 ways to express your love for the Divine — from a daily flower archane to the grand Paryaya Annadaana feeding thousands.</span>
+          <span className="hidden lg:inline">{content[defaultLang].sevas_subtitle}</span>
         </p>
       </div>
 

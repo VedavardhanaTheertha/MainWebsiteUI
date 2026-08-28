@@ -1,9 +1,8 @@
 # Developer Guide
 
-This is the setup-and-workflow reference. For *what the project is and why it's built
-this way*, see [ARCHITECTURE.md](./ARCHITECTURE.md). For *how to do specific
-content/editing tasks* (add a language, add a blog post), see [KT.md](./KT.md). For
-*current status and what's left*, see [STATUS.md](./STATUS.md).
+This is the setup, workflow, and practical how-to reference. For *what the project is,
+why it's built this way, and its known gaps*, see
+[ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ---
 
@@ -20,7 +19,7 @@ content/editing tasks* (add a language, add a blog post), see [KT.md](./KT.md). 
 All user-facing wording lives in `content/languages/en.json`, and blog posts live in
 `content/blog/<slug>/`. Both are plain files. You can edit them directly in GitHub's web
 UI and open a pull request — no Node install, no local build required. See
-[KT.md §3–§5](./KT.md) for exactly how.
+[§8.1–§8.3](#81-changing-site-text) for exactly how.
 
 If you want to *see* your change rendered before opening the PR, follow the full-setup
 path below — §4 gets you a running preview in a few commands.
@@ -36,42 +35,33 @@ Continue with §2.
 
 | Requirement | Version | Verified from |
 |---|---|---|
-| Node.js | **20** | `.github/workflows/deploy-dev.yml` pins `node-version: 20` for CI; [KT.md](./KT.md) says "20 or newer" |
-| npm | ships with Node 20 | `package-lock.json` is `lockfileVersion: 3`, which needs npm ≥ 7 |
+| Node.js | **20.9 through 24.x** (CI uses 22) | `package.json` engines and workflow setup |
+| npm | **10 or newer** | `package.json` engines/packageManager |
 | Git | any recent version | — |
 
-`package.json` does not declare an `engines` field, so nothing enforces this locally —
-matching CI's Node 20 is on you.
-
-TODO(bawse): confirm whether an exact Node 20.x patch version is required, or any 20.x
-is fine — CI just says `20`, which resolves to the latest 20.x at run time.
+The package manager declaration is npm 10.9.2; `npm ci` is the reproducible install.
 
 ---
 
 ## 3. Getting the code; branch model
 
 ```bash
-git clone https://github.com/VedavardhanaTheertha/MainWebsiteUI.git
+git clone --recurse-submodules https://github.com/VedavardhanaTheertha/MainWebsiteUI.git
 cd MainWebsiteUI
 ```
 
 (The address above is `origin` in this checkout — verified with `git remote -v`. If
 you've forked the repo, clone your fork instead.)
 
-### Branches, as they actually exist today
+Existing checkouts must run `git submodule update --init --recursive`. The Bhakti
+generator requires the library submodule and fails with this instruction when absent.
 
-| Branch | Purpose per the docs | CI trigger | Currently exists on `origin`? |
-|---|---|---|---|
-| `main` | Canonical source: the code, its build, and contributor docs | ✅ (`verify.yml` — build check, no deploy) | ✅ |
-| `dev` | Preview source; deploys to GitHub Pages | ✅ (`deploy-dev.yml`) | ❌ not currently pushed |
-| `Design2code` | — | ✅ (`deploy-dev.yml`) | ✅ — this is the active work branch |
+### Branch model
 
-`ARCHITECTURE.md` §6 and `KT.md` §7 describe a `dev` branch as the preview source. In
-the repository as checked out, that branch doesn't exist yet — active work happens on
-`Design2code`, which `.github/workflows/deploy-dev.yml` builds and deploys to GitHub
-Pages identically to how `dev` would. Branch from `main` — it now carries the full
-source, its build, and the contributor docs; check `git branch -a` if you're unsure
-which branches exist.
+`main` is the single canonical branch. Use a short-lived branch for each change, open a
+pull request into `main`, and delete the branch after merge. Both the permanent GitHub
+Pages preview and the future production deployment build reviewed `main` revisions with
+different environment settings.
 
 Branch and PR conventions live in [`CONTRIBUTING.md`](../CONTRIBUTING.md) and
 [`GUIDELINE_SOURCE_CODE.md`](./GUIDELINE_SOURCE_CODE.md). §9 below adds the
@@ -79,50 +69,67 @@ build-specific checks this project needs on top of them.
 
 ---
 
-## 4. First run; expected output
+## 4. Previewing the site
+
+### Hosted development preview
+
+**You do not need to install anything to review the site.**
+
+| | Link |
+|---|---|
+| **Development preview** | https://vedavardhanatheertha.github.io/MainWebsiteUI/ |
+| **Build status** | [GitHub Actions](https://github.com/VedavardhanaTheertha/MainWebsiteUI/actions) |
+
+Every push to `main` rebuilds and republishes the permanent preview automatically. Open
+the preview to review the latest merged revision without a local setup.
+
+The hosted preview deliberately shows placeholder text such as
+`en·hero title — content goes here` instead of real wording. This is intentional:
+
+- It keeps the preview out of search results so it cannot compete with the live site.
+- It makes accidental hardcoded content visible and allows the build to detect it.
+
+Review layout, spacing, images, colours, and navigation in the preview. Read the actual
+wording in [`content/languages/en.json`](../content/languages/en.json). Images remain
+real in the preview; only text is substituted.
+
+### First local run
 
 ```bash
-npm install
-npm run dev
+npm ci
+npm run dev:local
 ```
 
 Open:
 
 ```
-http://localhost:3000/MainWebsiteUI/
+http://localhost:3000/
 ```
 
-**The trailing path matters.** It comes from `base_path: "/MainWebsiteUI"` for the
-`dev` environment in `config/site.yml`, because GitHub Pages serves this project from
-`https://<user>.github.io/MainWebsiteUI/`. Plain `http://localhost:3000` 404s — that's
-expected.
-
-> Note: `KT.md` §2 shows a different path
-> (`http://localhost:3000/shiruru_final_21june/`), from an earlier repository name. The
-> path above matches the current `config/site.yml` and `README.md` — use it, not the one
-> in `KT.md`.
-
-**What you should see:** placeholder text everywhere, e.g. *"en·hero title — content
-goes here"*, not real Shiroor Matha wording. That's intentional — see §7. To see real
-content locally instead:
-
-```bash
-$env:SITE_ENV = "prod"; npm run dev    # PowerShell
-```
-
-```bash
-SITE_ENV=prod npm run dev              # bash
-```
+`dev:local` is cross-platform and selects the root-based, non-indexable `local`
+environment. A bar at the top switches between real and placeholder copy while retaining
+the active language; the choice is remembered in that browser. Real copy is the initial
+mode. Use `npm run dev` only when reproducing the hosted GitHub Pages preview; that URL is
+`http://localhost:3000/MainWebsiteUI/` and contains placeholders only.
 
 ---
 
 ## 5. Repository map
 
+| | |
+|---|---|
+| **Scope** | The website's frontend source code, build, and contributor documentation |
+| **Content** | Devotional and library content comes from [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) |
+| **Languages** | Languages are discovered by adding one correctly structured language file |
+| **Pages** | Filesystem routes plus article routes discovered from content at build time |
+| **Stack** | Next.js 16, React 19, and Tailwind CSS 4, exported as static files |
+| **Hosting** | GitHub Pages preview; Cloudflare Pages production is not yet connected |
+
 ```
 content/       all user-facing text and blog posts — the only folder most
                contributors touch (content/languages/*.json, content/blog/<slug>/)
 config/        site.yml — environments, build flags, brand terms
-docs/          this guide, ARCHITECTURE.md, KT.md, STATUS.md, and the
+docs/          this guide, ARCHITECTURE.md, and the
                CONTRIBUTE_*/GUIDELINE_* contributor guides
 build/         build.mjs (runs the full build) and verify.mjs (checks the output)
 scripts/       generate-content.mjs — turns content/ into src/gen/content.ts
@@ -132,8 +139,8 @@ src/lib/       shared logic: content-types.ts, nav-types.ts, scheduler.ts
 src/context/   LanguageContext.tsx — the useLang() provider (see §8)
 src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
-library/       submodule → WebsiteLibrary (devotional content; not needed to build)
-test_media/    submodule → WebsiteTestMedia (media fixtures; not needed to build)
+library/       required submodule → WebsiteLibrary (Bhakti source content)
+test_media/    recursively initialized submodule → WebsiteTestMedia
 .github/workflows/deploy-dev.yml  thin CI wrapper around build/build.mjs
 ```
 
@@ -143,20 +150,42 @@ Full rationale for this layout: [ARCHITECTURE.md §4](./ARCHITECTURE.md#4-reposi
 
 ## 6. Build
 
-This section is the usage-facing companion to
-[`build/README.md`](../build/README.md) — read that file for the reasoning behind
-keeping build logic out of CI YAML; this section is commands, outputs, and failures.
+CI runs the scripts under `build/`; developers can run the same pipeline locally.
+
+| File | Purpose |
+|---|---|
+| `build.mjs` | Runs the whole build: clean → generate → export → normalize canonicals → verify |
+| `clean.mjs` | Removes stale outputs before generation |
+| `markdown.mjs` | Parses and sanitizes blog and Bhakti Markdown |
+| `write-canonicals.mjs` | Derives each page's production canonical from its exported HTML path |
+| `verify.mjs` | Checks the built output before it is published |
+
+### Why build logic lives outside CI
+
+`.github/workflows/deploy-dev.yml` and `.github/workflows/verify.yml` are thin wrappers
+around `build.mjs`. This keeps the build portable and provides two practical benefits:
+
+- Build problems can be reproduced locally with the same script CI invokes, without
+  pushing commits merely to test the pipeline.
+- Changing CI providers requires replacing a small workflow wrapper rather than
+  reimplementing the build pipeline.
 
 ### Commands
 
 | Command | Runs | Produces |
 |---|---|---|
 | `npm run content:build` | Bhakti and website content generators | `src/gen/`, `public/robots.txt` |
+| `npm run clean` | Delete stale generated output | clean working build outputs |
+| `npm run typecheck` | Generate content, then `tsc --noEmit` | pass/fail |
+| `npm run test:unit` | Content utility and Markdown security tests | pass/fail |
 | `npm run dev` | content:build, then `next dev` | a running dev server |
+| `npm run dev:local` | Generate both copy variants with `SITE_ENV=local`, then `next dev` | root-based local server with copy selector |
+| `npm run build:local` | Full verified, non-indexable local build with both copy variants | `out/` (local/switchable build) |
 | `npm run build:dev` | `node build/build.mjs dev` — full pipeline: generate content → `next build` → verify | `out/` (dev/placeholder build) |
 | `npm run build:prod` | same pipeline with `SITE_ENV=prod` | `out/` (production/real-content build) |
 | `npm run verify` | `build/verify.mjs` against an existing `out/` | pass/fail report, no rebuild |
 | `npm run lint` | ESLint | lint errors/warnings |
+| `npm run ci` | Lint, typecheck, tests, and both builds | all local gates |
 
 `npm run build:dev` / `build:prod` are exactly what CI runs — see
 [`build/build.mjs`](../build/build.mjs). Run one locally before pushing rather than
@@ -164,11 +193,50 @@ using a push to test the pipeline.
 
 ### Environment variable
 
-`SITE_ENV` selects the environment (`dev` or `prod`, defined in `config/site.yml`).
+`SITE_ENV` selects the environment (`local`, `dev`, or `prod`, defined in `config/site.yml`).
 It defaults to `dev` when unset — showing real content is an explicit opt-in, never
 the default. `npm run build:dev` / `build:prod` set it for you via their `node
 build/build.mjs <env>` argument; set it yourself only when running `next dev` or
 `next build` directly.
+
+The equivalent direct invocation is:
+
+```bash
+SITE_ENV=dev node build/build.mjs
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:SITE_ENV = "dev"; node build/build.mjs
+```
+
+Valid values come from `config/site.yml`. Passing the environment as an argument, as
+in `node build/build.mjs prod`, takes precedence over `SITE_ENV`.
+
+### Output verification
+
+`build/verify.mjs` checks that:
+
+1. The generated web manifest uses environment-correct paths.
+2. `robots.txt` matches the selected environment's indexing policy.
+3. Non-production pages carry a `noindex` directive.
+4. Every non-error HTML file has exactly one production canonical matching its route;
+  generated error documents have none.
+5. Non-production HTML and the manifest contain no exact default-language JSON prose
+  of at least 30 characters.
+6. Institution brand terms do not leak into placeholder HTML or the manifest.
+7. `sitemap.xml` contains one canonical production URL per non-error exported page.
+
+The content comparison is an important backstop, not a complete source lint. It catches
+exact default-language JSON prose at least 30 characters long and configured brand terms
+in rendered HTML and the manifest. Short, changed, non-default-language, client-only,
+or unrendered literals may evade it. Those matches fail when
+`build.fail_on_hardcoded_content` is enabled; source review remains required.
+
+Every full build removes `.next/`, `out/`, `dist/`, `src/gen/`, and the generated
+`public/robots.txt` before regeneration. The library submodule is required; initialize
+all submodules with `git submodule update --init --recursive`.
 
 ### Common failures
 
@@ -177,12 +245,12 @@ build/build.mjs <env>` argument; set it yourself only when running `next dev` or
 | `SITE_ENV="…" is not defined in config/site.yml` | Typo in `$env:SITE_ENV`, or a new environment referenced before it's added to `config/site.yml` |
 | `config/site.yml is missing` | Running the build from the wrong working directory, or the file was deleted |
 | Build succeeds locally, fails in CI | You built against uncommitted files — see the CI-reproduction note in `AGENTS.md` and run the clean-clone check below |
-| `[verify] WARNING: real content found in a dev build` | Text is hardcoded in a `.tsx` file instead of `content/languages/en.json` — see §8 |
-| `[verify] WARNING: brand terms found in a dev build` | Same cause — a brand term from `config/site.yml`'s `brand_terms` list leaked into a non-production page |
+| `[verify]` reports real content in a dev build | Text is hardcoded in a `.tsx` file instead of `content/languages/en.json` — see §8 |
+| `[verify]` reports brand terms in a dev build | Same cause — a brand term from `config/site.yml`'s `brand_terms` list leaked into a non-production page |
 | A blog post silently fails the build | Missing/invalid `date` in `meta.json`, or no `# Title` heading in `en.md` — this one fails rather than warns, deliberately (see [ARCHITECTURE.md §5.2](./ARCHITECTURE.md#52-blog-and-article-content)) |
 
-The two `[verify] WARNING:` cases above currently only warn, per
-`build.fail_on_hardcoded_content: false` in `config/site.yml` — see §7.
+Both content-leak cases fail the build because `build.fail_on_hardcoded_content` is
+enabled in `config/site.yml` — see §7.
 
 To reproduce exactly what CI checks out (catches the class of bug where a working
 directory has files git doesn't track):
@@ -190,6 +258,10 @@ directory has files git doesn't track):
 ```bash
 git clone . /tmp/ci-check && cd /tmp/ci-check && npm ci && node build/build.mjs dev
 ```
+
+When local cloning is intentionally disallowed, use tracked-file and ignore checks plus
+`npm ci`, `npm run clean`, and all gates; this is close but cannot perfectly model a
+fresh checkout.
 
 ---
 
@@ -199,31 +271,31 @@ Everything environment-specific is in [`config/site.yml`](../config/site.yml) �
 in `src/` should ever branch on environment name directly. Full design rationale:
 [ARCHITECTURE.md §6](./ARCHITECTURE.md#6-environments).
 
-| Setting | `dev` | `prod` |
-|---|---|---|
-| `base_path` | `/MainWebsiteUI` | `""` |
-| `content_mode` | `placeholder` | `real` |
-| `indexable` | `false` | `true` |
-| Hosted on | GitHub Pages | Cloudflare Pages (not yet connected — see §11) |
+| Setting | `local` | `dev` | `prod` |
+|---|---|---|---|
+| `base_path` | `""` | `/MainWebsiteUI` | `""` |
+| `content_mode` | `switchable` | `placeholder` | `real` |
+| `indexable` | `false` | `false` | `true` |
+| Hosted on | Not hosted | GitHub Pages | Cloudflare Pages (not yet connected — see §11) |
 
 Build-wide flags also live there:
 
-- `build.fail_on_hardcoded_content` — `false` today. Flip to `true` once the hardcoded-
-  content migration (§8) is finished; this turns the two verify warnings above into
-  build failures.
+- `build.fail_on_hardcoded_content` — enabled; real prose and brand-term leaks in a
+  placeholder build are fatal.
 - `build.brand_terms` — words that must never appear on a non-production page, checked
   at any length (unlike general prose, which needs 30+ characters to count — see
   `build/verify.mjs`).
-- `build.daily_rebuild` / `daily_rebuild_hour` — GitHub Actions also rebuilds on a
-  cron schedule, independent of pushes; see `.github/workflows/deploy-dev.yml`.
-
-To add a third environment, add an entry under `environments:` in `config/site.yml` —
+To add another environment, add an entry under `environments:` in `config/site.yml` —
 no code change needed (`build/build.mjs`, `next.config.ts`, and
 `scripts/generate-content.mjs` all read the file at build time).
 
 ---
 
 ## 8. Content and i18n rules for developers
+
+**Content is data; code is structure.** Pages and components do not contain display
+wording or registries of languages and articles. The build discovers content from the
+filesystem, allowing contributors to add a language or article without changing code.
 
 **No user-facing wording may be written into a page or component file.** Every string a
 visitor reads comes from `content/languages/en.json` (and its per-language overrides),
@@ -236,9 +308,8 @@ never a literal in `src/`. This is stated in `AGENTS.md` and is not optional.
   Both are discovered from the filesystem by `scripts/generate-content.mjs` — see
   [ARCHITECTURE.md §3](./ARCHITECTURE.md#3-core-principle--content-is-data-structure-is-code).
 - This is **enforced by the build**, not just a convention: `build/verify.mjs` scans
-  every non-production page for real prose and for the brand terms in
-  `config/site.yml`, and reports any hit — currently as a warning (§7), soon as a
-  build failure once `build.fail_on_hardcoded_content` flips to `true`.
+  placeholder-build pages and generated content for real prose and for the brand terms in
+  `config/site.yml`, and fails the build on any hit (§7).
 - Before claiming a change is content-clean, run `npm run build:dev` and read the
   `[verify]` output — a passing type-check does not catch a hardcoded string.
 
@@ -247,6 +318,83 @@ If you find existing hardcoded text while working nearby, migrating it into
 [ARCHITECTURE.md §11](./ARCHITECTURE.md#11-known-gaps-and-planned-work) for what's
 still outstanding.
 
+### 8.1 Changing site text
+
+All display text lives in `content/languages/`, with one JSON file per language:
+
+1. Open `content/languages/en.json`.
+2. Find the key whose value you want to change.
+3. Edit only the value and save the file.
+4. Restart the development server if the generated content does not refresh.
+5. Update translated values where appropriate so languages do not drift apart.
+
+Never edit display text inside `src/`. If text is hardcoded in a component, move it to
+the default language file and consume it through the generated content API.
+
+### 8.2 Adding a language
+
+1. Copy `content/languages/en.json` to `content/languages/<code>.json`, using the
+  standard language code for the file name.
+2. Translate values without changing their keys or structure.
+3. Set the language's own display name near the top of the new file.
+4. Run `npm run dev` and select the language in the language switcher.
+5. Submit the language file as a focused pull request.
+
+No switcher, registry, component, or type file needs to be edited. The generator scans
+the directory and discovers language files automatically.
+
+Partial translations are valid. Missing keys fall back to the default language and are
+listed during generation. Delete untranslated keys instead of copying default-language
+values when you want the fallback report to accurately show remaining work.
+
+### 8.3 Adding a blog post or news item
+
+1. Create `content/blog/<url-slug>/`. Use lowercase words separated by hyphens; the
+  directory name becomes the URL segment.
+2. Add `meta.json` with at least a valid ISO date. Optional shared fields include the
+  hero image and tags:
+
+  ```json
+  {
+    "date": "2026-07-14",
+    "hero": "/articles/<descriptive-file>.webp",
+    "tags": ["news", "projects"]
+  }
+  ```
+
+3. Add `en.md` with a level-one title and article body:
+
+  ```markdown
+  # Article title
+
+  The first paragraph goes here.
+  ```
+
+4. Put new optimized article media under `public/articles/` and reference it as
+  `/articles/<descriptive-file>.webp`. Older assets remain directly under `public/` or
+  existing subdirectories such as `public/slide/`; `public/media/` does not exist.
+5. Optionally add a Markdown file for each translation using its language code.
+6. Add every new content or media asset to `ASSET_PROVENANCE.md`.
+7. Run `npm run build:dev` and `npm run build:prod`.
+
+The listing and article route are generated automatically; no page or menu registration
+is needed. A valid date and level-one title are mandatory. Raw HTML is escaped, generated
+HTML is sanitized, and links are limited to safe relative URLs plus `http`, `https`, and
+`mailto`. Script, data, and protocol-relative URLs are rejected.
+
+### 8.4 Placeholder and real-content previews
+
+The hosted development environment uses generated placeholders so search engines cannot
+index a duplicate of production and so hardcoded content remains detectable. Placeholders
+are padded to approximately the real text length, making them suitable for layout review.
+
+Use `npm run dev:local` to compare actual and placeholder wording with the on-page
+selector. It preserves the current language and persists the selected copy mode. The
+local build is still `noindex` with a disallowing robots file. Because this is a static
+export, metadata and legacy Server Component markup that reads generated content directly
+remain real; client components consuming `useLang()` switch immediately. See
+[ARCHITECTURE.md §6.4](./ARCHITECTURE.md#64-switchable-local-content).
+
 ---
 
 ## 9. Branches, commits, PR checklist
@@ -254,7 +402,7 @@ still outstanding.
 Read [`CONTRIBUTING.md`](../CONTRIBUTING.md) and
 [`GUIDELINE_SOURCE_CODE.md`](./GUIDELINE_SOURCE_CODE.md) first — they cover the general
 rules. What follows is the build-specific part, from `AGENTS.md` and the maintenance
-rules in `ARCHITECTURE.md` §12 and `KT.md` §11.
+rules in `ARCHITECTURE.md` §12.
 
 - Branch from `main`, with a descriptive name like `feature/add-events` or
   `fix/content-links` (see §3).
@@ -263,33 +411,29 @@ rules in `ARCHITECTURE.md` §12 and `KT.md` §11.
 - **If your change alters structure, the content system, environments, or the build
   pipeline, update `docs/ARCHITECTURE.md` in the same PR.**
 - **If your change alters how a contributor does something day-to-day, update
-  `docs/KT.md` in the same PR.**
-- Before opening the PR:
-  1. `npm run lint`
-  2. `npm run build:dev` — read the `[verify]` output, not just the exit code
-  3. For anything you're not 100% sure built from committed files, run the clean-clone
-     check in §6
+  `docs/DEVELOPER.md` in the same PR.**
+- Before opening the PR, run `npm run ci` and read both `[verify]` reports, not just the
+  exit code. For anything you're not certain built from committed files, also run the
+  clean-clone check in §6.
 - No file under `src/` should name a language code or a blog post slug (§8) — grep for
   the language codes in `content/languages/` and the slugs in `content/blog/` if
   you're unsure whether you've introduced one.
 
 `CONTRIBUTING.md` is at the repository root and is the canonical general checklist.
-There is still no PR template (`.github/pull_request_template.md`) — worth adding if PR
-descriptions start to drift.
+The repository's pull-request template records validation, documentation, security,
+accessibility, and provenance considerations for reviewers.
 
 ---
 
 ## 10. Tests and the automatic build check
 
-There is currently **no automated test suite** beyond linting and the build
-verification:
+Automated checks are blocking in CI:
 
 - `npm run lint` — ESLint (`eslint.config.mjs`).
-- `playwright` is a `devDependency` in `package.json`, but there is no `test` script
-  and no test files in the repo — it isn't wired up yet.
-  [ARCHITECTURE.md §11](./ARCHITECTURE.md#11-known-gaps-and-planned-work) lists
-  automated visual regression testing (using Playwright) as suggested future work, not
-  yet agreed or started.
+- `npm run typecheck` checks TypeScript after generating content.
+- `npm run test:unit` covers metadata validation and Markdown sanitization payloads.
+- Playwright is intentionally not installed: there is no reliable e2e suite yet, and
+  the project does not expose a fake `test:e2e` script.
 - `build/verify.mjs` (run via `npm run verify`, or automatically inside `build:dev` /
   `build:prod`) is the closest thing to an automated check today. It inspects the
   exported `out/` directory and confirms:
@@ -298,12 +442,12 @@ verification:
   3. non-production pages contain no real prose from `content/languages/en.json`
   4. non-production pages contain none of `config/site.yml`'s `brand_terms`
 
-  Checks 3 and 4 warn rather than fail today (`build.fail_on_hardcoded_content: false`
-  — see §7). There is no equivalent check for production builds; a `prod` build with
-  `content_mode: real` skips checks 3 and 4 entirely, by design.
+  Checks 3 and 4 fail the build (`build.fail_on_hardcoded_content: true` — see §7).
+  A `prod` build with `content_mode: real` skips those placeholder-specific checks by
+  design.
 
-Until a real test suite exists, `npm run build:dev` plus a manual look at the running
-dev server (§4) is the practical verification step before a PR.
+Run `npm run ci` before a PR. CI performs the same lint, typecheck, unit-test, and
+verified-build gates.
 
 ---
 
@@ -311,8 +455,21 @@ dev server (§4) is the practical verification step before a PR.
 
 | Branch | Target | How | Status |
 |---|---|---|---|
-| `dev` (or, today, `Design2code` — see §3) | GitHub Pages | `.github/workflows/deploy-dev.yml`, automatic on push, plus a daily cron rebuild at 21:00 UTC (`config/site.yml: build.daily_rebuild_hour`) | ✅ working |
-| `main` | Cloudflare Pages | — | ⏳ designed for, not yet connected (per [STATUS.md](./STATUS.md), requirement 5) |
+| `main` | GitHub Pages preview | `.github/workflows/deploy-dev.yml`, placeholder build on merge and daily | ✅ working |
+| `main` | Cloudflare Pages | — | ⏳ designed for, not yet connected |
+
+The permanent preview always represents `main`; feature branches are validated by the
+pull-request workflow but do not replace the shared preview. The Pages workflow runs:
+
+- After every push to `main`, publishing the newly reviewed revision.
+- Daily at 21:00 UTC from the default branch (`main`). Today this is a build canary.
+  Once `src/lib/scheduler.ts` is used by rendered content, it will also refresh
+  date-sensitive static output.
+- Manually from the Actions tab. Checkout is explicitly pinned to `main`, so a manual
+  run cannot accidentally publish an unreviewed feature branch.
+
+The cron expression in `.github/workflows/deploy-dev.yml` is the sole schedule source;
+environment configuration does not duplicate workflow timing.
 
 There is no workflow file in this repo for a production/Cloudflare deploy — only
 `deploy-dev.yml` exists under `.github/workflows/`. Cloudflare Pages connects directly
@@ -323,17 +480,18 @@ TODO(bawse): once Cloudflare Pages is connected, document the actual trigger (pu
 `main`? manual promote?) and whether it runs `build:prod` or something Cloudflare
 configures itself.
 
+Development is trunk-based: create a short-lived branch from `main`, open a pull
+request, obtain maintainer review, and merge only after lint, typecheck, unit tests, and
+both builds pass. Roll back with a reviewed revert or a known-good artifact
+redeployment; never rewrite shared history.
+
 The GitHub Pages deploy job deliberately has no `actions/configure-pages` step — see
-the comment in `deploy-dev.yml` and the commit `87851c4` — because it fails when Pages
-isn't yet enabled on the repo, which would make a correct build look broken.
+the explanation in `deploy-dev.yml` — because it fails when Pages is not enabled on the
+repository, which would make a correct build look broken.
 
 ---
 
 ## 12. Troubleshooting
-
-For content-editing problems (blog post not appearing, missing translation keys,
-localhost 404), see [KT.md §9](./KT.md#9-common-problems) first — this section only
-covers setup/build issues KT.md doesn't.
 
 **`npm run build:dev` passes locally but fails in CI.**
 Local builds see every file in your working directory, including anything
@@ -354,16 +512,56 @@ Either `SITE_ENV=prod` is set in your shell from a previous session (check `$env
 You're probably hitting `localhost:3000` without the `/MainWebsiteUI` base path — see
 §4.
 
+For content images, confirm the file is under `public/`, reference it without the
+`public` prefix (new article media uses `/articles/<file>`), and match filename
+capitalization and extension exactly. Windows may hide a capitalization error that
+fails on Linux.
+
+**The build reports missing language keys.**
+This is informational. Missing keys fall back to the default language; the report shows
+which translations remain.
+
+**A new blog post does not appear.**
+Confirm that it is directly under `content/blog/`, has `meta.json`, contains at least
+`en.md`, uses a valid `YYYY-MM-DD` date, and begins with a level-one title. Restart the
+development server because new content directories are discovered at startup.
+
+**Content changes do not appear.**
+Content is generated at startup. Stop the development server and run `npm run dev`
+again.
+
 ---
 
-## 13. Related docs
+## 13. Project boundary
+
+This repository contains the frontend and static site only. It renders forms and static
+lists up to the submit action, but does not implement:
+
+- Volunteer-form processing.
+- Payment or donation processing.
+- Storage or email delivery of feedback submissions.
+- Live or user-specific data.
+- Authentication.
+
+Those capabilities belong to backend services. A change to behavior after form
+submission is therefore a backend request rather than a frontend implementation here.
+
+---
+
+## 14. Keeping documentation current
+
+Update documentation in the same pull request as behavior. Structural, content-system,
+environment, and build changes update [ARCHITECTURE.md](./ARCHITECTURE.md); practical
+setup and contributor workflow changes update this guide. Documentation that disagrees
+with the implementation is a defect.
+
+---
+
+## 15. Related docs
 
 | Doc | For |
 |---|---|
-| [STATUS.md](./STATUS.md) | Requirements, what's built, what's left — non-technical |
-| [KT.md](./KT.md) | How to add a language, add a blog post, edit text — day-to-day contributor tasks |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design and the reasoning behind it |
-| [build/README.md](../build/README.md) | Build script implementation detail |
 | [README.md](../README.md) | Project landing page |
 | [AGENTS.md](../AGENTS.md) | Rules that apply to any agent (human or AI) working in this repo |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | General contribution rules, for every kind of change |

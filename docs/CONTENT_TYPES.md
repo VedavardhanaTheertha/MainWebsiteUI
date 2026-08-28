@@ -11,10 +11,10 @@ type is intended to be structured. **All content should be of Madhwa Siddantha.*
 > | A blog article | **this one** | `content/blog/<slug>/` |
 > | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
 >
-> As the site is built today, **everything it displays comes from `content/` in this
-> repository**; nothing in the build reads WebsiteLibrary yet. The library pages render
-> category tiles from `content/languages/*.json`. Wiring the corpus into the site is
-> still to be done — see [STATUS.md](STATUS.md).
+> Website UI text and blog articles come from `content/` in this repository. The Bhakti
+> collection is generated from the WebsiteLibrary submodule during the build; other
+> library categories currently render tiles from `content/languages/*.json`. See
+> [ARCHITECTURE.md](ARCHITECTURE.md) for the current integration and known gaps.
 
 ## 1. Sacred Texts & Scriptures
 

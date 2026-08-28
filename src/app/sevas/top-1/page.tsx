@@ -3,11 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import SevaDetailClient from "@/components/SevaDetailClient";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Maha Annadaana Seva | Shri Shiroor Matha",
-  description: "Offer the sacred Maha Annadaana Seva at Shri Shiroor Matha — feed thousands of devotees in the name of the Divine.",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.top_seva;
 
 const seva = {
   name: "Maha Annadaana Seva",
@@ -17,7 +15,7 @@ const seva = {
   image: "/slide/KRAJ0835.JPG",
   significance: [
     "Annadaana — the gift of food — is considered the highest form of charity in the Vedic tradition. The scriptures declare: 'Annam Brahma' — food itself is Brahman.",
-    "By sponsoring the Maha Annadaana Seva at Shri Shiroor Matha, you participate in feeding thousands of pilgrims, devotees, scholars, and the needy who visit the Matha during Paryaya 2026-2028.",
+    content[defaultLang].pages.detected.top_seva_significance,
     "Each meal is prepared with devotion by trained volunteers, offered first to the Lord, and then distributed as prasada. Your contribution directly sustains this sacred tradition.",
   ],
   benefits: [

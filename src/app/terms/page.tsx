@@ -1,9 +1,9 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Terms of Service | Shri Shiroor Matha",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.terms;
+const terms = content[defaultLang].pages.terms;
 
 // TODO: Have legal counsel review and finalise all policy text before launch
 export default function TermsPage() {
@@ -22,17 +22,14 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">1. Acceptance of Terms</h2>
             <p>
-              By accessing or using the Shri Shiroor Matha website (shiroormatha.org), you agree to these
-              Terms of Service. If you do not agree, please do not use the site.
+              {terms.acceptance}
             </p>
           </section>
 
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">2. Seva Offerings & Donations</h2>
             <p>
-              All seva offerings and donations made through this website are voluntary contributions to Shri
-              Krishna Matha Paryaya Shri Shiroor Matha, a religious institution. Payments are processed
-              securely. Please refer to our{" "}
+              {terms.donations} Please refer to our{" "}
               <a href="/refund" className="text-[var(--color-text-brand)] hover:underline">
                 Refund Policy
               </a>{" "}
@@ -43,17 +40,14 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">3. Intellectual Property</h2>
             <p>
-              All content on this website — including text, images, logos, and design — is the property of
-              Shri Shiroor Matha or used with permission. You may not reproduce, distribute, or create
-              derivative works without written permission.
+              {terms.property}
             </p>
           </section>
 
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">4. Disclaimer</h2>
             <p>
-              This website is provided &ldquo;as is&rdquo; without warranties of any kind. Shri Shiroor Matha
-              does not guarantee the accuracy of all content and reserves the right to update information at any time.
+              {terms.disclaimer}
             </p>
           </section>
 

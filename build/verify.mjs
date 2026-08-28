@@ -5,10 +5,12 @@
 //
 //   1. robots.txt matches the environment's indexing policy
 //   2. non-production pages carry a noindex directive
-//   3. non-production pages contain no real content
-//   4. non-production pages contain none of the institution's brand terms
+//   3. every page has its route-specific production canonical URL
+//   4. non-production pages contain no real content
+//   5. non-production pages contain none of the institution's brand terms
+//   6. the web manifest exists and uses environment-correct paths
 //
-// Check 3 is the one that makes the architecture self-policing. In a placeholder
+// The content checks make the architecture partly self-policing. In a placeholder
 // build the generated content module contains no real text at all, so any real
 // sentence appearing in the output can only have come from a string hardcoded in
 // a component — exactly the mistake the content system exists to prevent.
@@ -23,6 +25,8 @@ import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "js-yaml";
+import { canonicalForRoute, routeForHtml } from "./canonical-utils.mjs";
+import { describeContentMode } from "./environment-utils.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outDir = path.join(rootDir, "out");
@@ -39,6 +43,7 @@ if (!environment) {
   console.error(`[verify] SITE_ENV="${envName}" is not defined in config/site.yml`);
   process.exit(1);
 }
+const mode = describeContentMode(environment.content_mode);
 
 const problems = [];
 const warnings = [];
@@ -101,11 +106,90 @@ if (!existsSync(outDir)) {
 }
 
 const htmlFiles = collectHtmlFiles(outDir);
+const sitemapEligibleHtmlFiles = htmlFiles.filter((file) => routeForHtml(outDir, file) !== null);
 if (!htmlFiles.length) {
   problems.push("out/ contains no HTML files — the export produced nothing.");
 }
 
-// ── Check 2: robots.txt matches the environment ──────────────────────────────
+// ── Check 2: web manifest is generated for the selected environment ─────────
+
+const manifestFile = path.join(outDir, "manifest.webmanifest");
+if (!existsSync(manifestFile)) {
+  problems.push("out/manifest.webmanifest is missing.");
+} else {
+  try {
+    const manifest = JSON.parse(readFileSync(manifestFile, "utf8"));
+    const basePath = environment.base_path ?? "";
+    const expectedRoot = basePath ? `${basePath}/` : "/";
+    if (manifest.start_url !== expectedRoot) {
+      problems.push(
+        `manifest start_url must be "${expectedRoot}" in the ${envName} environment.`
+      );
+    }
+    if (manifest.scope !== expectedRoot) {
+      problems.push(`manifest scope must be "${expectedRoot}" in the ${envName} environment.`);
+    }
+    const invalidIcon = (manifest.icons ?? []).find(
+      (icon) => typeof icon.src !== "string" || !icon.src.startsWith(`${basePath}/`)
+    );
+    if (!manifest.icons?.length || invalidIcon) {
+      problems.push(`manifest icons must use the ${envName} environment base path.`);
+    }
+  } catch (error) {
+    problems.push(`manifest.webmanifest is invalid JSON: ${error.message}`);
+  }
+}
+
+// ── Check 3: sitemap uses the canonical production origin ───────────────────
+
+const sitemapFile = path.join(outDir, "sitemap.xml");
+if (!existsSync(sitemapFile)) {
+  problems.push("out/sitemap.xml is missing.");
+} else {
+  const sitemap = readFileSync(sitemapFile, "utf8");
+  const productionOrigin = new URL(config.site.production_url).origin;
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  if (!locations.length) problems.push("sitemap.xml contains no URLs.");
+  const wrongOrigin = locations.find((location) => {
+    try {
+      return new URL(location).origin !== productionOrigin;
+    } catch {
+      return true;
+    }
+  });
+  if (wrongOrigin) problems.push(`sitemap.xml contains a non-canonical URL: ${wrongOrigin}`);
+  if (locations.length !== sitemapEligibleHtmlFiles.length) {
+    problems.push(
+      `sitemap.xml lists ${locations.length} URL(s), but the export contains ` +
+        `${sitemapEligibleHtmlFiles.length} indexable page(s).`
+    );
+  }
+}
+
+// ── Check 4: each HTML file has the route-specific production canonical ──────
+
+for (const file of htmlFiles) {
+  const relative = path.relative(outDir, file);
+  const route = routeForHtml(outDir, file);
+  const html = readFileSync(file, "utf8");
+  const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)"\s*\/?\s*>/gi)]
+    .map((match) => match[1]);
+
+  if (route === null) {
+    if (canonicals.length) problems.push(`${relative} is an error document and must not declare a canonical URL.`);
+    continue;
+  }
+
+  const expected = canonicalForRoute(config.site.production_url, route);
+  if (canonicals.length !== 1 || canonicals[0] !== expected) {
+    problems.push(
+      `${relative} must contain exactly one canonical URL, "${expected}"` +
+        (canonicals.length ? ` (found: ${canonicals.join(", ")}).` : " (found none).")
+    );
+  }
+}
+
+// ── Check 5: robots.txt matches the environment ──────────────────────────────
 
 const robotsFile = path.join(outDir, "robots.txt");
 if (!existsSync(robotsFile)) {
@@ -121,7 +205,7 @@ if (!existsSync(robotsFile)) {
   }
 }
 
-// ── Check 3: noindex on non-production pages ─────────────────────────────────
+// ── Check 6: noindex on non-production pages ─────────────────────────────────
 
 if (!environment.indexable) {
   const missing = htmlFiles.filter((file) => !/noindex/i.test(readFileSync(file, "utf8")));
@@ -133,9 +217,36 @@ if (!environment.indexable) {
   }
 }
 
-// ── Check 4: no real content in a placeholder build ──────────────────────────
+// ── Check 7: local selector is emitted only for switchable builds ───────────
 
-if (environment.content_mode !== "real") {
+const localToggleFiles = htmlFiles.filter((file) =>
+  readFileSync(file, "utf8").includes("data-local-content-toggle")
+);
+if (mode.switchable && localToggleFiles.length !== htmlFiles.length) {
+  problems.push("the local content selector must appear on every page in a switchable build.");
+}
+if (!mode.switchable && localToggleFiles.length) {
+  problems.push(`the local content selector must not appear in the ${envName} build.`);
+}
+
+const generatedContentFile = path.join(rootDir, "src", "gen", "content.ts");
+if (mode.switchable && existsSync(generatedContentFile)) {
+  const generatedContent = readFileSync(generatedContentFile, "utf8");
+  if (!generatedContent.includes("localPlaceholderContent") || !generatedContent.includes("·")) {
+    problems.push("a switchable build must contain the generated placeholder variant.");
+  }
+}
+if (!mode.switchable && existsSync(generatedContentFile)) {
+  const generatedContent = readFileSync(generatedContentFile, "utf8");
+  if (!/localPlaceholderContent = null/.test(generatedContent) ||
+      !/localPlaceholderBlogPosts: BlogPost\[\] \| null = null/.test(generatedContent)) {
+    problems.push(`the ${envName} bundle must not contain switchable alternate content.`);
+  }
+}
+
+// ── Check 8: no real content in a placeholder build ──────────────────────────
+
+if (mode.contentMode === "placeholder") {
   const defaultLangFile = path.join(
     rootDir,
     config.content.languages_dir,
@@ -143,8 +254,15 @@ if (environment.content_mode !== "real") {
   );
   const realProse = collectRealProse(JSON.parse(readFileSync(defaultLangFile, "utf8")));
 
+  // Include the generated module to prove real content was not merely hidden from
+  // rendered HTML while remaining available in the development client bundle.
+  const contentFiles = [
+    ...htmlFiles,
+    ...(existsSync(manifestFile) ? [manifestFile] : []),
+    ...(existsSync(generatedContentFile) ? [generatedContentFile] : []),
+  ];
   const leaks = [];
-  for (const file of htmlFiles) {
+  for (const file of contentFiles) {
     const text = decodeEntities(readFileSync(file, "utf8"));
     for (const phrase of realProse) {
       if (text.includes(phrase)) {
@@ -165,7 +283,7 @@ if (environment.content_mode !== "real") {
       .slice(0, 10)
       .map(([phrase, files]) => {
         const preview = phrase.length > 70 ? `${phrase.slice(0, 70)}…` : phrase;
-        return `    "${preview}"\n      in ${files.length} page(s), e.g. ${files[0]}`;
+        return `    "${preview}"\n      in ${files.length} output file(s), e.g. ${files[0]}`;
       });
 
     const summary =
@@ -179,13 +297,18 @@ if (environment.content_mode !== "real") {
   }
 }
 
-// ── Check 5: brand terms must not appear outside production ──────────────────
+// ── Check 9: brand terms must not appear in placeholder builds ───────────────
 
-if (environment.content_mode !== "real") {
+if (mode.contentMode === "placeholder") {
   const brandTerms = config.build?.brand_terms ?? [];
   const hits = new Map();
 
-  for (const file of htmlFiles) {
+  const contentFiles = [
+    ...htmlFiles,
+    ...(existsSync(manifestFile) ? [manifestFile] : []),
+    ...(existsSync(generatedContentFile) ? [generatedContentFile] : []),
+  ];
+  for (const file of contentFiles) {
     const text = decodeEntities(readFileSync(file, "utf8"));
     for (const term of brandTerms) {
       if (text.includes(term)) {
@@ -197,7 +320,7 @@ if (environment.content_mode !== "real") {
 
   if (hits.size) {
     const lines = [...hits.entries()].map(
-      ([term, files]) => `    "${term}" — ${files.length} page(s), e.g. ${files[0]}`
+      ([term, files]) => `    "${term}" — ${files.length} output file(s), e.g. ${files[0]}`
     );
     const summary =
       `brand terms found in a ${envName} build — these identify the institution and\n` +

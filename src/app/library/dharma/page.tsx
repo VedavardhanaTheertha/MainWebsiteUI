@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import LibraryCategoryPage from "@/components/library/LibraryCategoryPage";
+import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = {
-  title: "Dharma Vidhi | Library | Shri Shiroor Matha",
-  description: "Rituals, observances and the way of dharma.",
+  title: content[defaultLang].library.dharma.title,
+  description: content[defaultLang].library.dharma.desc,
 };
 
 export default function Page() {

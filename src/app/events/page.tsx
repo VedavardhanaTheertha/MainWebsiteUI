@@ -4,124 +4,11 @@ import SiteFooter from "@/components/SiteFooter";
 import ThisWeekRail from "@/components/ThisWeekRail";
 import EventsAccordion from "@/components/EventsAccordion";
 import EventsExact from "@/components/EventsExact";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Events | Shri Shiroor Matha, Udupi",
-  description: "Upcoming and past events at Shri Shiroor Matha during the Paryaya 2026-2028 term.",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.events;
 
-const allEvents = [
-  {
-    date: "2026-06-30",
-    displayDate: "30 June 2026",
-    category: "Pooja",
-    title: "Ashadha Shukravara Pooja",
-    location: "Shri Shiroor Matha, Udupi",
-    time: "7:00 AM",
-    description: "Special pooja observed every Friday of Ashadha month with floral offerings and bhajans.",
-    thisWeek: true,
-  },
-  {
-    date: "2026-07-02",
-    displayDate: "2 July 2026",
-    category: "Pravachana",
-    title: "Swamiji Pravachana — Bhagavata",
-    location: "Matha Auditorium, Udupi",
-    time: "5:30 PM",
-    description: "Evening discourse by Pujya Swamiji on the tenth canto of Shrimad Bhagavata.",
-    thisWeek: true,
-  },
-  {
-    date: "2026-07-04",
-    displayDate: "4 July 2026",
-    category: "Annadaana",
-    title: "Ashadha Annadaana Seva",
-    location: "Bhojana Shala, Shiroor Matha",
-    time: "11:30 AM",
-    description: "Community meal offering during the sacred Ashadha month — open to all devotees.",
-    thisWeek: true,
-  },
-  {
-    date: "2026-07-05",
-    displayDate: "5 July 2026",
-    category: "Utsava",
-    title: "Ashadha Ekadashi Celebrations",
-    location: "Udupi Sri Krishna Temple",
-    time: "6:00 AM onwards",
-    description: "Auspicious Ekadashi fasting day with Vishnu Sahasranama parayana and special Abhisheka.",
-    thisWeek: true,
-  },
-  {
-    date: "2026-07-05",
-    displayDate: "5 July 2026",
-    category: "Parayana",
-    title: "Vishnu Sahasranama Parayana",
-    location: "Shri Shiroor Matha, Udupi",
-    time: "4:00 PM",
-    description: "Group recitation of the thousand names of Lord Vishnu on Ekadashi.",
-    thisWeek: true,
-  },
-  {
-    date: "2026-07-12",
-    displayDate: "12 July 2026",
-    category: "Utsava",
-    title: "Paryaya Rathotsava",
-    location: "Udupi Sri Krishna Temple",
-    time: "6:00 AM onwards",
-    description: "The grand chariot festival — Lord Krishna's processional journey through the streets of Udupi, drawing lakhs of devotees.",
-    thisWeek: false,
-  },
-  {
-    date: "2026-07-15",
-    displayDate: "15 July 2026",
-    category: "Festival",
-    title: "Guru Purnima Celebrations",
-    location: "Shri Shiroor Matha, Udupi",
-    time: "8:00 AM",
-    description: "Offer prayers to the Guru lineage — special puja and ashirvachana by Pujya Swamiji.",
-    thisWeek: false,
-  },
-  {
-    date: "2026-08-16",
-    displayDate: "16 August 2026",
-    category: "Festival",
-    title: "Krishnashtami Mahotsava",
-    location: "Shri Shiroor Matha, Udupi",
-    time: "From midnight",
-    description: "Grand celebration of Lord Krishna's birth anniversary with Abhisheka, Alankaara, special poojas, and Annadaana.",
-    thisWeek: false,
-  },
-  {
-    date: "2026-10-15",
-    displayDate: "15 October 2026",
-    category: "Parayana",
-    title: "Dvaadashastuti Utsava",
-    location: "Shri Shiroor Matha, Udupi",
-    time: "9:00 AM",
-    description: "Annual recitation of the sacred twelve-verse hymn praising Lord Vishnu.",
-    thisWeek: false,
-  },
-  {
-    date: "2026-11-30",
-    displayDate: "30 November 2026",
-    category: "Annadaana",
-    title: "Karthika Annadaana Mahotsava",
-    location: "Bhojana Shala, Shiroor Matha",
-    time: "11:00 AM",
-    description: "Mass Annadaana on the auspicious Karthika month — feeding over 5,000 devotees in a single sitting.",
-    thisWeek: false,
-  },
-  {
-    date: "2027-01-14",
-    displayDate: "14 January 2027",
-    category: "Festival",
-    title: "Makara Sankranti Celebrations",
-    location: "Shri Shiroor Matha, Udupi",
-    time: "6:00 AM",
-    description: "Celebration of the harvest festival with sesame-jaggery offerings and special Nitya Pooja.",
-    thisWeek: false,
-  },
-];
+const allEvents = content[defaultLang].pages.events.items;
 
 const thisWeekEvents = allEvents.filter((e) => e.thisWeek).slice(0, 5);
 
@@ -150,7 +37,7 @@ export default function EventsPage() {
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-sm lg:text-base max-w-xl mx-auto">
           <span className="lg:hidden">Festivals, utsavas & more.</span>
-          <span className="hidden lg:inline">Festivals, utsavas, parayanasa, and more — the living rhythm of Paryaya 2026-2028.</span>
+          <span className="hidden lg:inline">{content[defaultLang].events_subtitle}</span>
         </p>
       </div>
 

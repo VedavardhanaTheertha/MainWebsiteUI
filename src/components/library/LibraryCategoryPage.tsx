@@ -15,7 +15,7 @@ export default function LibraryCategoryPage({ categoryKey }: { categoryKey: keyo
       <div className="max-w-3xl mx-auto lg:max-w-5xl">
         <div className="px-4 py-3">
           <Link href="/library" className="inline-block font-body text-[var(--color-text-brand)] text-xs hover:underline">
-            ← Library
+            ← {tr.library.page_title}
           </Link>
         </div>
 

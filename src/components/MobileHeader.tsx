@@ -22,13 +22,16 @@ export default function MobileHeader() {
   const currentIndex = languages.findIndex((l) => l.code === lang);
   const nextLanguage = languages[(currentIndex + 1) % languages.length];
 
-  useEffect(() => { setOpen(false); setExpanded(null); }, [pathname]);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   const toggle = (key: string) => setExpanded((prev) => (prev === key ? null : key));
+  const closeMenu = () => {
+    setOpen(false);
+    setExpanded(null);
+  };
 
   return (
     <header className="lg:hidden sticky top-0 z-50 shadow-md">
@@ -38,6 +41,7 @@ export default function MobileHeader() {
         {/* Left — logo only, circular saffron halo */}
         <Link
           href="/"
+          onClick={closeMenu}
           className="shrink-0 rounded-full p-1 focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
           style={{ background: "radial-gradient(circle, var(--color-saffron-50) 0%, transparent 72%)" }}
         >
@@ -76,7 +80,7 @@ export default function MobileHeader() {
               return (
                 <li key={item.key}>
                   {!hasChildren ? (
-                    <Link href={item.href!}
+                    <Link href={item.href!} onClick={closeMenu}
                       className={`block px-6 py-3 font-body text-[15px] font-medium transition-colors ${isActive ? "text-[var(--color-text-brand)] bg-[var(--color-saffron-100)]" : "text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)]"}`}>
                       {item.label}
                     </Link>
@@ -91,7 +95,7 @@ export default function MobileHeader() {
                         <ul className="bg-[var(--color-gold-100)] border-t border-[var(--color-saffron-600)]">
                           {item.children!.map((sub) => (
                             <li key={sub.key}>
-                              <Link href={sub.href}
+                              <Link href={sub.href} onClick={closeMenu}
                                 className="block px-8 py-2.5 font-body text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] hover:bg-[var(--color-saffron-100)] transition-colors">
                                 {sub.label}
                               </Link>

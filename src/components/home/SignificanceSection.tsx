@@ -1,4 +1,7 @@
 ﻿import Link from "next/link";
+import { content, defaultLang } from "@/gen/content";
+
+const detected = content[defaultLang].pages.detected;
 
 // TODO: Replace placeholder copy with approved content from management
 const blocks = [
@@ -9,9 +12,9 @@ const blocks = [
     image: "/vittala.png",
     imageAlt: "Devotees receiving prasada at the Bhojana Shala",
     body: [
-      `"Annam Brahma" — food is God. This is not poetry; it is the lived theology of Shri Shiroor Matha, practiced without interruption for over eight centuries. Every day, regardless of season, occasion, or crisis, the Bhojana Shala doors open and meals are served. Not to a select few, but to whoever arrives — pilgrim, scholar, traveller, or the simply hungry.`,
+      detected.significance_annadaana,
       `The tradition traces to the teaching of Sri Madhwacharya himself, who saw Annadaana not as charity but as the highest form of worship. When you feed a human being, you are feeding the Divine seated within them. There is no return expected, no prayer required of the recipient. The act is complete in itself.`,
-      `During Paryaya, this tradition scales to feed thousands daily. Supporting Annadaana — whether for fifty or five hundred people — is to become part of an unbroken chain of compassion stretching back to the 13th century.`,
+      detected.significance_paryaya,
     ],
     cta: { label: "Support Annadaana", href: "/sevas?category=Bhojana+Shala" },
   },
@@ -22,8 +25,8 @@ const blocks = [
     image: "/Madhwacharya-new.jpg",
     imageAlt: "Sri Madhwacharya, the founder of the Dvaita Vedanta tradition",
     body: [
-      `The story of Shri Shiroor Matha begins with Sri Madhwacharya (1238–1317 CE), the philosopher-saint who established the Dvaita Vedanta school and created the Ashta Mathas of Udupi — eight monasteries entrusted with the continuous worship of Lord Krishna.`,
-      `Among these eight, Shri Shiroor Matha has maintained an unbroken apostolic succession for over 36 generations — each Swamiji chosen, trained, and consecrated to carry the living flame of the tradition forward. The Paryaya system — wherein each Matha takes a two-year turn as the presiding institution in Udupi — ensures this flame is continuously tended.`,
+      detected.significance_founding,
+      detected.significance_lineage,
       `The Matha's legacy extends beyond ritual: it has been a centre of Sanskrit learning, Vedic preservation, and social welfare for centuries. To visit is to step into a tradition older than most nations on earth.`,
     ],
     cta: { label: "Read the Full History", href: "/about" },
@@ -36,7 +39,7 @@ const blocks = [
     imageAlt: "Sacred pooja being performed at the main sannidhi",
     body: [
       `A pooja is not a transaction — it is a conversation with the infinite. Each element of a traditional pooja — the water, the flowers, the incense, the flame, the food — represents one of the five elements, and through them, the worshipper is symbolically offering back to God the world He has given us.`,
-      `At Shri Shiroor Matha, poojas are performed with extraordinary precision according to Madhwa Sampradaya traditions. The Nitya Pooja at dawn is a meditation on new beginnings. The Maha Pooja at noon is a celebration of the Divine in full radiance. The evening Chandan Pooja — where the deity is anointed with fragrant sandalwood paste — carries the cooling, calming quality of surrender.`,
+      detected.significance_poojas,
       `When you sponsor a pooja, you are not simply paying for a service. You are weaving your intention, your prayer, and your love into a sacred act that has been performed identically for generations. Your name is announced before the deity. Your family is prayed for. You become, briefly and beautifully, part of the ritual.`,
     ],
     cta: { label: "Offer a Pooja", href: "/sevas?category=Krishna+Sannidhi" },

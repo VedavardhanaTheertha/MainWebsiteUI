@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import MediaGrid from "@/components/media/MediaGrid";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Photos | Media | Shri Shiroor Matha",
-  description: "Photo gallery of ceremonies, seva activities, and sacred moments at Shri Shiroor Matha.",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.media_photos;
 
 export default function MediaPhotosPage() {
   return (

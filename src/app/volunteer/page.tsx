@@ -1,12 +1,9 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import ImageListCards from "@/components/ImageListCards";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Volunteer | Shri Shiroor Matha, Udupi",
-  description:
-    "Join the volunteer family of Shri Shiroor Matha during Paryaya 2026–2028. Offer your time and skills to the Divine.",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.volunteer;
 
 // TODO: Confirm roles, contact details, and form link with management
 const roles = [
@@ -49,7 +46,7 @@ const roles = [
     icon: "🧒",
     title: "Youth Engagement",
     description:
-      "Run cultural programs, teach children about the tradition, and involve the next generation in the Paryaya celebrations.",
+      content[defaultLang].pages.detected.volunteer_role,
     commitment: "Weekends",
   },
 ];
@@ -58,7 +55,7 @@ const whyVolunteer = [
   {
     icon: "🙏",
     title: "Sacred Service",
-    body: "Volunteering at the Matha during Paryaya is seva — not work. You carry forward an 800-year tradition with every hour you give.",
+    body: content[defaultLang].pages.detected.volunteer_why,
   },
   {
     icon: "🌐",
@@ -84,8 +81,7 @@ export default function VolunteerPage() {
           Become a Volunteer
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-base max-w-xl mx-auto">
-          The Paryaya needs more than donations — it needs willing hands, warm hearts, and dedicated souls.
-          Join us.
+          {content[defaultLang].vol_subtitle}
         </p>
       </div>
 
@@ -167,8 +163,7 @@ export default function VolunteerPage() {
             Ready to Serve?
           </h2>
           <p className="font-body text-[var(--color-text-brand)]/75 text-base mb-6 max-w-xl mx-auto">
-            Fill out the volunteer registration form and our team will reach out within 48 hours. All backgrounds,
-            ages, and skill levels are welcome.
+            {content[defaultLang].vol_ready_body}
           </p>
 
           {/* TODO: Replace href with actual volunteer registration form link from management */}
@@ -184,7 +179,7 @@ export default function VolunteerPage() {
 
           <p className="font-body text-xs text-[var(--color-text-brand)]/40 mt-4">
             {/* TODO: Replace with real contact info from management */}
-            Questions? Email us at volunteer@shiroor.matha.in
+            {content[defaultLang].pages.volunteer_question}
           </p>
         </section>
       </div>

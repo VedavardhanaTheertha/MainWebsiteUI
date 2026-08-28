@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import LibraryGrid from "@/components/library/LibraryGrid";
+import { content, defaultLang } from "@/gen/content";
 
-export const metadata: Metadata = {
-  title: "Library | Shri Shiroor Matha",
-  description: "Sacred texts, chants, devotional songs, wisdom archives, and ritual guides from Shri Shiroor Matha.",
-};
+export const metadata: Metadata = content[defaultLang].page_metadata.library;
 
 export default function LibraryPage() {
   return (

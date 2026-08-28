@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import LibraryCategoryPage from "@/components/library/LibraryCategoryPage";
+import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = {
-  title: "Jnāna Kosha | Library | Shri Shiroor Matha",
-  description: "A treasury of knowledge, glossary and reference.",
+  title: content[defaultLang].library.jnana.title,
+  description: content[defaultLang].library.jnana.desc,
 };
 
 export default function Page() {

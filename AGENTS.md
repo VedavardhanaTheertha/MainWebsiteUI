@@ -1,7 +1,11 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
 <!-- END:nextjs-agent-rules -->
 
 # Project rules
@@ -11,8 +15,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 All user-visible text lives in `content/languages/*.json`; articles live in
 `content/blog/<slug>/`. **Never hardcode a display string in `src/`.** Components read
 content through `useLang()`. This is what allows a contributor to add a language or an
-article without touching code, and it is enforced by `build/verify.mjs`, which fails or
-warns when real text appears in a placeholder build.
+article without touching code. `build/verify.mjs` fails on the detectable leak classes
+described below.
 
 No file in `src/` may name a language or a blog post. Both are discovered from the
 filesystem at build time by `scripts/generate-content.mjs`.
@@ -21,12 +25,15 @@ filesystem at build time by `scripts/generate-content.mjs`.
 
 Any change to the structure, content system, environments, or build pipeline **must**
 update `docs/ARCHITECTURE.md` in the same change. Changes to how contributors do things
-update `docs/KT.md`. Documentation that lies is worse than none, because people trust it.
+update `docs/DEVELOPER.md`. Documentation that lies is worse than none, because people trust it.
 
 ## Before claiming something works
 
-Run `npm run build:dev` and read the verification output. It reports hardcoded content
-and brand-term leaks that a passing type-check will not catch.
+Run `npm run build:dev` and read the verification output. In rendered HTML and the web
+manifest, it detects exact default-language JSON prose of at least 30 characters and
+configured brand terms at any length. This catches important leaks that type-checking
+cannot, but it is not a complete source-level guarantee: short, altered, or non-default
+language literals may evade it. Review `src/` for display strings as well.
 
 **A passing local build does not prove CI will pass.** Local builds run against the
 working directory, which includes files git ignores; CI only gets what is committed. A

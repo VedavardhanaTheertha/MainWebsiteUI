@@ -18,6 +18,8 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, statSy
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "js-yaml";
+import { renderMarkdown } from "../build/markdown.mjs";
+import { describeContentMode } from "../build/environment-utils.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
@@ -29,6 +31,9 @@ const PRESERVED_KEYS = new Set([
   "href", "img", "bg", "icon", "symbol", "upi", "images", "gallery",
   "launch_date", "end_date", "pinned_date", "date",
   "img_position",
+  // This local-only control must remain understandable while it selects which
+  // transform to preview. Its translated labels still come from content files.
+  "local_preview",
 ]);
 
 // Words appended to a placeholder so it roughly matches the length of the real
@@ -236,73 +241,6 @@ function toPlaceholders(node, langCode, prefix = "") {
 }
 
 /**
- * Converts the supported subset of Markdown to HTML: headings, paragraphs,
- * unordered lists, bold, italic and links. Deliberately minimal so the project
- * carries no Markdown dependency; swap in a full parser if posts outgrow it.
- */
-function markdownToHtml(markdown) {
-  const escapeHtml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-  const inline = (s) =>
-    escapeHtml(s)
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*([^*]+)\*/g, "<em>$1</em>");
-
-  const html = [];
-  let listOpen = false;
-  let paragraph = [];
-
-  const closeList = () => {
-    if (listOpen) {
-      html.push("</ul>");
-      listOpen = false;
-    }
-  };
-
-  // Consecutive non-blank lines form a single paragraph, as Markdown specifies —
-  // only a blank line or a block element starts a new one.
-  const flushParagraph = () => {
-    if (paragraph.length) {
-      html.push(`<p>${inline(paragraph.join(" "))}</p>`);
-      paragraph = [];
-    }
-  };
-
-  for (const rawLine of markdown.split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line) {
-      flushParagraph();
-      closeList();
-      continue;
-    }
-    const heading = line.match(/^(#{1,6})\s+(.*)$/);
-    if (heading) {
-      flushParagraph();
-      closeList();
-      const level = heading[1].length;
-      html.push(`<h${level}>${inline(heading[2])}</h${level}>`);
-      continue;
-    }
-    const bullet = line.match(/^[-*]\s+(.*)$/);
-    if (bullet) {
-      flushParagraph();
-      if (!listOpen) {
-        html.push("<ul>");
-        listOpen = true;
-      }
-      html.push(`<li>${inline(bullet[1])}</li>`);
-      continue;
-    }
-    closeList();
-    paragraph.push(line);
-  }
-  flushParagraph();
-  closeList();
-  return html.join("\n");
-}
-
-/**
  * Reads one `<lang>.md` article: the first level-1 heading becomes the title and
  * everything after it becomes the body.
  */
@@ -411,13 +349,14 @@ function writeRobots(env, config) {
 
 const config = loadConfig();
 const env = resolveEnvironment(config);
-const usePlaceholders = env.content_mode !== "real";
+const mode = describeContentMode(env.content_mode);
 const languageCodes = discoverLanguages(config);
 const defaultLang = config.site.default_language;
 
 const defaultContent = loadLanguage(config, defaultLang);
 
-const content = {};
+const realContent = {};
+const placeholderContent = {};
 const descriptors = [];
 const fallbackReport = {};
 
@@ -440,11 +379,18 @@ for (const code of languageCodes) {
     is_default: code === defaultLang,
   });
 
-  content[code] = usePlaceholders ? toPlaceholders(merged, code) : merged;
+  if (mode.includesReal) realContent[code] = merged;
+  if (mode.includesPlaceholder) placeholderContent[code] = toPlaceholders(merged, code);
 }
 
-let blogPosts = discoverBlogPosts(config, languageCodes);
-if (usePlaceholders) blogPosts = placeholderArticles(blogPosts);
+const discoveredBlogPosts = discoverBlogPosts(config, languageCodes);
+const realBlogPosts = mode.includesReal ? discoveredBlogPosts : [];
+const placeholderBlogPosts = mode.includesPlaceholder ? placeholderArticles(discoveredBlogPosts) : [];
+
+const content = mode.defaultVariant === "real" ? realContent : placeholderContent;
+const alternateContent = mode.switchable ? placeholderContent : null;
+const blogPosts = mode.defaultVariant === "real" ? realBlogPosts : placeholderBlogPosts;
+const alternateBlogPosts = mode.switchable ? placeholderBlogPosts : null;
 
 // Markdown is converted after the placeholder pass so placeholder bodies render
 // as ordinary paragraphs too.
@@ -453,7 +399,7 @@ const renderedPosts = blogPosts.map((post) => ({
   articles: Object.fromEntries(
     Object.entries(post.articles).map(([code, article]) => [
       code,
-      { title: article.title, html: markdownToHtml(article.bodyMarkdown) },
+      { title: article.title, html: renderMarkdown(article.bodyMarkdown) },
     ])
   ),
 }));
@@ -462,6 +408,26 @@ writeRobots(env, config);
 
 const outDir = path.join(rootDir, "src", "gen");
 mkdirSync(outDir, { recursive: true });
+
+function discoverStaticRoutes(dir, prefix = "") {
+  const routes = [];
+  for (const entry of readdirSync(dir)) {
+    const full = path.join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      if (!entry.startsWith("[") && !entry.startsWith("_")) {
+        routes.push(...discoverStaticRoutes(full, `${prefix}/${entry}`));
+      }
+    } else if (entry === "page.tsx") {
+      routes.push(prefix || "/");
+    }
+  }
+  return routes;
+}
+
+const routes = [
+  ...discoverStaticRoutes(path.join(rootDir, "src", "app")),
+  ...blogPosts.map((post) => `/blog/${post.slug}`),
+].filter((route, index, all) => all.indexOf(route) === index).sort();
 
 const langUnion = languageCodes.map((c) => `"${c}"`).join(" | ");
 const generated = `// AUTO-GENERATED by scripts/generate-content.mjs — do not edit directly.
@@ -479,7 +445,10 @@ export const defaultLang: Lang = "${defaultLang}";
 export const siteEnv = "${env.name}";
 
 /** Whether this bundle contains real content or generated placeholders. */
-export const isPlaceholderContent = ${usePlaceholders};
+export const isPlaceholderContent = ${mode.defaultVariant === "placeholder"};
+
+/** Whether this build enables the local runtime content selector. */
+export const isContentSwitchable = ${mode.switchable};
 
 /**
  * Environment settings resolved from config/site.yml at build time, so pages can
@@ -488,7 +457,6 @@ export const isPlaceholderContent = ${usePlaceholders};
 export const siteConfig = ${JSON.stringify(
   {
     env: env.name,
-    siteName: config.site.name,
     productionUrl: config.site.production_url,
     basePath: env.base_path ?? "",
     indexable: Boolean(env.indexable),
@@ -497,13 +465,36 @@ export const siteConfig = ${JSON.stringify(
   2
 )} as const;
 
+/** Static routes discovered from app pages and content-driven blog entries. */
+export const routes = ${JSON.stringify(routes, null, 2)} as const;
+
 /** Discovered languages, in switcher order. Add a file to content/languages/ to extend. */
 export const languages: LanguageDescriptor[] = ${JSON.stringify(descriptors, null, 2)};
 
 export const content = ${JSON.stringify(content, null, 2)} as unknown as Record<Lang, ContentShape>;
 
+/** Placeholder variant for local testing; null in development and production bundles. */
+export const localPlaceholderContent = ${JSON.stringify(alternateContent, null, 2)} as unknown as Record<Lang, ContentShape> | null;
+
 /** Discovered blog posts, newest first. Add a folder to content/blog/ to extend. */
 export const blogPosts: BlogPost[] = ${JSON.stringify(renderedPosts, null, 2)} as unknown as BlogPost[];
+
+/** Placeholder article variant for local testing; null in other bundles. */
+export const localPlaceholderBlogPosts: BlogPost[] | null = ${JSON.stringify(
+  alternateBlogPosts
+    ? alternateBlogPosts.map((post) => ({
+        ...post,
+        articles: Object.fromEntries(
+          Object.entries(post.articles).map(([code, article]) => [
+            code,
+            { title: article.title, html: renderMarkdown(article.bodyMarkdown) },
+          ])
+        ),
+      }))
+    : null,
+  null,
+  2
+)} as unknown as BlogPost[] | null;
 
 export type { ContentShape } from "@/lib/content-types";
 `;
@@ -525,6 +516,8 @@ for (const [code, fallbacks] of Object.entries(fallbackReport)) {
   );
 }
 
-if (usePlaceholders) {
+if (mode.contentMode === "placeholder") {
   console.log(`[content] placeholder mode — real text is not included in this build.`);
+} else if (mode.switchable) {
+  console.log(`[content] switchable mode — real and placeholder text are included; real is the default.`);
 }
