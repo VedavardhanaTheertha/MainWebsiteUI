@@ -38,6 +38,7 @@ jobs:
           ref: main
           submodules: recursive
           persist-credentials: false
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
 
       - uses: actions/setup-node@v4
         with:
