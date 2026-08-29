@@ -1,6 +1,3 @@
 [submodule "library"]
 	path = library
 	url = git@github.com:VedavardhanaTheertha/WebsiteLibrary.git
-[submodule "test_media"]
-	path = test_media
-	url = git@github.com:VedavardhanaTheertha/WebsiteTestMedia.git
