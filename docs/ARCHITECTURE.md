@@ -98,6 +98,12 @@ Shirooru/
 ├── config/
 │   └── site.yml                ← environment matrix, feature flags, deploy settings
 │
+├── settings/
+│   ├── dev/
+│   │   └── images.json          ← independent development image map
+│   └── prod/
+│       └── images.json          ← independent production image map
+│
 ├── docs/
 │   ├── ARCHITECTURE.md         ← this file — the design contract
 │   └── DEVELOPER.md            ← setup, knowledge transfer, and how-to guide
@@ -200,10 +206,17 @@ fallback — unlike a missing translation key, which has one.
 
 ### 5.3 Images
 
-Static assets currently live directly under `public/` and in existing subdirectories
-such as `public/slide/`. New article media goes in the tracked `public/articles/`
-directory and is referenced as `/articles/<file>`. There is no `public/media/`
-directory. Existing binaries are not moved merely to make the layout uniform.
+Image paths are centralized in independent maps under `settings/dev/` and
+`settings/prod/`. The active `SITE_ENV` selects `dev/images.json` or
+`prod/images.json` (`local` uses the dev map). Each map can
+define entirely different filenames and paths; dev currently uses the WebsiteTestMedia
+GitHub Pages base, while production uses `https://shiroormatha.org`. Content tokens
+such as `@image.krishna` and direct component imports resolve against the selected map;
+image filenames should not be hardcoded in content or source.
+
+Static assets currently live in the external WebsiteTestMedia repository for dev and
+under the production site's image paths for prod. Existing binaries are not duplicated
+in this repository merely to make the layout uniform.
 
 A contributor adding a post supplies both the Markdown file and the image in the same
 pull request. Images are pre-optimised at authoring time, because static export has no

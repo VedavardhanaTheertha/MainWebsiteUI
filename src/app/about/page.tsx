@@ -2,6 +2,7 @@
 import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
 import { content, defaultLang } from "@/gen/content";
+import { imagePaths } from "@/lib/images";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.about;
 
@@ -16,7 +17,7 @@ export default function AboutPage() {
       <div className="relative bg-[var(--color-parchment)] pt-4 pb-3 lg:pt-7 lg:pb-6 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <Image
-            src="/gopura.png"
+            src={imagePaths.gopura}
             alt=""
             fill
             className="object-cover object-center"
@@ -50,7 +51,7 @@ export default function AboutPage() {
             <div className="w-full lg:w-2/5 shrink-0">
               <div className="rounded-[18px] overflow-hidden">
                 <Image
-                  src="/Madhwacharya-new.jpg"
+                  src={imagePaths.madhwacharyaNew}
                   alt={page.founder_alt}
                   width={500}
                   height={600}
@@ -76,7 +77,7 @@ export default function AboutPage() {
           <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
             <div className="rounded-2xl overflow-hidden w-32 h-40 shrink-0 bg-[var(--color-saffron-100)]">
               <Image
-                src="/swamiji.png"
+                src={imagePaths.swamijiPortrait}
                 alt={page.pontiff_alt}
                 width={128}
                 height={160}

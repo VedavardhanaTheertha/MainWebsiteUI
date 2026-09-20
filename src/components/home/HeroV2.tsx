@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
+import { imagePaths } from "@/lib/images";
 
 const slides = [
   {
-    id: "krishna", bg: "/krishna.jpg",
+    id: "krishna", bg: imagePaths.krishna,
     label: "UDUPI SRI KRISHNA MATHA",
     headline: "The Divine Abode of Lord Krishna",
     body: "A 750-year-old seat of Madhwa philosophy, unbroken worship, and bhakti.",
@@ -13,7 +14,7 @@ const slides = [
     imgPosition: "center",
   },
   {
-    id: "swamiji", bg: "/swamiji.jpg",
+    id: "swamiji", bg: imagePaths.swamiji,
     label: "HIS HOLINESS SWAMIJI",
     headline: "Wisdom for the Modern Soul",
     body: "True devotion is not in words alone, but in selfless service to God and humanity.",
@@ -22,7 +23,7 @@ const slides = [
     imgPosition: "center top",
   },
   {
-    id: "shiroor", bg: "/shiroor-mutt.jpg",
+    id: "shiroor", bg: imagePaths.shiroorMutt,
     label: "PARYAYA 2026–2028",
     headline: "Shri Shiroor Matha Leads the Sacred Paryaya",
     body: "Every 14 years, Shri Shiroor Matha takes the helm — upholding centuries of tradition and devotion.",
@@ -123,7 +124,7 @@ export default function HeroV2() {
                 {/* Mandala background */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
                   <Image
-                    src="/chakra.png"
+                    src={imagePaths.chakra}
                     alt=""
                     width={380}
                     height={380}

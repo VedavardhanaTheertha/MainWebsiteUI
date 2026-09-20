@@ -4,17 +4,18 @@ import { useState, useMemo, useId } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
 import { sevas } from "@/data/sevas";
+import { imagePaths } from "@/lib/images";
 
 const categoryImg: Record<string, string> = {
-  "Krishna Sannidhi": "/krishna.jpg",
-  "Mukhyaprana Sannidhi": "/slide/KRAJ0615.JPG",
-  "Garuda Deva Sannidhi": "/vittala.png",
-  "Bhojana Shala": "/slide/KRAJ0835.JPG",
-  "Bhageerathi": "/shiroor-mutt.jpg",
-  "Navagraha": "/chakra.png",
-  "Subrahmanya": "/lord-vitthala.jpeg",
-  "Special": "/swamiji.jpg",
-  "Other": "/main-logo.png",
+  "Krishna Sannidhi": imagePaths.krishna,
+  "Mukhyaprana Sannidhi": imagePaths.kraj0615,
+  "Garuda Deva Sannidhi": imagePaths.vittala,
+  "Bhojana Shala": imagePaths.kraj0835,
+  "Bhageerathi": imagePaths.shiroorMutt,
+  "Navagraha": imagePaths.chakra,
+  "Subrahmanya": imagePaths.lordVitthala,
+  "Special": imagePaths.swamiji,
+  "Other": imagePaths.mainLogo,
 };
 
 const TABS = [
@@ -70,7 +71,7 @@ export default function AllSevaBrowser() {
         {items.map((s) => (
           <div key={s.id} className="flex items-center gap-3 bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] p-2.5 shadow-[var(--shadow-xs)]">
             <div className="relative w-[62px] h-[62px] shrink-0 rounded-[4px] overflow-hidden">
-              <Image src={categoryImg[s.category] ?? "/main-logo.png"} alt="" fill sizes="62px" className="object-cover" />
+              <Image src={categoryImg[s.category] ?? imagePaths.mainLogo} alt="" fill sizes="62px" className="object-cover" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-body font-semibold text-[15px] text-[var(--color-text-primary)] leading-tight">{s.name}</p>

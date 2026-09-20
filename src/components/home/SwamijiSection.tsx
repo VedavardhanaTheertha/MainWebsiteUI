@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import { useLang } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 
-// TODO: Replace /swamiji.png with real hi-res asset
 // TODO: Confirm Swamiji's exact name and title from management
 const SWAMIJI_NAME_EN = "His Holiness Shri Vidyavallabesha Theertha Swamiji";
 const SWAMIJI_NAME_KN = "ಪೂಜ್ಯ ಶ್ರೀ ವಿದ್ಯಾವಲ್ಲಭೇಶ ತೀರ್ಥ ಸ್ವಾಮಿಗಳು";
@@ -19,7 +19,7 @@ export default function SwamijiSection() {
       {/* Image with Ken Burns */}
       <div className="absolute inset-0 overflow-hidden">
         <img
-          src="/swamiji.png"
+          src={imagePaths.swamijiPortrait}
           alt="His Holiness Swamiji in divine composure"
           className="w-full h-full object-cover object-top animate-kenburns"
         />

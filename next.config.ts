@@ -50,6 +50,18 @@ const nextConfig: NextConfig = {
   // content decision: images are pre-optimized at authoring time).
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "vedavardhanatheertha.github.io",
+        pathname: "/WebsiteTestMedia/**",
+      },
+      {
+        protocol: "https",
+        hostname: "shiroormatha.org",
+        pathname: "/**",
+      },
+    ],
   },
   ...(basePath ? { basePath, assetPrefix: basePath } : {}),
 };

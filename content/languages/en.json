@@ -306,12 +306,12 @@
       "cta_label": "Our Mission",
       "cta_href": "/story",
       "images": [
-        "/krishna.jpg",
-        "/slide/KRAJ0615.JPG",
-        "/shiroor-mutt.jpg",
-        "/slide/KRAJ0835.JPG",
-        "/slide/go-matha.jpg",
-        "/swamiji.jpg"
+        "@image.krishna",
+        "@image.kraj0615",
+        "@image.shiroorMutt",
+        "@image.kraj0835",
+        "@image.goMatha",
+        "@image.swamiji"
       ]
     },
     "spotlight": [
@@ -319,35 +319,35 @@
         "tag": "This Season",
         "title": "Upcoming Events",
         "sub": "Rathotsava, Ekādashi & festival darshan",
-        "img": "/slide/KRAJ0835.JPG",
+        "img": "@image.kraj0835",
         "href": "/events"
       },
       {
         "tag": "Kainkarya",
         "title": "Projects & Seva Works",
         "sub": "The go-shāla, annadāna hall & restoration",
-        "img": "/slide/go-matha.jpg",
+        "img": "@image.goMatha",
         "href": "/volunteer"
       },
       {
         "tag": "Living Tradition",
         "title": "Significance of Paryāya",
         "sub": "The two-year cycle of Krishna's worship",
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "href": "/story"
       },
       {
         "tag": "Unbroken Lineage",
         "title": "Guru Paramparā",
         "sub": "From Madhvāchārya to the present Swāmiji",
-        "img": "/swamiji.jpg",
+        "img": "@image.swamiji",
         "href": "/story"
       },
       {
         "tag": "Kāshi of the South",
         "title": "Udupi, Abode of Shiva",
         "sub": "Where Chandramaulīshvara is revered",
-        "img": "/shiroor-mutt.jpg",
+        "img": "@image.shiroorMutt",
         "href": "/media"
       }
     ],
@@ -385,13 +385,13 @@
     ],
     "features": [
       {
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "title": "Krishna Mantra Lekhana Yajna",
         "cta_label": "Join the Yajna",
         "cta_href": "/events/mantra-yajna"
       },
       {
-        "img": "/shiroor-mutt.jpg",
+        "img": "@image.shiroorMutt",
         "title": "Last Week — Solar Power Installed at the Matha",
         "cta_label": "Read the News",
         "cta_href": "/media"
@@ -404,7 +404,7 @@
           "tag": "STORIES & PHILOSOPHY",
           "title": "Madhwa Philosophy & Bhakti",
           "summary": "Explore 750 years of Dvaita Vedanta wisdom, stories of saints, and the living tradition of Madhwacharya.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": null,
           "end_date": null,
@@ -424,7 +424,7 @@
           "tag": "STORIES & PHILOSOPHY",
           "title": "Guru Purnima Special: Honouring the Parampara",
           "summary": "A special reflection on the unbroken Guru Parampara, published around Guru Purnima.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": "2026-07-01",
           "end_date": "2026-07-31",
@@ -444,7 +444,7 @@
           "tag": "DAILY GUIDANCE",
           "title": "Scriptural Wisdom for Today",
           "summary": "Daily slokas, mantras, and teachings from the Bhagavata, Gita, and Upanishads — curated for modern life.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center top",
           "launch_date": null,
           "end_date": null,
@@ -464,7 +464,7 @@
           "tag": "DAILY GUIDANCE",
           "title": "Ekadashi Special Reading",
           "summary": "A focused scriptural reading and observance guide published on each Ekadashi.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center top",
           "launch_date": "2026-08-01",
           "end_date": "2026-08-15",
@@ -484,7 +484,7 @@
           "tag": "DIVINE DARSHAN",
           "title": "Sacred Moments in Photos",
           "summary": "Witness the beauty of Paryaya rituals, Rathotsava, Annadana, and the divine grace of Shri Krishna Matha.",
-          "bg": "/swamiji.jpg",
+          "bg": "@image.swamiji",
           "img_position": "center top",
           "launch_date": null,
           "end_date": null,
@@ -504,7 +504,7 @@
           "tag": "DIVINE DARSHAN",
           "title": "Deepotsava: A Gallery of Lights",
           "summary": "A dedicated photo set from the Deepotsava festival of lamps.",
-          "bg": "/swamiji.jpg",
+          "bg": "@image.swamiji",
           "img_position": "center top",
           "launch_date": "2026-11-01",
           "end_date": "2026-11-15",
@@ -524,7 +524,7 @@
           "tag": "SEVA — TANU MANA DHANA",
           "title": "Serve with Body, Mind & Wealth",
           "summary": "Offer your time, talents, or resources in the sacred service of the Lord during Paryaya 2026-2028.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": null,
           "end_date": null,
@@ -561,7 +561,7 @@
           "tag": "SEVA — TANU MANA DHANA",
           "title": "Paryaya Special Sevas",
           "summary": "Limited-window sevas offered only during the Paryaya transition period.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": "2026-01-01",
           "end_date": "2026-01-31",
@@ -590,7 +590,7 @@
           "tag": "PRAVACHANAS & VIDEOS",
           "title": "Teachings of Our Pontiff",
           "summary": "Watch and listen to discourses by Pujya Swamiji on Bhakti, Vedanta, and the path of righteousness.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center",
           "launch_date": null,
           "end_date": null,
@@ -610,7 +610,7 @@
           "tag": "PRAVACHANAS & VIDEOS",
           "title": "Gita Jayanti Discourse Series",
           "summary": "A special pravachana series released around Gita Jayanti.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center",
           "launch_date": "2026-12-01",
           "end_date": "2026-12-15",
@@ -634,7 +634,7 @@
           "tag": "TODAY",
           "title": "Panchanga",
           "teaser": "Tithi, Nakshatra & auspicious timings for today.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -653,7 +653,7 @@
           "tag": "UPCOMING",
           "title": "Events",
           "teaser": "Rathotsava, Krishnashtami, Dvaadashastuti & more.",
-          "img": "/slide/KRAJ0835.JPG",
+          "img": "@image.kraj0835",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -689,7 +689,7 @@
           "tag": "PROJECTS",
           "title": "Sacred Projects",
           "teaser": "Heritage restoration, Go Shala, and Vedic school initiatives.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -725,7 +725,7 @@
           "tag": "PROJECTS",
           "title": "Annual Projects Report",
           "teaser": "A yearly summary of completed and ongoing matha projects.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": "2026-04-01",
           "end_date": "2026-04-30",
           "pinned_date": null,
@@ -753,7 +753,7 @@
           "tag": "SERVE",
           "title": "Volunteering",
           "teaser": "Join 500+ volunteers in the sacred service of Paryaya.",
-          "img": "/slide/go-matha.jpg",
+          "img": "@image.goMatha",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -772,7 +772,7 @@
           "tag": "SERVE",
           "title": "Special Volunteer Drive",
           "teaser": "An extra call for hands during the busiest festival weeks.",
-          "img": "/slide/go-matha.jpg",
+          "img": "@image.goMatha",
           "launch_date": "2026-08-01",
           "end_date": "2026-08-20",
           "pinned_date": null,
@@ -791,7 +791,7 @@
           "tag": "LIVE",
           "title": "Seva in Numbers",
           "teaser": "41,200+ devotees served, 1,24,500 meals offered this Paryaya.",
-          "img": "/slide/KRAJ0835.JPG",
+          "img": "@image.kraj0835",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -827,7 +827,7 @@
           "tag": "LIVE",
           "title": "Paryaya So Far",
           "teaser": "Cumulative Annadana and Seva numbers since the Paryaya began.",
-          "img": "/slide/KRAJ0835.JPG",
+          "img": "@image.kraj0835",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -855,7 +855,7 @@
           "tag": "LATEST ARTICLE",
           "title": "The Significance of Paryaya",
           "teaser": "Why the 14-year tradition of Paryaya is one of Hinduism's greatest living rituals.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -874,7 +874,7 @@
           "tag": "LATEST ARTICLE",
           "title": "Annadana: Food as Worship",
           "teaser": "How the daily practice of feeding devotees became central to Matha life.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -945,7 +945,7 @@
     "mantra": {
       "title": "Mantra Nāda",
       "kn": "ಮಂತ್ರ ನಾದ",
-      "img": "/krishna.jpg",
+      "img": "@image.krishna",
       "desc": "Sacred chants and their meanings — to be heard, learned and recited.",
       "items": [
         {
@@ -969,7 +969,7 @@
     "shastra": {
       "title": "Shāstra Vidya",
       "kn": "ಶಾಸ್ತ್ರ ವಿದ್ಯಾ",
-      "img": "/swamiji.jpg",
+      "img": "@image.swamiji",
       "desc": "The scriptural knowledge of the Dvaita tradition.",
       "items": [
         {
@@ -993,7 +993,7 @@
     "bhakti": {
       "title": "Bhakti Gāna",
       "kn": "ಭಕ್ತಿ ಗಾನ",
-      "img": "/lord-vitthala.jpeg",
+      "img": "@image.lordVitthala",
       "desc": "Kannada devotional compositions of the Haridasa tradition.",
       "items": [],
       "page": {
@@ -1021,7 +1021,7 @@
     "jnana": {
       "title": "Jnāna Kosha",
       "kn": "ಜ್ಞಾನ ಕೋಶ",
-      "img": "/shiroor-mutt.jpg",
+      "img": "@image.shiroorMutt",
       "desc": "A treasury of knowledge, glossary and reference.",
       "items": [
         {
@@ -1045,7 +1045,7 @@
     "dharma": {
       "title": "Dharma Vidhi",
       "kn": "ಧರ್ಮ ವಿಧಿ",
-      "img": "/slide/KRAJ0615.JPG",
+      "img": "@image.kraj0615",
       "desc": "Rituals, observances and the way of dharma.",
       "items": [
         {
@@ -1103,7 +1103,7 @@
         "date": "Today · 7:30 pm",
         "dur": "Live",
         "views": "Streaming",
-        "img": "/slide/KRAJ0615.JPG",
+        "img": "@image.kraj0615",
         "desc": "The evening mangalārathi from the sanctum, streamed live from Udupi."
       },
       {
@@ -1114,7 +1114,7 @@
         "date": "9 Jul 2026",
         "dur": "2 hr",
         "views": "Sanctum",
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "desc": "Special worship and fasting observance on the sacred Ekādashi day."
       },
       {
@@ -1125,7 +1125,7 @@
         "date": "12 Jul 2026",
         "dur": "Full day",
         "views": "Car Street",
-        "img": "/slide/KRAJ0835.JPG",
+        "img": "@image.kraj0835",
         "desc": "The grand chariot of Shri Krishna is drawn through the streets of Udupi."
       },
       {
@@ -1136,7 +1136,7 @@
         "date": "26 Aug 2026",
         "dur": "Full day",
         "views": "Matha",
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "desc": "The birth of Lord Krishna celebrated with abhisheka, bhajans and prasāda."
       },
       {
@@ -1147,7 +1147,7 @@
         "date": "18 Jul 2026",
         "dur": "1.5 hr",
         "views": "Vedic school",
-        "img": "/swamiji.jpg",
+        "img": "@image.swamiji",
         "desc": "Initiation of new students into the Matha's Vedic pāthashāla."
       },
       {
@@ -1158,7 +1158,7 @@
         "date": "18 Jan 2026",
         "dur": "1:24:00",
         "views": "Recording",
-        "img": "/shiroor-mutt.jpg",
+        "img": "@image.shiroorMutt",
         "desc": "The ceremonial handover of the Paryāya — highlights and full recording."
       },
       {
@@ -1169,7 +1169,7 @@
         "date": "20 Nov 2025",
         "dur": "32:10",
         "views": "Recording",
-        "img": "/slide/go-matha.jpg",
+        "img": "@image.goMatha",
         "desc": "Worship of the sacred cattle of the Go Shāla on Gopāshtami."
       },
       {
@@ -1180,50 +1180,50 @@
         "date": "31 Oct 2025",
         "dur": "48:22",
         "views": "Recording",
-        "img": "/slide/KRAJ0835.JPG",
+        "img": "@image.kraj0835",
         "desc": "The Matha aglow with thousands of oil lamps on Deepāvali."
       }
     ]
   },
   "media": {
     "gallery": [
-      "/slide/KRAJ0615.JPG",
-      "/krishna.jpg",
-      "/slide/KRAJ0835.JPG",
-      "/swamiji.jpg",
-      "/shiroor-mutt.jpg",
-      "/slide/go-matha.jpg"
+      "@image.kraj0615",
+      "@image.krishna",
+      "@image.kraj0835",
+      "@image.swamiji",
+      "@image.shiroorMutt",
+      "@image.goMatha"
     ],
     "photos": [
       {
         "title": "Morning Mangalārathi",
         "detail": "Sanctum · Jun 2026",
-        "img": "/slide/KRAJ0835.JPG"
+        "img": "@image.kraj0835"
       },
       {
         "title": "Sri Krishna Alankāra",
         "detail": "Festival darshan",
-        "img": "/krishna.jpg"
+        "img": "@image.krishna"
       },
       {
         "title": "The Go Shāla",
         "detail": "Cattle care",
-        "img": "/slide/go-matha.jpg"
+        "img": "@image.goMatha"
       },
       {
         "title": "Annadhāna Hall",
         "detail": "Pilgrims fed daily",
-        "img": "/slide/KRAJ0615.JPG"
+        "img": "@image.kraj0615"
       },
       {
         "title": "His Holiness",
         "detail": "Daily worship",
-        "img": "/swamiji.jpg"
+        "img": "@image.swamiji"
       },
       {
         "title": "Shiroor Matha",
         "detail": "Car Street, Udupi",
-        "img": "/shiroor-mutt.jpg"
+        "img": "@image.shiroorMutt"
       }
     ],
     "videos": [
@@ -1231,25 +1231,25 @@
         "title": "Live Mangalārathi",
         "detail": "Daily · 7:30 pm",
         "dur": "12:40",
-        "img": "/slide/KRAJ0835.JPG"
+        "img": "@image.kraj0835"
       },
       {
         "title": "Rathotsava 2025",
         "detail": "Chariot festival",
         "dur": "08:15",
-        "img": "/slide/KRAJ0615.JPG"
+        "img": "@image.kraj0615"
       },
       {
         "title": "Pravachana — Paryāya",
         "detail": "By His Holiness",
         "dur": "24:02",
-        "img": "/swamiji.jpg"
+        "img": "@image.swamiji"
       },
       {
         "title": "Go Pooja Ceremony",
         "detail": "Go Shāla",
         "dur": "06:30",
-        "img": "/slide/go-matha.jpg"
+        "img": "@image.goMatha"
       }
     ]
   },
@@ -1257,39 +1257,39 @@
     {
       "title": "Vedic Recitation",
       "sub": "Learn to chant the Veda with correct svara",
-      "img": "/swamiji.jpg"
+      "img": "@image.swamiji"
     },
     {
       "title": "Sanskrit for Beginners",
       "sub": "Read the language of the scriptures",
-      "img": "/krishna.jpg"
+      "img": "@image.krishna"
     },
     {
       "title": "Bhagavad Gītā Study",
       "sub": "Verse-by-verse, in the Dvaita view",
-      "img": "/slide/KRAJ0615.JPG"
+      "img": "@image.kraj0615"
     },
     {
       "title": "Haridāsa Sāhitya",
       "sub": "The devotional songs of the Dāsas",
-      "img": "/slide/KRAJ0835.JPG"
+      "img": "@image.kraj0835"
     }
   ],
   "volunteer_ops": [
     {
       "title": "Anna Daana Kitchen",
       "sub": "Help prepare and serve meals to pilgrims",
-      "img": "/slide/KRAJ0615.JPG"
+      "img": "@image.kraj0615"
     },
     {
       "title": "Go Shāla Care",
       "sub": "Tend to the cattle — fodder, shelter, cleaning",
-      "img": "/slide/go-matha.jpg"
+      "img": "@image.goMatha"
     },
     {
       "title": "Festival Seva",
       "sub": "Assist during Rathotsava & Krishnashtami",
-      "img": "/slide/KRAJ0835.JPG"
+      "img": "@image.kraj0835"
     }
   ],
   "donation": {
@@ -1523,7 +1523,7 @@
   "stories": {
     "parampara": {
       "title": "Guru Paramparā",
-      "img": "/swamiji.jpg",
+      "img": "@image.swamiji",
       "intro": "The unbroken lineage of gurus from Madhvāchārya to the present Swamiji of Shiroor Matha.",
       "items": [
         {
@@ -1546,7 +1546,7 @@
     },
     "articles": {
       "title": "Blogs",
-      "img": "/shiroor-mutt.jpg",
+      "img": "@image.shiroorMutt",
       "intro": "Reflections, news and reading from the Matha.",
       "items": [
         {
@@ -1569,7 +1569,7 @@
     },
     "science": {
       "title": "Hindu Science & Philosophy",
-      "img": "/krishna.jpg",
+      "img": "@image.krishna",
       "intro": "Where the wisdom of the Vedas meets enquiry and reason.",
       "items": [
         {
@@ -1592,7 +1592,7 @@
     },
     "pilgrim": {
       "title": "Pilgrim Site Info",
-      "img": "/shiroor-mutt.jpg",
+      "img": "@image.shiroorMutt",
       "intro": "Everything you need to plan your darshan at Udupi.",
       "items": [
         {

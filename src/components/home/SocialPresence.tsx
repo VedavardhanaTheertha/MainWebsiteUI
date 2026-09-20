@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useLang } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 
 // TODO: Replace hrefs with real social media URLs from management
 const socials = [
@@ -110,7 +111,7 @@ export default function SocialPresence() {
           style={{ borderRadius: "45% 0 0 45% / 50% 0 0 50%" }}
         >
           <img
-            src="/fb.JPG"
+            src={imagePaths.fb}
             alt="His Holiness Swamiji"
             className="w-full h-full object-cover object-center"
           />
@@ -122,7 +123,7 @@ export default function SocialPresence() {
           style={{ borderRadius: "50% 50% 0 0 / 20% 20% 0 0" }}
         >
           <img
-            src="/fb.JPG"
+            src={imagePaths.fb}
             alt="His Holiness Swamiji"
             className="w-full h-full object-cover object-center"
           />

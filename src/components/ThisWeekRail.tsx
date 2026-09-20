@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import Image from "next/image";
+import { imagePaths } from "@/lib/images";
 
 type Event = {
   displayDate: string;
@@ -86,7 +87,7 @@ export default function ThisWeekRail({ events }: { events: Event[] }) {
         {events.map((ev, i) => (
           <div key={i} className="event-card shrink-0 w-[200px] bg-white border border-[var(--color-saffron-600)] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
             <div className="relative w-full h-[110px]">
-              <Image src="/event.JPG" alt={ev.title} fill className="object-cover" sizes="200px" />
+              <Image src={imagePaths.event} alt={ev.title} fill className="object-cover" sizes="200px" />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/70 to-transparent" />
               <span className="absolute bottom-2 left-2"><CategoryBadge category={ev.category} /></span>
             </div>
@@ -104,7 +105,7 @@ export default function ThisWeekRail({ events }: { events: Event[] }) {
         {events.map((ev, i) => (
           <article key={i} className="event-card bg-white rounded-xl overflow-hidden border border-[var(--color-saffron-600)] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
             <div className="relative w-full h-[120px]">
-              <Image src="/event.JPG" alt={ev.title} fill className="object-cover" sizes="20vw" />
+              <Image src={imagePaths.event} alt={ev.title} fill className="object-cover" sizes="20vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/60 to-transparent" />
               <span className="absolute bottom-2 left-2"><CategoryBadge category={ev.category} /></span>
             </div>

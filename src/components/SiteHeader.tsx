@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useRef } from "react";
 import { useQRModal } from "@/hooks/useQRModal";
 import { useLang } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 import type { NavItem } from "@/lib/nav-types";
 
 type DropKey = string | null;
@@ -31,7 +32,7 @@ export default function SiteHeader() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2 rounded">
-          <Image src="/main-logo.png" alt={tr.logo_alt} width={48} height={48} className="object-contain" />
+          <Image src={imagePaths.mainLogo} alt={tr.logo_alt} width={48} height={48} className="object-contain" />
         </Link>
 
         {/* Nav */}

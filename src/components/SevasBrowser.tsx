@@ -4,17 +4,18 @@ import { useState, useMemo, useId } from "react";
 import Image from "next/image";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { sevas } from "@/data/sevas";
+import { imagePaths } from "@/lib/images";
 
 const categoryImg: Record<string, string> = {
-  "Krishna Sannidhi":     "/krishna.jpg",
-  "Mukhyaprana Sannidhi": "/slide/KRAJ0615.JPG",
-  "Garuda Deva Sannidhi": "/vittala.png",
-  "Bhojana Shala":        "/slide/KRAJ0835.JPG",
-  "Bhageerathi":          "/shiroor-mutt.jpg",
-  "Navagraha":            "/chakra.png",
-  "Subrahmanya":          "/lord-vitthala.jpeg",
-  "Special":              "/swamiji.jpg",
-  "Other":                "/main-logo.png",
+  "Krishna Sannidhi":     imagePaths.krishna,
+  "Mukhyaprana Sannidhi": imagePaths.kraj0615,
+  "Garuda Deva Sannidhi": imagePaths.vittala,
+  "Bhojana Shala":        imagePaths.kraj0835,
+  "Bhageerathi":          imagePaths.shiroorMutt,
+  "Navagraha":            imagePaths.chakra,
+  "Subrahmanya":          imagePaths.lordVitthala,
+  "Special":              imagePaths.swamiji,
+  "Other":                imagePaths.mainLogo,
 };
 
 const specialSevas = sevas.filter((s) => s.isSpecial);
@@ -22,7 +23,7 @@ const nityaSevas  = sevas.filter((s) => s.category === "Krishna Sannidhi");
 const allSevas    = sevas;
 
 function SevaCard({ seva, onOffer }: { seva: typeof sevas[0]; onOffer: () => void }) {
-  const img = categoryImg[seva.category] ?? "/main-logo.png";
+  const img = categoryImg[seva.category] ?? imagePaths.mainLogo;
   return (
     <article className="bg-white p-4 flex flex-col gap-2 border border-[var(--color-saffron-600)] shadow-sm hover:shadow-md transition-all duration-200">
       <div className="flex items-start gap-3">

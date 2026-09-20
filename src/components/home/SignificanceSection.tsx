@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 import { content, defaultLang } from "@/gen/content";
+import { imagePaths } from "@/lib/images";
 
 const detected = content[defaultLang].pages.detected;
 
@@ -9,7 +10,7 @@ const blocks = [
     id: "annadaana",
     tag: "Annadaana",
     title: "The Gift That Never Diminishes",
-    image: "/vittala.png",
+    image: imagePaths.vittala,
     imageAlt: "Devotees receiving prasada at the Bhojana Shala",
     body: [
       detected.significance_annadaana,
@@ -22,7 +23,7 @@ const blocks = [
     id: "founding",
     tag: "Our Story",
     title: "An Unbroken Flame Since the 13th Century",
-    image: "/Madhwacharya-new.jpg",
+    image: imagePaths.madhwacharyaNew,
     imageAlt: "Sri Madhwacharya, the founder of the Dvaita Vedanta tradition",
     body: [
       detected.significance_founding,
@@ -35,7 +36,7 @@ const blocks = [
     id: "poojas",
     tag: "Individual Poojas",
     title: "Each Pooja, a Universe of Meaning",
-    image: "/lord-vitthala.jpeg",
+    image: imagePaths.lordVitthala,
     imageAlt: "Sacred pooja being performed at the main sannidhi",
     body: [
       `A pooja is not a transaction — it is a conversation with the infinite. Each element of a traditional pooja — the water, the flowers, the incense, the flame, the food — represents one of the five elements, and through them, the worshipper is symbolically offering back to God the world He has given us.`,

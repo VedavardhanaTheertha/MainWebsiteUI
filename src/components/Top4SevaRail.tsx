@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import Image from "next/image";
+import { imagePaths } from "@/lib/images";
 
 const top4 = [
   {
@@ -9,7 +10,7 @@ const top4 = [
     tag: "TOP 1 SEVA",
     title: "Top 1 Seva",
     desc: "Details coming soon.",
-    img: "/slide/KRAJ0615.JPG",
+    img: imagePaths.kraj0615,
     href: "/sevas/top-1",
   },
   {
@@ -17,7 +18,7 @@ const top4 = [
     tag: "TOP 2 SEVA",
     title: "Top 2 Seva",
     desc: "Details coming soon.",
-    img: "/slide/KRAJ0835.JPG",
+    img: imagePaths.kraj0835,
     href: "/sevas#top2",
   },
   {
@@ -25,7 +26,7 @@ const top4 = [
     tag: "TOP 3 SEVA",
     title: "Top 3 Seva",
     desc: "Details coming soon.",
-    img: "/slide/go-matha.jpg",
+    img: imagePaths.goMatha,
     href: "/sevas#top3",
   },
   {
@@ -33,7 +34,7 @@ const top4 = [
     tag: "TOP 4 SEVA",
     title: "Top 4 Seva",
     desc: "Details coming soon.",
-    img: "/slide/KRAJ0615.JPG",
+    img: imagePaths.kraj0615,
     href: "/sevas#top4",
   },
 ];
