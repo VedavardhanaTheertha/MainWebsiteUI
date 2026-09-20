@@ -2,6 +2,7 @@
 
 import { useLang } from "@/context/LanguageContext";
 import { openVolunteerModal } from "@/hooks/useVolunteerModal";
+import { imagePaths } from "@/lib/images";
 
 const roles = {
   en: ["Logistics", "Guest Services", "Digital & Media", "Annadaana Support"],
@@ -13,7 +14,7 @@ export default function VolunteerCallout() {
 
   return (
     <section className="py-16 lg:py-20 relative overflow-hidden" aria-labelledby="volunteer-heading"
-      style={{ backgroundImage: "url('/Madhwacharya.jpg')", backgroundSize: "cover", backgroundPosition: "center top" }}>
+      style={{ backgroundImage: `url('${imagePaths.madhwacharya}')`, backgroundSize: "cover", backgroundPosition: "center top" }}>
       {/* Dark blend overlay */}
       <div className="absolute inset-0 bg-[var(--color-ink-900)]/91 pointer-events-none" aria-hidden="true" />
       <div className="relative z-10 max-w-7xl mx-auto px-5 lg:px-8">

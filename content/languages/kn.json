@@ -291,12 +291,12 @@
       "cta_label": "ನಮ್ಮ ಧ್ಯೇಯ",
       "cta_href": "/story",
       "images": [
-        "/krishna.jpg",
-        "/slide/KRAJ0615.JPG",
-        "/shiroor-mutt.jpg",
-        "/slide/KRAJ0835.JPG",
-        "/slide/go-matha.jpg",
-        "/swamiji.jpg"
+        "@image.krishna",
+        "@image.kraj0615",
+        "@image.shiroorMutt",
+        "@image.kraj0835",
+        "@image.goMatha",
+        "@image.swamiji"
       ]
     },
     "spotlight": [
@@ -304,35 +304,35 @@
         "tag": "ಈ ಋತುವಿನಲ್ಲಿ",
         "title": "ಮುಂಬರುವ ಉತ್ಸವಗಳು",
         "sub": "ರಥೋತ್ಸವ, ಏಕಾದಶಿ ಮತ್ತು ಹಬ್ಬದ ದರ್ಶನ",
-        "img": "/slide/KRAJ0835.JPG",
+        "img": "@image.kraj0835",
         "href": "/events"
       },
       {
         "tag": "ಕೈಂಕರ್ಯ",
         "title": "ಯೋಜನೆಗಳು ಮತ್ತು ಸೇವಾ ಕಾರ್ಯಗಳು",
         "sub": "ಗೋಶಾಲೆ, ಅನ್ನದಾನ ಸಭಾಂಗಣ ಮತ್ತು ಪುನಶ್ಚೇತನ",
-        "img": "/slide/go-matha.jpg",
+        "img": "@image.goMatha",
         "href": "/volunteer"
       },
       {
         "tag": "ಜೀವಂತ ಪರಂಪರೆ",
         "title": "ಪರ್ಯಾಯದ ಮಹತ್ವ",
         "sub": "ಕೃಷ್ಣನ ಪೂಜೆಯ ಎರಡು ವರ್ಷಗಳ ಚಕ್ರ",
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "href": "/story"
       },
       {
         "tag": "ಅವಿಚ್ಛಿನ್ನ ಪರಂಪರೆ",
         "title": "ಗುರು ಪರಂಪರಾ",
         "sub": "ಮಧ್ವಾಚಾರ್ಯರಿಂದ ಇಂದಿನ ಸ್ವಾಮೀಜಿಯವರೆಗೆ",
-        "img": "/swamiji.jpg",
+        "img": "@image.swamiji",
         "href": "/story"
       },
       {
         "tag": "ದಕ್ಷಿಣದ ಕಾಶಿ",
         "title": "ಉಡುಪಿ, ಶಿವನ ನೆಲೆ",
         "sub": "ಚಂದ್ರಮೌಳೀಶ್ವರನನ್ನು ಪೂಜಿಸುವ ಸ್ಥಳ",
-        "img": "/shiroor-mutt.jpg",
+        "img": "@image.shiroorMutt",
         "href": "/media"
       }
     ],
@@ -370,13 +370,13 @@
     ],
     "features": [
       {
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "title": "ಕೃಷ್ಣ ಮಂತ್ರ ಲೇಖನ ಯಜ್ಞ",
         "cta_label": "ಯಜ್ಞದಲ್ಲಿ ಸೇರಿ",
         "cta_href": "/events/mantra-yajna"
       },
       {
-        "img": "/shiroor-mutt.jpg",
+        "img": "@image.shiroorMutt",
         "title": "ಕಳೆದ ವಾರ — ಮಠದಲ್ಲಿ ಸೌರ ವಿದ್ಯುತ್ ಅಳವಡಿಕೆ",
         "cta_label": "ಸುದ್ದಿ ಓದಿ",
         "cta_href": "/media"
@@ -389,7 +389,7 @@
           "tag": "ಕಥೆಗಳು ಮತ್ತು ತತ್ವಶಾಸ್ತ್ರ",
           "title": "ಮಧ್ವ ತತ್ವಶಾಸ್ತ್ರ ಮತ್ತು ಭಕ್ತಿ",
           "summary": "750 ವರ್ಷಗಳ ದ್ವೈತ ವೇದಾಂತ ಜ್ಞಾನ, ಸಂತರ ಕಥೆಗಳು ಮತ್ತು ಮಧ್ವಾಚಾರ್ಯರ ಜೀವಂತ ಪರಂಪರೆಯನ್ನು ಅನ್ವೇಷಿಸಿ.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": null,
           "end_date": null,
@@ -409,7 +409,7 @@
           "tag": "ಕಥೆಗಳು ಮತ್ತು ತತ್ವಶಾಸ್ತ್ರ",
           "title": "ಗುರು ಪೂರ್ಣಿಮಾ ವಿಶೇಷ: ಪರಂಪರೆಗೆ ಗೌರವ",
           "summary": "ಗುರು ಪೂರ್ಣಿಮೆಯ ಸಮಯದಲ್ಲಿ ಪ್ರಕಟವಾಗುವ ಗುರು ಪರಂಪರೆಯ ಕುರಿತ ವಿಶೇಷ ಚಿಂತನೆ.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": "2026-07-01",
           "end_date": "2026-07-31",
@@ -429,7 +429,7 @@
           "tag": "ದೈನಂದಿನ ಮಾರ್ಗದರ್ಶನ",
           "title": "ಇಂದಿನ ಶಾಸ್ತ್ರ ಜ್ಞಾನ",
           "summary": "ಭಾಗವತ, ಗೀತೆ ಮತ್ತು ಉಪನಿಷತ್ತುಗಳಿಂದ ದೈನಂದಿನ ಶ್ಲೋಕಗಳು, ಮಂತ್ರಗಳು ಮತ್ತು ಬೋಧನೆಗಳು.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center top",
           "launch_date": null,
           "end_date": null,
@@ -449,7 +449,7 @@
           "tag": "ದೈನಂದಿನ ಮಾರ್ಗದರ್ಶನ",
           "title": "ಏಕಾದಶಿ ವಿಶೇಷ ಪಠಣ",
           "summary": "ಪ್ರತಿ ಏಕಾದಶಿಯಂದು ಪ್ರಕಟವಾಗುವ ವಿಶೇಷ ಶಾಸ್ತ್ರ ಪಠಣ ಮತ್ತು ಆಚರಣೆ ಮಾರ್ಗದರ್ಶಿ.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center top",
           "launch_date": "2026-08-01",
           "end_date": "2026-08-15",
@@ -469,7 +469,7 @@
           "tag": "ದಿವ್ಯ ದರ್ಶನ",
           "title": "ಫೋಟೋಗಳಲ್ಲಿ ಪವಿತ್ರ ಕ್ಷಣಗಳು",
           "summary": "ಪರ್ಯಾಯ ಆಚರಣೆಗಳು, ರಥೋತ್ಸವ, ಅನ್ನದಾನ ಮತ್ತು ಶ್ರೀ ಕೃಷ್ಣ ಮಠದ ದಿವ್ಯ ಕೃಪೆಯ ಸೌಂದರ್ಯವನ್ನು ವೀಕ್ಷಿಸಿ.",
-          "bg": "/swamiji.jpg",
+          "bg": "@image.swamiji",
           "img_position": "center top",
           "launch_date": null,
           "end_date": null,
@@ -489,7 +489,7 @@
           "tag": "ದಿವ್ಯ ದರ್ಶನ",
           "title": "ದೀಪೋತ್ಸವ: ದೀಪಗಳ ಗ್ಯಾಲರಿ",
           "summary": "ದೀಪಗಳ ಹಬ್ಬ ದೀಪೋತ್ಸವದ ವಿಶೇಷ ಫೋಟೋ ಸಂಗ್ರಹ.",
-          "bg": "/swamiji.jpg",
+          "bg": "@image.swamiji",
           "img_position": "center top",
           "launch_date": "2026-11-01",
           "end_date": "2026-11-15",
@@ -509,7 +509,7 @@
           "tag": "ಸೇವೆ — ತನು ಮನ ಧನ",
           "title": "ದೇಹ, ಮನಸ್ಸು ಮತ್ತು ಸಂಪತ್ತಿನಿಂದ ಸೇವೆ ಸಲ್ಲಿಸಿ",
           "summary": "ಪರ್ಯಾಯ 2026-2028ರ ಪವಿತ್ರ ಸೇವೆಯಲ್ಲಿ ನಿಮ್ಮ ಸಮಯ, ಪ್ರತಿಭೆ ಅಥವಾ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಅರ್ಪಿಸಿ.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": null,
           "end_date": null,
@@ -546,7 +546,7 @@
           "tag": "ಸೇವೆ — ತನು ಮನ ಧನ",
           "title": "ಪರ್ಯಾಯ ವಿಶೇಷ ಸೇವೆಗಳು",
           "summary": "ಪರ್ಯಾಯ ಪರಿವರ್ತನಾ ಅವಧಿಯಲ್ಲಿ ಮಾತ್ರ ಲಭ್ಯವಿರುವ ಸೀಮಿತ ಸೇವೆಗಳು.",
-          "bg": "/krishna.jpg",
+          "bg": "@image.krishna",
           "img_position": "center",
           "launch_date": "2026-01-01",
           "end_date": "2026-01-31",
@@ -575,7 +575,7 @@
           "tag": "ಪ್ರವಚನಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು",
           "title": "ನಮ್ಮ ಸ್ವಾಮೀಜಿಯ ಬೋಧನೆಗಳು",
           "summary": "ಭಕ್ತಿ, ವೇದಾಂತ ಮತ್ತು ಧರ್ಮ ಮಾರ್ಗದ ಕುರಿತು ಪೂಜ್ಯ ಸ್ವಾಮೀಜಿಯವರ ಪ್ರವಚನಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ಆಲಿಸಿ.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center",
           "launch_date": null,
           "end_date": null,
@@ -595,7 +595,7 @@
           "tag": "ಪ್ರವಚನಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು",
           "title": "ಗೀತಾ ಜಯಂತಿ ಪ್ರವಚನ ಸರಣಿ",
           "summary": "ಗೀತಾ ಜಯಂತಿಯ ಸಂದರ್ಭದಲ್ಲಿ ಬಿಡುಗಡೆಯಾಗುವ ವಿಶೇಷ ಪ್ರವಚನ ಸರಣಿ.",
-          "bg": "/shiroor-mutt.jpg",
+          "bg": "@image.shiroorMutt",
           "img_position": "center",
           "launch_date": "2026-12-01",
           "end_date": "2026-12-15",
@@ -619,7 +619,7 @@
           "tag": "ಇಂದು",
           "title": "ಪಂಚಾಂಗ",
           "teaser": "ಇಂದಿನ ತಿಥಿ, ನಕ್ಷತ್ರ ಮತ್ತು ಶುಭ ಸಮಯಗಳು.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -638,7 +638,7 @@
           "tag": "ಮುಂಬರುವ",
           "title": "ಕಾರ್ಯಕ್ರಮಗಳು",
           "teaser": "ರಥೋತ್ಸವ, ಕೃಷ್ಣಾಷ್ಟಮಿ, ದ್ವಾದಶಸ್ತುತಿ ಮತ್ತು ಹೆಚ್ಚಿನವು.",
-          "img": "/slide/KRAJ0835.JPG",
+          "img": "@image.kraj0835",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -674,7 +674,7 @@
           "tag": "ಯೋಜನೆಗಳು",
           "title": "ಪವಿತ್ರ ಯೋಜನೆಗಳು",
           "teaser": "ಪರಂಪರೆ ಪುನಶ್ಚೇತನ, ಗೋ ಶಾಲಾ ಮತ್ತು ವೈದಿಕ ಶಾಲಾ ಉಪಕ್ರಮಗಳು.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -710,7 +710,7 @@
           "tag": "ಯೋಜನೆಗಳು",
           "title": "ವಾರ್ಷಿಕ ಯೋಜನಾ ವರದಿ",
           "teaser": "ಪೂರ್ಣಗೊಂಡ ಮತ್ತು ನಡೆಯುತ್ತಿರುವ ಮಠದ ಯೋಜನೆಗಳ ವಾರ್ಷಿಕ ಸಾರಾಂಶ.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": "2026-04-01",
           "end_date": "2026-04-30",
           "pinned_date": null,
@@ -738,7 +738,7 @@
           "tag": "ಸೇವೆ ಸಲ್ಲಿಸಿ",
           "title": "ಸ್ವಯಂಸೇವೆ",
           "teaser": "ಪರ್ಯಾಯದ ಪವಿತ್ರ ಸೇವೆಯಲ್ಲಿ 500+ ಸ್ವಯಂಸೇವಕರೊಂದಿಗೆ ಸೇರಿ.",
-          "img": "/slide/go-matha.jpg",
+          "img": "@image.goMatha",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -757,7 +757,7 @@
           "tag": "ಸೇವೆ ಸಲ್ಲಿಸಿ",
           "title": "ವಿಶೇಷ ಸ್ವಯಂಸೇವಕ ಅಭಿಯಾನ",
           "teaser": "ಅತ್ಯಂತ ಜನನಿಬಿಡ ಹಬ್ಬದ ವಾರಗಳಲ್ಲಿ ಹೆಚ್ಚುವರಿ ಕೈಗಳಿಗಾಗಿ ವಿಶೇಷ ಕರೆ.",
-          "img": "/slide/go-matha.jpg",
+          "img": "@image.goMatha",
           "launch_date": "2026-08-01",
           "end_date": "2026-08-20",
           "pinned_date": null,
@@ -776,7 +776,7 @@
           "tag": "ನೇರ",
           "title": "ಸಂಖ್ಯೆಗಳಲ್ಲಿ ಸೇವೆ",
           "teaser": "41,200+ ಭಕ್ತರಿಗೆ ಸೇವೆ, ಈ ಪರ್ಯಾಯದಲ್ಲಿ 1,24,500 ಊಟಗಳು.",
-          "img": "/slide/KRAJ0835.JPG",
+          "img": "@image.kraj0835",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -812,7 +812,7 @@
           "tag": "ನೇರ",
           "title": "ಇಲ್ಲಿಯವರೆಗಿನ ಪರ್ಯಾಯ",
           "teaser": "ಪರ್ಯಾಯ ಪ್ರಾರಂಭವಾದಾಗಿನಿಂದ ಒಟ್ಟು ಅನ್ನದಾನ ಮತ್ತು ಸೇವಾ ಅಂಕಿಅಂಶಗಳು.",
-          "img": "/slide/KRAJ0835.JPG",
+          "img": "@image.kraj0835",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -840,7 +840,7 @@
           "tag": "ಇತ್ತೀಚಿನ ಲೇಖನ",
           "title": "ಪರ್ಯಾಯದ ಮಹತ್ವ",
           "teaser": "14 ವರ್ಷಗಳ ಪರ್ಯಾಯ ಪರಂಪರೆ ಹಿಂದೂ ಧರ್ಮದ ಶ್ರೇಷ್ಠ ಜೀವಂತ ಆಚರಣೆಗಳಲ್ಲಿ ಒಂದೇಕೆ.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -859,7 +859,7 @@
           "tag": "ಇತ್ತೀಚಿನ ಲೇಖನ",
           "title": "ಅನ್ನದಾನ: ಆಹಾರವೇ ಪೂಜೆ",
           "teaser": "ಭಕ್ತರಿಗೆ ಆಹಾರ ನೀಡುವ ದೈನಂದಿನ ಅಭ್ಯಾಸ ಮಠದ ಜೀವನದ ಕೇಂದ್ರವಾದದ್ದು ಹೇಗೆ.",
-          "img": "/slide/KRAJ0615.JPG",
+          "img": "@image.kraj0615",
           "launch_date": null,
           "end_date": null,
           "pinned_date": null,
@@ -930,7 +930,7 @@
     "mantra": {
       "title": "ಮಂತ್ರ ನಾದ",
       "kn": "ಮಂತ್ರ ನಾದ",
-      "img": "/krishna.jpg",
+      "img": "@image.krishna",
       "desc": "ಪವಿತ್ರ ಮಂತ್ರಗಳು ಮತ್ತು ಅವುಗಳ ಅರ್ಥಗಳು — ಕೇಳಲು, ಕಲಿಯಲು ಮತ್ತು ಪಠಿಸಲು.",
       "items": [
         {
@@ -954,7 +954,7 @@
     "shastra": {
       "title": "ಶಾಸ್ತ್ರ ವಿದ್ಯಾ",
       "kn": "ಶಾಸ್ತ್ರ ವಿದ್ಯಾ",
-      "img": "/swamiji.jpg",
+      "img": "@image.swamiji",
       "desc": "ದ್ವೈತ ಪರಂಪರೆಯ ಶಾಸ್ತ್ರೀಯ ಜ್ಞಾನ.",
       "items": [
         {
@@ -978,7 +978,7 @@
     "bhakti": {
       "title": "ಭಕ್ತಿ ಗಾನ",
       "kn": "ಭಕ್ತಿ ಗಾನ",
-      "img": "/lord-vitthala.jpeg",
+      "img": "@image.lordVitthala",
       "desc": "ಹರಿದಾಸ ಪರಂಪರೆಯ ಕನ್ನಡ ಭಕ್ತಿ ರಚನೆಗಳು.",
       "items": [],
       "page": {
@@ -1006,7 +1006,7 @@
     "jnana": {
       "title": "ಜ್ಞಾನ ಕೋಶ",
       "kn": "ಜ್ಞಾನ ಕೋಶ",
-      "img": "/shiroor-mutt.jpg",
+      "img": "@image.shiroorMutt",
       "desc": "ಜ್ಞಾನ, ಪದಕೋಶ ಮತ್ತು ಉಲ್ಲೇಖದ ಭಂಡಾರ.",
       "items": [
         {
@@ -1030,7 +1030,7 @@
     "dharma": {
       "title": "ಧರ್ಮ ವಿಧಿ",
       "kn": "ಧರ್ಮ ವಿಧಿ",
-      "img": "/slide/KRAJ0615.JPG",
+      "img": "@image.kraj0615",
       "desc": "ಆಚರಣೆಗಳು, ವಿಧಿಗಳು ಮತ್ತು ಧರ್ಮದ ಮಾರ್ಗ.",
       "items": [
         {
@@ -1088,7 +1088,7 @@
         "date": "ಇಂದು · ಸಂಜೆ 7:30",
         "dur": "ಲೈವ್",
         "views": "ಸ್ಟ್ರೀಮಿಂಗ್",
-        "img": "/slide/KRAJ0615.JPG",
+        "img": "@image.kraj0615",
         "desc": "ಗರ್ಭಗುಡಿಯಿಂದ ಸಂಜೆಯ ಮಂಗಳಾರತಿ, ಉಡುಪಿಯಿಂದ ನೇರ ಪ್ರಸಾರ."
       },
       {
@@ -1099,7 +1099,7 @@
         "date": "9 ಜುಲೈ 2026",
         "dur": "2 ಗಂಟೆ",
         "views": "ಗರ್ಭಗುಡಿ",
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "desc": "ಪವಿತ್ರ ಏಕಾದಶಿ ದಿನದಂದು ವಿಶೇಷ ಪೂಜೆ ಮತ್ತು ಉಪವಾಸ ಆಚರಣೆ."
       },
       {
@@ -1110,7 +1110,7 @@
         "date": "12 ಜುಲೈ 2026",
         "dur": "ಪೂರ್ಣ ದಿನ",
         "views": "ಕಾರ್ ಸ್ಟ್ರೀಟ್",
-        "img": "/slide/KRAJ0835.JPG",
+        "img": "@image.kraj0835",
         "desc": "ಶ್ರೀ ಕೃಷ್ಣನ ಭವ್ಯ ರಥವನ್ನು ಉಡುಪಿಯ ಬೀದಿಗಳಲ್ಲಿ ಎಳೆಯಲಾಗುತ್ತದೆ."
       },
       {
@@ -1121,7 +1121,7 @@
         "date": "26 ಆಗಸ್ಟ್ 2026",
         "dur": "ಪೂರ್ಣ ದಿನ",
         "views": "ಮಠ",
-        "img": "/krishna.jpg",
+        "img": "@image.krishna",
         "desc": "ಅಭಿಷೇಕ, ಭಜನೆಗಳು ಮತ್ತು ಪ್ರಸಾದದೊಂದಿಗೆ ಶ್ರೀ ಕೃಷ್ಣನ ಜನ್ಮ ಆಚರಣೆ."
       },
       {
@@ -1132,7 +1132,7 @@
         "date": "18 ಜುಲೈ 2026",
         "dur": "1.5 ಗಂಟೆ",
         "views": "ವೇದ ಪಾಠಶಾಲೆ",
-        "img": "/swamiji.jpg",
+        "img": "@image.swamiji",
         "desc": "ಮಠದ ವೇದ ಪಾಠಶಾಲೆಗೆ ಹೊಸ ವಿದ್ಯಾರ್ಥಿಗಳ ಪ್ರವೇಶ."
       },
       {
@@ -1143,7 +1143,7 @@
         "date": "18 ಜನವರಿ 2026",
         "dur": "1:24:00",
         "views": "ರೆಕಾರ್ಡಿಂಗ್",
-        "img": "/shiroor-mutt.jpg",
+        "img": "@image.shiroorMutt",
         "desc": "ಪರ್ಯಾಯದ ವಿಧ್ಯುಕ್ತ ಹಸ್ತಾಂತರ — ಮುಖ್ಯಾಂಶಗಳು ಮತ್ತು ಪೂರ್ಣ ರೆಕಾರ್ಡಿಂಗ್."
       },
       {
@@ -1154,7 +1154,7 @@
         "date": "20 ನವೆಂಬರ್ 2025",
         "dur": "32:10",
         "views": "ರೆಕಾರ್ಡಿಂಗ್",
-        "img": "/slide/go-matha.jpg",
+        "img": "@image.goMatha",
         "desc": "ಗೋಪಾಷ್ಟಮಿಯಂದು ಗೋಶಾಲೆಯ ಪವಿತ್ರ ಗೋವುಗಳ ಪೂಜೆ."
       },
       {
@@ -1165,50 +1165,50 @@
         "date": "31 ಅಕ್ಟೋಬರ್ 2025",
         "dur": "48:22",
         "views": "ರೆಕಾರ್ಡಿಂಗ್",
-        "img": "/slide/KRAJ0835.JPG",
+        "img": "@image.kraj0835",
         "desc": "ದೀಪಾವಳಿಯಂದು ಸಾವಿರಾರು ದೀಪಗಳಿಂದ ಬೆಳಗುವ ಮಠ."
       }
     ]
   },
   "media": {
     "gallery": [
-      "/slide/KRAJ0615.JPG",
-      "/krishna.jpg",
-      "/slide/KRAJ0835.JPG",
-      "/swamiji.jpg",
-      "/shiroor-mutt.jpg",
-      "/slide/go-matha.jpg"
+      "@image.kraj0615",
+      "@image.krishna",
+      "@image.kraj0835",
+      "@image.swamiji",
+      "@image.shiroorMutt",
+      "@image.goMatha"
     ],
     "photos": [
       {
         "title": "ಬೆಳಗಿನ ಮಂಗಳಾರತಿ",
         "detail": "ಗರ್ಭಗುಡಿ · ಜೂನ್ 2026",
-        "img": "/slide/KRAJ0835.JPG"
+        "img": "@image.kraj0835"
       },
       {
         "title": "ಶ್ರೀ ಕೃಷ್ಣ ಅಲಂಕಾರ",
         "detail": "ಹಬ್ಬದ ದರ್ಶನ",
-        "img": "/krishna.jpg"
+        "img": "@image.krishna"
       },
       {
         "title": "ಗೋಶಾಲೆ",
         "detail": "ಗೋವುಗಳ ಆರೈಕೆ",
-        "img": "/slide/go-matha.jpg"
+        "img": "@image.goMatha"
       },
       {
         "title": "ಅನ್ನದಾನ ಸಭಾಂಗಣ",
         "detail": "ಪ್ರತಿದಿನ ಯಾತ್ರಿಕರಿಗೆ ಊಟ",
-        "img": "/slide/KRAJ0615.JPG"
+        "img": "@image.kraj0615"
       },
       {
         "title": "ಪೂಜ್ಯ ಶ್ರೀಗಳು",
         "detail": "ದೈನಂದಿನ ಪೂಜೆ",
-        "img": "/swamiji.jpg"
+        "img": "@image.swamiji"
       },
       {
         "title": "ಶಿರೂರು ಮಠ",
         "detail": "ಕಾರ್ ಸ್ಟ್ರೀಟ್, ಉಡುಪಿ",
-        "img": "/shiroor-mutt.jpg"
+        "img": "@image.shiroorMutt"
       }
     ],
     "videos": [
@@ -1216,25 +1216,25 @@
         "title": "ನೇರ ಮಂಗಳಾರತಿ",
         "detail": "ಪ್ರತಿದಿನ · ಸಂಜೆ 7:30",
         "dur": "12:40",
-        "img": "/slide/KRAJ0835.JPG"
+        "img": "@image.kraj0835"
       },
       {
         "title": "ರಥೋತ್ಸವ 2025",
         "detail": "ರಥ ಹಬ್ಬ",
         "dur": "08:15",
-        "img": "/slide/KRAJ0615.JPG"
+        "img": "@image.kraj0615"
       },
       {
         "title": "ಪ್ರವಚನ — ಪರ್ಯಾಯ",
         "detail": "ಪೂಜ್ಯ ಶ್ರೀಗಳಿಂದ",
         "dur": "24:02",
-        "img": "/swamiji.jpg"
+        "img": "@image.swamiji"
       },
       {
         "title": "ಗೋ ಪೂಜಾ ಸಮಾರಂಭ",
         "detail": "ಗೋಶಾಲೆ",
         "dur": "06:30",
-        "img": "/slide/go-matha.jpg"
+        "img": "@image.goMatha"
       }
     ]
   },
@@ -1242,39 +1242,39 @@
     {
       "title": "ವೇದ ಪಠಣ",
       "sub": "ಸರಿಯಾದ ಸ್ವರದೊಂದಿಗೆ ವೇದ ಪಠಿಸಲು ಕಲಿಯಿರಿ",
-      "img": "/swamiji.jpg"
+      "img": "@image.swamiji"
     },
     {
       "title": "ಆರಂಭಿಕರಿಗೆ ಸಂಸ್ಕೃತ",
       "sub": "ಶಾಸ್ತ್ರಗಳ ಭಾಷೆಯನ್ನು ಓದಿ",
-      "img": "/krishna.jpg"
+      "img": "@image.krishna"
     },
     {
       "title": "ಭಗವದ್ಗೀತಾ ಅಧ್ಯಯನ",
       "sub": "ದ್ವೈತ ದೃಷ್ಟಿಕೋನದಲ್ಲಿ, ಶ್ಲೋಕದಿಂದ ಶ್ಲೋಕಕ್ಕೆ",
-      "img": "/slide/KRAJ0615.JPG"
+      "img": "@image.kraj0615"
     },
     {
       "title": "ಹರಿದಾಸ ಸಾಹಿತ್ಯ",
       "sub": "ದಾಸರ ಭಕ್ತಿಗೀತೆಗಳು",
-      "img": "/slide/KRAJ0835.JPG"
+      "img": "@image.kraj0835"
     }
   ],
   "volunteer_ops": [
     {
       "title": "ಅನ್ನದಾನ ಅಡುಗೆಮನೆ",
       "sub": "ಯಾತ್ರಿಕರಿಗೆ ಊಟ ತಯಾರಿಸಲು ಮತ್ತು ಬಡಿಸಲು ಸಹಾಯ ಮಾಡಿ",
-      "img": "/slide/KRAJ0615.JPG"
+      "img": "@image.kraj0615"
     },
     {
       "title": "ಗೋಶಾಲಾ ಆರೈಕೆ",
       "sub": "ಗೋವುಗಳ ಆರೈಕೆ — ಮೇವು, ಆಶ್ರಯ, ಸ್ವಚ್ಛತೆ",
-      "img": "/slide/go-matha.jpg"
+      "img": "@image.goMatha"
     },
     {
       "title": "ಹಬ್ಬದ ಸೇವೆ",
       "sub": "ರಥೋತ್ಸವ ಮತ್ತು ಕೃಷ್ಣಾಷ್ಟಮಿಯ ಸಮಯದಲ್ಲಿ ಸಹಾಯ ಮಾಡಿ",
-      "img": "/slide/KRAJ0835.JPG"
+      "img": "@image.kraj0835"
     }
   ],
   "donation": {
@@ -1327,7 +1327,7 @@
   "stories": {
     "parampara": {
       "title": "ಗುರು ಪರಂಪರಾ",
-      "img": "/swamiji.jpg",
+      "img": "@image.swamiji",
       "intro": "ಮಧ್ವಾಚಾರ್ಯರಿಂದ ಶಿರೂರು ಮಠದ ಇಂದಿನ ಸ್ವಾಮೀಜಿಯವರೆಗಿನ ಗುರುಗಳ ಅವಿಚ್ಛಿನ್ನ ಪರಂಪರೆ.",
       "items": [
         {
@@ -1350,7 +1350,7 @@
     },
     "articles": {
       "title": "ಬ್ಲಾಗ್‌ಗಳು",
-      "img": "/shiroor-mutt.jpg",
+      "img": "@image.shiroorMutt",
       "intro": "ಮಠದಿಂದ ಚಿಂತನೆಗಳು, ಸುದ್ದಿ ಮತ್ತು ಓದುವಿಕೆ.",
       "items": [
         {
@@ -1373,7 +1373,7 @@
     },
     "science": {
       "title": "ಹಿಂದೂ ವಿಜ್ಞಾನ ಮತ್ತು ತತ್ವಶಾಸ್ತ್ರ",
-      "img": "/krishna.jpg",
+      "img": "@image.krishna",
       "intro": "ವೇದಗಳ ಜ್ಞಾನ ಮತ್ತು ವಿಚಾರಣೆ ಹಾಗೂ ತರ್ಕ ಸಂಧಿಸುವಲ್ಲಿ.",
       "items": [
         {
@@ -1396,7 +1396,7 @@
     },
     "pilgrim": {
       "title": "ಯಾತ್ರಾ ಸ್ಥಳ ಮಾಹಿತಿ",
-      "img": "/shiroor-mutt.jpg",
+      "img": "@image.shiroorMutt",
       "intro": "ಉಡುಪಿಯಲ್ಲಿ ನಿಮ್ಮ ದರ್ಶನವನ್ನು ಯೋಜಿಸಲು ಬೇಕಾದ ಎಲ್ಲವೂ.",
       "items": [
         {

@@ -5,6 +5,7 @@ import ThisWeekRail from "@/components/ThisWeekRail";
 import EventsAccordion from "@/components/EventsAccordion";
 import EventsExact from "@/components/EventsExact";
 import { content, defaultLang } from "@/gen/content";
+import { imagePaths } from "@/lib/images";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.events;
 
@@ -18,7 +19,7 @@ export default function EventsPage() {
       {/* Madhwacharya watermark — full page */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0, opacity: 0.06 }}>
         <Image
-          src="/Madhwacharya.jpg"
+          src={imagePaths.madhwacharya}
           alt=""
           fill
           className="object-cover"

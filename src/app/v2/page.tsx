@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLang } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 
 // ─── DATA ────────────────────────────────────────────────────
 
@@ -33,14 +34,14 @@ const contactMenu = [
 
 const baseSlides = [
   {
-    id: "krishna", bg: "/krishna.jpg",
+    id: "krishna", bg: imagePaths.krishna,
     label: "UDUPI SRI KRISHNA MATHA",
     headline: "The Divine Abode of Lord Krishna",
     body: "A 750-year-old seat of Madhwa philosophy, unbroken worship, and bhakti, established by Jagadguru Sri Madhwacharya.",
     link: "Explore the Matha",
   },
   {
-    id: "swamiji", bg: "/swamiji.jpg",
+    id: "swamiji", bg: imagePaths.swamiji,
     label: "HIS HOLINESS SWAMIJI",
     headline: "Wisdom for the Modern Soul",
     body: "“True devotion is not in words alone, but in selfless service to God and humanity. May Sri Krishna’s grace illuminate every step.”",
@@ -140,7 +141,7 @@ function HeaderV2() {
       <div className="max-w-[1400px] mx-auto px-5 lg:px-8 h-16 flex items-center justify-between gap-6">
         {/* Logo */}
         <Link href="/v2" className="flex items-center gap-3 shrink-0">
-          <Image src="/main-logo.png" alt={tr.pages.v2.header_name} width={40} height={40} className="object-contain" />
+          <Image src={imagePaths.mainLogo} alt={tr.pages.v2.header_name} width={40} height={40} className="object-contain" />
           <div className="leading-tight hidden sm:block">
             <p className="font-display font-semibold text-[14px] text-[var(--color-text-primary)]">{tr.pages.v2.header_name}</p>
             <p className="font-body text-[10px] text-[var(--color-text-secondary)]">{tr.pages.v2.header_tagline}</p>
@@ -216,7 +217,7 @@ function HeaderV2() {
 function HeroV2() {
   const { tr } = useLang();
   const slides = useMemo(() => [...baseSlides, {
-    id: "institution", bg: "/shiroor-mutt.jpg",
+    id: "institution", bg: imagePaths.shiroorMutt,
     label: tr.pages.v2.slide_label,
     headline: tr.pages.v2.slide_headline,
     body: tr.pages.v2.slide_body,
@@ -252,7 +253,7 @@ function HeroV2() {
             {/* Chakra mandala — very subtle, full centre */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
               <img
-                src="/chakra.png" alt=""
+                src={imagePaths.chakra} alt=""
                 style={{ width: "500px", height: "500px", opacity: 0.06, animation: "mandala-spin 40s linear infinite", objectFit: "contain" }}
               />
             </div>
@@ -342,19 +343,19 @@ const baseGridCards = [
     title: "Wanna Volunteer?",
     sub: "",
     btn: "Get Involved",
-    img: "/swamiji.jpg",
+    img: imagePaths.swamiji,
   },
   {
     title: "Krishna Mantra Lekhana Yajna",
     sub: "Write “Shri Krishnaya Namaha” and align your sankalpa with the sacred presence of Shri Krishna at Udupi.",
     btn: "Join the Yajna",
-    img: "/krishna.jpg",
+    img: imagePaths.krishna,
   },
   {
     title: "Veda Parayana Seva",
     sub: "Support the sacred recitation of the Vedas at our Matha. Your offering helps sustain continuous Veda chanting, preserves timeless spiritual wisdom, and blesses the entire community.",
     btn: "Offer Seva",
-    img: "/shiroor-mutt.jpg",
+    img: imagePaths.shiroorMutt,
   },
 ];
 
@@ -363,7 +364,7 @@ function CardGrid() {
   const gridCards = [
     { ...baseGridCards[0], sub: tr.pages.v2.volunteer_sub },
     ...baseGridCards.slice(1),
-    { title: tr.pages.v2.heritage_title, sub: tr.pages.v2.heritage_sub, btn: "Know More", img: "/fb.JPG" },
+    { title: tr.pages.v2.heritage_title, sub: tr.pages.v2.heritage_sub, btn: "Know More", img: imagePaths.fb },
   ];
   return (
     <div className="w-full bg-[#F5ECD8] py-10 px-4 lg:px-8">

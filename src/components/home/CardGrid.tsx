@@ -1,43 +1,44 @@
 ﻿"use client";
 
 import Image from "next/image";
+import { imagePaths } from "@/lib/images";
 
 const gridCards = [
   {
     title: "Wanna Volunteer?",
     sub: "Be part of the sacred service during Paryaya 2026-28. Serve the divine by serving the devotees.",
     btn: "Get Involved",
-    img: "/slide/KRAJ0615.JPG",
+    img: imagePaths.kraj0615,
   },
   {
     title: "Krishna Mantra Lekhana Yajna",
     sub: "Write “Shri Krishnaya Namaha” and align your sankalpa with the sacred presence of Shri Krishna at Udupi.",
     btn: "Join the Yajna",
-    img: "/slide/KRAJ0835.JPG",
+    img: imagePaths.kraj0835,
   },
   {
     title: "Veda Parayana Seva",
     sub: "Support the sacred recitation of the Vedas at our Matha. Your offering helps sustain continuous Veda chanting and blesses the entire community.",
     btn: "Offer Seva",
-    img: "/slide/KRAJ0615.JPG",
+    img: imagePaths.kraj0615,
   },
   {
     title: "Paryaya Heritage Project",
     sub: "Contribute to the restoration and beautification of Shri Shiroor Matha's sacred spaces during the auspicious Paryaya 2026-28.",
     btn: "Know More",
-    img: "/slide/KRAJ0835.JPG",
+    img: imagePaths.kraj0835,
   },
   {
     title: "Upcoming Events",
     sub: "Rathotsava, Krishnashtami, Dvaadashastuti & more -- stay connected with all sacred events at Shri Shiroor Matha.",
     btn: "Explore Events",
-    img: "/slide/KRAJ0615.JPG",
+    img: imagePaths.kraj0615,
   },
   {
     title: "Go Matha Seva",
     sub: "Offer nourishment to the sacred cows at Shri Shiroor Matha. A timeless act of compassion and devotion.",
     btn: "Sponsor a Cow",
-    img: "/slide/go-matha.jpg",
+    img: imagePaths.goMatha,
   },
 ];
 

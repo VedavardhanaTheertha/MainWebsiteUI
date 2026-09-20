@@ -130,7 +130,8 @@ if (!existsSync(manifestFile)) {
       problems.push(`manifest scope must be "${expectedRoot}" in the ${envName} environment.`);
     }
     const invalidIcon = (manifest.icons ?? []).find(
-      (icon) => typeof icon.src !== "string" || !icon.src.startsWith(`${basePath}/`)
+      (icon) => typeof icon.src !== "string" ||
+        (!icon.src.startsWith(`${basePath}/`) && !/^https?:\/\//.test(icon.src))
     );
     if (!manifest.icons?.length || invalidIcon) {
       problems.push(`manifest icons must use the ${envName} environment base path.`);

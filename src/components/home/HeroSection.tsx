@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLang } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 
 const KOTILEKHANA_LINK = "#";
 const AUTO_ADVANCE_MS = 5500;
@@ -10,7 +11,7 @@ const AUTO_ADVANCE_MS = 5500;
 const slides = [
   {
     id: "krishna",
-    bg: "/krishna.jpg",
+    bg: imagePaths.krishna,
     label_en: "UDUPI SRI KRISHNA MATHA",
     label_kn: "ಉಡುಪಿ ಶ್ರೀ ಕೃಷ್ಣ ಮಠ",
     headline_en: "The Divine Abode of Lord Krishna",
@@ -25,7 +26,7 @@ const slides = [
   },
   {
     id: "swamiji",
-    bg: "/swamiji.jpg",
+    bg: imagePaths.swamiji,
     label_en: "HIS HOLINESS SWAMIJI",
     label_kn: "ಪೂಜ್ಯ ಸ್ವಾಮೀಜಿ",
     headline_en: "Wisdom for the Modern Soul",
@@ -42,7 +43,7 @@ const slides = [
   },
   {
     id: "shiroor",
-    bg: "/shiroor-mutt.jpg",
+    bg: imagePaths.shiroorMutt,
     label_en: "PARYAYA 2026–2028",
     label_kn: "ಪರ್ಯಾಯ ೨೦೨೦–೨೦೨೨",
     headline_en: "Shri Shiroor Matha Leads the Sacred Paryaya",

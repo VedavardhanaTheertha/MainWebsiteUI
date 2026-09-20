@@ -1,6 +1,7 @@
 ﻿import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
 import { content, defaultLang } from "@/gen/content";
+import { imagePaths } from "@/lib/images";
 
 export const metadata = content[defaultLang].page_metadata.yajna;
 
@@ -9,7 +10,7 @@ export default function MantraYajnaPage() {
     <>
       {/* Hero — matches the design reference's .m-dhero */}
       <div className="relative h-[180px] lg:h-[280px]">
-        <Image src="/krishna.jpg" alt="" fill sizes="100vw" className="object-cover" />
+        <Image src={imagePaths.krishna} alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(26,17,8,.1), rgba(26,17,8,.5))" }} />
         <div className="absolute left-4 lg:left-8 bottom-4 right-4">
           <p className="text-[10px] font-bold tracking-[.16em] uppercase text-[var(--color-saffron-200)]">{content[defaultLang].pages.detected.yajna_eyebrow}</p>

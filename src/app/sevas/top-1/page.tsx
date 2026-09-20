@@ -4,6 +4,7 @@ import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import SevaDetailClient from "@/components/SevaDetailClient";
 import { content, defaultLang } from "@/gen/content";
+import { imagePaths } from "@/lib/images";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.top_seva;
 
@@ -12,7 +13,7 @@ const seva = {
   category: "Annadaana",
   tagline: "Feed thousands in the name of the Divine",
   price: 5000,
-  image: "/slide/KRAJ0835.JPG",
+  image: imagePaths.kraj0835,
   significance: [
     "Annadaana — the gift of food — is considered the highest form of charity in the Vedic tradition. The scriptures declare: 'Annam Brahma' — food itself is Brahman.",
     content[defaultLang].pages.detected.top_seva_significance,

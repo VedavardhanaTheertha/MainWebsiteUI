@@ -3,6 +3,7 @@ import { Marcellus, Montserrat, Noto_Sans_Kannada, Noto_Serif_Devanagari } from 
 import "./globals.css";
 import { siteConfig, defaultLang, content } from "@/gen/content";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 import TopBar from "@/components/TopBar";
 import SiteHeader from "@/components/SiteHeader";
 import MobileHeader from "@/components/MobileHeader";
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
   title: content[defaultLang].meta_title,
   description: content[defaultLang].meta_description,
   keywords: content[defaultLang].meta_keywords,
-  icons: { icon: "/favicon.ico" },
+  icons: { icon: imagePaths.favicon },
   // Resolves relative page metadata against the intended production origin.
   // Per-route canonicals are normalized from exported paths by the build pipeline.
   metadataBase: new URL(siteConfig.productionUrl),

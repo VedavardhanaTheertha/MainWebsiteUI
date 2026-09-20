@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 
 const SOCIAL_ICONS: Record<string, React.ReactNode> = {
   Facebook: (
@@ -27,7 +28,7 @@ export default function SiteFooter() {
     <footer className="w-full" style={{ margin: 0 }}>
       {/* Mobile: centered ceremonial block, matching the design reference's .m-foot */}
       <div className="lg:hidden text-center px-6 pt-9 pb-[30px] bg-[var(--color-cream-soft)] border-t border-[var(--color-line)] mt-6">
-        <Image src="/main-logo.png" alt="" width={50} height={50} className="object-contain mx-auto mb-2 opacity-95" />
+        <Image src={imagePaths.mainLogo} alt="" width={50} height={50} className="object-contain mx-auto mb-2 opacity-95" />
         <p className="font-display text-[19px] text-[var(--color-text-primary)]">{tr.site_name}</p>
         <p className="text-xs text-[var(--color-text-brand)] mt-1.5" style={{ fontFamily: "var(--font-kannada)" }}>
           ॥ ಶ್ರೀ ವಿಠ್ಠಲೋ ವಿಜಯತೇ ॥
@@ -65,7 +66,7 @@ export default function SiteFooter() {
           <div className="flex items-center justify-between gap-3">
             {/* Left — logo + copyright stacked */}
             <div className="flex items-center gap-2.5">
-              <Image src="/main-logo.png" alt={tr.logo_alt} width={40} height={40} className="object-contain shrink-0" />
+              <Image src={imagePaths.mainLogo} alt={tr.logo_alt} width={40} height={40} className="object-contain shrink-0" />
               <p className="font-body text-[10px] text-[var(--color-text-muted)] leading-snug">
                 © {new Date().getFullYear()} {footer.copyright_text}
               </p>

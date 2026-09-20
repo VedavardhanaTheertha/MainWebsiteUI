@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { imagePaths } from "@/lib/images";
 import type { Lang } from "@/gen/content";
 import type { NavItem } from "@/lib/nav-types";
 
@@ -45,7 +46,7 @@ export default function MobileHeader() {
           className="shrink-0 rounded-full p-1 focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
           style={{ background: "radial-gradient(circle, var(--color-saffron-50) 0%, transparent 72%)" }}
         >
-          <Image src="/main-logo.png" alt={tr.logo_alt} width={44} height={44} className="object-contain" />
+          <Image src={imagePaths.mainLogo} alt={tr.logo_alt} width={44} height={44} className="object-contain" />
         </Link>
 
         {/* Centre — Kannada sacred sloka (absolutely centred in bar) */}

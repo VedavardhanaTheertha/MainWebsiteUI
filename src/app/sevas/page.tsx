@@ -4,6 +4,7 @@ import SevasBrowser from "@/components/SevasBrowser";
 import Top4SevaRail from "@/components/Top4SevaRail";
 import SiteFooter from "@/components/SiteFooter";
 import { content, defaultLang } from "@/gen/content";
+import { imagePaths } from "@/lib/images";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.sevas;
 
@@ -13,7 +14,7 @@ export default function SevasPage() {
       {/* Vittala watermark art — bottom fixed, orange tint */}
       <div className="fixed bottom-16 left-1/2 -translate-x-1/2 pointer-events-none" style={{ zIndex: 0, width: 340, height: 340, opacity: 0.07 }}>
         <Image
-          src="/vittala.png"
+          src={imagePaths.vittala}
           alt=""
           fill
           className="object-contain"

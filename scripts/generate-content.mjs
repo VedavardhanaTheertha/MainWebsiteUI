@@ -104,6 +104,38 @@ function loadLanguage(config, code) {
   }
 }
 
+/** Loads the single source of truth for all public image paths. */
+function loadImageConfig(environmentName) {
+  const configName = environmentName === "local" ? "dev" : environmentName;
+  const file = path.join(rootDir, "settings", configName, "images.json");
+  if (!existsSync(file)) {
+    throw new Error(`settings/${configName}/images.json is missing — it defines the website image paths.`);
+  }
+  const config = JSON.parse(readFileSync(file, "utf8"));
+  const baseUrl = config.baseUrl ?? "";
+  const paths = config.paths ?? {};
+  const resolve = (imagePath) => `${baseUrl}${imagePath}`;
+  const lookup = new Map(Object.entries(paths).map(([key, imagePath]) => [`@image.${key}`, resolve(imagePath)]));
+  for (const imagePath of Object.values(paths)) lookup.set(imagePath, resolve(imagePath));
+  for (const [alias, key] of Object.entries(config.aliases ?? {})) {
+    if (!paths[key]) throw new Error(`settings/images.json alias ${alias} points to unknown image ${key}.`);
+    lookup.set(alias, resolve(paths[key]));
+  }
+  return lookup;
+}
+
+/** Replaces legacy content paths with the paths currently selected in settings. */
+function resolveImagePaths(value, imageLookup) {
+  if (typeof value === "string") return imageLookup.get(value) ?? value;
+  if (Array.isArray(value)) return value.map((item) => resolveImagePaths(item, imageLookup));
+  if (isPlainObject(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, resolveImagePaths(item, imageLookup)])
+    );
+  }
+  return value;
+}
+
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -342,6 +374,7 @@ function writeRobots(env, config) {
         "User-agent: *",
         "Disallow: /",
       ];
+  mkdirSync(path.join(rootDir, "public"), { recursive: true });
   writeFileSync(path.join(rootDir, "public", "robots.txt"), lines.join("\n") + "\n", "utf8");
 }
 
@@ -349,11 +382,12 @@ function writeRobots(env, config) {
 
 const config = loadConfig();
 const env = resolveEnvironment(config);
+const imageLookup = loadImageConfig(env.name);
 const mode = describeContentMode(env.content_mode);
 const languageCodes = discoverLanguages(config);
 const defaultLang = config.site.default_language;
 
-const defaultContent = loadLanguage(config, defaultLang);
+const defaultContent = resolveImagePaths(loadLanguage(config, defaultLang), imageLookup);
 
 const realContent = {};
 const placeholderContent = {};
@@ -361,7 +395,9 @@ const descriptors = [];
 const fallbackReport = {};
 
 for (const code of languageCodes) {
-  const raw = code === defaultLang ? defaultContent : loadLanguage(config, code);
+  const raw = code === defaultLang
+    ? defaultContent
+    : resolveImagePaths(loadLanguage(config, code), imageLookup);
   const fallbacks = [];
   const merged = code === defaultLang
     ? raw
@@ -383,7 +419,10 @@ for (const code of languageCodes) {
   if (mode.includesPlaceholder) placeholderContent[code] = toPlaceholders(merged, code);
 }
 
-const discoveredBlogPosts = discoverBlogPosts(config, languageCodes);
+const discoveredBlogPosts = resolveImagePaths(
+  discoverBlogPosts(config, languageCodes),
+  imageLookup
+);
 const realBlogPosts = mode.includesReal ? discoveredBlogPosts : [];
 const placeholderBlogPosts = mode.includesPlaceholder ? placeholderArticles(discoveredBlogPosts) : [];
 
