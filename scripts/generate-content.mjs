@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Content build step.
 //
-// Scans content/languages/ and content/blog/, merges every language over the
-// default language, optionally replaces all real text with placeholders, and
-// emits src/gen/content.ts for the app to import.
+// Scans content/languages/, content/blog/, and the active library/hero environment,
+// merges every language over the default language, optionally replaces all real
+// text with placeholders, and emits generated website content under src/gen/.
 //
 // Nothing in src/ lists languages or blog posts by name — this script discovers
 // them from the filesystem, which is what lets a contributor add a language or
@@ -378,6 +378,154 @@ function writeRobots(env, config) {
   writeFileSync(path.join(rootDir, "public", "robots.txt"), lines.join("\n") + "\n", "utf8");
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+/** Discovers hero groups for the active environment and selects default.hero.json. */
+function loadDefaultHero(imageLookup, environmentName) {
+  const heroEnvironment = environmentName === "local" ? "dev" : environmentName;
+  const relativeHeroDir = path.join("library", "hero", heroEnvironment);
+  const heroDir = path.join(rootDir, relativeHeroDir);
+  if (!existsSync(heroDir)) {
+    throw new Error(`${relativeHeroDir} is missing — initialize the library submodule and add a hero group.`);
+  }
+
+  const groupFiles = readdirSync(heroDir).filter((file) => file.endsWith(".hero.json")).sort();
+  const defaultFile = "default.hero.json";
+  if (!groupFiles.includes(defaultFile)) {
+    throw new Error(`${path.join(relativeHeroDir, defaultFile)} is missing — it selects the default hero group.`);
+  }
+
+  const file = path.join(heroDir, defaultFile);
+  let hero;
+  try {
+    hero = JSON.parse(readFileSync(file, "utf8"));
+  } catch (err) {
+    throw new Error(`${path.join(relativeHeroDir, defaultFile)} is not valid JSON — ${err.message}`);
+  }
+
+  for (const key of ["title_en", "title_kn", "href"]) {
+    if (typeof hero[key] !== "string" || !hero[key].trim()) {
+      throw new Error(`${path.join(relativeHeroDir, defaultFile)} needs a non-empty "${key}" string.`);
+    }
+  }
+  if (!Array.isArray(hero.images) || !hero.images.length) {
+    throw new Error(`${path.join(relativeHeroDir, defaultFile)} needs a non-empty "images" array.`);
+  }
+
+  const images = hero.images.map((image, index) => {
+    if (typeof image !== "string" || (!image.startsWith("http://") && !image.startsWith("https://") && !image.startsWith("@image."))) {
+      throw new Error(`${path.join(relativeHeroDir, defaultFile)} images[${index}] must be an HTTP URL or @image reference.`);
+    }
+    if (image.startsWith("@image.") && !imageLookup.has(image)) {
+      throw new Error(`${path.join(relativeHeroDir, defaultFile)} images[${index}] references unknown image "${image}".`);
+    }
+    return image;
+  });
+
+  console.log(`[content] hero env=${heroEnvironment} groups=[${groupFiles.map((name) => name.replace(/\.hero\.json$/, "")).join(", ")}] selected=default`);
+  return { ...hero, images };
+}
+
+function resolveHeroHref(href, basePath) {
+  if (!href.startsWith("/") || !basePath || href === basePath || href.startsWith(`${basePath}/`)) return href;
+  return `${basePath}${href}`;
+}
+
+/** Writes a standalone HTML rendering of the home page's hero carousel. */
+function writeHeroImages(hero, content, lang, basePath) {
+  const titleEn = escapeHtml(hero.title_en);
+  const titleKn = escapeHtml(hero.title_kn);
+  const activeTitle = lang === "kn" ? titleKn : titleEn;
+  const ctaEn = escapeHtml(content.en?.home?.hero_intro?.cta_label ?? "");
+  const ctaKn = escapeHtml(content.kn?.home?.hero_intro?.cta_label ?? ctaEn);
+  const activeCta = lang === "kn" ? ctaKn : ctaEn;
+  const slides = hero.images.map((src, index) => `
+      <div class="hero-image${index === 0 ? " is-active" : ""}" aria-hidden="${index === 0 ? "false" : "true"}">
+        <img src="${escapeHtml(src)}" alt=""${index === 0 ? ' fetchpriority="high"' : ' loading="lazy"'}>
+      </div>`).join("");
+
+  const html = `<!doctype html>
+<html lang="${escapeHtml(lang)}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${activeTitle}</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    .hero { position: relative; width: 100%; height: 462px; overflow: hidden; border-radius: 0 0 22px 22px; background: #140c04; }
+    .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity 900ms ease; }
+    .hero-image img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 7s ease-out; }
+    .hero-image.is-active { opacity: 1; }
+    .hero-image.is-active img { transform: scale(1); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,12,4,.42) 0%, rgba(20,12,4,.05) 22%, rgba(20,12,4,0) 40%, rgba(20,12,4,.55) 70%, rgba(16,9,3,.86) 100%); }
+    .hero-content { position: absolute; right: 0; bottom: 0; left: 0; padding: 0 24px 32px; text-align: center; }
+    .hero-title { margin: 0 0 20px; color: #fffaf0; font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.25; white-space: pre-line; text-shadow: 0 1px 20px rgba(0,0,0,.4); }
+    .hero-cta { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #c86d1d; color: #fff; font-family: sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 8px 22px -8px rgba(0,0,0,.55); transition: background-color 150ms ease; }
+    .hero-cta:hover { background: #a95315; }
+    .hero-cta:active { background: #85400f; }
+    @media (min-width: 1024px) {
+      .hero { height: 600px; }
+      .hero-title { font-size: 36px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-image, .hero-image img { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero" data-title-en="${titleEn}" data-title-kn="${titleKn}" data-cta-en="${ctaEn}" data-cta-kn="${ctaKn}">
+    <div class="hero-images">${slides}
+    </div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">${activeTitle}</h1>
+      <a class="hero-cta" href="${escapeHtml(resolveHeroHref(hero.href, basePath))}">${activeCta}</a>
+    </div>
+  </section>
+  <script>
+    (() => {
+      const hero = document.querySelector(".hero");
+      const applyLanguage = (lang) => {
+        if (lang !== "en" && lang !== "kn") return;
+        document.documentElement.lang = lang;
+        document.title = hero.dataset[lang === "kn" ? "titleKn" : "titleEn"];
+        document.querySelector(".hero-title").textContent = document.title;
+        document.querySelector(".hero-cta").textContent = hero.dataset[lang === "kn" ? "ctaKn" : "ctaEn"];
+      };
+      applyLanguage(new URLSearchParams(location.search).get("lang") || localStorage.getItem("shiroor-lang") || "${escapeHtml(lang)}");
+      window.addEventListener("storage", (event) => {
+        if (event.key === "shiroor-lang") applyLanguage(event.newValue);
+      });
+      window.addEventListener("site-language-change", () => applyLanguage(localStorage.getItem("shiroor-lang")));
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      const slides = [...document.querySelectorAll(".hero-image")];
+      let active = 0;
+      window.setInterval(() => {
+        slides[active].classList.remove("is-active");
+        slides[active].setAttribute("aria-hidden", "true");
+        active = (active + 1) % slides.length;
+        slides[active].classList.add("is-active");
+        slides[active].setAttribute("aria-hidden", "false");
+      }, 4500);
+    })();
+  </script>
+</body>
+</html>
+`;
+
+  const heroDir = path.join(rootDir, "src", "gen", "hero-images");
+  mkdirSync(heroDir, { recursive: true });
+  writeFileSync(path.join(heroDir, "index.html"), html, "utf8");
+}
+
 // ── Build ────────────────────────────────────────────────────────────────────
 
 const config = loadConfig();
@@ -386,6 +534,7 @@ const imageLookup = loadImageConfig(env.name);
 const mode = describeContentMode(env.content_mode);
 const languageCodes = discoverLanguages(config);
 const defaultLang = config.site.default_language;
+const defaultHero = loadDefaultHero(imageLookup, env.name);
 
 const defaultContent = resolveImagePaths(loadLanguage(config, defaultLang), imageLookup);
 
@@ -430,6 +579,18 @@ const content = mode.defaultVariant === "real" ? realContent : placeholderConten
 const alternateContent = mode.switchable ? placeholderContent : null;
 const blogPosts = mode.defaultVariant === "real" ? realBlogPosts : placeholderBlogPosts;
 const alternateBlogPosts = mode.switchable ? placeholderBlogPosts : null;
+const hero = env.name === "prod"
+  ? defaultHero
+  : {
+      ...defaultHero,
+      title_en: makePlaceholder("hero.default.title", defaultHero.title_en, "en"),
+      title_kn: makePlaceholder("hero.default.title", defaultHero.title_kn, "kn"),
+    };
+const homeHero = {
+  titles: { en: hero.title_en, kn: hero.title_kn },
+  href: hero.href,
+  images: hero.images.map((image) => imageLookup.get(image) ?? image),
+};
 
 // Markdown is converted after the placeholder pass so placeholder bodies render
 // as ordinary paragraphs too.
@@ -447,6 +608,7 @@ writeRobots(env, config);
 
 const outDir = path.join(rootDir, "src", "gen");
 mkdirSync(outDir, { recursive: true });
+writeHeroImages(hero, content, defaultLang, env.base_path ?? "");
 
 function discoverStaticRoutes(dir, prefix = "") {
   const routes = [];
@@ -509,6 +671,9 @@ export const routes = ${JSON.stringify(routes, null, 2)} as const;
 
 /** Discovered languages, in switcher order. Add a file to content/languages/ to extend. */
 export const languages: LanguageDescriptor[] = ${JSON.stringify(descriptors, null, 2)};
+
+/** Home hero selected from the active library environment. */
+export const homeHero = ${JSON.stringify(homeHero, null, 2)} as const;
 
 export const content = ${JSON.stringify(content, null, 2)} as unknown as Record<Lang, ContentShape>;
 
