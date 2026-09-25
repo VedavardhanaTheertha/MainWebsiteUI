@@ -124,11 +124,18 @@ Shirooru/
 │   ├── lib/                    ← shared logic (scheduler, types)
 │   ├── context/                ← language provider
 │   └── gen/                    ← generated website data. Never hand-edited. Gitignored.
+│       ├── content.ts          ← environment-resolved site and article content
+│       ├── hero-images/        ← standalone HTML rendering of the home hero carousel
+│       └── bhakti/             ← generated devotional collection
 │
 ├── public/                     ← existing static assets served from the site root
 │   ├── articles/               ← consistent location for new article media
 │   └── slide/                  ← existing legacy image collection
-├── library/                    ← required devotional-content Git submodule
+├── library/                    ← required content submodule (Bhakti and hero groups)
+│   ├── dasasahitya/            ← devotional source collection
+│   └── hero/                   ← environment-specific hero groups
+│       ├── dev/                ← development and local hero sources
+│       └── prod/               ← production hero sources
 ├── test_media/                 ← recursively initialized media submodule
 │
 └── .github/workflows/
@@ -247,6 +254,22 @@ and placeholder rules as the rest of the website UI. The collection is exposed t
 CI initializes submodules recursively. A missing library checkout fails early with the
 exact initialization command rather than an opaque file-not-found error.
 
+### 5.5 Hero groups
+
+The library submodule stores hero groups under `hero/dev/` and `hero/prod/`, with one
+`*.hero.json` file per group in each environment. Local builds use `hero/dev/`, matching
+the local image-settings rule. Each file defines `title_en`, `title_kn`, `href`, and a
+non-empty `images` list. Images may be direct HTTP URLs or `@image.<name>` references.
+The build validates references against the active environment's
+`settings/<env>/images.json` but preserves every image value in the generated HTML:
+HTTP URLs remain absolute and `@image.*` values remain references. It selects
+`default.hero.json` and writes the standalone carousel to
+`src/gen/hero-images/index.html`. Internal links receive the environment base path;
+external links are preserved. Production uses `title_en` and `title_kn` exactly as
+authored. Development and local builds replace both with independently generated titles,
+so library prose cannot leak through non-production output. The generated React data and
+standalone HTML select the matching title when the page language changes.
+
 ---
 
 ## 6. Environments
@@ -342,7 +365,8 @@ change pre-exported HTML without generating a second route tree.
 
 ```
 content/languages/*.json ─┐
-content/blog/*/          ─┼─→ generate-content.mjs → src/gen/ → next build → out/
+content/blog/*/          ─┤
+library/hero/<env>/*.hero.json ─┼─→ generate-content.mjs → src/gen/ → next build → out/
 config/site.yml          ─┘            ↑                                    │
                                    SITE_ENV                                 ↓
                                                        canonical normalization → verify
@@ -356,6 +380,9 @@ The generator performs the following jobs:
 4. **Applies the environment transform** — placeholder-only for `dev`, real-only for
   `prod`, and both variants for switchable `local` builds.
 5. **Discovers static routes** from page files plus blog folders for `sitemap.xml`.
+6. **Discovers hero groups** from `library/hero/<env>/*.hero.json` (`local` uses `dev`),
+  selects `default`, applies environment title handling, validates and preserves image
+  values, and renders React hero data plus `src/gen/hero-images/index.html`.
 
 After Next.js exports the site, `write-canonicals.mjs` maps each HTML output path back
 to its public route and writes the corresponding URL under `site.production_url`. This

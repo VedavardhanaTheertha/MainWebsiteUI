@@ -139,7 +139,9 @@ src/lib/       shared logic: content-types.ts, nav-types.ts, scheduler.ts
 src/context/   LanguageContext.tsx — the useLang() provider (see §8)
 src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
-library/       required submodule → WebsiteLibrary (Bhakti source content)
+library/       required submodule → WebsiteLibrary (Bhakti and hero source content)
+  hero/dev/    development and local hero groups; default.hero.json is selected
+  hero/prod/   production hero groups; default.hero.json is selected
 test_media/    recursively initialized submodule → WebsiteTestMedia
 .github/workflows/deploy-dev.yml  thin CI wrapper around build/build.mjs
 ```
