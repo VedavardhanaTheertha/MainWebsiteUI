@@ -71,12 +71,13 @@ it. Nobody edits a page, a menu, or a switcher to "register" new content.
 
 ### How it is enforced, not just encouraged
 
-The dev environment replaces generated content text with placeholders (see §6). The
-post-build verifier then checks rendered HTML and the manifest for exact prose from the
-default-language JSON when it is at least 30 characters, plus configured brand terms at
-any length. Matches fail the build. This is a useful backstop, not a complete guarantee:
+The dev environment renders placeholders by default and includes a copy selector (see
+§6). Its downloadable client assets contain both real and placeholder copy; the post-build
+verifier checks that exported HTML and the manifest remain placeholder-only, and checks
+brand terms there at any length. This is a useful backstop, not a complete guarantee:
 short, changed, non-default-language, client-only, or otherwise unrendered literals can
-escape comparison, so source review remains mandatory.
+escape comparison, so source review remains mandatory. The public preview has no access
+control, so `noindex` is a crawler directive, not a confidentiality boundary.
 
 ---
 
@@ -277,9 +278,12 @@ standalone HTML select the matching title when the page language changes.
 `library/parampara/index.json` defines the ordered lineage and references one Markdown
 file per guru. The generator validates that every file exists and that its heading and
 summary match the index, then parses content after `## Details` as sanitized Markdown.
-It writes `src/gen/parampara/data.ts` for the Next.js page and a self-contained interactive
-`src/gen/parampara/index.html`. Development output applies the standard placeholder
-transform and suppresses source image URLs; production uses the verified library text.
+it writes `src/gen/parampara/data.ts` for the Next.js lineage and per-guru detail pages,
+plus a self-contained interactive `src/gen/parampara/index.html`. Each indexed guru ID is
+statically generated under `/history/parampara/<id>` and included in the sitemap. The
+lineage modal shows a summary only; its full-details link opens that page. Development
+output applies the standard placeholder transform and suppresses source image URLs;
+production uses the verified library text.
 
 English is the current source and automatically falls back for other languages. Future
 translations can add `index.<lang>.json` and/or `<content-file-stem>.<lang>.md`; generated
@@ -303,9 +307,11 @@ Three build environments separate local copy review from hosted preview and prod
 
 ### 6.1 Placeholder content in dev
 
-When the configured environment's content mode is not `real`, generated visitor-facing
-content strings are replaced with placeholders **before they enter the JavaScript
-bundle**. Preserved metadata keys and machine values remain unchanged.
+In a placeholder-only environment, generated visitor-facing content strings are replaced
+with placeholders before they enter the JavaScript bundle. In a switchable environment,
+the placeholder and real variants are both generated; `default_variant` selects the
+server-rendered copy and first-visit choice. Preserved metadata keys and machine values
+remain unchanged.
 
 A placeholder is derived from its key path and prefixed with the language code, so
 `home.hero.body` renders as *"en·home hero body — content goes here…"*.
@@ -323,9 +329,9 @@ Three details that matter in practice:
   duplicate-key errors — and an unnumbered list of stand-ins cannot be matched back to
   the entry it came from.
 
-Machine-readable values — paths, URLs, ids, dates, style tokens — are preserved
-untouched in every environment. Replacing an `href` would break navigation and replacing
-an `id` would break item matching.
+Machine-readable values — paths, URLs, ids, dates, phone numbers, email addresses, and
+style tokens — are preserved untouched in every environment. Replacing an `href` would
+break navigation and replacing an `id` would break item matching.
 
 **Images are not replaced** — real images render in dev, because design review depends on
 them and the search-engine concern is driven by text, not images.
@@ -348,30 +354,34 @@ limits documented in §3 and §7.1.
 ### 6.3 Fail-safe default
 
 **`SITE_ENV` defaults to `dev` when unset.** A contributor running the project locally, or
-a misconfigured deployment, gets placeholders. Showing real content requires explicitly
-opting in. The system fails safe rather than failing open.
+a misconfigured deployment, gets placeholder copy by default. The local and dev copy
+selectors can opt into real copy for review; the system still starts with the safer
+placeholder variant.
 
-### 6.4 Switchable local content
+### 6.4 Switchable local and dev content
 
-The `local` environment uses `content_mode: switchable`. Generation emits both merged real
-content and its placeholder transform into that local bundle, with real content as the
-server-rendered and hydration default. A local-only control inside `LanguageProvider`
+The `local` and `dev` environments use `content_mode: switchable`. Generation emits both
+merged real content and its placeholder transform. `local` defaults to real copy;
+`dev` sets `default_variant: placeholder`. The copy control inside `LanguageProvider`
 selects the variant and persists the choice in `localStorage`; the external-store server
-snapshot remains real, preventing a hydration mismatch. Changing copy mode does not change
-the selected language. The control labels are translated content under `local_preview` and
-are exempt from placeholder transformation so the control remains understandable.
+snapshot uses the configured default, preventing a hydration mismatch. Changing copy mode
+does not change the selected language. The control labels are translated content under
+`local_preview` and are exempt from placeholder transformation so the control remains
+understandable. Since dev is publicly hosted, its real copy is available in client assets
+to anyone who downloads them, even though the exported pages default to placeholders.
 
-The `dev` and `prod` generators emit only their selected variant. Their generated switchable
-fields are `null`, and the control renders nothing. Thus dev still cannot acquire real copy
-through a client preference, while production does not carry placeholder content.
+The `prod` generator emits only real content; its alternate content fields are `null` and
+the control renders nothing. It does not ship placeholder copy or expose the preview
+control.
 
 Static export executes Server Components at build time. Consequently the local selector
-updates client components that consume `useLang()` (including generated blog article copy),
-while legacy route markup that reads `content[defaultLang]` directly remains at the local
-real default. Metadata, manifests, and initial exported HTML also deliberately remain real
-in local mode. Completing runtime switching for those legacy routes requires migrating their
-display markup to client components using `useLang()`; query or cookie selection cannot
-change pre-exported HTML without generating a second route tree.
+updates client components that consume `useLang()` (including generated blog article copy).
+Server-rendered route layouts keep their structure, but display strings and image alt text
+use the `LocalizedCopy` and `LocalizedImage` client leaves to read the active context.
+The home hero and Parampara browser/detail pages select between generated real and
+placeholder datasets from the active copy mode. Metadata, manifests, and initial exported
+HTML remain at the configured default; after hydration, visible localized leaves reflect
+the visitor's selected mode.
 
 ---
 
@@ -394,8 +404,8 @@ The generator performs the following jobs:
 1. **Discovers languages** by scanning `content/languages/*.json`; emits the list.
 2. **Merges** each language over `en.json`; warns about keys that fell back.
 3. **Discovers blog posts** by scanning `content/blog/*/`; emits the index and routes.
-4. **Applies the environment transform** — placeholder-only for `dev`, real-only for
-  `prod`, and both variants for switchable `local` builds.
+4. **Applies the environment transform** — both variants for switchable `local` and `dev`
+  builds (with environment-specific defaults), and real-only for `prod`.
 5. **Discovers static routes** from page files plus blog folders for `sitemap.xml`.
 6. **Discovers hero groups** from `library/hero/<env>/*.hero.json` (`local` uses `dev`),
   selects `default`, applies environment title handling, validates and preserves image
@@ -437,7 +447,8 @@ deployment repeats lint, typecheck, tests, and the verified dev build before pub
 The permanent preview and production site are two environment-specific builds of the
 same reviewed `main` revision. This preserves trunk-based development and prevents an
 unreviewed integration branch from becoming a second source of truth. GitHub Pages
-receives placeholder content; production receives real content.
+renders placeholders by default and includes both variants in client assets for the copy
+selector; production receives real content only.
 
 Static output is rebuilt daily as a build-health canary. Once date-sensitive selection
 is connected to rendered content, the same rebuild will also keep generated pages aligned

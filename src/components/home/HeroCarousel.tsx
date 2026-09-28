@@ -4,15 +4,18 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
-import { homeHero } from "@/gen/content";
+import { alternateHomeHero, defaultContentMode, homeHero } from "@/gen/content";
 
 const AUTO_MS = 4500;
 
 export default function HeroCarousel() {
-  const { lang, tr } = useLang();
+  const { lang, tr, contentMode } = useLang();
+  const hero = contentMode !== defaultContentMode && alternateHomeHero
+    ? alternateHomeHero
+    : homeHero;
   const { cta_label } = tr.home.hero_intro;
-  const title = homeHero.titles[lang];
-  const { href, images } = homeHero;
+  const title = hero.titles[lang];
+  const { href, images } = hero;
   const [i, setI] = useState(0);
 
   useEffect(() => {

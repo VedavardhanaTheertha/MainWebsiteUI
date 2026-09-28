@@ -33,8 +33,8 @@ environments:
   # ── Local testing — root URL, selectable copy ─────────────────────────────
   local:
     base_path: ""
-    # switchable = bundle real and placeholder variants. The local-only UI
-    # selects one at runtime; server-rendered output starts with real content.
+    # switchable = bundle real and placeholder variants for the preview control.
+    # The configured default variant is used for server-rendered output.
     content_mode: "switchable"
     indexable: false
 
@@ -46,9 +46,10 @@ environments:
     # Set to "" if you later move dev to a custom domain at the root.
     base_path: "/MainWebsiteUI"
 
-    # placeholder = real text is replaced with generated stand-ins.
-    # real        = actual content is shown.
-    content_mode: "placeholder"
+    # The preview control switches between both copy variants, while exported
+    # pages start with placeholders. Real copy is therefore also in dev assets.
+    content_mode: "switchable"
+    default_variant: "placeholder"
 
     # false = emit noindex + robots.txt disallow, so this environment can never
     # compete with production in search results.
@@ -61,14 +62,14 @@ environments:
     indexable: true
 
 build:
-  # Fail the build when real content is found in a placeholder build, which
-  # would mean text was hardcoded in a component instead of using content/.
+  # Fail the build when real content appears in placeholder-default rendered output,
+  # which would mean text was hardcoded in a component instead of using content/.
   # See docs/ARCHITECTURE.md §11.
   fail_on_hardcoded_content: true
 
-  # Words that identify the institution. These must never appear in a placeholder
-  # build at any length — they are what someone would search for, and the whole point
-  # of the hosted development environment is that only the live site can be found that way.
+  # Words that identify the institution. These must never appear in placeholder-default
+  # HTML or the manifest. Switchable dev assets contain the real alternate copy; the
+  # hosted preview is public, so noindex is not a confidentiality boundary.
   # Checked separately from general prose, which is only matched above a length
   # threshold to avoid false positives on common words.
   brand_terms:

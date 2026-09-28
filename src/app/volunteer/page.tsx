@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import ImageListCards from "@/components/ImageListCards";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.volunteer;
@@ -45,8 +46,7 @@ const roles = [
   {
     icon: "🧒",
     title: "Youth Engagement",
-    description:
-      content[defaultLang].pages.detected.volunteer_role,
+    description: "",
     commitment: "Weekends",
   },
 ];
@@ -55,7 +55,7 @@ const whyVolunteer = [
   {
     icon: "🙏",
     title: "Sacred Service",
-    body: content[defaultLang].pages.detected.volunteer_why,
+    body: "",
   },
   {
     icon: "🌐",
@@ -81,7 +81,7 @@ export default function VolunteerPage() {
           Become a Volunteer
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-base max-w-xl mx-auto">
-          {content[defaultLang].vol_subtitle}
+          <LocalizedCopy path={["vol_subtitle"]} />
         </p>
       </div>
 
@@ -95,14 +95,18 @@ export default function VolunteerPage() {
             Why Volunteer?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {whyVolunteer.map((item) => (
+            {whyVolunteer.map((item, index) => (
               <div
                 key={item.title}
                 className="bg-white rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.08)] text-center"
               >
                 <span className="text-4xl block mb-3" aria-hidden="true">{item.icon}</span>
                 <h3 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-2">{item.title}</h3>
-                <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">{item.body}</p>
+                <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">
+                  {index === 0
+                    ? <LocalizedCopy path={["pages", "detected", "volunteer_why"]} />
+                    : item.body}
+                </p>
               </div>
             ))}
           </div>
@@ -125,7 +129,7 @@ export default function VolunteerPage() {
             Volunteer Roles
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {roles.map((role) => (
+            {roles.map((role, index) => (
               <article
                 key={role.title}
                 className="bg-white rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.08)] flex gap-4"
@@ -140,7 +144,9 @@ export default function VolunteerPage() {
                     {role.title}
                   </h3>
                   <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed mb-3">
-                    {role.description}
+                    {index === roles.length - 1
+                      ? <LocalizedCopy path={["pages", "detected", "volunteer_role"]} />
+                      : role.description}
                   </p>
                   <span className="inline-block font-body text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-brand)] bg-[var(--color-saffron-100)] rounded-full px-3 py-1">
                     {role.commitment}
@@ -163,7 +169,7 @@ export default function VolunteerPage() {
             Ready to Serve?
           </h2>
           <p className="font-body text-[var(--color-text-brand)]/75 text-base mb-6 max-w-xl mx-auto">
-            {content[defaultLang].vol_ready_body}
+            <LocalizedCopy path={["vol_ready_body"]} />
           </p>
 
           {/* TODO: Replace href with actual volunteer registration form link from management */}
@@ -179,7 +185,7 @@ export default function VolunteerPage() {
 
           <p className="font-body text-xs text-[var(--color-text-brand)]/40 mt-4">
             {/* TODO: Replace with real contact info from management */}
-            {content[defaultLang].pages.volunteer_question}
+            <LocalizedCopy path={["pages", "volunteer_question"]} />
           </p>
         </section>
       </div>

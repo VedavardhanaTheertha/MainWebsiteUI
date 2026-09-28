@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import SevaDetailClient from "@/components/SevaDetailClient";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 import { imagePaths } from "@/lib/images";
 
@@ -16,7 +17,7 @@ const seva = {
   image: imagePaths.kraj0835,
   significance: [
     "Annadaana — the gift of food — is considered the highest form of charity in the Vedic tradition. The scriptures declare: 'Annam Brahma' — food itself is Brahman.",
-    content[defaultLang].pages.detected.top_seva_significance,
+    null,
     "Each meal is prepared with devotion by trained volunteers, offered first to the Lord, and then distributed as prasada. Your contribution directly sustains this sacred tradition.",
   ],
   benefits: [
@@ -83,7 +84,9 @@ export default function Top1SevaPage() {
               </div>
               <div className="space-y-3">
                 {seva.significance.map((para, i) => (
-                  <p key={i} className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">{para}</p>
+                  <p key={i} className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">
+                    {para ?? <LocalizedCopy path={["pages", "detected", "top_seva_significance"]} />}
+                  </p>
                 ))}
               </div>
             </section>

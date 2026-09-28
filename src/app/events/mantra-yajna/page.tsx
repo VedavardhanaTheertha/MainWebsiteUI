@@ -1,5 +1,6 @@
 ﻿import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 import { imagePaths } from "@/lib/images";
 
@@ -13,7 +14,9 @@ export default function MantraYajnaPage() {
         <Image src={imagePaths.krishna} alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(26,17,8,.1), rgba(26,17,8,.5))" }} />
         <div className="absolute left-4 lg:left-8 bottom-4 right-4">
-          <p className="text-[10px] font-bold tracking-[.16em] uppercase text-[var(--color-saffron-200)]">{content[defaultLang].pages.detected.yajna_eyebrow}</p>
+          <p className="text-[10px] font-bold tracking-[.16em] uppercase text-[var(--color-saffron-200)]">
+            <LocalizedCopy path={["pages", "detected", "yajna_eyebrow"]} />
+          </p>
           <h1 className="font-display text-[30px] lg:text-5xl text-[var(--color-cream-hi)] leading-tight mt-1">Krishna Mantra Lekhana Yajna</h1>
         </div>
       </div>
@@ -24,7 +27,7 @@ export default function MantraYajnaPage() {
         <div className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-2xl p-6 mb-6">
           <h2 className="font-display font-bold text-[var(--color-text-primary)] text-xl mb-3">What is Mantra Lekhana Yajna?</h2>
           <p className="font-body text-[var(--color-text-secondary)] text-base leading-relaxed mb-3">
-            {content[defaultLang].pages.detected.yajna_intro}
+            <LocalizedCopy path={["pages", "detected", "yajna_intro"]} />
           </p>
           <p className="font-body text-[var(--color-text-secondary)] text-base leading-relaxed">
             This is a practice rooted in the Madhwa tradition — Nama Smarana (remembrance of the divine name) is considered one of the nine forms of Bhakti. Writing the mantra aligns your mind, hand, and soul in devotion.
@@ -39,13 +42,15 @@ export default function MantraYajnaPage() {
               { step: "1", title: "Register your Sankalpa", desc: "Fill in the form below with your name and the number of writings you commit to (e.g. 108, 1008, or 10,008)." },
               { step: "2", title: "Write the Mantra", desc: 'Write "Shri Krishnaya Namaha" in a clean notebook with a calm mind. You may write in Kannada, Sanskrit, or any language.' },
               { step: "3", title: "Submit your count", desc: "Once complete, note the total count and submit it. Your contribution will be added to the collective Yajna count." },
-              { step: "4", title: "Receive Prasada", desc: content[defaultLang].pages.detected.yajna_step4 },
+              { step: "4", title: "Receive Prasada", desc: null },
             ].map((item) => (
               <li key={item.step} className="flex items-start gap-4">
                 <span className="shrink-0 w-8 h-8 rounded-full bg-[var(--color-saffron-600)] text-white font-display font-bold text-sm flex items-center justify-center">{item.step}</span>
                 <div>
                   <p className="font-body font-semibold text-[var(--color-text-primary)] text-[15px]">{item.title}</p>
-                  <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">{item.desc}</p>
+                  <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">
+                    {item.desc ?? <LocalizedCopy path={["pages", "detected", "yajna_step4"]} />}
+                  </p>
                 </div>
               </li>
             ))}

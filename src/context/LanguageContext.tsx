@@ -4,9 +4,10 @@ import { createContext, useContext, useEffect, useSyncExternalStore, type ReactN
 import {
   content,
   blogPosts,
+  alternateBlogPosts,
+  alternateContent,
+  defaultContentMode,
   isContentSwitchable,
-  localPlaceholderBlogPosts,
-  localPlaceholderContent,
   languages,
   defaultLang,
   type Lang,
@@ -31,7 +32,7 @@ const LanguageContext = createContext<LangCtx>({
   lang: defaultLang,
   setLang: () => {},
   tr: content[defaultLang],
-  contentMode: "real",
+  contentMode: defaultContentMode,
   setContentMode: () => {},
   blogPosts,
   languages,
@@ -94,12 +95,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       };
     },
     () => {
-      if (!isContentSwitchable) return "real";
-      return window.localStorage.getItem(CONTENT_MODE_STORAGE_KEY) === "placeholder"
-        ? "placeholder"
-        : "real";
+      if (!isContentSwitchable) return defaultContentMode;
+      const storedMode = window.localStorage.getItem(CONTENT_MODE_STORAGE_KEY);
+      return storedMode === "real" || storedMode === "placeholder"
+        ? storedMode
+        : defaultContentMode;
     },
-    () => "real",
+    () => defaultContentMode,
   );
 
   const setContentMode = (nextMode: ContentMode) => {
@@ -108,11 +110,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     window.dispatchEvent(new Event(CONTENT_MODE_EVENT));
   };
 
-  const activeContent = contentMode === "placeholder" && localPlaceholderContent
-    ? localPlaceholderContent
+  const activeContent = contentMode !== defaultContentMode && alternateContent
+    ? alternateContent
     : content;
-  const activeBlogPosts = contentMode === "placeholder" && localPlaceholderBlogPosts
-    ? localPlaceholderBlogPosts
+  const activeBlogPosts = contentMode !== defaultContentMode && alternateBlogPosts
+    ? alternateBlogPosts
     : blogPosts;
 
   return (

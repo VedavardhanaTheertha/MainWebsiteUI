@@ -1,6 +1,8 @@
 ﻿import type { Metadata } from "next";
 import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
+import LocalizedCopy from "@/components/LocalizedCopy";
+import LocalizedImage from "@/components/LocalizedImage";
 import { content, defaultLang } from "@/gen/content";
 import { imagePaths } from "@/lib/images";
 
@@ -29,10 +31,10 @@ export default function AboutPage() {
             Our Heritage
           </p>
           <h1 className="font-display font-bold text-[var(--color-text-primary)] text-4xl sm:text-5xl lg:text-6xl mb-4">
-            {page.title}
+            <LocalizedCopy path={["pages", "about", "title"]} />
           </h1>
           <p className="font-body text-[var(--color-text-brand)]/75 text-lg max-w-2xl mx-auto">
-            {page.subtitle}
+            <LocalizedCopy path={["pages", "about", "subtitle"]} />
           </p>
         </div>
       </div>
@@ -50,23 +52,25 @@ export default function AboutPage() {
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             <div className="w-full lg:w-2/5 shrink-0">
               <div className="rounded-[18px] overflow-hidden">
-                <Image
+                <LocalizedImage
                   src={imagePaths.madhwacharyaNew}
-                  alt={page.founder_alt}
+                  altPath={["pages", "about", "founder_alt"]}
                   width={500}
                   height={600}
                   className="w-full object-cover"
                 />
               </div>
               <p className="font-body text-xs text-[var(--color-text-secondary)] text-center mt-2">
-                {page.founder_caption}
+                <LocalizedCopy path={["pages", "about", "founder_caption"]} />
               </p>
             </div>
 
             <div className="flex-1 space-y-4">
               {/* TODO: Replace with approved historical content from management */}
-              {page.founding_paragraphs.map((paragraph) => (
-                <p key={paragraph} className="font-body text-[var(--color-text-secondary)] leading-relaxed">{paragraph}</p>
+              {page.founding_paragraphs.map((_, index) => (
+                <p key={index} className="font-body text-[var(--color-text-secondary)] leading-relaxed">
+                  <LocalizedCopy path={["pages", "about", "founding_paragraphs", index]} />
+                </p>
               ))}
             </div>
           </div>
@@ -76,9 +80,9 @@ export default function AboutPage() {
         <section aria-labelledby="swamiji-bio-heading" className="mb-16 lg:mb-20 bg-white rounded-[20px] p-8 shadow-[0_4px_18px_rgba(60,7,83,0.10)]">
           <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
             <div className="rounded-2xl overflow-hidden w-32 h-40 shrink-0 bg-[var(--color-saffron-100)]">
-              <Image
+              <LocalizedImage
                 src={imagePaths.swamijiPortrait}
-                alt={page.pontiff_alt}
+                altPath={["pages", "about", "pontiff_alt"]}
                 width={128}
                 height={160}
                 className="w-full h-full object-cover object-top"
@@ -93,18 +97,20 @@ export default function AboutPage() {
                 id="swamiji-bio-heading"
                 className="font-display font-bold text-[var(--color-text-primary)] text-2xl lg:text-3xl mb-1"
               >
-                {page.pontiff_name}
+                <LocalizedCopy path={["pages", "about", "pontiff_name"]} />
               </h2>
               <p className="font-body text-[var(--color-text-secondary)] text-sm">
-                {page.pontiff_line}
+                <LocalizedCopy path={["pages", "about", "pontiff_line"]} />
               </p>
             </div>
           </div>
 
           {/* TODO: Replace with real biographical content from management */}
           <div className="space-y-4">
-            {page.pontiff_paragraphs.map((paragraph) => (
-              <p key={paragraph} className="font-body text-[var(--color-text-secondary)] leading-relaxed">{paragraph}</p>
+            {page.pontiff_paragraphs.map((_, index) => (
+              <p key={index} className="font-body text-[var(--color-text-secondary)] leading-relaxed">
+                <LocalizedCopy path={["pages", "about", "pontiff_paragraphs", index]} />
+              </p>
             ))}
           </div>
         </section>
@@ -118,7 +124,7 @@ export default function AboutPage() {
             The Guru Parampara
           </h2>
           <p className="font-body text-[var(--color-text-secondary)] mb-8">
-            {page.parampara_intro}
+            <LocalizedCopy path={["pages", "about", "parampara_intro"]} />
             {/* TODO: Complete and verify all names and dates with management */}
           </p>
 
@@ -142,14 +148,14 @@ export default function AboutPage() {
                   }`}
                 >
                   <span className="text-[var(--color-text-brand)] mr-2 text-xs">{String(i + 1).padStart(2, "0")}.</span>
-                  {name}
+                  <LocalizedCopy path={["pages", "about", "parampara", i]} />
                   {i === guruParampara.length - 1 && " ✦ Current Pontiff"}
                 </p>
               </div>
             ))}
           </div>
           <p className="font-body text-xs text-[var(--color-text-secondary)]/50 mt-4 italic">
-            {page.parampara_note}
+            <LocalizedCopy path={["pages", "about", "parampara_note"]} />
           </p>
         </section>
       </div>

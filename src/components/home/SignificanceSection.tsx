@@ -1,8 +1,6 @@
 ﻿import Link from "next/link";
-import { content, defaultLang } from "@/gen/content";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { imagePaths } from "@/lib/images";
-
-const detected = content[defaultLang].pages.detected;
 
 // TODO: Replace placeholder copy with approved content from management
 const blocks = [
@@ -13,9 +11,9 @@ const blocks = [
     image: imagePaths.vittala,
     imageAlt: "Devotees receiving prasada at the Bhojana Shala",
     body: [
-      detected.significance_annadaana,
+      { path: ["pages", "detected", "significance_annadaana"] },
       `The tradition traces to the teaching of Sri Madhwacharya himself, who saw Annadaana not as charity but as the highest form of worship. When you feed a human being, you are feeding the Divine seated within them. There is no return expected, no prayer required of the recipient. The act is complete in itself.`,
-      detected.significance_paryaya,
+      { path: ["pages", "detected", "significance_paryaya"] },
     ],
     cta: { label: "Support Annadaana", href: "/sevas?category=Bhojana+Shala" },
   },
@@ -26,8 +24,8 @@ const blocks = [
     image: imagePaths.madhwacharyaNew,
     imageAlt: "Sri Madhwacharya, the founder of the Dvaita Vedanta tradition",
     body: [
-      detected.significance_founding,
-      detected.significance_lineage,
+      { path: ["pages", "detected", "significance_founding"] },
+      { path: ["pages", "detected", "significance_lineage"] },
       `The Matha's legacy extends beyond ritual: it has been a centre of Sanskrit learning, Vedic preservation, and social welfare for centuries. To visit is to step into a tradition older than most nations on earth.`,
     ],
     cta: { label: "Read the Full History", href: "/about" },
@@ -40,7 +38,7 @@ const blocks = [
     imageAlt: "Sacred pooja being performed at the main sannidhi",
     body: [
       `A pooja is not a transaction — it is a conversation with the infinite. Each element of a traditional pooja — the water, the flowers, the incense, the flame, the food — represents one of the five elements, and through them, the worshipper is symbolically offering back to God the world He has given us.`,
-      detected.significance_poojas,
+      { path: ["pages", "detected", "significance_poojas"] },
       `When you sponsor a pooja, you are not simply paying for a service. You are weaving your intention, your prayer, and your love into a sacred act that has been performed identically for generations. Your name is announced before the deity. Your family is prayed for. You become, briefly and beautifully, part of the ritual.`,
     ],
     cta: { label: "Offer a Pooja", href: "/sevas?category=Krishna+Sannidhi" },
@@ -96,7 +94,7 @@ export default function SignificanceSection() {
                 <div className="space-y-4">
                   {block.body.map((para, i) => (
                     <p key={i} className="font-body text-[var(--color-text-secondary)] text-base leading-relaxed">
-                      {para}
+                      {typeof para === "string" ? para : <LocalizedCopy path={para.path} />}
                     </p>
                   ))}
                 </div>

@@ -1,9 +1,9 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.terms;
-const terms = content[defaultLang].pages.terms;
 
 // TODO: Have legal counsel review and finalise all policy text before launch
 export default function TermsPage() {
@@ -22,14 +22,14 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">1. Acceptance of Terms</h2>
             <p>
-              {terms.acceptance}
+              <LocalizedCopy path={["pages", "terms", "acceptance"]} />
             </p>
           </section>
 
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">2. Seva Offerings & Donations</h2>
             <p>
-              {terms.donations} Please refer to our{" "}
+              <LocalizedCopy path={["pages", "terms", "donations"]} /> Please refer to our{" "}
               <a href="/refund" className="text-[var(--color-text-brand)] hover:underline">
                 Refund Policy
               </a>{" "}
@@ -40,14 +40,14 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">3. Intellectual Property</h2>
             <p>
-              {terms.property}
+              <LocalizedCopy path={["pages", "terms", "property"]} />
             </p>
           </section>
 
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">4. Disclaimer</h2>
             <p>
-              {terms.disclaimer}
+              <LocalizedCopy path={["pages", "terms", "disclaimer"]} />
             </p>
           </section>
 

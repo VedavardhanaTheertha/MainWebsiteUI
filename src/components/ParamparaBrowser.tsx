@@ -1,26 +1,30 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, X } from "lucide-react";
+import { BookOpen, UserRound, X } from "lucide-react";
 import SiteFooter from "@/components/SiteFooter";
 import { useLang } from "@/context/LanguageContext";
-import { paramparaByLanguage, type ParamparaGuru } from "@/gen/parampara/data";
-
-type DialogView = "summary" | "details";
+import {
+  alternateParamparaByLanguage,
+  paramparaByLanguage,
+  type ParamparaGuru,
+} from "@/gen/parampara/data";
+import { defaultContentMode } from "@/gen/content";
 
 export default function ParamparaBrowser() {
-  const { lang, tr } = useLang();
+  const { lang, tr, contentMode } = useLang();
+  const parampara = contentMode !== defaultContentMode && alternateParamparaByLanguage
+    ? alternateParamparaByLanguage
+    : paramparaByLanguage;
   const labels = tr.pages.parampara;
-  const lineage = paramparaByLanguage[lang] ?? paramparaByLanguage.en ?? [];
+  const lineage = parampara[lang] ?? parampara.en ?? [];
   const founder = lineage.find((guru) => guru.officialPosition === null) ?? null;
   const gurus = lineage.filter((guru) => guru.officialPosition !== null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedIndex = gurus.findIndex((guru) => guru.id === selectedId);
   const selected = selectedIndex >= 0 ? gurus[selectedIndex] : null;
-  const [view, setView] = useState<DialogView>("summary");
-
   useEffect(() => {
     const selectFromHash = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
@@ -34,7 +38,6 @@ export default function ParamparaBrowser() {
   }, [gurus]);
 
   const openGuru = (guru: ParamparaGuru) => {
-    setView("summary");
     setSelectedId(guru.id);
     window.history.replaceState(null, "", `#${encodeURIComponent(guru.id)}`);
   };
@@ -65,12 +68,6 @@ export default function ParamparaBrowser() {
     <>
       <main className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
         <header className="max-w-2xl mb-7 lg:mb-10">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="block w-9 h-px bg-[var(--color-saffron-600)]" />
-            <span className="font-body text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-text-brand)]">
-              {lineage.length}
-            </span>
-          </div>
           <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
             {labels.title}
           </h1>
@@ -140,8 +137,8 @@ export default function ParamparaBrowser() {
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                 ) : (
-                  <span className="grid h-full place-items-center font-display text-2xl font-bold text-[var(--color-saffron-300)]">
-                    {guru.officialPosition}
+                  <span className="grid h-full place-items-center text-[var(--color-saffron-400)]">
+                    <UserRound size={34} strokeWidth={1.4} aria-hidden="true" />
                   </span>
                 )}
               </span>
@@ -201,77 +198,34 @@ export default function ParamparaBrowser() {
                   <X size={21} aria-hidden="true" />
                 </button>
               </div>
-              <div role="tablist" aria-label={labels.content_views} className="mt-4 flex gap-6">
-                {(["summary", "details"] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    role="tab"
-                    aria-selected={view === tab}
-                    onClick={() => setView(tab)}
-                    className="relative min-h-10 pb-2 font-body text-xs font-bold text-[var(--color-text-secondary)] aria-selected:text-[var(--color-text-brand)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:scale-x-0 after:bg-[var(--color-saffron-600)] after:transition-transform aria-selected:after:scale-x-100"
-                  >
-                    {tab === "summary" ? labels.summary : labels.details}
-                  </button>
-                ))}
-              </div>
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-              <AnimatePresence mode="wait" initial={false}>
-                {view === "summary" ? (
-                  <motion.div
-                    key="summary"
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 16 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className={selected.fullImage ? "mx-auto grid max-w-4xl items-start gap-6 md:grid-cols-[minmax(220px,300px)_1fr] lg:gap-10" : "mx-auto max-w-3xl"}
-                  >
-                    {selected.fullImage && (
-                      <div className="relative mx-auto aspect-[4/5] w-full max-w-[300px] overflow-hidden bg-[var(--color-saffron-50)]">
-                        <Image
-                          src={selected.fullImage}
-                          alt={selected.name}
-                          fill
-                          sizes="(max-width: 767px) min(76vw, 300px), 300px"
-                          className="object-contain"
-                        />
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-body text-[14px] leading-[1.8] text-[var(--color-text-secondary)] sm:text-[15px]">
-                        {selected.summary}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setView("details")}
-                        className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--color-saffron-600)] px-5 font-body text-[13px] font-bold text-[var(--color-text-on-brand)] hover:bg-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
-                      >
-                        <BookOpen size={17} aria-hidden="true" />
-                        {labels.see_more}
-                      </button>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.article
-                    key="details"
-                    initial={{ opacity: 0, x: 16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -16 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="mx-auto max-w-3xl font-body text-[15px] leading-[1.85] text-[var(--color-text-secondary)] [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-[var(--color-text-primary)] [&_h3]:mt-6 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_p]:mt-4"
-                  >
-                    {selected.detailsHtml ? (
-                      <div dangerouslySetInnerHTML={{ __html: selected.detailsHtml }} />
-                    ) : (
-                      <p className="border-l-2 border-[var(--color-saffron-400)] pl-4 text-[var(--color-text-muted)]">
-                        {labels.details_placeholder}
-                      </p>
-                    )}
-                  </motion.article>
+              <div className={selected.fullImage ? "mx-auto grid max-w-4xl items-start gap-6 md:grid-cols-[minmax(220px,300px)_1fr] lg:gap-10" : "mx-auto max-w-3xl"}>
+                {selected.fullImage && (
+                  <div className="relative mx-auto aspect-[4/5] w-full max-w-[300px] overflow-hidden bg-[var(--color-saffron-50)]">
+                    <Image
+                      src={selected.fullImage}
+                      alt={selected.name}
+                      fill
+                      sizes="(max-width: 767px) min(76vw, 300px), 300px"
+                      className="object-contain"
+                    />
+                  </div>
                 )}
-              </AnimatePresence>
+                <div>
+                  <p className="font-body text-[14px] leading-[1.8] text-[var(--color-text-secondary)] sm:text-[15px]">
+                    {selected.summary}
+                  </p>
+                  <Link
+                    href={`/history/parampara/${encodeURIComponent(selected.id)}`}
+                    className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--color-saffron-600)] px-5 font-body text-[13px] font-bold text-[var(--color-text-on-brand)] hover:bg-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+                  >
+                    <BookOpen size={17} aria-hidden="true" />
+                    {labels.see_more}
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>

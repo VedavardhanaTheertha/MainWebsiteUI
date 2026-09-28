@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import ContactRows from "@/components/ContactRows";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.contact;
@@ -20,7 +21,7 @@ export default function ContactPage() {
           Contact & Branches
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-base max-w-xl mx-auto">
-          {content[defaultLang].contact_subtitle}
+          <LocalizedCopy path={["contact_subtitle"]} />
         </p>
       </div>
 
@@ -28,7 +29,7 @@ export default function ContactPage() {
         {/* Reach Shri Shiroor Matha — matches the design reference's .m-contact rows */}
         <section aria-labelledby="reach-heading" className="mb-14 max-w-md">
           <h2 id="reach-heading" className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-6">
-            {content[defaultLang].pages.contact.reach_title}
+            <LocalizedCopy path={["pages", "contact", "reach_title"]} />
           </h2>
           <ContactRows />
         </section>
@@ -43,36 +44,36 @@ export default function ContactPage() {
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {branches.map((branch) => (
+            {branches.map((branch, index) => (
               <article
-                key={branch.name}
+                key={index}
                 className="bg-white rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.08)] flex flex-col gap-4"
-                aria-labelledby={`branch-${branch.name}`}
+                aria-labelledby={`branch-${index}`}
               >
                 <div className="flex items-start gap-3">
                   <span
                     className={`font-body text-[10px] font-semibold uppercase tracking-wider rounded-full px-3 py-1 shrink-0 ${
-                      branch.type === "Main"
+                      index === 0
                         ? "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]"
                         : "bg-[var(--color-saffron-600)] text-[var(--color-text-secondary)]"
                     }`}
                   >
-                    {branch.type}
+                    <LocalizedCopy path={["pages", "contact", "branches", index, "type"]} />
                   </span>
                 </div>
 
                 <div>
                   <h3
-                    id={`branch-${branch.name}`}
+                    id={`branch-${index}`}
                     className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"
                   >
-                    {branch.name}
+                    <LocalizedCopy path={["pages", "contact", "branches", index, "name"]} />
                   </h3>
 
                   <div className="space-y-2.5 font-body text-sm text-[var(--color-text-secondary)]">
                     <p>
                       <span className="text-[var(--color-text-primary)] font-medium">Address: </span>
-                      {branch.address}
+                      <LocalizedCopy path={["pages", "contact", "branches", index, "address"]} />
                     </p>
                     <p>
                       <span className="text-[var(--color-text-primary)] font-medium">Phone: </span>
@@ -91,7 +92,7 @@ export default function ContactPage() {
                     </p>
                     <p>
                       <span className="text-[var(--color-text-primary)] font-medium">Hours: </span>
-                      {branch.hours}
+                      <LocalizedCopy path={["pages", "contact", "branches", index, "hours"]} />
                     </p>
                   </div>
                 </div>
@@ -125,7 +126,7 @@ export default function ContactPage() {
             Send Us a Message
           </h2>
           <p className="font-body text-[var(--color-text-brand)]/70 text-sm mb-6">
-            {content[defaultLang].contact_enquiry_sub}
+            <LocalizedCopy path={["contact_enquiry_sub"]} />
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <a
