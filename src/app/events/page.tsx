@@ -4,14 +4,11 @@ import SiteFooter from "@/components/SiteFooter";
 import ThisWeekRail from "@/components/ThisWeekRail";
 import EventsAccordion from "@/components/EventsAccordion";
 import EventsExact from "@/components/EventsExact";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 import { imagePaths } from "@/lib/images";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.events;
-
-const allEvents = content[defaultLang].pages.events.items;
-
-const thisWeekEvents = allEvents.filter((e) => e.thisWeek).slice(0, 5);
 
 export default function EventsPage() {
   return (
@@ -38,7 +35,7 @@ export default function EventsPage() {
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-sm lg:text-base max-w-xl mx-auto">
           <span className="lg:hidden">Festivals, utsavas & more.</span>
-          <span className="hidden lg:inline">{content[defaultLang].events_subtitle}</span>
+          <span className="hidden lg:inline"><LocalizedCopy path={["events_subtitle"]} /></span>
         </p>
       </div>
 
@@ -50,7 +47,7 @@ export default function EventsPage() {
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <h2 className="font-display font-bold text-[#4F252E] text-xl lg:text-2xl">This Week</h2>
           </div>
-          <ThisWeekRail events={thisWeekEvents} />
+          <ThisWeekRail />
         </section>
 
         {/* Divider */}

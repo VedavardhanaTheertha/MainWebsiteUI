@@ -2,16 +2,9 @@
 
 import { useRef, useEffect } from "react";
 import Image from "next/image";
+import { useLang } from "@/context/LanguageContext";
+import type { EventPageItem } from "@/lib/content-types";
 import { imagePaths } from "@/lib/images";
-
-type Event = {
-  displayDate: string;
-  category: string;
-  title: string;
-  location: string;
-  time: string;
-  description: string;
-};
 
 const catColor: Record<string, string> = {
   Utsava: "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]",
@@ -30,7 +23,9 @@ function CategoryBadge({ category }: { category: string }) {
   );
 }
 
-export default function ThisWeekRail({ events }: { events: Event[] }) {
+export default function ThisWeekRail() {
+  const { tr } = useLang();
+  const events: EventPageItem[] = tr.pages.events.items.filter((event) => event.thisWeek).slice(0, 5);
   const scrollRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const paused = useRef(false);

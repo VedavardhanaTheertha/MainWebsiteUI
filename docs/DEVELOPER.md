@@ -83,8 +83,9 @@ build-specific checks this project needs on top of them.
 Every push to `main` rebuilds and republishes the permanent preview automatically. Open
 the preview to review the latest merged revision without a local setup.
 
-The hosted preview deliberately shows placeholder text such as
-`en·hero title — content goes here` instead of real wording. This is intentional:
+The hosted preview initially shows placeholder text such as
+`en·hero title — content goes here` instead of real wording. The **Local copy preview**
+control can switch between placeholder and real copy. This is intentional:
 
 - It keeps the preview out of search results so it cannot compete with the live site.
 - It makes accidental hardcoded content visible and allows the build to detect it.
@@ -132,14 +133,17 @@ config/        site.yml — environments, build flags, brand terms
 docs/          this guide, ARCHITECTURE.md, and the
                CONTRIBUTE_*/GUIDELINE_* contributor guides
 build/         build.mjs (runs the full build) and verify.mjs (checks the output)
-scripts/       generate-content.mjs — turns content/ into src/gen/content.ts
+scripts/       generate-content.mjs — turns content/ and library sources into src/gen/
 src/app/       Next.js routes — structure only, never content
 src/components/  reusable UI — structure only, never content
 src/lib/       shared logic: content-types.ts, nav-types.ts, scheduler.ts
 src/context/   LanguageContext.tsx — the useLang() provider (see §8)
 src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
-library/       required submodule → WebsiteLibrary (Bhakti source content)
+library/       required submodule → WebsiteLibrary (Bhakti, hero, and Parampara content)
+  hero/dev/    development and local hero groups; default.hero.json is selected
+  hero/prod/   production hero groups; default.hero.json is selected
+  parampara/   index.json plus one Markdown file per guru
 test_media/    recursively initialized submodule → WebsiteTestMedia
 .github/workflows/deploy-dev.yml  thin CI wrapper around build/build.mjs
 ```
@@ -178,10 +182,10 @@ around `build.mjs`. This keeps the build portable and provides two practical ben
 | `npm run clean` | Delete stale generated output | clean working build outputs |
 | `npm run typecheck` | Generate content, then `tsc --noEmit` | pass/fail |
 | `npm run test:unit` | Content utility and Markdown security tests | pass/fail |
-| `npm run dev` | content:build, then `next dev` | a running dev server |
+| `npm run dev` | content:build, then `next dev` | dev server with placeholder-default copy selector |
 | `npm run dev:local` | Generate both copy variants with `SITE_ENV=local`, then `next dev` | root-based local server with copy selector |
 | `npm run build:local` | Full verified, non-indexable local build with both copy variants | `out/` (local/switchable build) |
-| `npm run build:dev` | `node build/build.mjs dev` — full pipeline: generate content → `next build` → verify | `out/` (dev/placeholder build) |
+| `npm run build:dev` | `node build/build.mjs dev` — full pipeline: generate content → `next build` → verify | `out/` (dev/placeholder-default build) |
 | `npm run build:prod` | same pipeline with `SITE_ENV=prod` | `out/` (production/real-content build) |
 | `npm run verify` | `build/verify.mjs` against an existing `out/` | pass/fail report, no rebuild |
 | `npm run lint` | ESLint | lint errors/warnings |
@@ -274,14 +278,15 @@ in `src/` should ever branch on environment name directly. Full design rationale
 | Setting | `local` | `dev` | `prod` |
 |---|---|---|---|
 | `base_path` | `""` | `/MainWebsiteUI` | `""` |
-| `content_mode` | `switchable` | `placeholder` | `real` |
+| `content_mode` | `switchable` | `switchable` | `real` |
+| `default_variant` | `real` (implicit) | `placeholder` | `real` (implicit) |
 | `indexable` | `false` | `false` | `true` |
 | Hosted on | Not hosted | GitHub Pages | Cloudflare Pages (not yet connected — see §11) |
 
 Build-wide flags also live there:
 
 - `build.fail_on_hardcoded_content` — enabled; real prose and brand-term leaks in a
-  placeholder build are fatal.
+  placeholder-default rendered output are fatal.
 - `build.brand_terms` — words that must never appear on a non-production page, checked
   at any length (unlike general prose, which needs 30+ characters to count — see
   `build/verify.mjs`).
@@ -304,6 +309,10 @@ never a literal in `src/`. This is stated in `AGENTS.md` and is not optional.
 - Read content through `useLang()` (`src/context/LanguageContext.tsx:69`), which
   returns `{ lang, tr, languages, setLang }`. `tr` is the merged, typed content object
   for the active language — pull strings from `tr`, not from a local constant.
+- In server-rendered route files, render localized text with `LocalizedCopy` and a path
+  into `tr` (for example `path={["pages", "about", "title"]}`). Use `LocalizedImage`
+  when image alt text comes from content. Do not render `content[defaultLang]` directly;
+  that is build-time default data and will not follow the active copy selection.
 - No file in `src/` may name a specific language code or a specific blog post slug.
   Both are discovered from the filesystem by `scripts/generate-content.mjs` — see
   [ARCHITECTURE.md §3](./ARCHITECTURE.md#3-core-principle--content-is-data-structure-is-code).
@@ -388,11 +397,14 @@ The hosted development environment uses generated placeholders so search engines
 index a duplicate of production and so hardcoded content remains detectable. Placeholders
 are padded to approximately the real text length, making them suitable for layout review.
 
-Use `npm run dev:local` to compare actual and placeholder wording with the on-page
-selector. It preserves the current language and persists the selected copy mode. The
-local build is still `noindex` with a disallowing robots file. Because this is a static
-export, metadata and legacy Server Component markup that reads generated content directly
-remain real; client components consuming `useLang()` switch immediately. See
+Use the copy selector in either preview to compare actual and placeholder wording. It
+preserves the current language and persists the selected copy mode. `local` starts with
+real copy; hosted `dev` starts with placeholders. The dev bundle includes real copy in
+downloadable client assets to support switching, so the public preview is not a place for
+confidential content. Both environments remain `noindex` with a disallowing robots file.
+Because this is a static export, metadata and legacy Server Component markup that reads
+generated content directly remain at the configured default; client components consuming
+`useLang()` switch immediately. See
 [ARCHITECTURE.md §6.4](./ARCHITECTURE.md#64-switchable-local-content).
 
 ---
@@ -455,7 +467,7 @@ verified-build gates.
 
 | Branch | Target | How | Status |
 |---|---|---|---|
-| `main` | GitHub Pages preview | `.github/workflows/deploy-dev.yml`, placeholder build on merge and daily | ✅ working |
+| `main` | GitHub Pages preview | `.github/workflows/deploy-dev.yml`, placeholder-default build on merge and daily | ✅ working |
 | `main` | Cloudflare Pages | — | ⏳ designed for, not yet connected |
 
 The permanent preview always represents `main`; feature branches are validated by the

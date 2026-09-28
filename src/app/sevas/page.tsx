@@ -3,6 +3,7 @@ import Image from "next/image";
 import SevasBrowser from "@/components/SevasBrowser";
 import Top4SevaRail from "@/components/Top4SevaRail";
 import SiteFooter from "@/components/SiteFooter";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 import { imagePaths } from "@/lib/images";
 
@@ -33,7 +34,7 @@ export default function SevasPage() {
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-sm lg:text-base max-w-xl mx-auto">
           <span className="lg:hidden">Express your love for the Divine.</span>
-          <span className="hidden lg:inline">{content[defaultLang].sevas_subtitle}</span>
+          <span className="hidden lg:inline"><LocalizedCopy path={["sevas_subtitle"]} /></span>
         </p>
       </div>
 

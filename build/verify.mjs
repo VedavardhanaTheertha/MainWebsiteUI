@@ -43,7 +43,7 @@ if (!environment) {
   console.error(`[verify] SITE_ENV="${envName}" is not defined in config/site.yml`);
   process.exit(1);
 }
-const mode = describeContentMode(environment.content_mode);
+const mode = describeContentMode(environment.content_mode, environment.default_variant);
 
 const problems = [];
 const warnings = [];
@@ -72,7 +72,7 @@ function decodeEntities(html) {
 
 /**
  * Gathers the real prose from the default language file — the text that must NOT
- * appear in a placeholder build. Machine values (paths, dates, ids) are excluded
+ * appear in placeholder-default rendered output. Machine values are excluded
  * because they are deliberately preserved in every environment.
  */
 function collectRealProse(node, out = []) {
@@ -218,7 +218,7 @@ if (!environment.indexable) {
   }
 }
 
-// ── Check 7: local selector is emitted only for switchable builds ───────────
+// ── Check 7: copy selector is emitted only for switchable builds ────────────
 
 const localToggleFiles = htmlFiles.filter((file) =>
   readFileSync(file, "utf8").includes("data-local-content-toggle")
@@ -233,21 +233,45 @@ if (!mode.switchable && localToggleFiles.length) {
 const generatedContentFile = path.join(rootDir, "src", "gen", "content.ts");
 if (mode.switchable && existsSync(generatedContentFile)) {
   const generatedContent = readFileSync(generatedContentFile, "utf8");
-  if (!generatedContent.includes("localPlaceholderContent") || !generatedContent.includes("·")) {
-    problems.push("a switchable build must contain the generated placeholder variant.");
+  if (!generatedContent.includes("alternateContent") ||
+      !generatedContent.includes(`defaultContentMode = "${mode.defaultVariant}"`) ||
+      !generatedContent.includes("alternateHomeHero: HomeHeroData | null") ||
+      /alternateHomeHero: HomeHeroData \| null = null/.test(generatedContent)) {
+    problems.push(`the ${envName} bundle must include its configured copy default and alternate variant.`);
+  }
+  if (mode.defaultVariant === "real" && !generatedContent.includes("·")) {
+    problems.push("a real-default switchable build must contain its placeholder alternate variant.");
+  }
+  const generatedParamparaFile = path.join(rootDir, "src", "gen", "parampara", "data.ts");
+  if (!existsSync(generatedParamparaFile)) {
+    problems.push("a switchable build must generate Parampara data.");
+  } else {
+    const generatedParampara = readFileSync(generatedParamparaFile, "utf8");
+    if (!generatedParampara.includes("alternateParamparaByLanguage") ||
+        /alternateParamparaByLanguage = null/.test(generatedParampara)) {
+      problems.push(`the ${envName} bundle must include alternate Parampara copy.`);
+    }
   }
 }
 if (!mode.switchable && existsSync(generatedContentFile)) {
   const generatedContent = readFileSync(generatedContentFile, "utf8");
-  if (!/localPlaceholderContent = null/.test(generatedContent) ||
-      !/localPlaceholderBlogPosts: BlogPost\[\] \| null = null/.test(generatedContent)) {
+  if (!/alternateContent = null/.test(generatedContent) ||
+      !/alternateBlogPosts: BlogPost\[\] \| null = null/.test(generatedContent)) {
     problems.push(`the ${envName} bundle must not contain switchable alternate content.`);
+  }
+  if (!/alternateHomeHero: HomeHeroData \| null = null/.test(generatedContent)) {
+    problems.push(`the ${envName} bundle must not contain an alternate home hero.`);
+  }
+  const generatedParamparaFile = path.join(rootDir, "src", "gen", "parampara", "data.ts");
+  if (existsSync(generatedParamparaFile) &&
+      !/alternateParamparaByLanguage = null/.test(readFileSync(generatedParamparaFile, "utf8"))) {
+    problems.push(`the ${envName} bundle must not contain alternate Parampara copy.`);
   }
 }
 
-// ── Check 8: no real content in a placeholder build ──────────────────────────
+// ── Check 8: placeholder-default HTML contains no real content ────────────────
 
-if (mode.contentMode === "placeholder") {
+if (mode.defaultVariant === "placeholder") {
   const defaultLangFile = path.join(
     rootDir,
     config.content.languages_dir,
@@ -260,7 +284,7 @@ if (mode.contentMode === "placeholder") {
   const contentFiles = [
     ...htmlFiles,
     ...(existsSync(manifestFile) ? [manifestFile] : []),
-    ...(existsSync(generatedContentFile) ? [generatedContentFile] : []),
+    ...(!mode.includesReal && existsSync(generatedContentFile) ? [generatedContentFile] : []),
   ];
   const leaks = [];
   for (const file of contentFiles) {
@@ -298,16 +322,16 @@ if (mode.contentMode === "placeholder") {
   }
 }
 
-// ── Check 9: brand terms must not appear in placeholder builds ───────────────
+// ── Check 9: brand terms must not appear in placeholder-default output ────────
 
-if (mode.contentMode === "placeholder") {
+if (mode.defaultVariant === "placeholder") {
   const brandTerms = config.build?.brand_terms ?? [];
   const hits = new Map();
 
   const contentFiles = [
     ...htmlFiles,
     ...(existsSync(manifestFile) ? [manifestFile] : []),
-    ...(existsSync(generatedContentFile) ? [generatedContentFile] : []),
+    ...(!mode.includesReal && existsSync(generatedContentFile) ? [generatedContentFile] : []),
   ];
   for (const file of contentFiles) {
     const text = decodeEntities(readFileSync(file, "utf8"));

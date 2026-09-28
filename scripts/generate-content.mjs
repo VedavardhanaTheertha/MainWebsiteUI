@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Content build step.
 //
-// Scans content/languages/ and content/blog/, merges every language over the
-// default language, optionally replaces all real text with placeholders, and
-// emits src/gen/content.ts for the app to import.
+// Scans content/languages/, content/blog/, and the active library/hero environment,
+// merges every language over the default language, optionally replaces all real
+// text with placeholders, and emits generated website content under src/gen/.
 //
 // Nothing in src/ lists languages or blog posts by name — this script discovers
 // them from the filesystem, which is what lets a contributor add a language or
@@ -27,11 +27,11 @@ const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 // must survive the placeholder transform untouched. Replacing an `href` would
 // break navigation; replacing an `id` would break item matching.
 const PRESERVED_KEYS = new Set([
-  "id", "key", "code", "kind", "tone", "cat", "slug",
+  "id", "key", "code", "kind", "tone", "cat", "slug", "phone", "email",
   "href", "img", "bg", "icon", "symbol", "upi", "images", "gallery",
   "launch_date", "end_date", "pinned_date", "date",
   "img_position",
-  // This local-only control must remain understandable while it selects which
+  // This preview control must remain understandable while it selects which
   // transform to preview. Its translated labels still come from content files.
   "local_preview",
 ]);
@@ -360,6 +360,157 @@ function placeholderArticles(posts) {
   }));
 }
 
+function parseParamparaMarkdown(file) {
+  const raw = readFileSync(file, "utf8");
+  const heading = raw.match(/^#\s+(.+)$/m)?.[1]?.trim();
+  const detailsMatch = raw.match(/^##\s+Details\s*$/m);
+  if (!heading || !detailsMatch) {
+    throw new Error(`${path.relative(rootDir, file)} needs a title and a "## Details" heading.`);
+  }
+
+  const summary = raw
+    .slice(raw.indexOf("\n") + 1, detailsMatch.index)
+    .split(/\r?\n/)
+    .filter((line) => !/^\s*-\s+\*\*[^*]+:\*\*/.test(line) && line.trim())
+    .join("\n\n")
+    .trim();
+  const detailsMarkdown = raw.slice(detailsMatch.index + detailsMatch[0].length).trim();
+  return { heading, summary, detailsMarkdown };
+}
+
+/** Loads the indexed Guru Parampara, falling back to English until translations exist. */
+function discoverParampara(languageCodes, defaultLang) {
+  const dir = path.join(rootDir, "library", "parampara");
+  const indexFile = path.join(dir, "index.json");
+  if (!existsSync(indexFile)) {
+    throw new Error("library/parampara/index.json is missing — initialize the library submodule.");
+  }
+
+  const loadIndex = (file) => {
+    try {
+      return JSON.parse(readFileSync(file, "utf8"));
+    } catch (err) {
+      throw new Error(`${path.relative(rootDir, file)} is not valid JSON — ${err.message}`);
+    }
+  };
+  const baseIndex = loadIndex(indexFile);
+  if (!Array.isArray(baseIndex.items) || !baseIndex.items.length) {
+    throw new Error("library/parampara/index.json needs a non-empty items array.");
+  }
+
+  const result = {};
+  for (const code of languageCodes) {
+    const translatedIndexFile = path.join(dir, `index.${code}.json`);
+    const hasTranslatedIndex = code !== defaultLang && existsSync(translatedIndexFile);
+    const index = hasTranslatedIndex ? loadIndex(translatedIndexFile) : baseIndex;
+    if (!Array.isArray(index.items) || index.items.length !== baseIndex.items.length) {
+      throw new Error(`${path.relative(rootDir, translatedIndexFile)} must contain the same ${baseIndex.items.length} entries as index.json.`);
+    }
+
+    result[code] = index.items.map((item, itemIndex) => {
+      const baseItem = baseIndex.items[itemIndex];
+      if (!item.id || item.id !== baseItem.id || !item.contentFile) {
+        throw new Error(`library/parampara index entry ${itemIndex + 1} needs a stable id and contentFile.`);
+      }
+
+      const parsedPath = path.parse(item.contentFile);
+      const translatedMarkdown = path.join(dir, `${parsedPath.name}.${code}${parsedPath.ext}`);
+      const markdownFile = hasTranslatedIndex
+        ? path.join(dir, item.contentFile)
+        : code !== defaultLang && existsSync(translatedMarkdown)
+          ? translatedMarkdown
+          : path.join(dir, baseItem.contentFile);
+      if (!existsSync(markdownFile)) {
+        throw new Error(`${path.relative(rootDir, markdownFile)} is referenced by the parampara index but is missing.`);
+      }
+
+      const parsed = parseParamparaMarkdown(markdownFile);
+      if (code === defaultLang && (parsed.heading !== item.name || parsed.summary !== item.summary)) {
+        throw new Error(`${path.relative(rootDir, markdownFile)} title or summary does not match library/parampara/index.json.`);
+      }
+      return {
+        id: item.id,
+        name: parsed.heading,
+        position: item.position,
+        officialPosition: item.officialPosition ?? null,
+        timePeriod: item.timePeriod ?? "",
+        summary: parsed.summary,
+        thumbnailImage: item.thumbnailImage ?? "",
+        fullImage: item.fullImage ?? item.thumbnailImage ?? "",
+        detailsMarkdown: parsed.detailsMarkdown,
+      };
+    });
+  }
+  return result;
+}
+
+function placeholderParampara(parampara) {
+  return Object.fromEntries(Object.entries(parampara).map(([code, items]) => [
+    code,
+    items.map((item, index) => ({
+      ...item,
+      name: makePlaceholder(`parampara.items.${index}.name`, item.name, code),
+      timePeriod: item.timePeriod
+        ? makePlaceholder(`parampara.items.${index}.time_period`, item.timePeriod, code)
+        : "",
+      summary: makePlaceholder(`parampara.items.${index}.summary`, item.summary, code),
+      detailsMarkdown: item.detailsMarkdown
+        ? makePlaceholder(`parampara.items.${index}.details`, item.detailsMarkdown, code)
+        : "",
+      thumbnailImage: "",
+      fullImage: "",
+    })),
+  ]));
+}
+
+function writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang) {
+  const dir = path.join(rootDir, "src", "gen", "parampara");
+  mkdirSync(dir, { recursive: true });
+
+  const renderParampara = (itemsByLanguage) => Object.fromEntries(Object.entries(itemsByLanguage).map(([code, items]) => [
+    code,
+    items.map(({ detailsMarkdown, ...item }) => ({
+      ...item,
+      detailsHtml: detailsMarkdown ? renderMarkdown(detailsMarkdown) : "",
+    })),
+  ]));
+  const rendered = renderParampara(parampara);
+  const renderedAlternate = alternateParampara ? renderParampara(alternateParampara) : null;
+  const generated = `// AUTO-GENERATED by scripts/generate-content.mjs — do not edit directly.\n` +
+    `export interface ParamparaGuru {\n` +
+    `  id: string; name: string; position: number; officialPosition: number | null;\n` +
+    `  timePeriod: string; summary: string; thumbnailImage: string; fullImage: string; detailsHtml: string;\n` +
+    `}\n\n` +
+    `export const paramparaByLanguage = ${JSON.stringify(rendered, null, 2)} as unknown as Record<string, ParamparaGuru[]>;\n` +
+    `export const alternateParamparaByLanguage = ${JSON.stringify(renderedAlternate, null, 2)} as unknown as Record<string, ParamparaGuru[]> | null;\n`;
+  writeFileSync(path.join(dir, "data.ts"), generated, "utf8");
+
+  const labels = content[defaultLang].pages.parampara;
+  const gurus = rendered[defaultLang];
+  const cards = gurus.map((guru) => `
+      <button class="guru" data-id="${escapeHtml(guru.id)}">
+        <span class="position">${escapeHtml(guru.officialPosition === null ? labels.founder : `${labels.position} ${guru.officialPosition}`)}</span>
+        <strong>${escapeHtml(guru.name)}</strong>
+        ${guru.timePeriod ? `<small>${escapeHtml(guru.timePeriod)}</small>` : ""}
+        <span class="summary">${escapeHtml(guru.summary)}</span>
+      </button>`).join("");
+  const payload = JSON.stringify(rendered).replaceAll("<", "\\u003c");
+  const labelPayload = JSON.stringify(Object.fromEntries(
+    Object.keys(rendered).map((code) => [code, content[code].pages.parampara])
+  )).replaceAll("<", "\\u003c");
+  const html = `<!doctype html>
+<html lang="${escapeHtml(defaultLang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHtml(labels.title)}</title><style>
+*{box-sizing:border-box}body{margin:0;background:#fbf3e7;color:#261b12;font:15px system-ui,sans-serif}.wrap{max-width:1120px;margin:auto;padding:40px 20px 64px}header{max-width:680px;margin-bottom:28px}h1{font:700 38px Georgia,serif;margin:0 0 10px}.intro{color:#5c4a38;line-height:1.65}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.guru{min-height:190px;padding:18px;text-align:left;background:#fff;border:1px solid #e0cfb3;border-radius:8px;color:inherit;cursor:pointer}.guru:hover{border-color:#c4520a;box-shadow:0 10px 30px -12px rgba(38,27,18,.2)}.position{display:block;color:#c4520a;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:12px}.guru strong{display:block;font:700 20px Georgia,serif}.guru small{display:block;color:#9a8a72;margin-top:5px}.summary{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:#5c4a38;line-height:1.55;margin-top:14px}.modal{position:fixed;inset:0;background:rgba(26,17,8,.7);display:none;place-items:center;padding:20px}.modal.open{display:grid}.panel{width:min(620px,100%);max-height:85vh;overflow:auto;background:#fff;border-radius:8px;padding:24px}.close{float:right;border:0;background:none;font-size:24px;cursor:pointer}.details{line-height:1.7;color:#5c4a38}.action{border:0;border-radius:999px;background:#c4520a;color:#fff;padding:12px 20px;font-weight:700;cursor:pointer}@media(max-width:600px){.wrap{padding:28px 14px}h1{font-size:30px}.grid{grid-template-columns:1fr 1fr}.guru{min-height:210px;padding:14px}}
+</style></head><body><main class="wrap"><header><h1>${escapeHtml(labels.title)}</h1><p class="intro">${escapeHtml(labels.intro)}</p></header><div class="grid">${cards}
+</div></main><div class="modal" role="dialog" aria-modal="true"><div class="panel"><button class="close" aria-label="${escapeHtml(labels.close)}">&times;</button><p class="position modal-position"></p><h2></h2><p class="details modal-summary"></p><div class="details modal-details" hidden></div><button class="action">${escapeHtml(labels.see_more)}</button></div></div><script>
+const byLanguage=${payload};const labelsByLanguage=${labelPayload};const modal=document.querySelector('.modal');const grid=document.querySelector('.grid');const title=modal.querySelector('h2');const position=modal.querySelector('.modal-position');const summary=modal.querySelector('.modal-summary');const details=modal.querySelector('.modal-details');const action=modal.querySelector('.action');let gurus;let labels;let selected;
+const positionText=guru=>guru.officialPosition===null?labels.founder:labels.position+' '+guru.officialPosition;const openGuru=guru=>{selected=guru;title.textContent=guru.name;position.textContent=positionText(guru);summary.textContent=guru.summary;summary.hidden=false;details.hidden=true;details.innerHTML=guru.detailsHtml||'<p>'+labels.details_placeholder+'</p>';action.hidden=false;action.textContent=labels.see_more;modal.classList.add('open')};const render=lang=>{if(!byLanguage[lang])lang='${escapeHtml(defaultLang)}';gurus=byLanguage[lang];labels=labelsByLanguage[lang];document.documentElement.lang=lang;document.title=labels.title;document.querySelector('h1').textContent=labels.title;document.querySelector('.intro').textContent=labels.intro;modal.querySelector('.close').setAttribute('aria-label',labels.close);grid.replaceChildren(...gurus.map(guru=>{const card=document.createElement('button');card.className='guru';card.dataset.id=guru.id;const pos=document.createElement('span');pos.className='position';pos.textContent=positionText(guru);const name=document.createElement('strong');name.textContent=guru.name;card.append(pos,name);if(guru.timePeriod){const time=document.createElement('small');time.textContent=guru.timePeriod;card.append(time)}const text=document.createElement('span');text.className='summary';text.textContent=guru.summary;card.append(text);card.addEventListener('click',()=>openGuru(guru));return card}))};
+render(localStorage.getItem('shiroor-lang')||'${escapeHtml(defaultLang)}');addEventListener('storage',event=>{if(event.key==='shiroor-lang')render(event.newValue)});addEventListener('site-language-change',()=>render(localStorage.getItem('shiroor-lang')));action.addEventListener('click',()=>{summary.hidden=true;details.hidden=false;action.hidden=true});const close=()=>modal.classList.remove('open');modal.querySelector('.close').addEventListener('click',close);modal.addEventListener('click',event=>{if(event.target===modal)close()});addEventListener('keydown',event=>{if(event.key==='Escape')close()});
+</script></body></html>\n`;
+  writeFileSync(path.join(dir, "index.html"), html, "utf8");
+}
+
 /**
  * Writes public/robots.txt for the active environment. Non-production
  * environments disallow all crawling so they cannot compete with the live site
@@ -378,14 +529,163 @@ function writeRobots(env, config) {
   writeFileSync(path.join(rootDir, "public", "robots.txt"), lines.join("\n") + "\n", "utf8");
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+/** Discovers hero groups for the active environment and selects default.hero.json. */
+function loadDefaultHero(imageLookup, environmentName) {
+  const heroEnvironment = environmentName === "local" ? "dev" : environmentName;
+  const relativeHeroDir = path.join("library", "hero", heroEnvironment);
+  const heroDir = path.join(rootDir, relativeHeroDir);
+  if (!existsSync(heroDir)) {
+    throw new Error(`${relativeHeroDir} is missing — initialize the library submodule and add a hero group.`);
+  }
+
+  const groupFiles = readdirSync(heroDir).filter((file) => file.endsWith(".hero.json")).sort();
+  const defaultFile = "default.hero.json";
+  if (!groupFiles.includes(defaultFile)) {
+    throw new Error(`${path.join(relativeHeroDir, defaultFile)} is missing — it selects the default hero group.`);
+  }
+
+  const file = path.join(heroDir, defaultFile);
+  let hero;
+  try {
+    hero = JSON.parse(readFileSync(file, "utf8"));
+  } catch (err) {
+    throw new Error(`${path.join(relativeHeroDir, defaultFile)} is not valid JSON — ${err.message}`);
+  }
+
+  for (const key of ["title_en", "title_kn", "href"]) {
+    if (typeof hero[key] !== "string" || !hero[key].trim()) {
+      throw new Error(`${path.join(relativeHeroDir, defaultFile)} needs a non-empty "${key}" string.`);
+    }
+  }
+  if (!Array.isArray(hero.images) || !hero.images.length) {
+    throw new Error(`${path.join(relativeHeroDir, defaultFile)} needs a non-empty "images" array.`);
+  }
+
+  const images = hero.images.map((image, index) => {
+    if (typeof image !== "string" || (!image.startsWith("http://") && !image.startsWith("https://") && !image.startsWith("@image."))) {
+      throw new Error(`${path.join(relativeHeroDir, defaultFile)} images[${index}] must be an HTTP URL or @image reference.`);
+    }
+    if (image.startsWith("@image.") && !imageLookup.has(image)) {
+      throw new Error(`${path.join(relativeHeroDir, defaultFile)} images[${index}] references unknown image "${image}".`);
+    }
+    return image;
+  });
+
+  console.log(`[content] hero env=${heroEnvironment} groups=[${groupFiles.map((name) => name.replace(/\.hero\.json$/, "")).join(", ")}] selected=default`);
+  return { ...hero, images };
+}
+
+function resolveHeroHref(href, basePath) {
+  if (!href.startsWith("/") || !basePath || href === basePath || href.startsWith(`${basePath}/`)) return href;
+  return `${basePath}${href}`;
+}
+
+/** Writes a standalone HTML rendering of the home page's hero carousel. */
+function writeHeroImages(hero, content, lang, basePath) {
+  const titleEn = escapeHtml(hero.title_en);
+  const titleKn = escapeHtml(hero.title_kn);
+  const activeTitle = lang === "kn" ? titleKn : titleEn;
+  const ctaEn = escapeHtml(content.en?.home?.hero_intro?.cta_label ?? "");
+  const ctaKn = escapeHtml(content.kn?.home?.hero_intro?.cta_label ?? ctaEn);
+  const activeCta = lang === "kn" ? ctaKn : ctaEn;
+  const slides = hero.images.map((src, index) => `
+      <div class="hero-image${index === 0 ? " is-active" : ""}" aria-hidden="${index === 0 ? "false" : "true"}">
+        <img src="${escapeHtml(src)}" alt=""${index === 0 ? ' fetchpriority="high"' : ' loading="lazy"'}>
+      </div>`).join("");
+
+  const html = `<!doctype html>
+<html lang="${escapeHtml(lang)}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${activeTitle}</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    .hero { position: relative; width: 100%; height: 462px; overflow: hidden; border-radius: 0 0 22px 22px; background: #140c04; }
+    .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity 900ms ease; }
+    .hero-image img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 7s ease-out; }
+    .hero-image.is-active { opacity: 1; }
+    .hero-image.is-active img { transform: scale(1); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,12,4,.42) 0%, rgba(20,12,4,.05) 22%, rgba(20,12,4,0) 40%, rgba(20,12,4,.55) 70%, rgba(16,9,3,.86) 100%); }
+    .hero-content { position: absolute; right: 0; bottom: 0; left: 0; padding: 0 24px 32px; text-align: center; }
+    .hero-title { margin: 0 0 20px; color: #fffaf0; font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.25; white-space: pre-line; text-shadow: 0 1px 20px rgba(0,0,0,.4); }
+    .hero-cta { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #c86d1d; color: #fff; font-family: sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 8px 22px -8px rgba(0,0,0,.55); transition: background-color 150ms ease; }
+    .hero-cta:hover { background: #a95315; }
+    .hero-cta:active { background: #85400f; }
+    @media (min-width: 1024px) {
+      .hero { height: 600px; }
+      .hero-title { font-size: 36px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-image, .hero-image img { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero" data-title-en="${titleEn}" data-title-kn="${titleKn}" data-cta-en="${ctaEn}" data-cta-kn="${ctaKn}">
+    <div class="hero-images">${slides}
+    </div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">${activeTitle}</h1>
+      <a class="hero-cta" href="${escapeHtml(resolveHeroHref(hero.href, basePath))}">${activeCta}</a>
+    </div>
+  </section>
+  <script>
+    (() => {
+      const hero = document.querySelector(".hero");
+      const applyLanguage = (lang) => {
+        if (lang !== "en" && lang !== "kn") return;
+        document.documentElement.lang = lang;
+        document.title = hero.dataset[lang === "kn" ? "titleKn" : "titleEn"];
+        document.querySelector(".hero-title").textContent = document.title;
+        document.querySelector(".hero-cta").textContent = hero.dataset[lang === "kn" ? "ctaKn" : "ctaEn"];
+      };
+      applyLanguage(new URLSearchParams(location.search).get("lang") || localStorage.getItem("shiroor-lang") || "${escapeHtml(lang)}");
+      window.addEventListener("storage", (event) => {
+        if (event.key === "shiroor-lang") applyLanguage(event.newValue);
+      });
+      window.addEventListener("site-language-change", () => applyLanguage(localStorage.getItem("shiroor-lang")));
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      const slides = [...document.querySelectorAll(".hero-image")];
+      let active = 0;
+      window.setInterval(() => {
+        slides[active].classList.remove("is-active");
+        slides[active].setAttribute("aria-hidden", "true");
+        active = (active + 1) % slides.length;
+        slides[active].classList.add("is-active");
+        slides[active].setAttribute("aria-hidden", "false");
+      }, 4500);
+    })();
+  </script>
+</body>
+</html>
+`;
+
+  const heroDir = path.join(rootDir, "src", "gen", "hero-images");
+  mkdirSync(heroDir, { recursive: true });
+  writeFileSync(path.join(heroDir, "index.html"), html, "utf8");
+}
+
 // ── Build ────────────────────────────────────────────────────────────────────
 
 const config = loadConfig();
 const env = resolveEnvironment(config);
 const imageLookup = loadImageConfig(env.name);
-const mode = describeContentMode(env.content_mode);
+const mode = describeContentMode(env.content_mode, env.default_variant);
 const languageCodes = discoverLanguages(config);
 const defaultLang = config.site.default_language;
+const defaultHero = loadDefaultHero(imageLookup, env.name);
 
 const defaultContent = resolveImagePaths(loadLanguage(config, defaultLang), imageLookup);
 
@@ -427,9 +727,35 @@ const realBlogPosts = mode.includesReal ? discoveredBlogPosts : [];
 const placeholderBlogPosts = mode.includesPlaceholder ? placeholderArticles(discoveredBlogPosts) : [];
 
 const content = mode.defaultVariant === "real" ? realContent : placeholderContent;
-const alternateContent = mode.switchable ? placeholderContent : null;
+const alternateContent = mode.switchable
+  ? mode.defaultVariant === "real" ? placeholderContent : realContent
+  : null;
 const blogPosts = mode.defaultVariant === "real" ? realBlogPosts : placeholderBlogPosts;
-const alternateBlogPosts = mode.switchable ? placeholderBlogPosts : null;
+const alternateBlogPosts = mode.switchable
+  ? mode.defaultVariant === "real" ? placeholderBlogPosts : realBlogPosts
+  : null;
+const discoveredParampara = discoverParampara(languageCodes, defaultLang);
+const placeholderParamparaContent = placeholderParampara(discoveredParampara);
+const parampara = mode.defaultVariant === "real" ? discoveredParampara : placeholderParamparaContent;
+const alternateParampara = mode.switchable
+  ? mode.defaultVariant === "real" ? placeholderParamparaContent : discoveredParampara
+  : null;
+const placeholderHero = {
+  ...defaultHero,
+  title_en: makePlaceholder("hero.default.title", defaultHero.title_en, "en"),
+  title_kn: makePlaceholder("hero.default.title", defaultHero.title_kn, "kn"),
+};
+const hero = mode.defaultVariant === "real" ? defaultHero : placeholderHero;
+const alternateHero = mode.switchable
+  ? mode.defaultVariant === "real" ? placeholderHero : defaultHero
+  : null;
+const toHomeHero = (heroData) => ({
+  titles: { en: heroData.title_en, kn: heroData.title_kn },
+  href: heroData.href,
+  images: heroData.images.map((image) => imageLookup.get(image) ?? image),
+});
+const homeHero = toHomeHero(hero);
+const alternateHomeHero = alternateHero ? toHomeHero(alternateHero) : null;
 
 // Markdown is converted after the placeholder pass so placeholder bodies render
 // as ordinary paragraphs too.
@@ -447,6 +773,8 @@ writeRobots(env, config);
 
 const outDir = path.join(rootDir, "src", "gen");
 mkdirSync(outDir, { recursive: true });
+writeHeroImages(hero, content, defaultLang, env.base_path ?? "");
+writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang);
 
 function discoverStaticRoutes(dir, prefix = "") {
   const routes = [];
@@ -466,6 +794,7 @@ function discoverStaticRoutes(dir, prefix = "") {
 const routes = [
   ...discoverStaticRoutes(path.join(rootDir, "src", "app")),
   ...blogPosts.map((post) => `/blog/${post.slug}`),
+  ...discoveredParampara[defaultLang].map((guru) => `/history/parampara/${guru.id}`),
 ].filter((route, index, all) => all.indexOf(route) === index).sort();
 
 const langUnion = languageCodes.map((c) => `"${c}"`).join(" | ");
@@ -483,8 +812,11 @@ export const defaultLang: Lang = "${defaultLang}";
 /** Environment this bundle was built for. */
 export const siteEnv = "${env.name}";
 
-/** Whether this bundle contains real content or generated placeholders. */
+/** Whether the server-rendered copy uses generated placeholders. */
 export const isPlaceholderContent = ${mode.defaultVariant === "placeholder"};
+
+/** Initial copy mode for server rendering and first-time visitors. */
+export const defaultContentMode = "${mode.defaultVariant}" as const;
 
 /** Whether this build enables the local runtime content selector. */
 export const isContentSwitchable = ${mode.switchable};
@@ -510,16 +842,25 @@ export const routes = ${JSON.stringify(routes, null, 2)} as const;
 /** Discovered languages, in switcher order. Add a file to content/languages/ to extend. */
 export const languages: LanguageDescriptor[] = ${JSON.stringify(descriptors, null, 2)};
 
+/** Home hero selected from the configured default copy mode. */
+export interface HomeHeroData {
+  titles: Record<Lang, string>;
+  href: string;
+  images: string[];
+}
+export const homeHero: HomeHeroData = ${JSON.stringify(homeHero, null, 2)};
+export const alternateHomeHero: HomeHeroData | null = ${JSON.stringify(alternateHomeHero, null, 2)};
+
 export const content = ${JSON.stringify(content, null, 2)} as unknown as Record<Lang, ContentShape>;
 
-/** Placeholder variant for local testing; null in development and production bundles. */
-export const localPlaceholderContent = ${JSON.stringify(alternateContent, null, 2)} as unknown as Record<Lang, ContentShape> | null;
+/** Alternate copy variant for switchable environments; null otherwise. */
+export const alternateContent = ${JSON.stringify(alternateContent, null, 2)} as unknown as Record<Lang, ContentShape> | null;
 
 /** Discovered blog posts, newest first. Add a folder to content/blog/ to extend. */
 export const blogPosts: BlogPost[] = ${JSON.stringify(renderedPosts, null, 2)} as unknown as BlogPost[];
 
-/** Placeholder article variant for local testing; null in other bundles. */
-export const localPlaceholderBlogPosts: BlogPost[] | null = ${JSON.stringify(
+/** Alternate article variant for switchable environments; null otherwise. */
+export const alternateBlogPosts: BlogPost[] | null = ${JSON.stringify(
   alternateBlogPosts
     ? alternateBlogPosts.map((post) => ({
         ...post,
@@ -558,5 +899,8 @@ for (const [code, fallbacks] of Object.entries(fallbackReport)) {
 if (mode.contentMode === "placeholder") {
   console.log(`[content] placeholder mode — real text is not included in this build.`);
 } else if (mode.switchable) {
-  console.log(`[content] switchable mode — real and placeholder text are included; real is the default.`);
+  console.log(
+    `[content] switchable mode — real and placeholder text are included; ` +
+      `${mode.defaultVariant} is the default.`
+  );
 }

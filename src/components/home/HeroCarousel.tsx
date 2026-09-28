@@ -4,12 +4,18 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
+import { alternateHomeHero, defaultContentMode, homeHero } from "@/gen/content";
 
 const AUTO_MS = 4500;
 
 export default function HeroCarousel() {
-  const { tr } = useLang();
-  const { title, cta_label, cta_href, images } = tr.home.hero_intro;
+  const { lang, tr, contentMode } = useLang();
+  const hero = contentMode !== defaultContentMode && alternateHomeHero
+    ? alternateHomeHero
+    : homeHero;
+  const { cta_label } = tr.home.hero_intro;
+  const title = hero.titles[lang];
+  const { href, images } = hero;
   const [i, setI] = useState(0);
 
   useEffect(() => {
@@ -55,7 +61,7 @@ export default function HeroCarousel() {
           {title}
         </h1>
         <Link
-          href={cta_href}
+          href={href}
           className="inline-block font-body font-semibold text-[15px] text-[var(--color-text-on-brand)] bg-[var(--color-saffron-500)] hover:bg-[var(--color-saffron-600)] active:bg-[var(--color-saffron-700)] rounded-full px-[30px] py-[14px] transition-colors"
           style={{ boxShadow: "0 8px 22px -8px rgba(0,0,0,.55)" }}
         >

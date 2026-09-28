@@ -1416,6 +1416,23 @@
     }
   },
   "pages": {
+    "parampara": {
+      "title": "Guru Parampara",
+      "intro": "An unbroken lineage of spiritual teachers carrying the tradition from Sri Madhwacharyaru to the present day.",
+      "position": "Guru",
+      "founder": "Founder",
+      "see_more": "See full details",
+      "close": "Close",
+      "lineage": "The lineage",
+      "back_to_lineage": "Back to the lineage",
+      "guru_navigation": "Guru navigation",
+      "previous": "Previous guru",
+      "next": "Next guru",
+      "content_views": "Biography views",
+      "summary": "Summary",
+      "details": "Details",
+      "details_placeholder": "A complete biography, teachings, and historical details will be added here when verified source material becomes available."
+    },
     "detected": {
       "connect_address": "Shri Shiroor Matha, Car Street, Udupi, Karnataka - 576101",
       "connect_newsletter": "Subscribe to receive updates, newsletters, and daily slokas from Shri Shiroor Matha.",

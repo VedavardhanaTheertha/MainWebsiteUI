@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.privacy;
@@ -31,7 +32,7 @@ export default function PrivacyPage() {
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">2. How We Use Your Data</h2>
             <ul className="list-disc pl-5 space-y-1.5">
               <li>To process your donation or seva offering and send you a receipt</li>
-              <li>{content[defaultLang].pages.detected.privacy_updates}</li>
+              <li><LocalizedCopy path={["pages", "detected", "privacy_updates"]} /></li>
               <li>To fulfil any legal or regulatory obligations</li>
             </ul>
           </section>

@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
+import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.refund;
@@ -23,7 +24,7 @@ export default function RefundPage() {
               1. Donations (General)
             </h2>
             <p>
-              {content[defaultLang].pages.detected.refund_donations}
+              <LocalizedCopy path={["pages", "detected", "refund_donations"]} />
             </p>
           </section>
 
