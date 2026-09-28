@@ -126,13 +126,15 @@ Shirooru/
 │   └── gen/                    ← generated website data. Never hand-edited. Gitignored.
 │       ├── content.ts          ← environment-resolved site and article content
 │       ├── hero-images/        ← standalone HTML rendering of the home hero carousel
+│       ├── parampara/          ← lineage data module and standalone interactive HTML
 │       └── bhakti/             ← generated devotional collection
 │
 ├── public/                     ← existing static assets served from the site root
 │   ├── articles/               ← consistent location for new article media
 │   └── slide/                  ← existing legacy image collection
-├── library/                    ← required content submodule (Bhakti and hero groups)
+├── library/                    ← required content submodule (Bhakti, hero, and Parampara)
 │   ├── dasasahitya/            ← devotional source collection
+│   ├── parampara/              ← indexed Guru Parampara Markdown entries
 │   └── hero/                   ← environment-specific hero groups
 │       ├── dev/                ← development and local hero sources
 │       └── prod/               ← production hero sources
@@ -266,9 +268,23 @@ HTTP URLs remain absolute and `@image.*` values remain references. It selects
 `default.hero.json` and writes the standalone carousel to
 `src/gen/hero-images/index.html`. Internal links receive the environment base path;
 external links are preserved. Production uses `title_en` and `title_kn` exactly as
-authored. Development and local builds replace both with independently generated titles,
+authored. Development and local builds replace both with the shared placeholder transform,
 so library prose cannot leak through non-production output. The generated React data and
 standalone HTML select the matching title when the page language changes.
+
+### 5.6 Guru Parampara
+
+`library/parampara/index.json` defines the ordered lineage and references one Markdown
+file per guru. The generator validates that every file exists and that its heading and
+summary match the index, then parses content after `## Details` as sanitized Markdown.
+It writes `src/gen/parampara/data.ts` for the Next.js page and a self-contained interactive
+`src/gen/parampara/index.html`. Development output applies the standard placeholder
+transform and suppresses source image URLs; production uses the verified library text.
+
+English is the current source and automatically falls back for other languages. Future
+translations can add `index.<lang>.json` and/or `<content-file-stem>.<lang>.md`; generated
+data and both interfaces already select the active language through `useLang()` and the
+`shiroor-lang` browser event contract.
 
 ---
 
@@ -366,6 +382,7 @@ change pre-exported HTML without generating a second route tree.
 ```
 content/languages/*.json ─┐
 content/blog/*/          ─┤
+library/parampara/*      ─┤
 library/hero/<env>/*.hero.json ─┼─→ generate-content.mjs → src/gen/ → next build → out/
 config/site.yml          ─┘            ↑                                    │
                                    SITE_ENV                                 ↓
@@ -383,6 +400,9 @@ The generator performs the following jobs:
 6. **Discovers hero groups** from `library/hero/<env>/*.hero.json` (`local` uses `dev`),
   selects `default`, applies environment title handling, validates and preserves image
   values, and renders React hero data plus `src/gen/hero-images/index.html`.
+7. **Discovers Guru Parampara entries** from `library/parampara/`, validates and parses
+  Markdown, applies language fallback and environment placeholders, and renders the
+  generated data module plus standalone interactive HTML.
 
 After Next.js exports the site, `write-canonicals.mjs` maps each HTML output path back
 to its public route and writes the corresponding URL under `site.production_url`. This

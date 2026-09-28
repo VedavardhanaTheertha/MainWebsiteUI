@@ -374,6 +374,23 @@ export interface EventPageItem {
 }
 
 export interface PagesShape {
+  parampara: {
+    title: string;
+    intro: string;
+    position: string;
+    founder: string;
+    see_more: string;
+    close: string;
+    lineage: string;
+    back_to_lineage: string;
+    guru_navigation: string;
+    previous: string;
+    next: string;
+    content_views: string;
+    summary: string;
+    details: string;
+    details_placeholder: string;
+  };
   detected: Record<string, string>;
   about: {
     title: string;

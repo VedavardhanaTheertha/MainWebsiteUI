@@ -132,16 +132,17 @@ config/        site.yml — environments, build flags, brand terms
 docs/          this guide, ARCHITECTURE.md, and the
                CONTRIBUTE_*/GUIDELINE_* contributor guides
 build/         build.mjs (runs the full build) and verify.mjs (checks the output)
-scripts/       generate-content.mjs — turns content/ into src/gen/content.ts
+scripts/       generate-content.mjs — turns content/ and library sources into src/gen/
 src/app/       Next.js routes — structure only, never content
 src/components/  reusable UI — structure only, never content
 src/lib/       shared logic: content-types.ts, nav-types.ts, scheduler.ts
 src/context/   LanguageContext.tsx — the useLang() provider (see §8)
 src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
-library/       required submodule → WebsiteLibrary (Bhakti and hero source content)
+library/       required submodule → WebsiteLibrary (Bhakti, hero, and Parampara content)
   hero/dev/    development and local hero groups; default.hero.json is selected
   hero/prod/   production hero groups; default.hero.json is selected
+  parampara/   index.json plus one Markdown file per guru
 test_media/    recursively initialized submodule → WebsiteTestMedia
 .github/workflows/deploy-dev.yml  thin CI wrapper around build/build.mjs
 ```
