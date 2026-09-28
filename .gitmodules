@@ -1,6 +1,8 @@
 [submodule "library"]
 	path = library
 	url = git@github.com:VedavardhanaTheertha/WebsiteLibrary.git
+	branch = main
 [submodule "settings"]
 	path = settings
 	url = git@github.com:VedavardhanaTheertha/WebsiteConfiguration.git
+	branch = main
