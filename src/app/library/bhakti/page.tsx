@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: pageContent.metadata_description,
 };
 
-interface CatalogItem extends Omit<BhaktiItem, "html"> {
+interface CatalogItem extends BhaktiItem {
   contentFile: string;
 }
 
@@ -23,10 +23,7 @@ function loadBhakti(): BhaktiItem[] {
   const collectionRoot = path.join(process.cwd(), "src", "gen", "bhakti");
   const catalog = JSON.parse(readFileSync(path.join(collectionRoot, "index.json"), "utf8")) as Catalog;
 
-  return catalog.items.map(({ contentFile, ...item }) => ({
-    ...item,
-    html: readFileSync(path.join(collectionRoot, contentFile), "utf8"),
-  }));
+  return catalog.items;
 }
 
 export default function BhaktiPage() {

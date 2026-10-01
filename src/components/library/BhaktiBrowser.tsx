@@ -1,47 +1,127 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
+import { bhaktiContentLoaders, loadBhaktiSearchIndex } from "@/gen/bhakti/loaders";
 
 export interface BhaktiItem {
   id: string;
   title: string;
+  titleKn?: string;
+  titleEn?: string;
   kruti: string;
   krutiKn: string;
   ankita: string;
   ankitaKn: string;
-  searchTags: string[];
-  html: string;
+  searchText?: string;
+  searchTags?: string[];
+  html?: string;
+  htmlKn?: string;
+  htmlEn?: string;
 }
 
-function normalize(value: string) {
-  return value.normalize("NFKD").toLocaleLowerCase().replace(/[|–—.,'’]/g, " ").replace(/\s+/g, " ").trim();
+interface SongContent {
+  html: string;
+  htmlKn?: string;
+  htmlEn?: string;
 }
 
 export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const { lang, tr } = useLang();
   const copy = tr.library.bhakti.page;
+  const isKn = lang === "kn";
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
   const [showAll, setShowAll] = useState(false);
   const [expanded, setExpanded] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [loadedContent, setLoadedContent] = useState<Record<string, SongContent>>({});
 
-  const filtered = useMemo(() => {
-    const needle = normalize(query);
-    if (!needle) return items;
-    return items.filter((item) => normalize([
-      item.title,
-      item.kruti,
-      item.krutiKn,
-      item.ankita,
-      item.ankitaKn,
-      ...item.searchTags,
-    ].join(" ")).includes(needle));
-  }, [items, query]);
+  const bhaktiSearchConfig = useMemo(
+    () => ({
+      fields: [
+        "title",
+        "titleKn",
+        "titleEn",
+        "kruti",
+        "krutiKn",
+        "ankita",
+        "ankitaKn",
+        "searchTags",
+        "searchText",
+      ],
+      boost: {
+        title: 3,
+        titleKn: 3,
+        titleEn: 3,
+        ankita: 2,
+        ankitaKn: 2,
+        kruti: 1.5,
+        krutiKn: 1.5,
+      },
+      extractField: (item: BhaktiItem, field: string) => {
+        if (field === "searchTags" && Array.isArray(item.searchTags)) {
+          return item.searchTags.join(" ");
+        }
+        const val = (item as unknown as Record<string, unknown>)[field];
+        return val != null ? String(val) : "";
+      },
+    }),
+    []
+  );
+
+  const { results: filtered, ensureLoaded } = useLazyMiniSearch(
+    items,
+    deferredQuery,
+    loadBhaktiSearchIndex,
+    bhaktiSearchConfig
+  );
 
   const visible = showAll ? filtered : filtered.slice(0, 6);
   const selected = items.find((item) => item.id === selectedId) ?? null;
+  const selectedContent = selected ? loadedContent[selected.id] : null;
+  const currentHtml = selected
+    ? isKn
+      ? selected.htmlKn || selectedContent?.htmlKn || selected.html || selectedContent?.html || null
+      : selected.htmlEn || selectedContent?.htmlEn || selected.html || selectedContent?.html || null
+    : null;
+
+  const loadSongContent = useCallback((id: string) => {
+    setLoadedContent((prev) => {
+      if (prev[id]) return prev;
+      const item = items.find((i) => i.id === id);
+      if (item?.html || item?.htmlKn || item?.htmlEn) {
+        return {
+          ...prev,
+          [id]: {
+            html: item.html || "",
+            htmlKn: item.htmlKn,
+            htmlEn: item.htmlEn,
+          },
+        };
+      }
+      const loader = bhaktiContentLoaders[id];
+      if (loader) {
+        loader()
+          .then((mod) => {
+            setLoadedContent((current) => ({
+              ...current,
+              [id]: {
+                html: mod.html,
+                htmlKn: mod.htmlKn,
+                htmlEn: mod.htmlEn,
+              },
+            }));
+          })
+          .catch((err) => {
+            console.error("Failed to load bhakti content:", err);
+          });
+      }
+      return prev;
+    });
+  }, [items]);
 
   useEffect(() => {
     const selectFromHash = () => {
@@ -49,18 +129,43 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
       if (id && items.some((item) => item.id === id)) {
         setSelectedId(id);
         setExpanded(false);
+        loadSongContent(id);
+      } else {
+        setSelectedId(null);
       }
     };
     selectFromHash();
     window.addEventListener("hashchange", selectFromHash);
     return () => window.removeEventListener("hashchange", selectFromHash);
-  }, [items]);
+  }, [items, loadSongContent]);
 
   const selectItem = (item: BhaktiItem) => {
     setSelectedId(item.id);
     setExpanded(false);
+    loadSongContent(item.id);
     window.history.replaceState(null, "", `#${encodeURIComponent(item.id)}`);
     window.setTimeout(() => document.getElementById("bhakti-reading")?.scrollIntoView({ behavior: "smooth" }), 0);
+  };
+
+  const prefetchItem = (id: string) => {
+    if (!loadedContent[id] && bhaktiContentLoaders[id]) {
+      bhaktiContentLoaders[id]()
+        .then((mod) => {
+          setLoadedContent((current) =>
+            current[id]
+              ? current
+              : {
+                  ...current,
+                  [id]: {
+                    html: mod.html,
+                    htmlKn: mod.htmlKn,
+                    htmlEn: mod.htmlEn,
+                  },
+                },
+          );
+        })
+        .catch(() => {});
+    }
   };
 
   const backToResults = () => {
@@ -82,6 +187,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
           <input
             type="search"
             value={query}
+            onFocus={ensureLoaded}
             onChange={(event) => { setQuery(event.target.value); setShowAll(false); }}
             placeholder={copy.search_placeholder}
             className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-text-muted)]"
@@ -120,12 +226,20 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
                     key={item.id}
                     type="button"
                     onClick={() => selectItem(item)}
+                    onMouseEnter={() => prefetchItem(item.id)}
+                    onFocus={() => prefetchItem(item.id)}
                     className="group relative min-h-30 overflow-hidden rounded-lg border border-[var(--color-line-strong)] bg-white/75 p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-gold-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                   >
                     <span className="absolute left-4 top-0 h-[3px] w-8 bg-[var(--color-gold-500)]" />
-                    <strong className="block pr-5 font-kannada text-sm leading-relaxed">{item.title}</strong>
-                    <span className="mt-1.5 block text-[11px] text-[var(--color-text-muted)]">{copy.by}: {lang === "kn" ? item.krutiKn || item.kruti : item.kruti}</span>
-                    <span className="mt-2 block pr-6 text-[11px] text-[var(--color-text-brand)]">{copy.ankita}: {lang === "kn" ? item.ankitaKn || item.ankita : item.ankita}</span>
+                    <strong className={`block pr-5 text-sm leading-relaxed ${isKn ? "font-kannada" : "font-sans font-semibold"}`}>
+                      {isKn ? item.titleKn || item.title : item.titleEn || item.title}
+                    </strong>
+                    <span className="mt-1.5 block text-[11px] text-[var(--color-text-muted)]">
+                      {copy.by}: {isKn ? item.krutiKn || item.kruti : item.kruti}
+                    </span>
+                    <span className="mt-2 block pr-6 text-[11px] text-[var(--color-text-brand)]">
+                      {copy.ankita}: {isKn ? item.ankitaKn || item.ankita : item.ankita}
+                    </span>
                     <span aria-hidden="true" className="absolute bottom-3 right-3 grid size-5 place-items-center rounded-full bg-[var(--color-saffron-600)] text-xs text-white">→</span>
                   </button>
                 ))}
@@ -148,9 +262,20 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
             <button type="button" onClick={backToResults} className="py-3 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
             <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>
           </div>
-          <article className="bhakti-literature-content" dangerouslySetInnerHTML={{ __html: selected.html }} />
+          {currentHtml ? (
+            <article
+              className={`bhakti-literature-content ${isKn ? "font-kannada" : "font-sans"}`}
+              lang={lang}
+              dangerouslySetInnerHTML={{ __html: currentHtml }}
+            />
+          ) : (
+            <div className="flex items-center justify-center py-16">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-saffron-600)] border-t-transparent" />
+            </div>
+          )}
         </section>
       )}
     </div>
   );
 }
+

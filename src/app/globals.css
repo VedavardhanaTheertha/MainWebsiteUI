@@ -220,12 +220,20 @@ html[lang="kn"] h4, html[lang="kn"] h5, html[lang="kn"] h6 {
   line-height: 1.8;
 }
 
+.bhakti-literature-content[lang="en"] {
+  font-family: var(--font-body);
+}
+
 .bhakti-literature-content h1 {
   margin-bottom: .75rem;
   font-family: var(--font-kannada);
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 700;
   line-height: 1.45;
+}
+
+.bhakti-literature-content[lang="en"] h1 {
+  font-family: var(--font-display);
 }
 
 .bhakti-literature-content h2 {
@@ -236,6 +244,10 @@ html[lang="kn"] h4, html[lang="kn"] h5, html[lang="kn"] h6 {
   font-family: var(--font-kannada);
   font-size: 1.2rem;
   font-weight: 600;
+}
+
+.bhakti-literature-content[lang="en"] h2 {
+  font-family: var(--font-display);
 }
 
 .bhakti-literature-content p {

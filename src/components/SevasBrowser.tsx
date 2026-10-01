@@ -1,10 +1,12 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo, useId } from "react";
 import Image from "next/image";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { sevas } from "@/data/sevas";
 import { imagePaths } from "@/lib/images";
+import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
+import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
 
 const categoryImg: Record<string, string> = {
   "Krishna Sannidhi":     imagePaths.krishna,
@@ -110,11 +112,22 @@ export default function SevasBrowser() {
   const [query, setQuery] = useState("");
   const searchId = useId();
 
-  const filteredResults = useMemo(() => {
-    if (!query) return null;
-    const q = query.toLowerCase();
-    return sevas.filter((s) => s.name.toLowerCase().includes(q) || s.significance.toLowerCase().includes(q));
-  }, [query]);
+  const sevasSearchConfig = useMemo(
+    () => ({
+      fields: ["name", "significance", "category"],
+      boost: { name: 2, category: 1.5, significance: 1 },
+    }),
+    []
+  );
+
+  const { results, ensureLoaded } = useLazyMiniSearch(
+    sevas,
+    query,
+    loadSevasSearchIndex,
+    sevasSearchConfig
+  );
+
+  const filteredResults = query.trim() ? results : null;
 
   return (
     <div className="px-3 lg:px-8 pt-1 pb-8 lg:py-12" id="donate">
@@ -127,6 +140,7 @@ export default function SevasBrowser() {
             id={searchId}
             type="search"
             value={query}
+            onFocus={ensureLoaded}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search sevas…"
             className="w-full bg-white border border-[var(--color-saffron-600)] rounded-full pl-10 pr-4 py-2.5 font-body text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/40 focus:outline-none focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-600)]/20 transition-all"

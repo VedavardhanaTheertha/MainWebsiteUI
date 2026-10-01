@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import { Search, Play } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { useMiniSearch } from "@/hooks/useMiniSearch";
 import type { MediaVideo } from "@/lib/content-types";
 
 export default function MediaGrid({ type }: { type: "photo" | "video" }) {
@@ -11,7 +12,16 @@ export default function MediaGrid({ type }: { type: "photo" | "video" }) {
   const list: Array<MediaVideo | { title: string; detail: string; img: string }> =
     type === "video" ? tr.media.videos : tr.media.photos;
   const [q, setQ] = useState("");
-  const items = list.filter((x) => x.title.toLowerCase().includes(q.toLowerCase()));
+
+  const searchConfig = useMemo(
+    () => ({
+      fields: ["title", "detail"],
+      boost: { title: 2, detail: 1 },
+    }),
+    []
+  );
+
+  const items = useMiniSearch(list, q, searchConfig);
 
   return (
     <div>

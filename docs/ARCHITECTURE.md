@@ -257,6 +257,24 @@ and placeholder rules as the rest of the website UI. The collection is exposed t
 CI initializes submodules recursively. A missing library checkout fails early with the
 exact initialization command rather than an opaque file-not-found error.
 
+The collection supports multi-language display (Kannada and English) driven directly by the
+existing language switcher in the site header (`useLang().lang`):
+1. **Build-Time Index Creation & Compression**: `src/gen/bhakti/index.json` stores lightweight song metadata
+   including Kannada titles (`titleKn`), transliterated English titles (`titleEn`), author/ankita
+   attributes in both scripts, and pre-tokenized, normalized search haystacks (`searchText`).
+   `build/build-bhakti-content.mjs` pre-builds a complete `MiniSearch` index at build time with field
+   weights (titles 3x, ankitas 2x, authors 1.5x) and serializes it to a gzip-compressed payload in
+   `src/gen/bhakti/search-index.ts` (~6 KB). This index chunk is lazy loaded on demand (on idle or search focus)
+   and decompressed in the browser via native `DecompressionStream("gzip")`, eliminating runtime indexing overhead
+   and keeping initial page load small.
+2. **Lazy-Loaded Language Chunks**: Songs are split into individual modules under
+   `src/gen/bhakti/content/<id>.ts` and lazy loaded on demand via `loaders.ts` with card
+   hover/focus prefetching. Each module exports both `htmlKn` (Kannada title, author line, and lyrics)
+   and `htmlEn` (English title, author line, and transliterated lyrics).
+3. **Instantaneous Language Switching**: When the reader toggles the language switch in the header,
+   the catalog titles, attribution lines, and active reading view switch between Kannada and English
+   immediately without additional network requests, preserving reading continuity.
+
 ### 5.5 Hero groups
 
 The library submodule stores hero groups under `hero/dev/` and `hero/prod/`, with one
@@ -289,6 +307,28 @@ English is the current source and automatically falls back for other languages. 
 translations can add `index.<lang>.json` and/or `<content-file-stem>.<lang>.md`; generated
 data and both interfaces already select the active language through `useLang()` and the
 `shiroor-lang` browser event contract.
+
+### 5.7 Full-text search with MiniSearch and build-time compression
+
+Client-side searching across the website is unified through `minisearch` via `src/lib/search.ts`
+and React hooks in `src/hooks/useMiniSearch.ts`:
+- **Build-Time Indexing and Gzip Compression**:
+  - **Dasasahitya (`BhaktiBrowser.tsx`)**: The full bilingual index is compiled at build time by
+    `build/build-bhakti-content.mjs`, serialized, and compressed with gzip into `src/gen/bhakti/search-index.ts`.
+  - **Sevas (`SevasBrowser.tsx` & `AllSevaBrowser.tsx`)**: All 97 sevas are indexed and gzip-compressed
+    at build time by `build/build-sevas-content.mjs` into `src/gen/sevas/search-index.ts`.
+- **Streaming Lazy Loading (`useLazyMiniSearch`)**:
+  - The compressed index modules are code-split into dynamic import chunks that are only loaded on demand
+    (idle prefetch or input focus).
+  - Decompression occurs in the browser using the native `DecompressionStream("gzip")` API with zero additional
+    dependencies and automatic fallback to client-side indexing if needed.
+  - An optimistic immediate filter prevents UI pauses while the chunk resolves.
+- **In-Memory Local Search (`MediaGrid.tsx`)**:
+  - Media photo and video catalogs are localized and indexed on the client with lightweight in-memory MiniSearch.
+- **Search Quality**:
+  - Prefix matching (`prefix: true`) as users type.
+  - Adaptive fuzzy matching (`fuzzy: (term) => (term.length > 3 ? 0.2 : false)`) tolerating typos.
+  - Automatic fallback from `AND` to `OR` combinations on multi-word queries.
 
 ---
 
@@ -431,9 +471,9 @@ still point to the production origin.
    false positives on ordinary words).
 5. Non-production pages and manifest contain none of the **brand terms** listed in
    `config/site.yml` — matched at *any* length, because a name like "Shiroor" is short
-  but is precisely what someone would search for. The prose check alone would miss it.
+   but is precisely what someone would search for. The prose check alone would miss it.
 6. Every non-error exported HTML file has exactly one production canonical derived from
-  its exported route; generated `404.html` and `_not-found.html` have no canonical.
+   its exported route; generated `404.html` and `_not-found.html` have no canonical.
 7. `sitemap.xml` has one canonical production URL per non-error exported HTML page.
 
 Every full build first removes `.next/`, `out/`, `dist/`, `src/gen/`, and generated

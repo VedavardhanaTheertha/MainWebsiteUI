@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Search } from "lucide-react";
 import { sevas } from "@/data/sevas";
 import { imagePaths } from "@/lib/images";
+import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
+import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
 
 const categoryImg: Record<string, string> = {
   "Krishna Sannidhi": imagePaths.krishna,
@@ -29,15 +31,37 @@ export default function AllSevaBrowser() {
   const [q, setQ] = useState("");
   const searchId = useId();
 
-  const items = useMemo(() => {
-    const byTab =
-      tab === "nitya" ? sevas.filter((s) => s.category === "Krishna Sannidhi")
-      : tab === "special" ? sevas.filter((s) => s.isSpecial)
+  const tabFiltered = useMemo(() => {
+    return tab === "nitya"
+      ? sevas.filter((s) => s.category === "Krishna Sannidhi")
+      : tab === "special"
+      ? sevas.filter((s) => s.isSpecial)
       : sevas;
-    if (!q) return byTab;
-    const query = q.toLowerCase();
-    return byTab.filter((s) => s.name.toLowerCase().includes(query) || s.significance.toLowerCase().includes(query));
-  }, [tab, q]);
+  }, [tab]);
+
+  const searchConfig = useMemo(
+    () => ({
+      fields: ["name", "significance", "category"],
+      boost: { name: 2, category: 1.5, significance: 1 },
+    }),
+    []
+  );
+
+  const { results: allMatches, ensureLoaded } = useLazyMiniSearch(
+    sevas,
+    q,
+    loadSevasSearchIndex,
+    searchConfig
+  );
+
+  const items = useMemo(() => {
+    if (!q.trim()) return tabFiltered;
+    return allMatches.filter((s) => {
+      if (tab === "nitya") return s.category === "Krishna Sannidhi";
+      if (tab === "special") return s.isSpecial;
+      return true;
+    });
+  }, [allMatches, q, tab, tabFiltered]);
 
   return (
     <div>
@@ -61,6 +85,7 @@ export default function AllSevaBrowser() {
           id={searchId}
           type="search"
           value={q}
+          onFocus={ensureLoaded}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search sevas…"
           className="flex-1 bg-transparent outline-none text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]"
