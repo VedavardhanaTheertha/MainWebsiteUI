@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
-import ThisWeekRail from "@/components/ThisWeekRail";
+import UpcomingEventRail from "@/components/UpcomingEventRail";
 import EventsAccordion from "@/components/EventsAccordion";
 import EventsExact from "@/components/EventsExact";
 import LocalizedCopy from "@/components/LocalizedCopy";
@@ -45,7 +45,7 @@ export default function EventsPage() {
               <LocalizedCopy path={["events_upcoming"]} />
             </h2>
           </div>
-          <ThisWeekRail />
+          <UpcomingEventRail />
         </section>
 
         {/* Divider */}

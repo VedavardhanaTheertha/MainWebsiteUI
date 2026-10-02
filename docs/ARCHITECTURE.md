@@ -351,13 +351,19 @@ and production build (`npm run events:build`).
    events are pre-built and gzip-compressed into `src/gen/events/search-index.ts` and `past-search-index.ts`.
 3. **Reactive UI Integration**: Events are consumed by Next.js components:
    - `EventsExact.tsx`: Category tabs starting with "All Upcoming", individual category filters, and an "All Past Events" tab. Selecting "All Past Events" lazy loads `past-data.ts`. MiniSearch searches past events only when on the past events tab, and future events on all other tabs. Clicking any card opens `EventDetailModal`.
-   - `ThisWeekRail.tsx`: Highlights up to 6 upcoming events occurring in the next 30 days, or displays an empty state message if no upcoming events are scheduled.
+   - `UpcomingEventRail.tsx`: Highlights up to 6 upcoming events occurring in the next 30 days, or displays an empty state message if no upcoming events are scheduled.
    - `EventsAccordion.tsx`: Displays a row of tiles for recurring events (`recurring: true`), automatically hidden if no recurring events exist.
    - `EventDetailModal.tsx`: Interactive accessible modal displaying complete event details, performers, schedule, and gallery in the user's selected language.
    - `MilestonesEvents.tsx`: Homepage spotlight rail.
 4. **Environment Isolation**: Placeholders in dev/preview builds prevent content leaks through
    SSR verification, while production renders full verified copy and imagery. Real and placeholder
    variants are switchable via the preview control without impacting images.
+5. **Dev & Local Test Event Duplication**: In `dev` and `local` builds, `build/build-events-content.mjs`
+   duplicates all past events and shifts their dates forward equally such that the earliest event
+   falls on the current day (`today`), making them available in the upcoming events collection for
+   interactive testing. Titles and descriptions are prefixed with `Duplicate event for testing:`.
+   These duplicates are added in addition to the original past events and are strictly excluded from
+   production builds.
 
 ---
 

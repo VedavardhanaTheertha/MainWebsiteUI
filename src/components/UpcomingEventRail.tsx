@@ -35,7 +35,7 @@ function CategoryBadge({ category, code }: { category: string; code?: string }) 
   );
 }
 
-export default function ThisWeekRail() {
+export default function UpcomingEventRail() {
   const { lang, contentMode, tr } = useLang();
   const isKn = lang === "kn";
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);

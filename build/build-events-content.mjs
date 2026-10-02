@@ -202,48 +202,153 @@ for (const file of eventFiles) {
   });
 }
 
-// 3. Generate placeholder catalog for development/placeholder verification
-const placeholderCatalog = realCatalog.map((ev, idx) => ({
-  ...ev,
-  image: ev.image,
-  images: ev.images,
-  title: {
-    en: `en·event title ${idx + 1} — content goes here`,
-    kn: `kn·event title ${idx + 1} — ವಿಷಯ ಇಲ್ಲಿದೆ`,
-  },
-  displayDate: ev.displayDate,
-  time: ev.time,
-  location: {
-    en: `en·event location ${idx + 1}`,
-    kn: `kn·event location ${idx + 1}`,
-  },
-  performers: {
-    en: (ev.performers?.en || []).map((_, pIdx) => `en·performer ${pIdx + 1}`),
-    kn: (ev.performers?.kn || []).map((_, pIdx) => `kn·performer ${pIdx + 1}`),
-  },
-  description: {
-    en: `en·event description ${idx + 1} — sample placeholder text for layout preview only text`,
-    kn: `kn·event description ${idx + 1} — ಮಾದರಿ ಪಠ್ಯ ವಿವರಣೆ ಇಲ್ಲಿದೆ ಪೂರ್ವವೀಕ್ಷಣೆಗಾಗಿ ಮಾತ್ರ`,
-  },
-  details: {
-    en: `en·event details ${idx + 1} — sample placeholder copy for layout preview only text`,
-    kn: `kn·event details ${idx + 1} — ಮಾದರಿ ಕಾರ್ಯಕ್ರಮ ವಿವರಣೆ ಇಲ್ಲಿದೆ`,
-  },
-  categories: ev.categories.map((c) => ({
-    code: c.code,
-    en: `en·${c.code}`,
-    kn: `kn·${c.code}`,
-  })),
-}));
+// Date helpers for test event generation
+const EN_MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+const KN_MONTHS = [
+  "ಜನವರಿ", "ಫೆಬ್ರವರಿ", "ಮಾರ್ಚ್", "ಏಪ್ರಿಲ್", "ಮೇ", "ಜೂನ್",
+  "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂಬರ್", "ಅಕ್ಟೋಬರ್", "ನವೆಂಬರ್", "ಡಿಸೆಂಬರ್",
+];
 
-// 4. Partition catalogs into Upcoming, Past, and Recurring
+function parseISODate(dStr) {
+  const [y, m, d] = dStr.split("-").map(Number);
+  return Date.UTC(y, m - 1, d);
+}
+
+function formatISODate(utcMs) {
+  const d = new Date(utcMs);
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function addDaysToISODate(dStr, days) {
+  if (!dStr) return "";
+  const utcMs = parseISODate(dStr);
+  return formatISODate(utcMs + days * 86400000);
+}
+
+function formatDisplayDateSingle(isoDateStr, lang = "en") {
+  if (!isoDateStr) return "";
+  const [y, m, d] = isoDateStr.split("-").map(Number);
+  const monthName = lang === "kn" ? KN_MONTHS[m - 1] : EN_MONTHS[m - 1];
+  return `${d} ${monthName} ${y}`;
+}
+
+function formatDisplayDateRange(startStr, endStr, lang = "en") {
+  if (!startStr) return "";
+  if (!endStr || startStr === endStr) {
+    return formatDisplayDateSingle(startStr, lang);
+  }
+  return `${formatDisplayDateSingle(startStr, lang)} - ${formatDisplayDateSingle(endStr, lang)}`;
+}
+
 const today = new Date().toISOString().slice(0, 10);
 
 const isPastEvent = (ev) => {
   const end = ev.endDate || ev.startDate;
-  return end && end < today;
+  return Boolean(end && end < today);
 };
 
+// 3. For dev and local environments: create duplicate events for testing from all past events
+const isDevOrLocal = envName === "dev" || envName === "local";
+
+if (isDevOrLocal) {
+  const pastEvents = realCatalog.filter((ev) => isPastEvent(ev) && ev.startDate);
+  if (pastEvents.length > 0) {
+    const sortedPastDates = pastEvents.map((ev) => ev.startDate).sort();
+    const earliestPastDate = sortedPastDates[0];
+    const diffDays = Math.round((parseISODate(today) - parseISODate(earliestPastDate)) / 86400000);
+
+    if (diffDays >= 0) {
+      for (const ev of pastEvents) {
+        const newStartDate = addDaysToISODate(ev.startDate, diffDays);
+        const newEndDate = addDaysToISODate(ev.endDate || ev.startDate, diffDays);
+        const newDisplayDateEn = formatDisplayDateRange(newStartDate, newEndDate, "en");
+        const newDisplayDateKn = formatDisplayDateRange(newStartDate, newEndDate, "kn");
+
+        const duplicateTitleEn = `Duplicate event for testing: ${ev.title.en}`;
+        const duplicateTitleKn = `Duplicate event for testing: ${ev.title.kn}`;
+        const duplicateDescEn = `Duplicate event for testing: ${ev.description.en || ""}`.trim();
+        const duplicateDescKn = `Duplicate event for testing: ${ev.description.kn || ""}`.trim();
+
+        const categoriesEn = (ev.categories || []).map((c) => c.en).join(", ");
+        const categoriesKn = (ev.categories || []).map((c) => c.kn).join(", ");
+
+        const searchHaystack = [
+          duplicateTitleEn,
+          duplicateTitleKn,
+          categoriesEn,
+          categoriesKn,
+          ev.location.en,
+          ev.location.kn,
+          (ev.performers?.en || []).join(" "),
+          (ev.performers?.kn || []).join(" "),
+          duplicateDescEn,
+          duplicateDescKn,
+          (ev.tags || []).join(" "),
+          ev.recurrence,
+        ].filter(Boolean).join(" ");
+
+        const searchText = normalizeSearchText(searchHaystack);
+
+        realCatalog.push({
+          ...ev,
+          slug: `duplicate-${ev.slug}`,
+          title: { en: duplicateTitleEn, kn: duplicateTitleKn },
+          startDate: newStartDate,
+          endDate: newEndDate,
+          displayDate: { en: newDisplayDateEn, kn: newDisplayDateKn },
+          description: { en: duplicateDescEn, kn: duplicateDescKn },
+          searchText,
+        });
+      }
+    }
+  }
+}
+
+// 4. Generate placeholder catalog for development/placeholder verification
+const placeholderCatalog = realCatalog.map((ev, idx) => {
+  const isDuplicate = ev.slug.startsWith("duplicate-");
+  const prefix = isDuplicate ? "Duplicate event for testing: " : "";
+  return {
+    ...ev,
+    image: ev.image,
+    images: ev.images,
+    title: {
+      en: `${prefix}en·event title ${idx + 1} — content goes here`,
+      kn: `${prefix}kn·event title ${idx + 1} — ವಿಷಯ ಇಲ್ಲಿದೆ`,
+    },
+    displayDate: ev.displayDate,
+    time: ev.time,
+    location: {
+      en: `en·event location ${idx + 1}`,
+      kn: `kn·event location ${idx + 1}`,
+    },
+    performers: {
+      en: (ev.performers?.en || []).map((_, pIdx) => `en·performer ${pIdx + 1}`),
+      kn: (ev.performers?.kn || []).map((_, pIdx) => `kn·performer ${pIdx + 1}`),
+    },
+    description: {
+      en: `${prefix}en·event description ${idx + 1} — sample placeholder text for layout preview only text`,
+      kn: `${prefix}kn·event description ${idx + 1} — ಮಾದರಿ ಪಠ್ಯ ವಿವರಣೆ ಇಲ್ಲಿದೆ ಪೂರ್ವವೀಕ್ಷಣೆಗಾಗಿ ಮಾತ್ರ`,
+    },
+    details: {
+      en: `en·event details ${idx + 1} — sample placeholder copy for layout preview only text`,
+      kn: `kn·event details ${idx + 1} — ಮಾದರಿ ಕಾರ್ಯಕ್ರಮ ವಿವರಣೆ ಇಲ್ಲಿದೆ`,
+    },
+    categories: ev.categories.map((c) => ({
+      code: c.code,
+      en: `en·${c.code}`,
+      kn: `kn·${c.code}`,
+    })),
+  };
+});
+
+// 5. Partition catalogs into Upcoming, Past, and Recurring
 const realUpcoming = realCatalog.filter((ev) => !isPastEvent(ev));
 const realPast = realCatalog.filter((ev) => isPastEvent(ev));
 const realRecurring = realCatalog.filter((ev) => ev.isRecurring);
