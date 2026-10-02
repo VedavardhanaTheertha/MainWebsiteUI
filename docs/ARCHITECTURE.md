@@ -382,6 +382,34 @@ and is recreated on every development, local, and production build (`npm run bra
 3. **Environment Isolation**: Dev/preview builds substitute placeholder copy to prevent content leakage through SSR verification,
    while switchable and production modes provide full verified copy.
 
+### 5.10 Sevas collection
+
+`build/build-sevas-content.mjs` converts individual seva Markdown files directly from
+`library/sevas/*.md` (97 canonical sevas published on `https://shiroormatha.org/sevas`) into
+`src/gen/sevas/` and synchronizes `src/data/sevas.ts`. `src/gen/` is disposable, Gitignored build
+output and is recreated on every development, local, and production build (`npm run sevas:build`).
+
+1. **Top-Level Markdown Source**: Each seva is represented by an individual markdown file (e.g.,
+   `001-kanike.md` through `107-1-day-veda-parayana-seva.md`) in `library/sevas/`, containing
+   bilingual YAML frontmatter:
+   - Numerical `code`, `entity_id: 3`, `event_id: 4`, and `highlight`.
+   - Bilingual `title` (`en`/`kn`), `name`, `category` (mapped into official sannidhi groupings),
+     `sannidhi`, `deity`, `location`, `formatted_amount`, `description`, and `significance`.
+   - Numerical `amount`, `currency: INR`, and `is_popular` flag.
+   - Canonical `booking_url` pointing directly to the official payment portal
+     (`https://pay.shiroormatha.org/?entity_id=3&event_id=4&seva_id=${code}`).
+   - Bilingual body sections with comprehensive descriptions, spiritual significance, seva
+     guidelines, and direct online booking links.
+2. **Generated Assets**:
+   - `src/data/sevas.ts`: Canonical typed array of 97 `Seva` objects used across the site.
+   - `src/gen/sevas/data.ts`: Generated seva list and metadata.
+   - `src/gen/sevas/search-index.ts`: Pre-built, gzip-compressed MiniSearch index (`compressedSevasSearchIndex`).
+   - `src/gen/sevas/loaders.ts`: Lazy-loaders for individual seva modules.
+   - `src/gen/sevas/index.html`: Standalone static seva directory page.
+3. **Search & Decompression**:
+   - The pre-built search index enables instant client-side full-text search across `name`,
+     `significance`, and `category` in both Kannada and English without runtime indexing delays.
+
 ---
 
 ## 6. Environments
