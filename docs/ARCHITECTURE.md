@@ -365,6 +365,23 @@ and production build (`npm run events:build`).
    These duplicates are added in addition to the original past events and are strictly excluded from
    production builds.
 
+### 5.9 Branches collection
+
+`build/build-branches-content.mjs` converts individual branch Markdown files directly from
+`library/branches/*.md` into `src/gen/branches/`. `src/gen/` is disposable, Gitignored build output
+and is recreated on every development, local, and production build (`npm run branches:build`).
+
+1. **Top-Level Markdown Source**: Each branch is represented by a markdown file (e.g. `01-shri-shiroor-matha-udupi.md`,
+   `02-shri-shiroor-moola-matha.md`, `03-shri-gopalakrishna-matha-santhyaru.md`, and `04-shri-gopalakrishna-matha-papuje.md`)
+   containing bilingual YAML frontmatter (ID, title, branch type, address, timings, contact info, Google Maps coordinates,
+   deity, history, and imagery) and bilingual body sections under `## Kannada` and `## English`.
+2. **Generated Assets**:
+   - `src/gen/branches/data.ts`: Exports `branchesByLanguage` containing localized branch objects for both Kannada and English.
+   - `src/gen/branches/index.html`: A self-contained, responsive branch directory page featuring an interactive branch selector,
+     contact details, darshan timings, embedded Google Map, and full historical details.
+3. **Environment Isolation**: Dev/preview builds substitute placeholder copy to prevent content leakage through SSR verification,
+   while switchable and production modes provide full verified copy.
+
 ---
 
 ## 6. Environments
