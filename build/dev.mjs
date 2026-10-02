@@ -18,5 +18,6 @@ function run(scriptPath, args = []) {
 
 run(path.join(rootDir, "build", "build-bhakti-content.mjs"));
 run(path.join(rootDir, "build", "build-sevas-content.mjs"));
+run(path.join(rootDir, "build", "build-events-content.mjs"));
 run(path.join(rootDir, "scripts", "generate-content.mjs"));
 run(path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["dev"]);

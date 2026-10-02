@@ -297,7 +297,30 @@ export interface EventListItem {
 
 export interface EventsExactShape {
   tabs: EventTab[];
-  list: EventListItem[];
+  list?: EventListItem[];
+  search_placeholder?: string;
+  all_categories?: string;
+  no_results?: string;
+  clear_search?: string;
+  view_details?: string;
+  hide_details?: string;
+  full_page?: string;
+  performers?: string;
+  location?: string;
+  timing?: string;
+  gallery?: string;
+  no_upcoming_events?: string;
+  no_past_events?: string;
+  loading_past?: string;
+  recurring_badge?: string;
+  close_modal?: string;
+}
+
+export interface EventsSectionsShape {
+  annual_festivals: string;
+  classical_concerts: string;
+  dance_cultural: string;
+  pooja_rituals: string;
 }
 
 export interface MediaPhoto {
@@ -472,6 +495,10 @@ export interface ContentShape extends LegacyFlatKeys {
   library: LibraryShape;
   connect2: Connect2Shape;
   events_exact: EventsExactShape;
+  events_sections?: EventsSectionsShape;
+  events_recurring?: string;
+  events_this_week?: string;
+  events_all?: string;
   media: MediaShape;
   learn: ImageListItem[];
   volunteer_ops: ImageListItem[];

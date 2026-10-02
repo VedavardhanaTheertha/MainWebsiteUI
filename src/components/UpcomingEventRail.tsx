@@ -2,11 +2,10 @@
 
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
-import { Repeat } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import {
-  realRecurringEvents,
-  placeholderRecurringEvents,
+  realEvents,
+  placeholderEvents,
   type EventItem,
 } from "@/gen/events/data";
 import { imagePaths } from "@/lib/images";
@@ -36,13 +35,25 @@ function CategoryBadge({ category, code }: { category: string; code?: string }) 
   );
 }
 
-export default function EventsAccordion() {
+export default function UpcomingEventRail() {
   const { lang, contentMode, tr } = useLang();
   const isKn = lang === "kn";
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
-  const recurringList =
-    contentMode === "placeholder" ? placeholderRecurringEvents : realRecurringEvents;
+  const upcomingList = contentMode === "placeholder" ? placeholderEvents : realEvents;
+
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+  const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const railEvents = upcomingList
+    .filter((ev) => {
+      const start = ev.startDate;
+      const end = ev.endDate || ev.startDate;
+      return start <= thirtyDaysLater && end >= todayStr;
+    })
+    .sort((a, b) => a.startDate.localeCompare(b.startDate))
+    .slice(0, 6);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -50,7 +61,7 @@ export default function EventsAccordion() {
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el || recurringList.length <= 1) return;
+    if (!el || railEvents.length === 0) return;
     const step = () => {
       if (!paused.current && el) {
         el.scrollLeft -= 0.6;
@@ -80,25 +91,21 @@ export default function EventsAccordion() {
       el.removeEventListener("mousedown", pause);
       el.removeEventListener("mouseup", resume);
     };
-  }, [recurringList.length]);
+  }, [railEvents.length]);
 
-  // Do not display this row if there are no recurring events
-  if (recurringList.length === 0) {
-    return null;
+  if (railEvents.length === 0) {
+    return (
+      <div className="py-6 text-center bg-white rounded-2xl border border-[var(--color-line)] p-4">
+        <p className="font-body text-xs sm:text-sm text-[var(--color-text-secondary)] italic">
+          {tr.events_exact?.no_upcoming_events || "No scheduled upcoming events at this time."}
+        </p>
+      </div>
+    );
   }
 
-  const sectionTitle = tr.events_recurring || "Recurring Events";
-
   return (
-    <section className="mb-8 px-3">
-      <div className="flex items-center gap-2 mb-4">
-        <Repeat size={18} className="text-[var(--color-saffron-800)]" />
-        <h2 className="font-display font-bold text-[#4F252E] text-xl lg:text-2xl">
-          {sectionTitle}
-        </h2>
-      </div>
-
-      {/* Mobile: horizontal scroll */}
+    <>
+      {/* Mobile: smooth scrolling carousel */}
       <div
         ref={scrollRef}
         className="lg:hidden flex gap-3 -mx-3 px-3 pb-2"
@@ -109,7 +116,7 @@ export default function EventsAccordion() {
           msOverflowStyle: "none",
         }}
       >
-        {recurringList.map((ev) => {
+        {railEvents.map((ev) => {
           const title = isKn ? ev.title?.kn : ev.title?.en;
           const displayDate = isKn ? ev.displayDate?.kn : ev.displayDate?.en;
           const time = isKn ? ev.time?.kn : ev.time?.en;
@@ -165,7 +172,7 @@ export default function EventsAccordion() {
 
       {/* Desktop: static grid with photo */}
       <div className="hidden lg:grid grid-cols-3 xl:grid-cols-6 gap-3">
-        {recurringList.map((ev) => {
+        {railEvents.map((ev) => {
           const title = isKn ? ev.title?.kn : ev.title?.en;
           const displayDate = isKn ? ev.displayDate?.kn : ev.displayDate?.en;
           const time = isKn ? ev.time?.kn : ev.time?.en;
@@ -221,6 +228,6 @@ export default function EventsAccordion() {
 
       {/* Event Details Modal Popup */}
       <EventDetailModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
-    </section>
+    </>
   );
 }

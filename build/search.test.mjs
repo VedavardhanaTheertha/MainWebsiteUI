@@ -158,3 +158,41 @@ test("loadCompressedIndex decodes pre-built, gzip-compressed Sevas search index"
   assert.ok(milkBathResults.length > 0);
 });
 
+test("loadCompressedIndex decodes pre-built, gzip-compressed Events search index", async () => {
+  const { compressedPastEventsSearchIndex } = await import("../src/gen/events/past-search-index.ts");
+  const { loadCompressedIndex, searchItems } = await import("../src/lib/search.ts");
+  const { pastEvents } = await import("../src/gen/events/past-data.ts");
+
+  assert.ok(typeof compressedPastEventsSearchIndex === "string");
+  assert.ok(compressedPastEventsSearchIndex.length > 0);
+
+  const index = await loadCompressedIndex(compressedPastEventsSearchIndex, pastEvents, {
+    fields: [
+      "titleEn",
+      "titleKn",
+      "categoriesText",
+      "locationEn",
+      "locationKn",
+      "performersText",
+      "tagsText",
+      "searchText",
+    ],
+    boost: {
+      titleEn: 3,
+      titleKn: 3,
+      categoriesText: 2,
+      performersText: 1.8,
+      locationEn: 1.5,
+      locationKn: 1.5,
+      tagsText: 1.2,
+      searchText: 1,
+    },
+  });
+
+  const muhurthaResults = searchItems(index, "muhurtha");
+  assert.ok(muhurthaResults.length > 0);
+
+  const udupiResults = searchItems(index, "udupi");
+  assert.ok(udupiResults.length > 0);
+});
+

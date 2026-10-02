@@ -81,6 +81,7 @@ console.log("─".repeat(70));
 run("cleaning stale output", path.join(rootDir, "build", "clean.mjs"));
 run("generating Bhakti", path.join(rootDir, "build", "build-bhakti-content.mjs"));
 run("generating Sevas", path.join(rootDir, "build", "build-sevas-content.mjs"));
+run("generating Events", path.join(rootDir, "build", "build-events-content.mjs"));
 run("generating website content", path.join(rootDir, "scripts", "generate-content.mjs"));
 run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build"]);
 run("normalizing canonical URLs", path.join(rootDir, "build", "write-canonicals.mjs"));

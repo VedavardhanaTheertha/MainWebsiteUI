@@ -27,6 +27,14 @@ Any change to the structure, content system, environments, or build pipeline **m
 update `docs/ARCHITECTURE.md` in the same change. Changes to how contributors do things
 update `docs/DEVELOPER.md`. Documentation that lies is worse than none, because people trust it.
 
+## Never revert or discard verified changes
+
+Once changes are applied and verified (or requested by the user), never revert,
+discard, restore, or undo them. Do not run `git restore`, `git checkout`, or
+rollback actions on edited project files after verification passes.
+Always preserve modifications and stage them (`git add`) so that editor buffer
+reloads or session checkpoints do not overwrite or discard them.
+
 ## Before claiming something works
 
 Run `npm run build:dev` and read the verification output. In rendered HTML and the web
