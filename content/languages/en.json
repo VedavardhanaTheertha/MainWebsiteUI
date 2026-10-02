@@ -1076,115 +1076,63 @@
     "hours": "Darshan · 5:00 am – 9:00 pm"
   },
   "events_exact": {
+    "search_placeholder": "Search events, artists, dates, rituals...",
+    "all_categories": "All Categories",
+    "no_results": "No events found matching your search.",
+    "clear_search": "Clear Search",
+    "view_details": "View Details",
+    "hide_details": "Hide Details",
+    "full_page": "Open Full Page →",
+    "performers": "Performers",
+    "location": "Location",
+    "timing": "Timing",
+    "gallery": "Event Gallery",
+    "no_upcoming_events": "No scheduled upcoming events at this time.",
+    "no_past_events": "No past events recorded.",
+    "loading_past": "Loading past events...",
+    "recurring_badge": "Recurring",
+    "close_modal": "Close",
     "tabs": [
       {
-        "id": "all",
-        "label": "All"
+        "id": "upcoming",
+        "label": "All Upcoming"
       },
       {
-        "id": "month",
-        "label": "This Month"
+        "id": "festival",
+        "label": "Festivals & Utsavas"
       },
       {
-        "id": "earlier",
-        "label": "Earlier"
+        "id": "concert",
+        "label": "Concerts & Music"
+      },
+      {
+        "id": "dance",
+        "label": "Dance & Drama"
+      },
+      {
+        "id": "pooja",
+        "label": "Poojas & Rituals"
       },
       {
         "id": "special",
-        "label": "Special"
+        "label": "Special Events"
+      },
+      {
+        "id": "past",
+        "label": "All Past Events"
       }
     ],
-    "list": [
-      {
-        "cat": "month",
-        "live": true,
-        "tag": "Live now",
-        "title": "Sri Krishna Mangalārathi",
-        "date": "Today · 7:30 pm",
-        "dur": "Live",
-        "views": "Streaming",
-        "img": "@image.kraj0615",
-        "desc": "The evening mangalārathi from the sanctum, streamed live from Udupi."
-      },
-      {
-        "cat": "month",
-        "live": false,
-        "tag": "This month",
-        "title": "Ekādashi Special Pooja",
-        "date": "9 Jul 2026",
-        "dur": "2 hr",
-        "views": "Sanctum",
-        "img": "@image.krishna",
-        "desc": "Special worship and fasting observance on the sacred Ekādashi day."
-      },
-      {
-        "cat": "special",
-        "live": false,
-        "tag": "Festival",
-        "title": "Rathotsava — Chariot Festival",
-        "date": "12 Jul 2026",
-        "dur": "Full day",
-        "views": "Car Street",
-        "img": "@image.kraj0835",
-        "desc": "The grand chariot of Shri Krishna is drawn through the streets of Udupi."
-      },
-      {
-        "cat": "special",
-        "live": false,
-        "tag": "Festival",
-        "title": "Sri Krishna Janmāshtami",
-        "date": "26 Aug 2026",
-        "dur": "Full day",
-        "views": "Matha",
-        "img": "@image.krishna",
-        "desc": "The birth of Lord Krishna celebrated with abhisheka, bhajans and prasāda."
-      },
-      {
-        "cat": "month",
-        "live": false,
-        "tag": "This month",
-        "title": "Vidyā Dāna Ceremony",
-        "date": "18 Jul 2026",
-        "dur": "1.5 hr",
-        "views": "Vedic school",
-        "img": "@image.swamiji",
-        "desc": "Initiation of new students into the Matha's Vedic pāthashāla."
-      },
-      {
-        "cat": "earlier",
-        "live": false,
-        "tag": "Recorded",
-        "title": "Paryāya Mahotsava 2026",
-        "date": "18 Jan 2026",
-        "dur": "1:24:00",
-        "views": "Recording",
-        "img": "@image.shiroorMutt",
-        "desc": "The ceremonial handover of the Paryāya — highlights and full recording."
-      },
-      {
-        "cat": "earlier",
-        "live": false,
-        "tag": "Recorded",
-        "title": "Go Pooja on Gopāshtami",
-        "date": "20 Nov 2025",
-        "dur": "32:10",
-        "views": "Recording",
-        "img": "@image.goMatha",
-        "desc": "Worship of the sacred cattle of the Go Shāla on Gopāshtami."
-      },
-      {
-        "cat": "earlier",
-        "live": false,
-        "tag": "Recorded",
-        "title": "Deepotsava — Festival of Lamps",
-        "date": "31 Oct 2025",
-        "dur": "48:22",
-        "views": "Recording",
-        "img": "@image.kraj0835",
-        "desc": "The Matha aglow with thousands of oil lamps on Deepāvali."
-      }
-    ]
+    "list": []
   },
+  "events_sections": {
+    "annual_festivals": "Annual Festivals & Celebrations",
+    "classical_concerts": "Classical Music & Concerts",
+    "dance_cultural": "Dance, Yakshagana & Cultural",
+    "pooja_rituals": "Pooja & Sacred Rituals"
+  },
+  "events_recurring": "Recurring Events",
+  "events_this_week": "This Week",
+  "events_all": "All Events",
   "media": {
     "gallery": [
       "@image.kraj0615",

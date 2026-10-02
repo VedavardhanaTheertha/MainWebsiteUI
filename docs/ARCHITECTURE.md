@@ -128,17 +128,21 @@ Shirooru/
 │       ├── content.ts          ← environment-resolved site and article content
 │       ├── hero-images/        ← standalone HTML rendering of the home hero carousel
 │       ├── parampara/          ← lineage data module and standalone interactive HTML
-│       └── bhakti/             ← generated devotional collection
+│       ├── bhakti/             ← generated devotional collection
+│       ├── sevas/              ← generated sevas collection
+│       └── events/             ← generated events collection and standalone HTML pages
 │
 ├── public/                     ← existing static assets served from the site root
 │   ├── articles/               ← consistent location for new article media
 │   └── slide/                  ← existing legacy image collection
-├── library/                    ← required content submodule (Bhakti, hero, and Parampara)
+├── library/                    ← required content submodule (Bhakti, hero, Parampara, and Events)
 │   ├── dasasahitya/            ← devotional source collection
 │   ├── parampara/              ← indexed Guru Parampara Markdown entries
-│   └── hero/                   ← environment-specific hero groups
-│       ├── dev/                ← development and local hero sources
-│       └── prod/               ← production hero sources
+│   ├── hero/                   ← environment-specific hero groups
+│   │   ├── dev/                ← development and local hero sources
+│   │   └── prod/               ← production hero sources
+│   ├── sevas/                  ← indexed sevas entries
+│   └── events/                 ← event Markdown entries (top-level only)
 ├── test_media/                 ← recursively initialized media submodule
 │
 └── .github/workflows/
@@ -317,6 +321,8 @@ and React hooks in `src/hooks/useMiniSearch.ts`:
     `build/build-bhakti-content.mjs`, serialized, and compressed with gzip into `src/gen/bhakti/search-index.ts`.
   - **Sevas (`SevasBrowser.tsx` & `AllSevaBrowser.tsx`)**: All 97 sevas are indexed and gzip-compressed
     at build time by `build/build-sevas-content.mjs` into `src/gen/sevas/search-index.ts`.
+  - **Events (`EventsExact.tsx`)**: All events from `library/events/*.md` are indexed and gzip-compressed
+    at build time by `build/build-events-content.mjs` into `src/gen/events/search-index.ts`.
 - **Streaming Lazy Loading (`useLazyMiniSearch`)**:
   - The compressed index modules are code-split into dynamic import chunks that are only loaded on demand
     (idle prefetch or input focus).
@@ -329,6 +335,29 @@ and React hooks in `src/hooks/useMiniSearch.ts`:
   - Prefix matching (`prefix: true`) as users type.
   - Adaptive fuzzy matching (`fuzzy: (term) => (term.length > 3 ? 0.2 : false)`) tolerating typos.
   - Automatic fallback from `AND` to `OR` combinations on multi-word queries.
+
+### 5.8 Events collection
+
+`build/build-events-content.mjs` converts individual event Markdown files directly from
+`library/events/*.md` (top-level only, no index JSON required or created) into `src/gen/events/`.
+`src/gen/` is disposable, Gitignored build output and is recreated on every development, local,
+and production build (`npm run events:build`).
+
+1. **Partitioned Catalogs**: Events are partitioned by date into `upcoming` and `past` collections,
+   alongside a filtered `recurring` collection. Generated files reside at `src/gen/events/`
+   (`data.ts`, `past-data.ts`, `search-index.ts`, `past-search-index.ts`, and `loaders.ts`),
+   while past events are split into `past-data.ts` to enable on-demand lazy loading.
+2. **Build-Time Search Indexing & Compression**: Separate MiniSearch indexes for future and past
+   events are pre-built and gzip-compressed into `src/gen/events/search-index.ts` and `past-search-index.ts`.
+3. **Reactive UI Integration**: Events are consumed by Next.js components:
+   - `EventsExact.tsx`: Category tabs starting with "All Upcoming", individual category filters, and an "All Past Events" tab. Selecting "All Past Events" lazy loads `past-data.ts`. MiniSearch searches past events only when on the past events tab, and future events on all other tabs. Clicking any card opens `EventDetailModal`.
+   - `ThisWeekRail.tsx`: Highlights up to 6 upcoming events occurring in the next 30 days, or displays an empty state message if no upcoming events are scheduled.
+   - `EventsAccordion.tsx`: Displays a row of tiles for recurring events (`recurring: true`), automatically hidden if no recurring events exist.
+   - `EventDetailModal.tsx`: Interactive accessible modal displaying complete event details, performers, schedule, and gallery in the user's selected language.
+   - `MilestonesEvents.tsx`: Homepage spotlight rail.
+4. **Environment Isolation**: Placeholders in dev/preview builds prevent content leaks through
+   SSR verification, while production renders full verified copy and imagery. Real and placeholder
+   variants are switchable via the preview control without impacting images.
 
 ---
 
