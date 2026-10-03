@@ -90,10 +90,10 @@ export default function EventsAccordion() {
   const sectionTitle = tr.events_recurring || "Recurring Events";
 
   return (
-    <section className="mb-8 px-3">
-      <div className="flex items-center gap-2 mb-4">
+    <section className="border-t border-[var(--color-line)] pt-10" aria-labelledby="recurring-events-heading">
+      <div className="flex items-center gap-2 mb-5">
         <Repeat size={18} className="text-[var(--color-saffron-800)]" />
-        <h2 className="font-display font-bold text-[#4F252E] text-xl lg:text-2xl">
+        <h2 id="recurring-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
           {sectionTitle}
         </h2>
       </div>
@@ -163,8 +163,8 @@ export default function EventsAccordion() {
         })}
       </div>
 
-      {/* Desktop: static grid with photo */}
-      <div className="hidden lg:grid grid-cols-3 xl:grid-cols-6 gap-3">
+      {/* Desktop: bounded card grid */}
+      <div className="hidden lg:grid grid-cols-3 gap-5">
         {recurringList.map((ev) => {
           const title = isKn ? ev.title?.kn : ev.title?.en;
           const displayDate = isKn ? ev.displayDate?.kn : ev.displayDate?.en;
@@ -188,13 +188,13 @@ export default function EventsAccordion() {
               }}
               className="event-card bg-white rounded-xl overflow-hidden border border-[var(--color-saffron-600)] shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300"
             >
-              <div className="relative w-full h-[120px]">
+              <div className="relative w-full h-44">
                 <Image
                   src={imgUrl}
                   alt=""
                   fill
                   className="object-cover"
-                  sizes="20vw"
+                  sizes="(max-width: 1280px) 33vw, 400px"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/60 to-transparent" />
                 {catLabel && (
@@ -207,7 +207,7 @@ export default function EventsAccordion() {
                 <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>
-                <p className="font-display font-bold text-[var(--color-text-primary)] text-[13px] leading-snug mb-1 line-clamp-1">
+                <p className="font-display font-bold text-[var(--color-text-primary)] text-base leading-snug mb-1 line-clamp-2">
                   {title}
                 </p>
                 <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 line-clamp-1">

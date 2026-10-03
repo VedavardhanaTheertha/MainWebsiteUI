@@ -347,6 +347,10 @@ Development exports use generated placeholder Seva fields and links so real libr
 and brand terms cannot leak into non-production HTML; local and production exports use the
 Markdown values.
 
+The statically exported `/events` route uses the same centered `max-w-7xl` page rhythm
+as the Seva and Connect experiences. Upcoming, recurring, and catalog sections render as
+responsive three-column desktop card grids and collapse to touch-friendly mobile layouts.
+
 ### 5.7 Full-text search with MiniSearch and build-time compression
 
 Client-side searching across the website is unified through `minisearch` via `src/lib/search.ts`
