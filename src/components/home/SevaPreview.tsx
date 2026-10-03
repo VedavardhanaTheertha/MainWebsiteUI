@@ -1,16 +1,20 @@
-﻿"use client";
+"use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { sevas } from "@/data/sevas";
+import { featuredSevaIds, sevas, type LocalizedSevaText, type SevaRecord } from "@/gen/sevas/data";
 import { useLang } from "@/context/LanguageContext";
 
-const FEATURED_IDS = ["ks-01", "ks-03", "bs-01", "bs-02"];
-const featuredSevas = FEATURED_IDS.map((id) => sevas.find((s) => s.id === id)).filter(Boolean) as typeof sevas;
+const featuredSevas = featuredSevaIds
+  .map((id) => sevas.find((seva) => seva.id === id))
+  .filter((seva): seva is SevaRecord => Boolean(seva));
 
-// TODO: Add Kannada translations for seva names/significance in data/sevas.ts when ready
+function localized(value: LocalizedSevaText, lang: string) {
+  return value[lang as keyof LocalizedSevaText] || value.en;
+}
 
 export default function SevaPreview() {
-  const { tr } = useLang();
+  const { lang, tr } = useLang();
 
   return (
     <section className="py-16 lg:py-24 bg-[var(--color-cream)]" aria-labelledby="seva-preview-heading">
@@ -30,41 +34,32 @@ export default function SevaPreview() {
           </p>
         </div>
 
-        {/* Grid — single row of 4 */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
           {featuredSevas.map((seva) => (
             <article
               key={seva.id}
-              className="bg-white rounded-[18px] p-5 flex flex-col gap-3 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.10)] hover:shadow-[0_8px_32px_rgba(60,7,83,0.18)] hover:-translate-y-0.5 transition-all duration-200"
+              className="bg-white rounded-[18px] overflow-hidden flex flex-col border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.10)] hover:shadow-[0_8px_32px_rgba(60,7,83,0.18)] hover:-translate-y-0.5 transition-all duration-200"
             >
-              <div className="flex items-start justify-between gap-2">
-                <span className="text-3xl" aria-hidden="true">{seva.icon}</span>
-                {seva.isSpecial && (
-                  <span className="font-body text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-brand)] bg-[var(--color-saffron-100)] rounded-full px-2.5 py-0.5">
-                    {tr.seva_special}
-                  </span>
-                )}
+              <div className="relative h-32 bg-[var(--color-saffron-100)]">
+                <Image src="/icons/seva-placeholder.svg" alt="" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-display font-semibold text-[var(--color-text-primary)] text-lg leading-tight mb-1">
-                  {seva.name}
-                </h3>
-                <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed line-clamp-3">
-                  {seva.significance}
-                </p>
-              </div>
-              <div className="flex items-center justify-between pt-2 border-t border-[var(--color-saffron-600)]">
-                <span className="font-body text-sm font-medium text-[var(--color-text-secondary)]">
-                  {tr.seva_from}{" "}
-                  <span className="text-[var(--color-text-primary)] font-semibold">₹{seva.price.toLocaleString("en-IN")}</span>
-                  {/* TODO: Replace placeholder prices */}
-                </span>
-                <Link
-                  href="/sevas"
-                  className="font-body text-xs font-semibold text-white bg-gradient-to-r from-[var(--color-saffron-600)] to-[var(--color-saffron-600)] rounded-full px-4 py-1.5 hover:shadow-md transition-shadow focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
-                >
-                  {tr.seva_offer}
-                </Link>
+              <div className="p-5 flex flex-1 flex-col gap-3">
+                <div className="flex-1">
+                  <h3 className="font-display font-semibold text-[var(--color-text-primary)] text-lg leading-tight mb-1">
+                    {localized(seva.title, lang)}
+                  </h3>
+                  <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed line-clamp-3">
+                    {localized(seva.significance, lang)}
+                  </p>
+                </div>
+                <div className="flex items-center justify-end pt-2 border-t border-[var(--color-saffron-600)]">
+                  <Link
+                    href="/sevas"
+                    className="font-body text-xs font-semibold text-white bg-[var(--color-saffron-600)] rounded-full px-4 py-1.5 hover:shadow-md transition-shadow focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
+                  >
+                    {tr.seva_offer}
+                  </Link>
+                </div>
               </div>
             </article>
           ))}

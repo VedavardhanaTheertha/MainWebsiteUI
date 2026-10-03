@@ -555,10 +555,13 @@ function discoverConnectContent() {
   const branches = branchFiles.map((filename, index) => {
     const file = path.join(branchesDir, filename);
     const { metadata, body } = parseLibraryFrontmatter(file);
-    for (const field of ["id", "phone", "email", "map_link"]) {
+    for (const field of ["id", "email", "map_link"]) {
       if (typeof metadata[field] !== "string" || !metadata[field].trim()) {
         throw new Error(`${path.relative(rootDir, file)} needs a non-empty ${field}.`);
       }
+    }
+    if (typeof metadata.phone !== "string") {
+      throw new Error(`${path.relative(rootDir, file)} phone must be a string.`);
     }
     const latitude = Number(metadata.coordinates?.latitude);
     const longitude = Number(metadata.coordinates?.longitude);

@@ -101,9 +101,11 @@ Shirooru/
 │
 ├── settings/
 │   ├── dev/
-│   │   └── images.json          ← independent development image map
+│   │   ├── images.json          ← independent development image map
+│   │   └── topsevas.json        ← ordered featured Seva IDs
 │   └── prod/
-│       └── images.json          ← independent production image map
+│       ├── images.json          ← independent production image map
+│       └── topsevas.json        ← ordered featured Seva IDs
 │
 ├── docs/
 │   ├── ARCHITECTURE.md         ← this file — the design contract
@@ -144,7 +146,7 @@ Shirooru/
 │   ├── hero/                   ← environment-specific hero groups
 │   │   ├── dev/                ← development and local hero sources
 │   │   └── prod/               ← production hero sources
-│   ├── sevas/                  ← indexed sevas entries
+│   ├── sevas/                  ← bilingual Seva metadata and complete Markdown details
 │   └── events/                 ← event Markdown entries (top-level only)
 ├── test_media/                 ← recursively initialized media submodule
 │
@@ -332,6 +334,19 @@ channel in its initial HTML. Selecting a branch hydrates a client-side details d
 containing localized content, an embedded coordinate-based map, an external Google Maps
 link, and a Google Maps directions link. Connection cards are ordinary external links.
 
+The statically exported `/sevas` route is the only Seva navigation destination. The
+build discovers all Markdown records under `library/sevas/`, generates typed client data,
+and selects featured tiles in the order configured by
+`settings/<env>/topsevas.json`. Local builds use the development setting. A missing or
+empty setting falls back to Kanike, Donations, and Volunteer Sign-up. The page provides
+category filtering, shared MiniSearch behavior, and a sanitized details
+dialog. The generator stores independently sanitized English and Kannada guideline HTML,
+so the dialog immediately renders only the active language. Its booking action remains
+visible below the scrolling details and opens the record's `booking_url` in a new tab.
+Development exports use generated placeholder Seva fields and links so real library prose
+and brand terms cannot leak into non-production HTML; local and production exports use the
+Markdown values.
+
 ### 5.7 Full-text search with MiniSearch and build-time compression
 
 Client-side searching across the website is unified through `minisearch` via `src/lib/search.ts`
@@ -344,8 +359,9 @@ and React hooks in `src/hooks/useMiniSearch.ts`:
 - **Build-Time Indexing and Gzip Compression**:
   - **Dasasahitya (`BhaktiBrowser.tsx`)**: The full bilingual index is compiled at build time by
     `build/build-bhakti-content.mjs`, serialized, and compressed with gzip into `src/gen/bhakti/search-index.ts`.
-  - **Sevas (`SevasBrowser.tsx` & `AllSevaBrowser.tsx`)**: All 97 sevas are indexed and gzip-compressed
-    at build time by `build/build-sevas-content.mjs` into `src/gen/sevas/search-index.ts`.
+  - **Sevas (`SevasBrowser.tsx`)**: Every `library/sevas/*.md` file is validated and
+    generated into `src/gen/sevas/data.ts`; its full bilingual metadata and Markdown
+    body are indexed and gzip-compressed into `src/gen/sevas/search-index.ts`.
   - **Events (`EventsExact.tsx`)**: All events from `library/events/*.md` are indexed and gzip-compressed
     at build time by `build/build-events-content.mjs` into `src/gen/events/search-index.ts`.
 - **Streaming Lazy Loading (`useLazyMiniSearch`)**:

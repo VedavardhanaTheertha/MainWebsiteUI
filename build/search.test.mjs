@@ -172,27 +172,35 @@ test("loadCompressedIndex decodes pre-built, gzip-compressed search index and pe
 test("loadCompressedIndex decodes pre-built, gzip-compressed Sevas search index", async () => {
   const { compressedSevasSearchIndex } = await import("../src/gen/sevas/search-index.ts");
   const { loadCompressedIndex, searchItems } = await import("../src/lib/search.ts");
-  const { sevas } = await import("../src/data/sevas.ts");
+  const { sevas } = await import("../src/gen/sevas/data.ts");
 
   assert.ok(typeof compressedSevasSearchIndex === "string");
   assert.ok(compressedSevasSearchIndex.length > 0);
 
   const index = await loadCompressedIndex(compressedSevasSearchIndex, sevas, {
-    fields: ["name", "significance", "category"],
-    boost: { name: 2, category: 1.5, significance: 1 },
+    fields: ["searchText"],
+    boost: { searchText: 1 },
   });
 
-  const abhishekResults = searchItems(index, "abhisheka");
-  assert.ok(abhishekResults.length > 0);
+  const firstSeva = sevas[0];
+  const englishResults = searchItems(index, firstSeva.title.en);
+  assert.ok(englishResults.some((seva) => seva.id === firstSeva.id));
 
-  const milkBathResults = searchItems(index, "milk bath");
-  assert.ok(milkBathResults.length > 0);
+  const kannadaResults = searchItems(index, firstSeva.title.kn);
+  assert.ok(kannadaResults.some((seva) => seva.id === firstSeva.id));
 
-  const infixResults = searchItems(index, "bhisheka");
-  assert.ok(infixResults.length > 0);
+  const descriptionToken = firstSeva.description.en.match(/[\p{L}\p{N}]{5,}/u)?.[0];
+  assert.ok(descriptionToken);
+  const bodyResults = searchItems(index, descriptionToken);
+  assert.ok(bodyResults.some((seva) => seva.id === firstSeva.id));
 
-  const fuzzyResults = searchItems(index, "abhiseka");
-  assert.ok(fuzzyResults.length > 0);
+  const titleToken = firstSeva.title.en.match(/[\p{L}\p{N}]{6,}/u)?.[0];
+  assert.ok(titleToken);
+  const infixResults = searchItems(index, titleToken.slice(1));
+  assert.ok(infixResults.some((seva) => seva.id === firstSeva.id));
+
+  const fuzzyResults = searchItems(index, `${titleToken.slice(0, -1)}x`);
+  assert.ok(fuzzyResults.some((seva) => seva.id === firstSeva.id));
 });
 
 test("loadCompressedIndex decodes pre-built, gzip-compressed Events search index", async () => {

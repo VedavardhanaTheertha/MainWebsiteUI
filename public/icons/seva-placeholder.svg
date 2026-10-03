@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
+  <defs>
+    <radialGradient id="background" cx=".5" cy=".42" r=".72">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#efd4a6"/>
+    </radialGradient>
+    <linearGradient id="lotus" x1=".5" y1="0" x2=".5" y2="1">
+      <stop offset="0" stop-color="#c66b36"/>
+      <stop offset="1" stop-color="#8f351f"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#background)"/>
+  <g fill="none" stroke="#b75c30" opacity=".18">
+    <circle cx="320" cy="180" r="128" stroke-width="2"/>
+    <circle cx="320" cy="180" r="105" stroke-width="2"/>
+  </g>
+  <g fill="url(#lotus)" transform="translate(320 184)">
+    <path d="M0-88C35-54 37-17 0 20-37-17-35-54 0-88Z"/>
+    <path d="M-8 20c-49-8-74-35-75-78 46 4 74 28 83 70Z" opacity=".82"/>
+    <path d="M8 20c49-8 74-35 75-78-46 4-74 28-83 70Z" opacity=".82"/>
+    <path d="M-4 31c-54 14-91 1-112-39 47-12 83 0 108 31Z" opacity=".64"/>
+    <path d="M4 31c54 14 91 1 112-39-47-12-83 0-108 31Z" opacity=".64"/>
+  </g>
+  <path d="M210 255c66 25 154 25 220 0" fill="none" stroke="#8f351f" stroke-linecap="round" stroke-width="7" opacity=".48"/>
+  <g fill="#b75c30" opacity=".45">
+    <circle cx="216" cy="104" r="4"/><circle cx="424" cy="104" r="4"/>
+    <circle cx="184" cy="150" r="3"/><circle cx="456" cy="150" r="3"/>
+  </g>
+</svg>

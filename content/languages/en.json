@@ -57,7 +57,7 @@
   "seva_label": "Offer a Seva",
   "seva_title": "Express Your Devotion",
   "seva_body": "Each seva is a thread connecting your heart to the Divine. From daily flowers to Annadaana feeding hundreds — every offering matters.",
-  "seva_view_all": "View All 97 Sevas",
+  "seva_view_all": "View All 98 Sevas",
   "seva_from": "From",
   "seva_offer": "Offer Seva",
   "seva_special": "Special",
@@ -88,11 +88,26 @@
   "about_placeholder": "* Placeholder Parampara — to be verified and completed with management before launch.",
   "sevas_label": "Offer Your Devotion",
   "sevas_title": "Sevas & Donations",
-  "sevas_subtitle": "97 ways to express your love for the Divine — from a daily flower archane to the grand Paryaya Annadaana feeding thousands.",
+  "sevas_subtitle": "Express your love for the Divine through volunteering, daily worship, and the grand Paryaya Annadaana feeding thousands.",
   "sevas_search": "Search sevas…",
   "sevas_showing_template": "Showing {n} of {total} sevas",
   "sevas_empty_title": "No sevas found",
   "sevas_empty_sub": "Try a different category or clear your search.",
+  "sevas_featured_label": "Featured offerings",
+  "sevas_featured_title": "Ways to Serve",
+  "sevas_all_title": "All Sevas",
+  "sevas_filter_category": "Category",
+  "sevas_all_categories": "All categories",
+  "sevas_clear_filters": "Clear filters",
+  "sevas_results_template": "{n} sevas",
+  "sevas_any_amount": "₹ --",
+  "sevas_deity": "Deity",
+  "sevas_sannidhi": "Sannidhi",
+  "sevas_location": "Location",
+  "sevas_description": "Description",
+  "sevas_significance": "Significance and spiritual benefits",
+  "sevas_offer": "Offer this Seva",
+  "sevas_close": "Close Seva details",
   "events_label": "Calendar",
   "events_title": "Events",
   "events_subtitle": "Festivals, utsavas, parayanasa, and more — the living rhythm of Paryaya 2026–2028.",
@@ -125,28 +140,7 @@
     {
       "key": "seva",
       "label": "Seva",
-      "children": [
-        {
-          "key": "seva-donations",
-          "label": "Donations",
-          "href": "/seva/donations"
-        },
-        {
-          "key": "seva-volunteer",
-          "label": "Volunteer Sign-up",
-          "href": "/volunteer"
-        },
-        {
-          "key": "seva-top",
-          "label": "Top 4 Featured Sevas",
-          "href": "/sevas"
-        },
-        {
-          "key": "seva-all",
-          "label": "All Sevas Catalog",
-          "href": "/seva/all-sevas"
-        }
-      ]
+      "href": "/sevas"
     },
     {
       "key": "events",
@@ -552,7 +546,7 @@
             ],
             "link": {
               "label": "View All Sevas",
-              "href": "/seva/all-sevas"
+              "href": "/sevas"
             }
           }
         },
@@ -581,7 +575,7 @@
             ],
             "link": {
               "label": "View All Sevas",
-              "href": "/seva/all-sevas"
+              "href": "/sevas"
             }
           }
         },

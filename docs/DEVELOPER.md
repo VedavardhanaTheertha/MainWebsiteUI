@@ -211,6 +211,11 @@ the default. `npm run build:dev` / `build:prod` set it for you via their `node
 build/build.mjs <env>` argument; set it yourself only when running `next dev` or
 `next build` directly.
 
+Seva generation reads `settings/<env>/topsevas.json`; the `local` environment uses
+the development setting. Set `seva_ids` to an ordered array of IDs from
+`library/sevas/*.md`. Missing or empty configuration falls back to Kanike, Donations,
+and Volunteer Sign-up.
+
 The equivalent direct invocation is:
 
 ```bash

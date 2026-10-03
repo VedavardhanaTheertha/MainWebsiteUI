@@ -98,10 +98,12 @@ export default function ConnectBrowser() {
                 <MapPin size={16} className="mt-1 shrink-0 text-[var(--color-saffron-700)]" aria-hidden="true" />
                 {localized(branch.address, lang)}
               </span>
-              <span className="mt-3 flex items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-primary)]">
-                <Phone size={15} className="shrink-0 text-[var(--color-saffron-700)]" aria-hidden="true" />
-                {branch.phone}
-              </span>
+              {branch.phone && (
+                <span className="mt-3 flex items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-primary)]">
+                  <Phone size={15} className="shrink-0 text-[var(--color-saffron-700)]" aria-hidden="true" />
+                  {branch.phone}
+                </span>
+              )}
               <span className="mt-auto pt-5 font-body text-xs font-bold text-[var(--color-text-brand)]">
                 {copy.view_details}
               </span>
@@ -218,11 +220,13 @@ function BranchDetails({
               <Detail icon={<MapPin size={16} />} label={copy.address} value={localized(branch.address, lang)} />
               <Detail icon={<Clock size={16} />} label={copy.timings} value={localized(branch.timings, lang)} />
               <Detail icon={<Landmark size={16} />} label={copy.deity} value={localized(branch.deity, lang)} />
-              <Detail
-                icon={<Phone size={16} />}
-                label={copy.phone}
-                value={<a className="text-[var(--color-text-brand)] hover:underline" href={`tel:${branch.phone.replace(/[^\d+]/g, "")}`}>{branch.phone}</a>}
-              />
+              {branch.phone && (
+                <Detail
+                  icon={<Phone size={16} />}
+                  label={copy.phone}
+                  value={<a className="text-[var(--color-text-brand)] hover:underline" href={`tel:${branch.phone.replace(/[^\d+]/g, "")}`}>{branch.phone}</a>}
+                />
+              )}
               <Detail
                 icon={<Mail size={16} />}
                 label={copy.email}

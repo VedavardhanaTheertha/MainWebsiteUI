@@ -69,12 +69,31 @@ file's front matter, sanitizes its Markdown body, and generates disposable outpu
 Branch and connection-channel content also belongs in WebsiteLibrary:
 
 - Add one bilingual, front-matter Markdown file per branch under `branches/`. Keep its
-  coordinates, phone, email, map link, summary, and detailed English/Kannada sections current.
+  coordinates, email, map link, summary, and detailed English/Kannada sections current.
+  Keep `phone` as a string; it may be empty only when no verified branch number is available.
 - Add one front-matter Markdown file per official channel under `connect/`. Each record
   requires a stable ID, display order, platform, handle, HTTPS or `mailto:` URL, brand
   colour, and local icon path. Audience is optional for channels such as email.
 - Do not edit `src/gen/connect/data.ts`; `generate-content.mjs` recreates it and the
   statically exported `/connect` page during every content build.
+
+Seva content also belongs in WebsiteLibrary:
+
+- Add one Markdown file under `sevas/` with the same bilingual YAML structure used by
+  existing records. Required display fields include a stable `id`, numeric `code`,
+  localized title, category, deity, sannidhi, location, amount, description,
+  significance, and `booking_url`.
+- Keep the complete bilingual details in the Markdown body. Use separate
+  `### Seva Guidelines & Offerings (English)` and
+  `### ಸೇವಾ ನಿಯಮಗಳು ಮತ್ತು ಸಮರ್ಪಣೆ (ಕನ್ನಡ)` sections. The build sanitizes them
+  independently so the dialog renders only the selected language, while search indexes
+  the complete bilingual body together with all localized metadata.
+- An amount of `0` displays as `₹ --` in the catalog.
+- To feature a Seva, add its ID to the ordered `seva_ids` array in
+  `settings/<env>/topsevas.json`. A missing or empty list uses Kanike, Donations, and
+  Volunteer Sign-up.
+- Do not edit `src/gen/sevas/`; `build/build-sevas-content.mjs` recreates the typed data
+  and compressed search index during every content build.
 
 ## Review requirements
 
