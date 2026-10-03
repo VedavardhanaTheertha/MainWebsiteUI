@@ -4,10 +4,11 @@ import {
   assertSafeSourceFile,
   buildSearchText,
   normalizeSearchText,
+  parseMarkdownFrontmatter,
   removeSearchTags,
   splitSongContent,
   toTitleCase,
-  validateMetadata,
+  validateSongs,
 } from "./content-utils.mjs";
 
 test("removeSearchTags omits the metadata-only Markdown section", () => {
@@ -82,9 +83,40 @@ test("assertSafeSourceFile rejects traversal and non-Markdown files", () => {
   assert.doesNotThrow(() => assertSafeSourceFile("song.md"));
 });
 
-test("validateMetadata rejects duplicate ids", () => {
+test("parseMarkdownFrontmatter returns metadata and content separately", () => {
+  const source = `---
+id: song-id
+title: Song title
+sourceFile: song.md
+searchTags:
+  - first
+  - second
+---
+
+# Song title
+
+Lyrics`;
+  const { metadata, body } = parseMarkdownFrontmatter(source, "song.md");
+
+  assert.deepEqual(metadata.searchTags, ["first", "second"]);
+  assert.equal(metadata.id, "song-id");
+  assert.equal(body, "# Song title\n\nLyrics");
+});
+
+test("parseMarkdownFrontmatter rejects missing and invalid front matter", () => {
+  assert.throws(
+    () => parseMarkdownFrontmatter("# Song title", "song.md"),
+    /must begin with YAML front matter/,
+  );
+  assert.throws(
+    () => parseMarkdownFrontmatter("---\ntitle: [\n---\nBody", "song.md"),
+    /Invalid YAML front matter/,
+  );
+});
+
+test("validateSongs rejects duplicate ids", () => {
   const song = { id: "same", title: "Song", sourceFile: "song.md" };
-  assert.throws(() => validateMetadata({ songs: [song, song] }, "test"), /duplicate id/);
+  assert.throws(() => validateSongs([song, song], "test"), /duplicate id/);
 });
 
 test("normalizeSearchText removes punctuation and decomposes unicode consistently", () => {

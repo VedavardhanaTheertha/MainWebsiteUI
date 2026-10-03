@@ -1,4 +1,28 @@
 import path from "node:path";
+import yaml from "js-yaml";
+
+export function parseMarkdownFrontmatter(markdown, sourceName) {
+  const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
+  if (!match) {
+    throw new Error(`${sourceName} must begin with YAML front matter.`);
+  }
+
+  let metadata;
+  try {
+    metadata = yaml.load(match[1]);
+  } catch (error) {
+    throw new Error(`Invalid YAML front matter in ${sourceName}: ${error.message}`, { cause: error });
+  }
+
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    throw new Error(`${sourceName} front matter must be a YAML object.`);
+  }
+
+  return {
+    metadata,
+    body: match[2].trim(),
+  };
+}
 
 export function removeSearchTags(markdown) {
   return markdown.replace(/\r?\n##\s+Search Tags\s*[\s\S]*$/iu, "").trim();
@@ -56,18 +80,14 @@ export function assertSafeSourceFile(sourceFile) {
   }
 }
 
-export function validateMetadata(metadata, tabId) {
-  if (!metadata || !Array.isArray(metadata.songs)) {
-    throw new Error(`${tabId}/metadata.json must contain a songs array.`);
-  }
-
+export function validateSongs(songs, collectionId) {
   const ids = new Set();
-  for (const song of metadata.songs) {
+  for (const song of songs) {
     if (!song.id || !song.title || !song.sourceFile) {
-      throw new Error(`${tabId} contains a song without id, title, or sourceFile.`);
+      throw new Error(`${collectionId} contains a song without id, title, or sourceFile.`);
     }
     if (ids.has(song.id)) {
-      throw new Error(`${tabId} contains duplicate id: ${song.id}`);
+      throw new Error(`${collectionId} contains duplicate id: ${song.id}`);
     }
     assertSafeSourceFile(song.sourceFile);
     ids.add(song.id);

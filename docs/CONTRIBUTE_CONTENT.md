@@ -52,16 +52,18 @@ Bhakti corpus changes belong in the
 in generated files under `src/gen/` and not as a blog post here.
 
 1. Follow the corpus structure already present in WebsiteLibrary's `dasasahitya/`
-   directory: Markdown source files are indexed by its `metadata.json`.
-2. Update both the Markdown and the corresponding metadata entry in the library
-   repository. Preserve its identifiers and required schema.
+   directory: every Markdown source file begins with YAML front matter containing its
+   `id`, titles, attribution, ankita, source filename, and search tags.
+2. Update the Markdown body and its front matter together in the library repository.
+   Preserve existing identifiers and required fields.
 3. Submit and review that change in WebsiteLibrary first.
 4. A later MainWebsiteUI change may advance the `library` submodule reference. Run
    `git submodule update --init --recursive` and `npm run ci` when validating that
    integration.
 
-The MainWebsiteUI build reads `library/dasasahitya/metadata.json`, sanitizes each listed
-Markdown file, and generates disposable output under `src/gen/bhakti/`.
+The MainWebsiteUI build discovers `library/dasasahitya/*.md`, reads and validates each
+file's front matter, sanitizes its Markdown body, and generates disposable output under
+`src/gen/bhakti/`.
 
 ## Review requirements
 

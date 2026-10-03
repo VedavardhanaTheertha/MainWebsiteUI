@@ -251,10 +251,12 @@ must be optimized before review and recorded in `ASSET_PROVENANCE.md`.
 
 ### 5.4 Bhakti collection
 
-`build/build-bhakti-content.mjs` converts the Markdown and metadata from the library submodule's
-`dasasahitya` source directory into `src/gen/bhakti/`. The site has one Bhakti collection, so no
-tab manifest is generated. `src/gen/` is disposable, Gitignored build output and is recreated before
-development and production builds. Its page labels, controls, and metadata are stored under
+`build/build-bhakti-content.mjs` discovers Markdown files in the library submodule's
+`dasasahitya` source directory and reads each song's YAML front matter as its metadata source,
+then converts the content into `src/gen/bhakti/`. There is no separate collection metadata file.
+The site has one Bhakti collection, so no tab manifest is generated. `src/gen/` is disposable,
+Gitignored build output and is recreated before development and production builds. Its page labels,
+controls, and metadata are stored under
 `library.bhakti.page` in each `content/languages/<lang>.json` file and follow the same fallback
 and placeholder rules as the rest of the website UI. The collection is exposed through
 `/library/bhakti`; there is no separate Dasa Sahitya navigation item or route.
