@@ -16,7 +16,6 @@ export interface BhaktiItem {
   ankita: string;
   ankitaKn: string;
   searchText?: string;
-  searchTags?: string[];
   html?: string;
   htmlKn?: string;
   htmlEn?: string;
@@ -49,7 +48,6 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
         "krutiKn",
         "ankita",
         "ankitaKn",
-        "searchTags",
         "searchText",
       ],
       boost: {
@@ -62,9 +60,6 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
         krutiKn: 1.5,
       },
       extractField: (item: BhaktiItem, field: string) => {
-        if (field === "searchTags" && Array.isArray(item.searchTags)) {
-          return item.searchTags.join(" ");
-        }
         const val = (item as unknown as Record<string, unknown>)[field];
         return val != null ? String(val) : "";
       },
@@ -278,4 +273,3 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
     </div>
   );
 }
-

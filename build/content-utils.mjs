@@ -24,10 +24,6 @@ export function parseMarkdownFrontmatter(markdown, sourceName) {
   };
 }
 
-export function removeSearchTags(markdown) {
-  return markdown.replace(/\r?\n##\s+Search Tags\s*[\s\S]*$/iu, "").trim();
-}
-
 export function toTitleCase(filename) {
   if (typeof filename !== "string") return "";
   return filename
@@ -39,20 +35,19 @@ export function toTitleCase(filename) {
 }
 
 export function splitSongContent(markdown, song = {}) {
-  const cleanMarkdown = removeSearchTags(markdown);
   const titleEn = song.titleEn || song["title-en"] || toTitleCase(song.sourceFile || "") || song.title || "";
-  const knMatch = cleanMarkdown.match(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ\s*\r?\n([\s\S]*?)(?=##\s*Lyrics transliterated to english|$)/i);
-  const enMatch = cleanMarkdown.match(/##\s*Lyrics transliterated to english\s*\r?\n([\s\S]*?)(?=##\s*Search Tags|$)/i);
+  const knMatch = markdown.match(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ\s*\r?\n([\s\S]*?)(?=##\s*Lyrics transliterated to english|$)/i);
+  const enMatch = markdown.match(/##\s*Lyrics transliterated to english\s*\r?\n([\s\S]*?)$/i);
 
   if (!knMatch || !enMatch) {
     return {
-      knMarkdown: cleanMarkdown,
-      enMarkdown: cleanMarkdown,
+      knMarkdown: markdown,
+      enMarkdown: markdown,
       titleEn,
     };
   }
 
-  const header = cleanMarkdown.slice(0, cleanMarkdown.search(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ/i)).trim();
+  const header = markdown.slice(0, markdown.search(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ/i)).trim();
   const lines = header.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   const titleLine = lines[0] || (`# ${song.titleKn || song.title || ""}`);
   const metaLines = lines.slice(1);
@@ -104,7 +99,7 @@ export function normalizeSearchText(value) {
     .trim();
 }
 
-export function buildSearchText(song) {
+export function buildSearchText(song, contentMarkdown = []) {
   const titleEn = song.titleEn || song["title-en"] || toTitleCase(song.sourceFile || "");
   const parts = [
     song.title,
@@ -113,7 +108,7 @@ export function buildSearchText(song) {
     song["kruti-kn"] ?? song.krutiKn ?? "",
     song.ankita ?? "",
     song["ankita-kn"] ?? song.ankitaKn ?? "",
-    ...(Array.isArray(song.searchTags) ? song.searchTags : []),
+    ...contentMarkdown,
   ];
 
   const normalized = normalizeSearchText(parts.join(" "));

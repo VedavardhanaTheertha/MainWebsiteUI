@@ -267,10 +267,12 @@ The collection supports multi-language display (Kannada and English) driven dire
 existing language switcher in the site header (`useLang().lang`):
 1. **Build-Time Index Creation & Compression**: `src/gen/bhakti/index.json` stores lightweight song metadata
    including Kannada titles (`titleKn`), transliterated English titles (`titleEn`), author/ankita
-   attributes in both scripts, and pre-tokenized, normalized search haystacks (`searchText`).
+   attributes in both scripts, and pre-tokenized, normalized search haystacks (`searchText`) built
+   from the complete Kannada and transliterated English song text. Authors do not maintain separate
+   search tags.
    `build/build-bhakti-content.mjs` pre-builds a complete `MiniSearch` index at build time with field
    weights (titles 3x, ankitas 2x, authors 1.5x) and serializes it to a gzip-compressed payload in
-   `src/gen/bhakti/search-index.ts` (~6 KB). This index chunk is lazy loaded on demand (on idle or search focus)
+   `src/gen/bhakti/search-index.ts`. This index chunk is lazy loaded on demand (on idle or search focus)
    and decompressed in the browser via native `DecompressionStream("gzip")`, eliminating runtime indexing overhead
    and keeping initial page load small.
 2. **Lazy-Loaded Language Chunks**: Songs are split into individual modules under
@@ -318,6 +320,11 @@ data and both interfaces already select the active language through `useLang()` 
 
 Client-side searching across the website is unified through `minisearch` via `src/lib/search.ts`
 and React hooks in `src/hooks/useMiniSearch.ts`:
+- **Mandatory Shared Defaults**:
+  - Every search UI must use `useMiniSearch` or `useLazyMiniSearch`; it must not construct
+    `MiniSearch` directly or implement a separate substring filter.
+  - Every build-time index must use `withSearchDefaults` from `build/search-config.mjs`.
+    This is the default contract for future search features as well as current ones.
 - **Build-Time Indexing and Gzip Compression**:
   - **Dasasahitya (`BhaktiBrowser.tsx`)**: The full bilingual index is compiled at build time by
     `build/build-bhakti-content.mjs`, serialized, and compressed with gzip into `src/gen/bhakti/search-index.ts`.
@@ -334,7 +341,8 @@ and React hooks in `src/hooks/useMiniSearch.ts`:
 - **In-Memory Local Search (`MediaGrid.tsx`)**:
   - Media photo and video catalogs are localized and indexed on the client with lightweight in-memory MiniSearch.
 - **Search Quality**:
-  - Prefix matching (`prefix: true`) as users type.
+  - Infix matching expands indexed terms into suffixes and combines that with MiniSearch prefix
+    matching, so a query can begin anywhere within a word.
   - Adaptive fuzzy matching (`fuzzy: (term) => (term.length > 3 ? 0.2 : false)`) tolerating typos.
   - Automatic fallback from `AND` to `OR` combinations on multi-word queries.
 

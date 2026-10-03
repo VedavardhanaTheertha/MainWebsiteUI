@@ -7,11 +7,11 @@ import { collection } from "./collection.config.mjs";
 import {
   buildSearchText,
   parseMarkdownFrontmatter,
-  removeSearchTags,
   splitSongContent,
   validateSongs,
 } from "./content-utils.mjs";
 import { renderMarkdown } from "./markdown.mjs";
+import { withSearchDefaults } from "./search-config.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const libraryRoot = path.join(projectRoot, "library");
@@ -62,10 +62,9 @@ async function buildCollection({ id, sourceDirectory }) {
   const catalog = [];
   const loaders = [];
   for (const song of songs) {
-    const cleanSource = removeSearchTags(song.body);
-    const { knMarkdown, enMarkdown, titleEn } = splitSongContent(cleanSource, song);
+    const { knMarkdown, enMarkdown, titleEn } = splitSongContent(song.body, song);
 
-    const html = renderMarkdown(cleanSource);
+    const html = renderMarkdown(song.body);
     const htmlKn = renderMarkdown(knMarkdown);
     const htmlEn = renderMarkdown(enMarkdown);
 
@@ -91,12 +90,12 @@ async function buildCollection({ id, sourceDirectory }) {
       krutiKn: song["kruti-kn"] ?? "",
       ankita: song.ankita ?? "",
       ankitaKn: song["ankita-kn"] ?? "",
-      searchText: buildSearchText({ ...song, titleEn }),
+      searchText: buildSearchText({ ...song, titleEn }, [knMarkdown, enMarkdown]),
       contentFile,
     });
   }
 
-  const searchIndex = new MiniSearch({
+  const searchIndex = new MiniSearch(withSearchDefaults({
     idField: "__search_id",
     fields: [
       "title",
@@ -106,13 +105,9 @@ async function buildCollection({ id, sourceDirectory }) {
       "krutiKn",
       "ankita",
       "ankitaKn",
-      "searchTags",
       "searchText",
     ],
     extractField: (item, field) => {
-      if (field === "searchTags" && Array.isArray(item.searchTags)) {
-        return item.searchTags.join(" ");
-      }
       const val = item[field];
       return val != null ? String(val) : "";
     },
@@ -126,11 +121,8 @@ async function buildCollection({ id, sourceDirectory }) {
         kruti: 1.5,
         krutiKn: 1.5,
       },
-      prefix: true,
-      fuzzy: (term) => (term.length > 3 ? 0.2 : false),
-      combineWith: "AND",
     },
-  });
+  }));
 
   const docs = catalog.map((item, idx) => ({ ...item, __search_id: idx }));
   searchIndex.addAll(docs);

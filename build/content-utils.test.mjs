@@ -5,16 +5,10 @@ import {
   buildSearchText,
   normalizeSearchText,
   parseMarkdownFrontmatter,
-  removeSearchTags,
   splitSongContent,
   toTitleCase,
   validateSongs,
 } from "./content-utils.mjs";
-
-test("removeSearchTags omits the metadata-only Markdown section", () => {
-  const source = "# Title\n\nVisible content\n\n## Search Tags\n\nnot, visible";
-  assert.equal(removeSearchTags(source), "# Title\n\nVisible content");
-});
 
 test("toTitleCase converts markdown filenames to title-cased English names", () => {
   assert.equal(toTitleCase("aadidano ranga.md"), "Aadidano Ranga");
@@ -35,10 +29,6 @@ Kruti: Sri Purandara Dasaru (Purandara vittala)
 ## Lyrics transliterated to english
 
 ADidanO raMga adbhutadiMdali kaaLiMgana PaNeyali ||pa||
-
-## Search Tags
-
-ಆಡಿದನೋ ರಂಗ, aadidano ranga
 `;
 
   const song = {
@@ -88,9 +78,6 @@ test("parseMarkdownFrontmatter returns metadata and content separately", () => {
 id: song-id
 title: Song title
 sourceFile: song.md
-searchTags:
-  - first
-  - second
 ---
 
 # Song title
@@ -98,7 +85,6 @@ searchTags:
 Lyrics`;
   const { metadata, body } = parseMarkdownFrontmatter(source, "song.md");
 
-  assert.deepEqual(metadata.searchTags, ["first", "second"]);
   assert.equal(metadata.id, "song-id");
   assert.equal(body, "# Song title\n\nLyrics");
 });
@@ -124,7 +110,7 @@ test("normalizeSearchText removes punctuation and decomposes unicode consistentl
   assert.equal(normalizeSearchText("  ಶ್ರೀ   ಪುರಂದರ  "), normalizeSearchText("ಶ್ರೀ ಪುರಂದರ"));
 });
 
-test("buildSearchText produces deduplicated normalized search terms for both languages", () => {
+test("buildSearchText includes deduplicated terms from complete Kannada and English content", () => {
   const song = {
     title: "ಆಡಿದನೋ ರಂಗ",
     sourceFile: "aadidano ranga.md",
@@ -132,21 +118,18 @@ test("buildSearchText produces deduplicated normalized search terms for both lan
     "kruti-kn": "ಶ್ರೀ ಪುರಂದರ ದಾಸರು",
     ankita: "Purandara vittala",
     "ankita-kn": "ಪುರಂದರ ವಿಠಲ",
-    searchTags: [
-      "Purandara dasaru",
-      "Purandara vittala",
-      "purandara dasara hadugalu",
-      "ಆಡಿದನೋ ರಂಗ",
-      "ಆಡಿದನೋ ರಂಗ",
-    ],
   };
-  const searchText = buildSearchText(song);
+  const searchText = buildSearchText(song, [
+    "ಕಾಳಿಂಗನ ಫಣೆಯಲಿ ಬೆಣ್ಣೆ ಬೇಡುತಲಿ ಕೃಷ್ಣ",
+    "kaaLiMgana PaNeyali beNNe bEDutali kRuShNa",
+  ]);
   assert.ok(searchText.includes("aadidano"));
   assert.ok(searchText.includes("purandara"));
   assert.ok(searchText.includes("vittala"));
-  assert.ok(searchText.includes("hadugalu"));
   assert.ok(searchText.includes("ರಂಗ"));
-  // Ensure words are unique
+  assert.ok(searchText.includes("ಕಾಳಿಂಗನ"));
+  assert.ok(searchText.includes("kaaLiMgana".toLocaleLowerCase()));
+  assert.ok(searchText.includes("beNNe".toLocaleLowerCase()));
   const words = searchText.split(" ");
   assert.equal(words.length, new Set(words).size);
 });

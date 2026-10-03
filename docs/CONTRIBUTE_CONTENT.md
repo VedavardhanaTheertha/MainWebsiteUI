@@ -53,7 +53,8 @@ in generated files under `src/gen/` and not as a blog post here.
 
 1. Follow the corpus structure already present in WebsiteLibrary's `dasasahitya/`
    directory: every Markdown source file begins with YAML front matter containing its
-   `id`, titles, attribution, ankita, source filename, and search tags.
+   `id`, titles, attribution, ankita, and source filename. Do not add manual search tags;
+   the build indexes the complete Kannada and transliterated English song text.
 2. Update the Markdown body and its front matter together in the library repository.
    Preserve existing identifiers and required fields.
 3. Submit and review that change in WebsiteLibrary first.

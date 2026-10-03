@@ -15,6 +15,7 @@ import yaml from "js-yaml";
 import MiniSearch from "minisearch";
 import { normalizeSearchText } from "./content-utils.mjs";
 import { describeContentMode } from "./environment-utils.mjs";
+import { withSearchDefaults } from "./search-config.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const eventsSourceDir = path.join(rootDir, "library", "events");
@@ -371,7 +372,7 @@ function buildSearchIndexPayload(catalog) {
     tagsText: item.tags.join(" "),
   }));
 
-  const miniSearch = new MiniSearch({
+  const miniSearch = new MiniSearch(withSearchDefaults({
     idField: "__search_id",
     fields: [
       "titleEn",
@@ -394,10 +395,8 @@ function buildSearchIndexPayload(catalog) {
         tagsText: 1.2,
         searchText: 1,
       },
-      fuzzy: (term) => (term.length > 3 ? 0.2 : false),
-      prefix: true,
     },
-  });
+  }));
 
   if (searchDocs.length > 0) {
     miniSearch.addAll(searchDocs);

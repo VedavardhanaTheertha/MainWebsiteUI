@@ -164,6 +164,12 @@ CI runs the scripts under `build/`; developers can run the same pipeline locally
 | `write-canonicals.mjs` | Derives each page's production canonical from its exported HTML path |
 | `verify.mjs` | Checks the built output before it is published |
 
+Search features must use the shared MiniSearch implementation. Client components use
+`useMiniSearch` or `useLazyMiniSearch` from `src/hooks/useMiniSearch.ts`; build-time indexes
+use `withSearchDefaults` from `build/search-config.mjs`. Do not add direct `MiniSearch`
+instances or ad hoc text filters. These shared defaults provide prefix, anywhere-in-word,
+and adaptive fuzzy matching consistently.
+
 ### Why build logic lives outside CI
 
 `.github/workflows/deploy-dev.yml` and `.github/workflows/verify.yml` are thin wrappers

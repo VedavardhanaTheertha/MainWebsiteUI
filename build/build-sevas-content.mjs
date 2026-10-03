@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import MiniSearch from "minisearch";
 import { sevas } from "../src/data/sevas.ts";
+import { withSearchDefaults } from "./search-config.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = path.join(projectRoot, "src", "gen", "sevas");
@@ -12,16 +13,13 @@ await mkdir(outputDir, { recursive: true });
 
 const docs = sevas.map((s, idx) => ({ ...s, __search_id: idx }));
 
-const miniSearch = new MiniSearch({
+const miniSearch = new MiniSearch(withSearchDefaults({
   idField: "__search_id",
   fields: ["name", "significance", "category"],
   searchOptions: {
     boost: { name: 2, category: 1.5, significance: 1 },
-    prefix: true,
-    fuzzy: (term) => (term.length > 3 ? 0.2 : false),
-    combineWith: "AND",
   },
-});
+}));
 
 miniSearch.addAll(docs);
 

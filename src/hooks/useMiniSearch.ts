@@ -23,7 +23,7 @@ export function useMiniSearch<T extends object>(
   const index = useMemo(() => {
     return createSearchIndex(items, config);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, fieldsKey, boostKey, config.extractField]);
+  }, [items, fieldsKey, boostKey, config.searchOptions, config.extractField]);
 
   return useMemo(() => {
     return searchItems(index, query);
