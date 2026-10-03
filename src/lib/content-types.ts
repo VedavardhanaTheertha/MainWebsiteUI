@@ -385,6 +385,28 @@ export interface PageMetadataEntry {
   description?: string;
 }
 
+export interface ConnectPageShape {
+  title: string;
+  intro: string;
+  branches_title: string;
+  branches_intro: string;
+  view_details: string;
+  branch_type: string;
+  address: string;
+  timings: string;
+  contact: string;
+  phone: string;
+  email: string;
+  deity: string;
+  close: string;
+  map_title: string;
+  open_google_maps: string;
+  directions: string;
+  connect_title: string;
+  connect_intro: string;
+  audience: string;
+}
+
 export interface EventPageItem {
   date: string;
   displayDate: string;
@@ -494,6 +516,7 @@ export interface ContentShape extends LegacyFlatKeys {
   home: HomeShape;
   library: LibraryShape;
   connect2: Connect2Shape;
+  connect_page: ConnectPageShape;
   events_exact: EventsExactShape;
   events_sections?: EventsSectionsShape;
   events_recurring?: string;

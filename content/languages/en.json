@@ -1075,6 +1075,27 @@
     "email": "contact@shiroormatha.org",
     "hours": "Darshan · 5:00 am – 9:00 pm"
   },
+  "connect_page": {
+    "title": "Connect with Matha",
+    "intro": "Visit a branch, find directions, or join Shri Shiroor Matha through an official social channel.",
+    "branches_title": "Our branches",
+    "branches_intro": "Select a branch to view its complete details, contact information, and location.",
+    "view_details": "View branch details",
+    "branch_type": "Branch type",
+    "address": "Address",
+    "timings": "Darshan timings",
+    "contact": "Contact",
+    "phone": "Phone",
+    "email": "Email",
+    "deity": "Presiding deity",
+    "close": "Close branch details",
+    "map_title": "Map and directions",
+    "open_google_maps": "Open in Google Maps",
+    "directions": "Get directions",
+    "connect_title": "Connect with us",
+    "connect_intro": "Join our growing spiritual community for updates, live sessions, and sacred teachings.",
+    "audience": "Audience"
+  },
   "events_exact": {
     "search_placeholder": "Search events, artists, dates, rituals...",
     "all_categories": "All Categories",
@@ -1293,7 +1314,8 @@
       "description": "The founding story, history, and Guru Parampara of Shri Shiroor Matha — an 800+ year lineage of devotion in Udupi."
     },
     "connect": {
-      "title": "Connect with Matha | Shri Shiroor Matha"
+      "title": "Connect with Matha | Shri Shiroor Matha",
+      "description": "Explore Shri Shiroor Matha branches, contact details, maps, directions, and official social channels."
     },
     "contact": {
       "title": "Contact & Branches | Shri Shiroor Matha, Udupi",

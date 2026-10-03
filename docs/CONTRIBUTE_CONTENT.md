@@ -66,6 +66,16 @@ The MainWebsiteUI build discovers `library/dasasahitya/*.md`, reads and validate
 file's front matter, sanitizes its Markdown body, and generates disposable output under
 `src/gen/bhakti/`.
 
+Branch and connection-channel content also belongs in WebsiteLibrary:
+
+- Add one bilingual, front-matter Markdown file per branch under `branches/`. Keep its
+  coordinates, phone, email, map link, summary, and detailed English/Kannada sections current.
+- Add one front-matter Markdown file per official channel under `connect/`. Each record
+  requires a stable ID, display order, platform, handle, HTTPS or `mailto:` URL, brand
+  colour, and local icon path. Audience is optional for channels such as email.
+- Do not edit `src/gen/connect/data.ts`; `generate-content.mjs` recreates it and the
+  statically exported `/connect` page during every content build.
+
 ## Review requirements
 
 - Follow the [content guidelines](./GUIDELINE_CONTENT.md).

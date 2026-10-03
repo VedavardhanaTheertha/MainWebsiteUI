@@ -511,6 +511,207 @@ render(localStorage.getItem('shiroor-lang')||'${escapeHtml(defaultLang)}');addEv
   writeFileSync(path.join(dir, "index.html"), html, "utf8");
 }
 
+function parseLibraryFrontmatter(file) {
+  const raw = readFileSync(file, "utf8");
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
+  if (!match) {
+    throw new Error(`${path.relative(rootDir, file)} must begin with YAML front matter.`);
+  }
+  let metadata;
+  try {
+    metadata = yaml.load(match[1]);
+  } catch (err) {
+    throw new Error(`${path.relative(rootDir, file)} has invalid YAML front matter — ${err.message}`);
+  }
+  if (!isPlainObject(metadata)) {
+    throw new Error(`${path.relative(rootDir, file)} front matter must be an object.`);
+  }
+  return { metadata, body: match[2].trim() };
+}
+
+function requireLocalized(value, field, file) {
+  if (!isPlainObject(value) || typeof value.en !== "string" || typeof value.kn !== "string") {
+    throw new Error(`${path.relative(rootDir, file)} needs ${field}.en and ${field}.kn.`);
+  }
+  return { en: value.en.trim(), kn: value.kn.trim() };
+}
+
+function discoverConnectContent() {
+  const branchesDir = path.join(rootDir, "library", "branches");
+  const connectDir = path.join(rootDir, "library", "connect");
+  for (const dir of [branchesDir, connectDir]) {
+    if (!existsSync(dir)) {
+      throw new Error(`${path.relative(rootDir, dir)} is missing — initialize the library submodule.`);
+    }
+  }
+
+  const branchFiles = readdirSync(branchesDir).filter((file) => file.endsWith(".md")).sort();
+  const connectFiles = readdirSync(connectDir).filter((file) => file.endsWith(".md")).sort();
+  if (!branchFiles.length || !connectFiles.length) {
+    throw new Error("library/branches and library/connect must each contain Markdown files.");
+  }
+
+  const branchIds = new Set();
+  const branches = branchFiles.map((filename, index) => {
+    const file = path.join(branchesDir, filename);
+    const { metadata, body } = parseLibraryFrontmatter(file);
+    for (const field of ["id", "phone", "email", "map_link"]) {
+      if (typeof metadata[field] !== "string" || !metadata[field].trim()) {
+        throw new Error(`${path.relative(rootDir, file)} needs a non-empty ${field}.`);
+      }
+    }
+    const latitude = Number(metadata.coordinates?.latitude);
+    const longitude = Number(metadata.coordinates?.longitude);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      throw new Error(`${path.relative(rootDir, file)} needs numeric coordinates.`);
+    }
+    if (!metadata.map_link.startsWith("https://")) {
+      throw new Error(`${path.relative(rootDir, file)} map_link must use HTTPS.`);
+    }
+    if (branchIds.has(metadata.id)) {
+      throw new Error(`library/branches contains duplicate id: ${metadata.id}`);
+    }
+    branchIds.add(metadata.id);
+
+    const detailsSection = body.split(/^##\s+Details\s*$/imu)[1]?.trim() ?? "";
+    const withoutContact = detailsSection.split(/^###\s+Contact & Location Information.*$/imu)[0]?.trim() ?? "";
+    const [englishDetails, kannadaDetails = englishDetails] = withoutContact.split(/^\s*---\s*$/mu, 2);
+    if (!englishDetails?.trim() || !kannadaDetails?.trim()) {
+      throw new Error(`${path.relative(rootDir, file)} needs English and Kannada details.`);
+    }
+
+    return {
+      id: metadata.id,
+      order: index + 1,
+      title: requireLocalized(metadata.title, "title", file),
+      name: requireLocalized(metadata.name, "name", file),
+      branchType: requireLocalized(metadata.branch_type, "branch_type", file),
+      address: requireLocalized(metadata.address, "address", file),
+      timings: requireLocalized(metadata.timings, "timings", file),
+      deity: requireLocalized(metadata.deity, "deity", file),
+      description: requireLocalized(metadata.description, "description", file),
+      phone: metadata.phone,
+      email: metadata.email,
+      pincode: String(metadata.pincode ?? ""),
+      mapLink: metadata.map_link,
+      embedMapUrl: `https://www.google.com/maps?q=${latitude},${longitude}&output=embed`,
+      directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`,
+      coordinates: { latitude, longitude },
+      detailsMarkdown: {
+        en: englishDetails.trim(),
+        kn: kannadaDetails.trim(),
+      },
+    };
+  });
+
+  const ids = new Set();
+  const orders = new Set();
+  const connectLinks = connectFiles.map((filename) => {
+    const file = path.join(connectDir, filename);
+    const { metadata } = parseLibraryFrontmatter(file);
+    for (const field of ["id", "platform", "handle", "url", "brand_color", "icon"]) {
+      if (typeof metadata[field] !== "string" || !metadata[field].trim()) {
+        throw new Error(`${path.relative(rootDir, file)} needs a non-empty ${field}.`);
+      }
+    }
+    if (ids.has(metadata.id)) {
+      throw new Error(`library/connect contains duplicate id: ${metadata.id}`);
+    }
+    const iconRelativePath = metadata.icon.slice(1);
+    if (
+      (!metadata.url.startsWith("https://") && !metadata.url.startsWith("mailto:")) ||
+      !/^#[\da-f]{6}$/iu.test(metadata.brand_color) ||
+      !metadata.icon.startsWith("/") ||
+      metadata.icon.includes("..") ||
+      !existsSync(path.join(rootDir, "public", iconRelativePath))
+    ) {
+      throw new Error(
+        `${path.relative(rootDir, file)} needs an HTTPS or mailto URL, a local icon, and six-digit brand_color.`
+      );
+    }
+    const order = Number(metadata.order);
+    if (!Number.isInteger(order) || order < 1 || orders.has(order)) {
+      throw new Error(`${path.relative(rootDir, file)} needs a unique positive integer order.`);
+    }
+    ids.add(metadata.id);
+    orders.add(order);
+    return {
+      id: metadata.id,
+      order,
+      platform: { en: metadata.platform, kn: metadata.platform },
+      handle: { en: metadata.handle, kn: metadata.handle },
+      audience: typeof metadata.audience === "string" ? metadata.audience : "",
+      url: metadata.url,
+      brandColor: metadata.brand_color,
+      icon: metadata.icon,
+    };
+  }).sort((a, b) => a.order - b.order);
+
+  return { branches, connectLinks };
+}
+
+function placeholderConnectContent(connectContent) {
+  const placeholderLocalized = (value, key) => Object.fromEntries(
+    Object.entries(value).map(([code, text]) => [code, makePlaceholder(`${key}.${code}`, text, code)])
+  );
+  return {
+    branches: connectContent.branches.map((branch, index) => ({
+      ...branch,
+      title: placeholderLocalized(branch.title, `connect.branches.${index}.title`),
+      name: placeholderLocalized(branch.name, `connect.branches.${index}.name`),
+      branchType: placeholderLocalized(branch.branchType, `connect.branches.${index}.branch_type`),
+      address: placeholderLocalized(branch.address, `connect.branches.${index}.address`),
+      timings: placeholderLocalized(branch.timings, `connect.branches.${index}.timings`),
+      deity: placeholderLocalized(branch.deity, `connect.branches.${index}.deity`),
+      description: placeholderLocalized(branch.description, `connect.branches.${index}.description`),
+      detailsMarkdown: placeholderLocalized(branch.detailsMarkdown, `connect.branches.${index}.details`),
+    })),
+    connectLinks: connectContent.connectLinks.map((link, index) => ({
+      ...link,
+      platform: placeholderLocalized(link.platform, `connect.links.${index}.platform`),
+      handle: placeholderLocalized(link.handle, `connect.links.${index}.handle`),
+      audience: link.audience
+        ? makePlaceholder(`connect.links.${index}.audience`, link.audience, "en")
+        : "",
+    })),
+  };
+}
+
+function writeConnectArtifacts(connectContent, alternateConnectContent) {
+  const dir = path.join(rootDir, "src", "gen", "connect");
+  mkdirSync(dir, { recursive: true });
+  const renderContent = (source) => ({
+    branches: source.branches.map(({ detailsMarkdown, ...branch }) => ({
+      ...branch,
+      detailsHtml: {
+        en: renderMarkdown(detailsMarkdown.en),
+        kn: renderMarkdown(detailsMarkdown.kn),
+      },
+    })),
+    connectLinks: source.connectLinks,
+  });
+  const rendered = renderContent(connectContent);
+  const alternate = alternateConnectContent ? renderContent(alternateConnectContent) : null;
+  const generated = `// AUTO-GENERATED by scripts/generate-content.mjs — do not edit directly.\n` +
+    `export interface LocalizedText { en: string; kn: string; [language: string]: string; }\n` +
+    `export interface BranchRecord {\n` +
+    `  id: string; order: number; title: LocalizedText; name: LocalizedText; branchType: LocalizedText;\n` +
+    `  address: LocalizedText; timings: LocalizedText; deity: LocalizedText; description: LocalizedText;\n` +
+    `  phone: string; email: string; pincode: string; mapLink: string; embedMapUrl: string;\n` +
+    `  directionsUrl: string; coordinates: { latitude: number; longitude: number };\n` +
+    `  detailsHtml: LocalizedText;\n` +
+    `}\n` +
+    `export interface ConnectLinkRecord {\n` +
+    `  id: string; order: number; platform: LocalizedText; handle: LocalizedText;\n` +
+    `  audience: string; url: string; brandColor: string; icon: string;\n` +
+    `}\n\n` +
+    `export const branches = ${JSON.stringify(rendered.branches, null, 2)} as unknown as BranchRecord[];\n` +
+    `export const connectLinks = ${JSON.stringify(rendered.connectLinks, null, 2)} as unknown as ConnectLinkRecord[];\n` +
+    `export const alternateBranches = ${JSON.stringify(alternate?.branches ?? null, null, 2)} as unknown as BranchRecord[] | null;\n` +
+    `export const alternateConnectLinks = ${JSON.stringify(alternate?.connectLinks ?? null, null, 2)} as unknown as ConnectLinkRecord[] | null;\n`;
+  writeFileSync(path.join(dir, "data.ts"), generated, "utf8");
+}
+
 /**
  * Writes public/robots.txt for the active environment. Non-production
  * environments disallow all crawling so they cannot compete with the live site
@@ -740,6 +941,12 @@ const parampara = mode.defaultVariant === "real" ? discoveredParampara : placeho
 const alternateParampara = mode.switchable
   ? mode.defaultVariant === "real" ? placeholderParamparaContent : discoveredParampara
   : null;
+const discoveredConnectContent = discoverConnectContent();
+const placeholderConnect = placeholderConnectContent(discoveredConnectContent);
+const connectContent = mode.defaultVariant === "real" ? discoveredConnectContent : placeholderConnect;
+const alternateConnectContent = mode.switchable
+  ? mode.defaultVariant === "real" ? placeholderConnect : discoveredConnectContent
+  : null;
 const placeholderHero = {
   ...defaultHero,
   title_en: makePlaceholder("hero.default.title", defaultHero.title_en, "en"),
@@ -775,6 +982,7 @@ const outDir = path.join(rootDir, "src", "gen");
 mkdirSync(outDir, { recursive: true });
 writeHeroImages(hero, content, defaultLang, env.base_path ?? "");
 writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang);
+writeConnectArtifacts(connectContent, alternateConnectContent);
 
 function discoverStaticRoutes(dir, prefix = "") {
   const routes = [];

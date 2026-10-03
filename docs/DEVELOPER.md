@@ -141,6 +141,8 @@ src/context/   LanguageContext.tsx — the useLang() provider (see §8)
 src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
 library/       required submodule → WebsiteLibrary (Bhakti, hero, and Parampara content)
+  branches/    branch summaries, contacts, coordinates, maps, and detailed Markdown
+  connect/     official social and connection-channel Markdown records
   hero/dev/    development and local hero groups; default.hero.json is selected
   hero/prod/   production hero groups; default.hero.json is selected
   parampara/   index.json plus one Markdown file per guru

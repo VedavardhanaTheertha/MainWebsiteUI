@@ -128,6 +128,7 @@ Shirooru/
 │       ├── content.ts          ← environment-resolved site and article content
 │       ├── hero-images/        ← standalone HTML rendering of the home hero carousel
 │       ├── parampara/          ← lineage data module and standalone interactive HTML
+│       ├── connect/            ← generated branch and connection-channel data
 │       ├── bhakti/             ← generated devotional collection
 │       ├── sevas/              ← generated sevas collection
 │       └── events/             ← generated events collection and standalone HTML pages
@@ -135,7 +136,9 @@ Shirooru/
 ├── public/                     ← existing static assets served from the site root
 │   ├── articles/               ← consistent location for new article media
 │   └── slide/                  ← existing legacy image collection
-├── library/                    ← required content submodule (Bhakti, hero, Parampara, and Events)
+├── library/                    ← required content submodule
+│   ├── branches/               ← bilingual branch front matter and detailed Markdown
+│   ├── connect/                ← official connection-channel Markdown records
 │   ├── dasasahitya/            ← devotional source collection
 │   ├── parampara/              ← indexed Guru Parampara Markdown entries
 │   ├── hero/                   ← environment-specific hero groups
@@ -316,6 +319,19 @@ translations can add `index.<lang>.json` and/or `<content-file-stem>.<lang>.md`;
 data and both interfaces already select the active language through `useLang()` and the
 `shiroor-lang` browser event contract.
 
+#### Connect and branch collections
+
+`library/branches/*.md` supplies bilingual branch summaries, contact information,
+coordinates, and detailed Markdown. `library/connect/*.md` supplies official connection
+channels, handles, optional audience figures, URLs, brand colours, and local icon paths. `generate-content.mjs`
+discovers and validates both directories, sanitizes branch details, applies the normal
+environment placeholder policy, and writes `src/gen/connect/data.ts`.
+
+The statically exported `/connect` route renders every branch summary and connection
+channel in its initial HTML. Selecting a branch hydrates a client-side details dialog
+containing localized content, an embedded coordinate-based map, an external Google Maps
+link, and a Google Maps directions link. Connection cards are ordinary external links.
+
 ### 5.7 Full-text search with MiniSearch and build-time compression
 
 Client-side searching across the website is unified through `minisearch` via `src/lib/search.ts`
@@ -478,6 +494,8 @@ the visitor's selected mode.
 content/languages/*.json ─┐
 content/blog/*/          ─┤
 library/parampara/*      ─┤
+library/branches/*.md    ─┤
+library/connect/*.md     ─┤
 library/hero/<env>/*.hero.json ─┼─→ generate-content.mjs → src/gen/ → next build → out/
 config/site.yml          ─┘            ↑                                    │
                                    SITE_ENV                                 ↓
@@ -498,6 +516,9 @@ The generator performs the following jobs:
 7. **Discovers Guru Parampara entries** from `library/parampara/`, validates and parses
   Markdown, applies language fallback and environment placeholders, and renders the
   generated data module plus standalone interactive HTML.
+8. **Discovers branches and connection channels** from `library/branches/*.md` and
+  `library/connect/*.md`, validates required fields and secure links, sanitizes branch
+  details, applies environment placeholders, and emits `src/gen/connect/data.ts`.
 
 After Next.js exports the site, `write-canonicals.mjs` maps each HTML output path back
 to its public route and writes the corresponding URL under `site.production_url`. This
