@@ -13,6 +13,19 @@ export interface SearchIndex<T> {
   config: MiniSearchConfig<T>;
 }
 
+export function normalizeSearchTerm(term: string): string {
+  return term.toLocaleLowerCase();
+}
+
+export function expandSearchTerm(term: string): string[] {
+  const characters = Array.from(normalizeSearchTerm(term));
+  return characters.map((_, index) => characters.slice(index).join(""));
+}
+
+export function fuzzySearchTerm(term: string): number | false {
+  return Array.from(term).length > 3 ? 0.2 : false;
+}
+
 /**
  * Creates an in-memory MiniSearch index for arbitrary collections.
  * Uses a synthetic `__search_id` index mapping to ensure safety against missing or duplicate IDs.
@@ -29,6 +42,7 @@ export function createSearchIndex<T extends object>(
   const miniSearch = new MiniSearch<T & { __search_id: number }>({
     idField: "__search_id",
     fields: config.fields as string[],
+    processTerm: expandSearchTerm,
     extractField: (document, fieldName) => {
       if (config.extractField) {
         return config.extractField(document as unknown as T, fieldName);
@@ -42,8 +56,9 @@ export function createSearchIndex<T extends object>(
     searchOptions: {
       boost: config.boost as Record<string, number> | undefined,
       prefix: true,
-      fuzzy: (term) => (term.length > 3 ? 0.2 : false),
+      fuzzy: fuzzySearchTerm,
       combineWith: "AND",
+      processTerm: normalizeSearchTerm,
       ...config.searchOptions,
     },
   });
@@ -86,7 +101,8 @@ export function searchItems<T extends object>(
       ...options,
       combineWith: "OR",
       prefix: true,
-      fuzzy: (term) => (term.length > 3 ? 0.2 : false),
+      fuzzy: fuzzySearchTerm,
+      processTerm: normalizeSearchTerm,
     });
   }
 
@@ -121,11 +137,13 @@ export async function loadCompressedIndex<T extends object>(
   const miniSearch = MiniSearch.loadJSON<T & { __search_id: number }>(json, {
     fields: config.fields as string[],
     idField: "__search_id",
+    processTerm: expandSearchTerm,
     searchOptions: {
       boost: config.boost as Record<string, number> | undefined,
       prefix: true,
-      fuzzy: (term) => (term.length > 3 ? 0.2 : false),
+      fuzzy: fuzzySearchTerm,
       combineWith: "AND",
+      processTerm: normalizeSearchTerm,
       ...config.searchOptions,
     },
   });
@@ -136,4 +154,3 @@ export async function loadCompressedIndex<T extends object>(
     config,
   };
 }
-

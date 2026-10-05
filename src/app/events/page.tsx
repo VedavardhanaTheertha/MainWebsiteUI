@@ -1,72 +1,50 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import SiteFooter from "@/components/SiteFooter";
 import UpcomingEventRail from "@/components/UpcomingEventRail";
 import EventsAccordion from "@/components/EventsAccordion";
 import EventsExact from "@/components/EventsExact";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
-import { imagePaths } from "@/lib/images";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.events;
 
 export default function EventsPage() {
   return (
-    <div className="relative overflow-hidden">
-      {/* Madhwacharya watermark — full page */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0, opacity: 0.06 }}>
-        <Image
-          src={imagePaths.madhwacharya}
-          alt=""
-          fill
-          className="object-cover"
-          style={{ filter: "sepia(1) saturate(3) hue-rotate(340deg) brightness(1.3)" }}
-          sizes="100vw"
-        />
-      </div>
-
-      {/* Page header */}
-      <div className="relative z-10 bg-[var(--color-parchment)] pt-4 pb-3 lg:pt-7 lg:pb-6 text-center px-5">
-        <h1 className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-4xl mb-2 lg:mb-3">
+    <>
+      <header className="bg-[var(--color-parchment)] px-5 py-7 text-center lg:py-10">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
+          <LocalizedCopy path={["events_label"]} />
+        </p>
+        <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           <LocalizedCopy path={["events_title"]} />
         </h1>
-        <p className="font-body text-[var(--color-text-brand)]/75 text-sm lg:text-base max-w-xl mx-auto">
+        <p className="mx-auto mt-3 max-w-2xl text-sm text-[var(--color-text-brand)]/75 lg:text-base">
           <LocalizedCopy path={["events_subtitle"]} />
         </p>
-      </div>
+      </header>
 
-      <div className="w-full px-0 py-6 lg:py-12 relative z-10">
-
-        {/* Upcoming events — top upcoming events */}
-        <section className="mb-8 px-3">
-          <div className="flex items-center gap-2 mb-4">
+      <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 lg:space-y-12 lg:px-8 lg:py-12">
+        <section aria-labelledby="upcoming-events-heading">
+          <div className="mb-5 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <h2 className="font-display font-bold text-[#4F252E] text-xl lg:text-2xl">
+            <h2 id="upcoming-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
               <LocalizedCopy path={["events_upcoming"]} />
             </h2>
           </div>
           <UpcomingEventRail />
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-[var(--color-saffron-600)] mb-4 mx-3" />
-
-        {/* Recurring events row */}
         <EventsAccordion />
 
-        {/* Divider */}
-        <div className="border-t border-[var(--color-saffron-600)] mb-6 mx-3" />
-
-        {/* All Events — chips + card list */}
-        <section className="px-3">
-          <h2 className="font-display font-bold text-[#4F252E] text-xl lg:text-2xl mb-4">
+        <section className="border-t border-[var(--color-line)] pt-10" aria-labelledby="all-events-heading">
+          <h2 id="all-events-heading" className="mb-5 font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             <LocalizedCopy path={["events_all"]} />
           </h2>
           <EventsExact />
         </section>
       </div>
 
-      <div className="relative z-10"><SiteFooter /></div>
-    </div>
+      <SiteFooter />
+    </>
   );
 }

@@ -52,16 +52,48 @@ Bhakti corpus changes belong in the
 in generated files under `src/gen/` and not as a blog post here.
 
 1. Follow the corpus structure already present in WebsiteLibrary's `dasasahitya/`
-   directory: Markdown source files are indexed by its `metadata.json`.
-2. Update both the Markdown and the corresponding metadata entry in the library
-   repository. Preserve its identifiers and required schema.
+   directory: every Markdown source file begins with YAML front matter containing its
+   `id`, titles, attribution, ankita, and source filename. Do not add manual search tags;
+   the build indexes the complete Kannada and transliterated English song text.
+2. Update the Markdown body and its front matter together in the library repository.
+   Preserve existing identifiers and required fields.
 3. Submit and review that change in WebsiteLibrary first.
 4. A later MainWebsiteUI change may advance the `library` submodule reference. Run
    `git submodule update --init --recursive` and `npm run ci` when validating that
    integration.
 
-The MainWebsiteUI build reads `library/dasasahitya/metadata.json`, sanitizes each listed
-Markdown file, and generates disposable output under `src/gen/bhakti/`.
+The MainWebsiteUI build discovers `library/dasasahitya/*.md`, reads and validates each
+file's front matter, sanitizes its Markdown body, and generates disposable output under
+`src/gen/bhakti/`.
+
+Branch and connection-channel content also belongs in WebsiteLibrary:
+
+- Add one bilingual, front-matter Markdown file per branch under `branches/`. Keep its
+  coordinates, email, map link, summary, and detailed English/Kannada sections current.
+  Keep `phone` as a string; it may be empty only when no verified branch number is available.
+- Add one front-matter Markdown file per official channel under `connect/`. Each record
+  requires a stable ID, display order, platform, handle, HTTPS or `mailto:` URL, brand
+  colour, and local icon path. Audience is optional for channels such as email.
+- Do not edit `src/gen/connect/data.ts`; `generate-content.mjs` recreates it and the
+  statically exported `/connect` page during every content build.
+
+Seva content also belongs in WebsiteLibrary:
+
+- Add one Markdown file under `sevas/` with the same bilingual YAML structure used by
+  existing records. Required display fields include a stable `id`, numeric `code`,
+  localized title, category, deity, sannidhi, location, amount, description,
+  significance, and `booking_url`.
+- Keep the complete bilingual details in the Markdown body. Use separate
+  `### Seva Guidelines & Offerings (English)` and
+  `### ಸೇವಾ ನಿಯಮಗಳು ಮತ್ತು ಸಮರ್ಪಣೆ (ಕನ್ನಡ)` sections. The build sanitizes them
+  independently so the dialog renders only the selected language, while search indexes
+  the complete bilingual body together with all localized metadata.
+- An amount of `0` displays as `₹ --` in the catalog.
+- To feature a Seva, add its ID to the ordered `seva_ids` array in
+  `settings/<env>/topsevas.json`. A missing or empty list uses Kanike, Donations, and
+  Volunteer Sign-up.
+- Do not edit `src/gen/sevas/`; `build/build-sevas-content.mjs` recreates the typed data
+  and compressed search index during every content build.
 
 ## Review requirements
 

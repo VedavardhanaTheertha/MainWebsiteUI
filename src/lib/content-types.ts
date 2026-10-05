@@ -197,6 +197,21 @@ export interface LegacyFlatKeys {
   sevas_showing_template: string;
   sevas_empty_title: string;
   sevas_empty_sub: string;
+  sevas_featured_label: string;
+  sevas_featured_title: string;
+  sevas_all_title: string;
+  sevas_filter_category: string;
+  sevas_all_categories: string;
+  sevas_clear_filters: string;
+  sevas_results_template: string;
+  sevas_any_amount: string;
+  sevas_deity: string;
+  sevas_sannidhi: string;
+  sevas_location: string;
+  sevas_description: string;
+  sevas_significance: string;
+  sevas_offer: string;
+  sevas_close: string;
   events_label: string;
   events_title: string;
   events_subtitle: string;
@@ -385,6 +400,28 @@ export interface PageMetadataEntry {
   description?: string;
 }
 
+export interface ConnectPageShape {
+  title: string;
+  intro: string;
+  branches_title: string;
+  branches_intro: string;
+  view_details: string;
+  branch_type: string;
+  address: string;
+  timings: string;
+  contact: string;
+  phone: string;
+  email: string;
+  deity: string;
+  close: string;
+  map_title: string;
+  open_google_maps: string;
+  directions: string;
+  connect_title: string;
+  connect_intro: string;
+  audience: string;
+}
+
 export interface EventPageItem {
   date: string;
   displayDate: string;
@@ -494,6 +531,7 @@ export interface ContentShape extends LegacyFlatKeys {
   home: HomeShape;
   library: LibraryShape;
   connect2: Connect2Shape;
+  connect_page: ConnectPageShape;
   events_exact: EventsExactShape;
   events_sections?: EventsSectionsShape;
   events_recurring?: string;

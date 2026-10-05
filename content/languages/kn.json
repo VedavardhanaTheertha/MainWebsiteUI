@@ -42,7 +42,7 @@
   "seva_label": "ಸೇವೆ ಅರ್ಪಿಸಿ",
   "seva_title": "ನಿಮ್ಮ ಭಕ್ತಿ ವ್ಯಕ್ತಪಡಿಸಿ",
   "seva_body": "ಪ್ರತಿ ಸೇವೆಯು ನಿಮ್ಮ ಹೃದಯ ಮತ್ತು ಭಗವಂತನನ್ನು ಬೆಸೆಯುವ ದಾರ. ಹೂವಿನ ಅರ್ಚನೆಯಿಂದ ಅನ್ನದಾನದವರೆಗೆ — ಪ್ರತಿ ಅರ್ಪಣೆಯೂ ಮಹತ್ವದ್ದು.",
-  "seva_view_all": "97 ಸೇವೆಗಳನ್ನೂ ನೋಡಿ",
+  "seva_view_all": "98 ಸೇವೆಗಳನ್ನೂ ನೋಡಿ",
   "seva_from": "ಆರಂಭ",
   "seva_offer": "ಸೇವೆ ಅರ್ಪಿಸಿ",
   "seva_special": "ವಿಶೇಷ",
@@ -73,11 +73,26 @@
   "about_placeholder": "* ತಾತ್ಕಾಲಿಕ ಪರಂಪರೆ — ಪ್ರಕಟಣೆಗೆ ಮೊದಲು ದೃಢೀಕರಿಸಬೇಕು.",
   "sevas_label": "ನಿಮ್ಮ ಭಕ್ತಿ ಅರ್ಪಿಸಿ",
   "sevas_title": "ಸೇವೆಗಳು ಮತ್ತು ದೇಣಿಗೆ",
-  "sevas_subtitle": "ಭಗವಂತನ ಮೇಲಿನ ಪ್ರೀತಿ ವ್ಯಕ್ತಪಡಿಸಲು 97 ಮಾರ್ಗಗಳು — ಹೂವಿನ ಅರ್ಚನೆಯಿಂದ ಸಾವಿರಾರು ಜನರಿಗೆ ಅನ್ನದಾನದವರೆಗೆ.",
+  "sevas_subtitle": "ಸ್ವಯಂಸೇವೆ, ನಿತ್ಯ ಪೂಜೆ ಮತ್ತು ಸಾವಿರಾರು ಜನರಿಗೆ ಅನ್ನದಾನದ ಮೂಲಕ ಭಗವಂತನ ಮೇಲಿನ ಪ್ರೀತಿಯನ್ನು ವ್ಯಕ್ತಪಡಿಸಿ.",
   "sevas_search": "ಸೇವೆ ಹುಡುಕಿ…",
   "sevas_showing_template": "{total}ರಲ್ಲಿ {n} ಸೇವೆಗಳು ತೋರಿಸಲಾಗುತ್ತಿದೆ",
   "sevas_empty_title": "ಯಾವ ಸೇವೆಯೂ ಕಂಡುಬಂದಿಲ್ಲ",
   "sevas_empty_sub": "ಬೇರೆ ವರ್ಗ ಆಯ್ಕೆ ಮಾಡಿ ಅಥವಾ ಹುಡುಕಾಟ ತೆರವು ಮಾಡಿ.",
+  "sevas_featured_label": "ವಿಶೇಷ ಸೇವೆಗಳು",
+  "sevas_featured_title": "ಸೇವೆಯ ಮಾರ್ಗಗಳು",
+  "sevas_all_title": "ಎಲ್ಲ ಸೇವೆಗಳು",
+  "sevas_filter_category": "ವರ್ಗ",
+  "sevas_all_categories": "ಎಲ್ಲ ವರ್ಗಗಳು",
+  "sevas_clear_filters": "ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ",
+  "sevas_results_template": "{n} ಸೇವೆಗಳು",
+  "sevas_any_amount": "₹ --",
+  "sevas_deity": "ದೇವರು",
+  "sevas_sannidhi": "ಸನ್ನಿಧಿ",
+  "sevas_location": "ಸ್ಥಳ",
+  "sevas_description": "ವಿವರಣೆ",
+  "sevas_significance": "ಧಾರ್ಮಿಕ ಮಹತ್ವ ಮತ್ತು ಫಲಶ್ರುತಿ",
+  "sevas_offer": "ಈ ಸೇವೆಯನ್ನು ಸಮರ್ಪಿಸಿ",
+  "sevas_close": "ಸೇವೆಯ ವಿವರಗಳನ್ನು ಮುಚ್ಚಿ",
   "events_label": "ದಿನದರ್ಶಿ",
   "events_title": "ಕಾರ್ಯಕ್ರಮಗಳು",
   "events_subtitle": "ಹಬ್ಬಗಳು, ಉತ್ಸವಗಳು, ಪಾರಾಯಣ ಮತ್ತು ಹೆಚ್ಚಿನವು — ಪರ್ಯಾಯ 2026–2028ರ ಜೀವಂತ ಲಯ.",
@@ -110,28 +125,7 @@
     {
       "key": "seva",
       "label": "ಸೇವೆ",
-      "children": [
-        {
-          "key": "seva-donations",
-          "label": "ದೇಣಿಗೆ",
-          "href": "/seva/donations"
-        },
-        {
-          "key": "seva-volunteer",
-          "label": "ಸ್ವಯಂಸೇವಕ ನೋಂದಣಿ",
-          "href": "/volunteer"
-        },
-        {
-          "key": "seva-top",
-          "label": "ಟಾಪ್ 4 ವಿಶೇಷ ಸೇವೆಗಳು",
-          "href": "/sevas"
-        },
-        {
-          "key": "seva-all",
-          "label": "ಎಲ್ಲ ಸೇವೆಗಳ ಪಟ್ಟಿ",
-          "href": "/seva/all-sevas"
-        }
-      ]
+      "href": "/sevas"
     },
     {
       "key": "events",
@@ -537,7 +531,7 @@
             ],
             "link": {
               "label": "ಎಲ್ಲ ಸೇವೆಗಳನ್ನು ನೋಡಿ",
-              "href": "/seva/all-sevas"
+              "href": "/sevas"
             }
           }
         },
@@ -566,7 +560,7 @@
             ],
             "link": {
               "label": "ಎಲ್ಲ ಸೇವೆಗಳನ್ನು ನೋಡಿ",
-              "href": "/seva/all-sevas"
+              "href": "/sevas"
             }
           }
         },
@@ -1059,6 +1053,27 @@
     "phone": "+91 820 252 0598",
     "email": "contact@shiroormatha.org",
     "hours": "ದರ್ಶನ · ಬೆಳಿಗ್ಗೆ 5:00 – ರಾತ್ರಿ 9:00"
+  },
+  "connect_page": {
+    "title": "ಮಠದೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ",
+    "intro": "ಶಾಖೆಗೆ ಭೇಟಿ ನೀಡಿ, ದಾರಿ ತಿಳಿಯಿರಿ ಅಥವಾ ಶ್ರೀ ಶೀರೂರು ಮಠದ ಅಧಿಕೃತ ಸಾಮಾಜಿಕ ಮಾಧ್ಯಮದೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ.",
+    "branches_title": "ನಮ್ಮ ಶಾಖೆಗಳು",
+    "branches_intro": "ಸಂಪೂರ್ಣ ವಿವರ, ಸಂಪರ್ಕ ಮಾಹಿತಿ ಮತ್ತು ಸ್ಥಳವನ್ನು ನೋಡಲು ಶಾಖೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+    "view_details": "ಶಾಖೆಯ ವಿವರ ನೋಡಿ",
+    "branch_type": "ಶಾಖೆಯ ಪ್ರಕಾರ",
+    "address": "ವಿಳಾಸ",
+    "timings": "ದರ್ಶನ ಸಮಯ",
+    "contact": "ಸಂಪರ್ಕ",
+    "phone": "ದೂರವಾಣಿ",
+    "email": "ಇಮೇಲ್",
+    "deity": "ಮುಖ್ಯ ದೇವರು",
+    "close": "ಶಾಖೆಯ ವಿವರ ಮುಚ್ಚಿ",
+    "map_title": "ನಕ್ಷೆ ಮತ್ತು ದಿಕ್ಕುಗಳು",
+    "open_google_maps": "Google Maps ನಲ್ಲಿ ತೆರೆಯಿರಿ",
+    "directions": "ದಾರಿ ಪಡೆಯಿರಿ",
+    "connect_title": "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ",
+    "connect_intro": "ನವೀಕರಣಗಳು, ನೇರ ಕಾರ್ಯಕ್ರಮಗಳು ಮತ್ತು ಪವಿತ್ರ ಬೋಧನೆಗಳಿಗಾಗಿ ನಮ್ಮ ಆಧ್ಯಾತ್ಮಿಕ ಸಮುದಾಯಕ್ಕೆ ಸೇರಿ.",
+    "audience": "ಅನುಯಾಯಿಗಳು"
   },
   "events_exact": {
     "search_placeholder": "ಕಾರ್ಯಕ್ರಮಗಳು, ಕಲಾವಿದರು, ದಿನಾಂಕಗಳು ಹುಡುಕಿ...",

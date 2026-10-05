@@ -261,7 +261,7 @@ export default function EventsExact() {
 
       {/* Events List */}
       {(!isPastTab || !loadingPast) && filteredEvents.length > 0 && (
-        <div className="flex flex-col gap-4 mt-4">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredEvents.map((item: EventItem) => {
             const title = isKn ? item.title?.kn : item.title?.en;
             const displayDate = isKn ? item.displayDate?.kn : item.displayDate?.en;
@@ -283,16 +283,16 @@ export default function EventsExact() {
                     setSelectedEvent(item);
                   }
                 }}
-                className="bg-white rounded-2xl border border-[var(--color-line)] hover:border-[var(--color-saffron-600)] shadow-sm hover:shadow-md cursor-pointer transition-all overflow-hidden"
+                className="bg-white rounded-xl border border-[var(--color-line)] hover:border-[var(--color-saffron-600)] shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all overflow-hidden"
               >
-                <div className="flex flex-col sm:flex-row gap-4 p-4">
+                <div className="flex h-full flex-col">
                   {/* Event Thumbnail */}
-                  <div className="relative w-full sm:w-[170px] h-[170px] shrink-0 rounded-xl overflow-hidden bg-[var(--color-cream-soft)]">
+                  <div className="relative h-44 w-full shrink-0 overflow-hidden bg-[var(--color-cream-soft)]">
                     <Image
                       src={imgUrl}
                       alt=""
                       fill
-                      sizes="(max-width: 640px) 100vw, 170px"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover"
                     />
                     {item.categories?.[0] && (
@@ -303,7 +303,7 @@ export default function EventsExact() {
                   </div>
 
                   {/* Main Event Info */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
                     <div>
                       {/* Meta badges */}
                       <div className="flex flex-wrap items-center gap-2 mb-1.5 text-xs text-[var(--color-text-secondary)]">
@@ -318,9 +318,9 @@ export default function EventsExact() {
                           </span>
                         )}
                         {location && (
-                          <span className="inline-flex items-center gap-1 text-[var(--color-text-muted)] truncate max-w-[200px]">
+                          <span className="inline-flex min-w-0 items-center gap-1 text-[var(--color-text-muted)]">
                             <MapPin size={13} />
-                            {location}
+                            <span className="truncate">{location}</span>
                           </span>
                         )}
                       </div>

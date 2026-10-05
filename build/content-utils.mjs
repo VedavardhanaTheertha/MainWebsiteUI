@@ -1,7 +1,27 @@
 import path from "node:path";
+import yaml from "js-yaml";
 
-export function removeSearchTags(markdown) {
-  return markdown.replace(/\r?\n##\s+Search Tags\s*[\s\S]*$/iu, "").trim();
+export function parseMarkdownFrontmatter(markdown, sourceName) {
+  const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
+  if (!match) {
+    throw new Error(`${sourceName} must begin with YAML front matter.`);
+  }
+
+  let metadata;
+  try {
+    metadata = yaml.load(match[1]);
+  } catch (error) {
+    throw new Error(`Invalid YAML front matter in ${sourceName}: ${error.message}`, { cause: error });
+  }
+
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    throw new Error(`${sourceName} front matter must be a YAML object.`);
+  }
+
+  return {
+    metadata,
+    body: match[2].trim(),
+  };
 }
 
 export function toTitleCase(filename) {
@@ -15,20 +35,19 @@ export function toTitleCase(filename) {
 }
 
 export function splitSongContent(markdown, song = {}) {
-  const cleanMarkdown = removeSearchTags(markdown);
   const titleEn = song.titleEn || song["title-en"] || toTitleCase(song.sourceFile || "") || song.title || "";
-  const knMatch = cleanMarkdown.match(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ\s*\r?\n([\s\S]*?)(?=##\s*Lyrics transliterated to english|$)/i);
-  const enMatch = cleanMarkdown.match(/##\s*Lyrics transliterated to english\s*\r?\n([\s\S]*?)(?=##\s*Search Tags|$)/i);
+  const knMatch = markdown.match(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ\s*\r?\n([\s\S]*?)(?=##\s*Lyrics transliterated to english|$)/i);
+  const enMatch = markdown.match(/##\s*Lyrics transliterated to english\s*\r?\n([\s\S]*?)$/i);
 
   if (!knMatch || !enMatch) {
     return {
-      knMarkdown: cleanMarkdown,
-      enMarkdown: cleanMarkdown,
+      knMarkdown: markdown,
+      enMarkdown: markdown,
       titleEn,
     };
   }
 
-  const header = cleanMarkdown.slice(0, cleanMarkdown.search(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ/i)).trim();
+  const header = markdown.slice(0, markdown.search(/##\s*ಕನ್ನಡ\s*ಸಾಹಿತ್ಯ/i)).trim();
   const lines = header.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   const titleLine = lines[0] || (`# ${song.titleKn || song.title || ""}`);
   const metaLines = lines.slice(1);
@@ -56,18 +75,14 @@ export function assertSafeSourceFile(sourceFile) {
   }
 }
 
-export function validateMetadata(metadata, tabId) {
-  if (!metadata || !Array.isArray(metadata.songs)) {
-    throw new Error(`${tabId}/metadata.json must contain a songs array.`);
-  }
-
+export function validateSongs(songs, collectionId) {
   const ids = new Set();
-  for (const song of metadata.songs) {
+  for (const song of songs) {
     if (!song.id || !song.title || !song.sourceFile) {
-      throw new Error(`${tabId} contains a song without id, title, or sourceFile.`);
+      throw new Error(`${collectionId} contains a song without id, title, or sourceFile.`);
     }
     if (ids.has(song.id)) {
-      throw new Error(`${tabId} contains duplicate id: ${song.id}`);
+      throw new Error(`${collectionId} contains duplicate id: ${song.id}`);
     }
     assertSafeSourceFile(song.sourceFile);
     ids.add(song.id);
@@ -84,7 +99,7 @@ export function normalizeSearchText(value) {
     .trim();
 }
 
-export function buildSearchText(song) {
+export function buildSearchText(song, contentMarkdown = []) {
   const titleEn = song.titleEn || song["title-en"] || toTitleCase(song.sourceFile || "");
   const parts = [
     song.title,
@@ -93,7 +108,7 @@ export function buildSearchText(song) {
     song["kruti-kn"] ?? song.krutiKn ?? "",
     song.ankita ?? "",
     song["ankita-kn"] ?? song.ankitaKn ?? "",
-    ...(Array.isArray(song.searchTags) ? song.searchTags : []),
+    ...contentMarkdown,
   ];
 
   const normalized = normalizeSearchText(parts.join(" "));

@@ -1,4 +1,4 @@
-import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,11 +6,12 @@ import MiniSearch from "minisearch";
 import { collection } from "./collection.config.mjs";
 import {
   buildSearchText,
-  removeSearchTags,
+  parseMarkdownFrontmatter,
   splitSongContent,
-  validateMetadata,
+  validateSongs,
 } from "./content-utils.mjs";
 import { renderMarkdown } from "./markdown.mjs";
+import { withSearchDefaults } from "./search-config.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const libraryRoot = path.join(projectRoot, "library");
@@ -25,31 +26,45 @@ async function buildCollection({ id, sourceDirectory }) {
   await mkdir(collectionOutput, { recursive: true });
 
   const sourceRoot = path.join(libraryRoot, sourceDirectory);
-  const metadataPath = path.join(sourceRoot, "metadata.json");
+  let sourceFiles;
   try {
-    await access(metadataPath);
-  } catch {
+    sourceFiles = (await readdir(sourceRoot))
+      .filter((file) => path.extname(file).toLowerCase() === ".md")
+      .sort();
+  } catch (error) {
     throw new Error(
-      `Required library content is missing at ${path.relative(projectRoot, metadataPath)}. ` +
+      `Required library content is missing at ${path.relative(projectRoot, sourceRoot)}. ` +
         "Initialize submodules with: git submodule update --init --recursive",
+      { cause: error },
     );
   }
 
-  const metadata = JSON.parse(await readFile(metadataPath, "utf8"));
-  validateMetadata(metadata, id);
+  if (sourceFiles.length === 0) {
+    throw new Error(`${path.relative(projectRoot, sourceRoot)} contains no Markdown files.`);
+  }
+
+  const songs = await Promise.all(sourceFiles.map(async (sourceFile) => {
+    const sourcePath = path.join(sourceRoot, sourceFile);
+    const source = await readFile(sourcePath, "utf8");
+    const { metadata, body } = parseMarkdownFrontmatter(source, path.relative(projectRoot, sourcePath));
+    if (metadata.sourceFile !== sourceFile) {
+      throw new Error(
+        `${path.relative(projectRoot, sourcePath)} front matter sourceFile must equal ${sourceFile}.`,
+      );
+    }
+    return { ...metadata, sourceFile, body };
+  }));
+  validateSongs(songs, id);
 
   const contentOutput = path.join(collectionOutput, "content");
   await mkdir(contentOutput, { recursive: true });
 
   const catalog = [];
   const loaders = [];
-  for (const song of metadata.songs) {
-    const sourcePath = path.join(sourceRoot, song.sourceFile);
-    const source = await readFile(sourcePath, "utf8");
-    const cleanSource = removeSearchTags(source);
-    const { knMarkdown, enMarkdown, titleEn } = splitSongContent(cleanSource, song);
+  for (const song of songs) {
+    const { knMarkdown, enMarkdown, titleEn } = splitSongContent(song.body, song);
 
-    const html = renderMarkdown(cleanSource);
+    const html = renderMarkdown(song.body);
     const htmlKn = renderMarkdown(knMarkdown);
     const htmlEn = renderMarkdown(enMarkdown);
 
@@ -75,12 +90,12 @@ async function buildCollection({ id, sourceDirectory }) {
       krutiKn: song["kruti-kn"] ?? "",
       ankita: song.ankita ?? "",
       ankitaKn: song["ankita-kn"] ?? "",
-      searchText: buildSearchText({ ...song, titleEn }),
+      searchText: buildSearchText({ ...song, titleEn }, [knMarkdown, enMarkdown]),
       contentFile,
     });
   }
 
-  const searchIndex = new MiniSearch({
+  const searchIndex = new MiniSearch(withSearchDefaults({
     idField: "__search_id",
     fields: [
       "title",
@@ -90,13 +105,9 @@ async function buildCollection({ id, sourceDirectory }) {
       "krutiKn",
       "ankita",
       "ankitaKn",
-      "searchTags",
       "searchText",
     ],
     extractField: (item, field) => {
-      if (field === "searchTags" && Array.isArray(item.searchTags)) {
-        return item.searchTags.join(" ");
-      }
       const val = item[field];
       return val != null ? String(val) : "";
     },
@@ -110,11 +121,8 @@ async function buildCollection({ id, sourceDirectory }) {
         kruti: 1.5,
         krutiKn: 1.5,
       },
-      prefix: true,
-      fuzzy: (term) => (term.length > 3 ? 0.2 : false),
-      combineWith: "AND",
     },
-  });
+  }));
 
   const docs = catalog.map((item, idx) => ({ ...item, __search_id: idx }));
   searchIndex.addAll(docs);
@@ -144,7 +152,7 @@ ${loaders.join("\n")}
   await writeFile(path.join(collectionOutput, "loaders.ts"), loadersCode, "utf8");
   await writeFile(
     path.join(collectionOutput, "index.json"),
-    `${JSON.stringify({ schemaVersion: metadata.schemaVersion, items: catalog })}\n`,
+    `${JSON.stringify({ schemaVersion: "1.0", items: catalog })}\n`,
     "utf8",
   );
 
@@ -162,4 +170,3 @@ await mkdir(dataRoot, { recursive: true });
 
 const itemCount = await buildCollection(collection);
 console.log(`Built ${itemCount} items for ${collection.id}.`);
-

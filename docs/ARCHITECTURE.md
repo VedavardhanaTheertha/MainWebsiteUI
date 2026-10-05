@@ -101,9 +101,11 @@ Shirooru/
 │
 ├── settings/
 │   ├── dev/
-│   │   └── images.json          ← independent development image map
+│   │   ├── images.json          ← independent development image map
+│   │   └── topsevas.json        ← ordered featured Seva IDs
 │   └── prod/
-│       └── images.json          ← independent production image map
+│       ├── images.json          ← independent production image map
+│       └── topsevas.json        ← ordered featured Seva IDs
 │
 ├── docs/
 │   ├── ARCHITECTURE.md         ← this file — the design contract
@@ -128,6 +130,7 @@ Shirooru/
 │       ├── content.ts          ← environment-resolved site and article content
 │       ├── hero-images/        ← standalone HTML rendering of the home hero carousel
 │       ├── parampara/          ← lineage data module and standalone interactive HTML
+│       ├── connect/            ← generated branch and connection-channel data
 │       ├── bhakti/             ← generated devotional collection
 │       ├── sevas/              ← generated sevas collection
 │       └── events/             ← generated events collection and standalone HTML pages
@@ -135,13 +138,15 @@ Shirooru/
 ├── public/                     ← existing static assets served from the site root
 │   ├── articles/               ← consistent location for new article media
 │   └── slide/                  ← existing legacy image collection
-├── library/                    ← required content submodule (Bhakti, hero, Parampara, and Events)
+├── library/                    ← required content submodule
+│   ├── branches/               ← bilingual branch front matter and detailed Markdown
+│   ├── connect/                ← official connection-channel Markdown records
 │   ├── dasasahitya/            ← devotional source collection
 │   ├── parampara/              ← indexed Guru Parampara Markdown entries
 │   ├── hero/                   ← environment-specific hero groups
 │   │   ├── dev/                ← development and local hero sources
 │   │   └── prod/               ← production hero sources
-│   ├── sevas/                  ← indexed sevas entries
+│   ├── sevas/                  ← bilingual Seva metadata and complete Markdown details
 │   └── events/                 ← event Markdown entries (top-level only)
 ├── test_media/                 ← recursively initialized media submodule
 │
@@ -251,10 +256,12 @@ must be optimized before review and recorded in `ASSET_PROVENANCE.md`.
 
 ### 5.4 Bhakti collection
 
-`build/build-bhakti-content.mjs` converts the Markdown and metadata from the library submodule's
-`dasasahitya` source directory into `src/gen/bhakti/`. The site has one Bhakti collection, so no
-tab manifest is generated. `src/gen/` is disposable, Gitignored build output and is recreated before
-development and production builds. Its page labels, controls, and metadata are stored under
+`build/build-bhakti-content.mjs` discovers Markdown files in the library submodule's
+`dasasahitya` source directory and reads each song's YAML front matter as its metadata source,
+then converts the content into `src/gen/bhakti/`. There is no separate collection metadata file.
+The site has one Bhakti collection, so no tab manifest is generated. `src/gen/` is disposable,
+Gitignored build output and is recreated before development and production builds. Its page labels,
+controls, and metadata are stored under
 `library.bhakti.page` in each `content/languages/<lang>.json` file and follow the same fallback
 and placeholder rules as the rest of the website UI. The collection is exposed through
 `/library/bhakti`; there is no separate Dasa Sahitya navigation item or route.
@@ -265,10 +272,12 @@ The collection supports multi-language display (Kannada and English) driven dire
 existing language switcher in the site header (`useLang().lang`):
 1. **Build-Time Index Creation & Compression**: `src/gen/bhakti/index.json` stores lightweight song metadata
    including Kannada titles (`titleKn`), transliterated English titles (`titleEn`), author/ankita
-   attributes in both scripts, and pre-tokenized, normalized search haystacks (`searchText`).
+   attributes in both scripts, and pre-tokenized, normalized search haystacks (`searchText`) built
+   from the complete Kannada and transliterated English song text. Authors do not maintain separate
+   search tags.
    `build/build-bhakti-content.mjs` pre-builds a complete `MiniSearch` index at build time with field
    weights (titles 3x, ankitas 2x, authors 1.5x) and serializes it to a gzip-compressed payload in
-   `src/gen/bhakti/search-index.ts` (~6 KB). This index chunk is lazy loaded on demand (on idle or search focus)
+   `src/gen/bhakti/search-index.ts`. This index chunk is lazy loaded on demand (on idle or search focus)
    and decompressed in the browser via native `DecompressionStream("gzip")`, eliminating runtime indexing overhead
    and keeping initial page load small.
 2. **Lazy-Loaded Language Chunks**: Songs are split into individual modules under
@@ -312,15 +321,51 @@ translations can add `index.<lang>.json` and/or `<content-file-stem>.<lang>.md`;
 data and both interfaces already select the active language through `useLang()` and the
 `shiroor-lang` browser event contract.
 
+#### Connect and branch collections
+
+`library/branches/*.md` supplies bilingual branch summaries, contact information,
+coordinates, and detailed Markdown. `library/connect/*.md` supplies official connection
+channels, handles, optional audience figures, URLs, brand colours, and local icon paths. `generate-content.mjs`
+discovers and validates both directories, sanitizes branch details, applies the normal
+environment placeholder policy, and writes `src/gen/connect/data.ts`.
+
+The statically exported `/connect` route renders every branch summary and connection
+channel in its initial HTML. Selecting a branch hydrates a client-side details dialog
+containing localized content, an embedded coordinate-based map, an external Google Maps
+link, and a Google Maps directions link. Connection cards are ordinary external links.
+
+The statically exported `/sevas` route is the only Seva navigation destination. The
+build discovers all Markdown records under `library/sevas/`, generates typed client data,
+and selects featured tiles in the order configured by
+`settings/<env>/topsevas.json`. Local builds use the development setting. A missing or
+empty setting falls back to Kanike, Donations, and Volunteer Sign-up. The page provides
+category filtering, shared MiniSearch behavior, and a sanitized details
+dialog. The generator stores independently sanitized English and Kannada guideline HTML,
+so the dialog immediately renders only the active language. Its booking action remains
+visible below the scrolling details and opens the record's `booking_url` in a new tab.
+Development exports use generated placeholder Seva fields and links so real library prose
+and brand terms cannot leak into non-production HTML; local and production exports use the
+Markdown values.
+
+The statically exported `/events` route uses the same centered `max-w-7xl` page rhythm
+as the Seva and Connect experiences. Upcoming, recurring, and catalog sections render as
+responsive three-column desktop card grids and collapse to touch-friendly mobile layouts.
+
 ### 5.7 Full-text search with MiniSearch and build-time compression
 
 Client-side searching across the website is unified through `minisearch` via `src/lib/search.ts`
 and React hooks in `src/hooks/useMiniSearch.ts`:
+- **Mandatory Shared Defaults**:
+  - Every search UI must use `useMiniSearch` or `useLazyMiniSearch`; it must not construct
+    `MiniSearch` directly or implement a separate substring filter.
+  - Every build-time index must use `withSearchDefaults` from `build/search-config.mjs`.
+    This is the default contract for future search features as well as current ones.
 - **Build-Time Indexing and Gzip Compression**:
   - **Dasasahitya (`BhaktiBrowser.tsx`)**: The full bilingual index is compiled at build time by
     `build/build-bhakti-content.mjs`, serialized, and compressed with gzip into `src/gen/bhakti/search-index.ts`.
-  - **Sevas (`SevasBrowser.tsx` & `AllSevaBrowser.tsx`)**: All 97 sevas are indexed and gzip-compressed
-    at build time by `build/build-sevas-content.mjs` into `src/gen/sevas/search-index.ts`.
+  - **Sevas (`SevasBrowser.tsx`)**: Every `library/sevas/*.md` file is validated and
+    generated into `src/gen/sevas/data.ts`; its full bilingual metadata and Markdown
+    body are indexed and gzip-compressed into `src/gen/sevas/search-index.ts`.
   - **Events (`EventsExact.tsx`)**: All events from `library/events/*.md` are indexed and gzip-compressed
     at build time by `build/build-events-content.mjs` into `src/gen/events/search-index.ts`.
 - **Streaming Lazy Loading (`useLazyMiniSearch`)**:
@@ -332,7 +377,8 @@ and React hooks in `src/hooks/useMiniSearch.ts`:
 - **In-Memory Local Search (`MediaGrid.tsx`)**:
   - Media photo and video catalogs are localized and indexed on the client with lightweight in-memory MiniSearch.
 - **Search Quality**:
-  - Prefix matching (`prefix: true`) as users type.
+  - Infix matching expands indexed terms into suffixes and combines that with MiniSearch prefix
+    matching, so a query can begin anywhere within a word.
   - Adaptive fuzzy matching (`fuzzy: (term) => (term.length > 3 ? 0.2 : false)`) tolerating typos.
   - Automatic fallback from `AND` to `OR` combinations on multi-word queries.
 
@@ -468,6 +514,8 @@ the visitor's selected mode.
 content/languages/*.json ─┐
 content/blog/*/          ─┤
 library/parampara/*      ─┤
+library/branches/*.md    ─┤
+library/connect/*.md     ─┤
 library/hero/<env>/*.hero.json ─┼─→ generate-content.mjs → src/gen/ → next build → out/
 config/site.yml          ─┘            ↑                                    │
                                    SITE_ENV                                 ↓
@@ -488,6 +536,9 @@ The generator performs the following jobs:
 7. **Discovers Guru Parampara entries** from `library/parampara/`, validates and parses
   Markdown, applies language fallback and environment placeholders, and renders the
   generated data module plus standalone interactive HTML.
+8. **Discovers branches and connection channels** from `library/branches/*.md` and
+  `library/connect/*.md`, validates required fields and secure links, sanitizes branch
+  details, applies environment placeholders, and emits `src/gen/connect/data.ts`.
 
 After Next.js exports the site, `write-canonicals.mjs` maps each HTML output path back
 to its public route and writes the corresponding URL under `site.production_url`. This

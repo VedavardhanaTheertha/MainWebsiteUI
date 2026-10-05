@@ -141,6 +141,8 @@ src/context/   LanguageContext.tsx — the useLang() provider (see §8)
 src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
 library/       required submodule → WebsiteLibrary (Bhakti, hero, and Parampara content)
+  branches/    branch summaries, contacts, coordinates, maps, and detailed Markdown
+  connect/     official social and connection-channel Markdown records
   hero/dev/    development and local hero groups; default.hero.json is selected
   hero/prod/   production hero groups; default.hero.json is selected
   parampara/   index.json plus one Markdown file per guru
@@ -163,6 +165,12 @@ CI runs the scripts under `build/`; developers can run the same pipeline locally
 | `markdown.mjs` | Parses and sanitizes blog and Bhakti Markdown |
 | `write-canonicals.mjs` | Derives each page's production canonical from its exported HTML path |
 | `verify.mjs` | Checks the built output before it is published |
+
+Search features must use the shared MiniSearch implementation. Client components use
+`useMiniSearch` or `useLazyMiniSearch` from `src/hooks/useMiniSearch.ts`; build-time indexes
+use `withSearchDefaults` from `build/search-config.mjs`. Do not add direct `MiniSearch`
+instances or ad hoc text filters. These shared defaults provide prefix, anywhere-in-word,
+and adaptive fuzzy matching consistently.
 
 ### Why build logic lives outside CI
 
@@ -202,6 +210,11 @@ It defaults to `dev` when unset — showing real content is an explicit opt-in, 
 the default. `npm run build:dev` / `build:prod` set it for you via their `node
 build/build.mjs <env>` argument; set it yourself only when running `next dev` or
 `next build` directly.
+
+Seva generation reads `settings/<env>/topsevas.json`; the `local` environment uses
+the development setting. Set `seva_ids` to an ordered array of IDs from
+`library/sevas/*.md`. Missing or empty configuration falls back to Kanike, Donations,
+and Volunteer Sign-up.
 
 The equivalent direct invocation is:
 

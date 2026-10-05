@@ -1,178 +1,297 @@
 "use client";
 
-import { useState, useMemo, useId } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
-import { sevas } from "@/data/sevas";
-import { imagePaths } from "@/lib/images";
-import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
+import { Search, X } from "lucide-react";
+import { useLang } from "@/context/LanguageContext";
+import { featuredSevaIds, sevas, type LocalizedSevaText, type SevaRecord } from "@/gen/sevas/data";
 import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
+import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 
-const categoryImg: Record<string, string> = {
-  "Krishna Sannidhi":     imagePaths.krishna,
-  "Mukhyaprana Sannidhi": imagePaths.kraj0615,
-  "Garuda Deva Sannidhi": imagePaths.vittala,
-  "Bhojana Shala":        imagePaths.kraj0835,
-  "Bhageerathi":          imagePaths.shiroorMutt,
-  "Navagraha":            imagePaths.chakra,
-  "Subrahmanya":          imagePaths.lordVitthala,
-  "Special":              imagePaths.swamiji,
-  "Other":                imagePaths.mainLogo,
-};
+function localized(value: LocalizedSevaText, lang: string) {
+  return value[lang as keyof LocalizedSevaText] || value.en;
+}
 
-const specialSevas = sevas.filter((s) => s.isSpecial);
-const nityaSevas  = sevas.filter((s) => s.category === "Krishna Sannidhi");
-const allSevas    = sevas;
+function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
+  if (seva.amount <= 0) return anyAmount;
+  const configured = localized(seva.formattedAmount, lang);
+  return configured || new Intl.NumberFormat(lang === "kn" ? "kn-IN" : "en-IN", {
+    style: "currency",
+    currency: seva.currency,
+    maximumFractionDigits: 0,
+  }).format(seva.amount);
+}
 
-function SevaCard({ seva, onOffer }: { seva: typeof sevas[0]; onOffer: () => void }) {
-  const img = categoryImg[seva.category] ?? imagePaths.mainLogo;
+function SevaImage({ title, featured = false }: { title: string; featured?: boolean }) {
   return (
-    <article className="bg-white p-4 flex flex-col gap-2 border border-[var(--color-saffron-600)] shadow-sm hover:shadow-md transition-all duration-200">
-      <div className="flex items-start gap-3">
-        {/* Small circular category photo */}
-        <div className="shrink-0 w-11 h-11 overflow-hidden">
-          <Image src={img} alt={seva.category} width={44} height={44}
-            className="w-full h-full object-cover" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-1">
-            <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60">{seva.category}</p>
-            {seva.isSpecial && (
-              <span className="font-body text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 shrink-0 bg-[var(--color-paper)]" style={{color: "var(--color-text-primary)"}}>
-                Special
-              </span>
-            )}
-          </div>
-          <h3 className="font-display font-semibold text-[var(--color-text-primary)] text-[13px] leading-tight">{seva.name}</h3>
-        </div>
-      </div>
-      <p className="font-body text-[var(--color-text-secondary)] text-xs leading-relaxed line-clamp-2">{seva.significance}</p>
-      <div className="flex items-center justify-between pt-2 border-t border-[var(--color-saffron-600)]">
-        <span className="font-body text-sm font-semibold text-[var(--color-text-primary)]">₹{seva.price.toLocaleString("en-IN")}</span>
-        <button
-          onClick={onOffer}
-          className="font-body text-xs font-semibold text-white bg-[var(--color-saffron-600)] hover:bg-[var(--color-saffron-700)] px-4 py-1.5 transition-colors"
-        >
-          Offer Seva
-        </button>
-      </div>
-    </article>
+    <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
+      <Image
+        src="/icons/seva-placeholder.svg"
+        alt=""
+        fill
+        sizes={featured ? "(max-width: 768px) 85vw, 33vw" : "80px"}
+        className="object-cover"
+      />
+      <span className="sr-only">{title}</span>
+    </div>
   );
 }
 
-function SevaSection({ title, items, defaultOpen = false }: { title: string; items: typeof sevas; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
-  const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? items : items.slice(0, 4);
+function SevaCard({
+  seva,
+  lang,
+  anyAmount,
+  onOpen,
+}: {
+  seva: SevaRecord;
+  lang: string;
+  anyAmount: string;
+  onOpen: () => void;
+}) {
+  const title = localized(seva.title, lang);
+  const amount = amountLabel(seva, lang, anyAmount);
 
   return (
-    <div className="mb-3">
-      {/* Section header */}
-      <button
-        onClick={() => { setOpen((o) => !o); setShowAll(false); }}
-        className="w-full flex items-center justify-between bg-white rounded-2xl px-4 py-3.5 shadow-sm border border-[var(--color-saffron-600)]"
-      >
-        <div className="flex items-center gap-2">
-          <span className="font-display font-bold text-[var(--color-text-primary)] text-base">{title}</span>
-          <span className="font-body text-[11px] text-[var(--color-text-primary)] bg-[#8FDDDF] rounded-full px-2 py-0.5">{items.length}</span>
+    <button
+      type="button"
+      onClick={onOpen}
+      className="w-full bg-white border border-[var(--color-saffron-600)] rounded-xl p-3 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+    >
+      <div className="flex items-center gap-3">
+        <SevaImage title={title} />
+        <div className="min-w-0 flex-1">
+          <h3 className="font-display font-semibold text-[var(--color-text-primary)] leading-snug">{title}</h3>
+          <p className="mt-1 text-xs text-[var(--color-text-secondary)] line-clamp-1">{localized(seva.deity, lang)}</p>
+          {amount && <p className="mt-2 font-body font-bold text-[var(--color-text-brand)]">{amount}</p>}
         </div>
-        {open
-          ? <ChevronUp size={18} className="text-[var(--color-text-brand)]" />
-          : <ChevronDown size={18} className="text-[var(--color-text-brand)]" />}
-      </button>
+      </div>
+    </button>
+  );
+}
 
-      {/* Cards — only shown when open */}
-      {open && (
-        <>
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {visible.map((seva) => (
-              <SevaCard
-                key={seva.id}
-                seva={seva}
-                onOffer={() => alert(`Seva booking for "${seva.name}" — payment integration coming soon.`)}
-              />
-            ))}
+function SevaModal({
+  seva,
+  lang,
+  onClose,
+}: {
+  seva: SevaRecord;
+  lang: string;
+  onClose: () => void;
+}) {
+  const { tr } = useLang();
+  const title = localized(seva.title, lang);
+  const amount = amountLabel(seva, lang, tr.sevas_any_amount);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-end justify-center bg-[var(--color-ink-900)]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="seva-dialog-title"
+      onClick={onClose}
+    >
+      <div
+        className="relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={tr.sevas_close}
+          className="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2 text-[var(--color-text-primary)] shadow"
+        >
+          <X size={20} />
+        </button>
+        <div className="overflow-y-auto">
+          <SevaImage title={title} featured />
+          <div className="p-5 sm:p-7">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
+              {localized(seva.category, lang)}
+            </p>
+            <h2 id="seva-dialog-title" className="mt-1 font-display text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
+              {title}
+            </h2>
+            {amount && <p className="mt-2 text-xl font-bold text-[var(--color-text-brand)]">{amount}</p>}
+
+            <dl className="mt-5 grid gap-3 rounded-xl bg-[var(--color-parchment)] p-4 sm:grid-cols-2">
+              <div>
+                <dt className="text-xs font-semibold text-[var(--color-text-secondary)]">{tr.sevas_deity}</dt>
+                <dd className="mt-1 text-sm text-[var(--color-text-primary)]">{localized(seva.deity, lang)}</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold text-[var(--color-text-secondary)]">{tr.sevas_sannidhi}</dt>
+                <dd className="mt-1 text-sm text-[var(--color-text-primary)]">{localized(seva.sannidhi, lang)}</dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-xs font-semibold text-[var(--color-text-secondary)]">{tr.sevas_location}</dt>
+                <dd className="mt-1 text-sm text-[var(--color-text-primary)]">{localized(seva.location, lang)}</dd>
+              </div>
+            </dl>
+
+            <div className="mt-5">
+              <h3 className="font-display text-lg font-semibold text-[var(--color-text-primary)]">{tr.sevas_description}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
+            </div>
+            <div className="mt-4">
+              <h3 className="font-display text-lg font-semibold text-[var(--color-text-primary)]">{tr.sevas_significance}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">{localized(seva.significance, lang)}</p>
+            </div>
+
+            <div
+              className="mt-5 max-w-none border-t border-[var(--color-line)] pt-5 text-sm leading-relaxed text-[var(--color-text-secondary)] [&_h3]:mb-3 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-[var(--color-text-primary)] [&_li]:mb-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5"
+              dangerouslySetInnerHTML={{ __html: localized(seva.detailsHtml, lang) }}
+            />
+            <div className="h-3" />
           </div>
+        </div>
 
-          {items.length > 4 && (
-            <button
-              onClick={() => setShowAll((s) => !s)}
-              className="mt-3 w-full font-body text-sm text-[var(--color-text-brand)] font-semibold py-2 border border-[var(--color-saffron-600)]/30 rounded-xl hover:bg-[var(--color-saffron-100)] transition-colors"
-            >
-              {showAll ? "Show Less" : `Show All ${items.length} →`}
-            </button>
-          )}
-        </>
-      )}
+        <div className="shrink-0 border-t border-[var(--color-line)] bg-white p-4 shadow-[0_-8px_24px_rgba(60,7,83,0.08)] sm:px-7">
+          <a
+            href={seva.bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center rounded-full bg-[var(--color-saffron-600)] px-6 py-3 font-semibold text-white hover:bg-[var(--color-saffron-700)]"
+          >
+            {tr.sevas_offer}
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function SevasBrowser() {
+  const { lang, tr } = useLang();
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [query, setQuery] = useState("");
+  const [selectedSeva, setSelectedSeva] = useState<SevaRecord | null>(null);
   const searchId = useId();
 
-  const sevasSearchConfig = useMemo(
-    () => ({
-      fields: ["name", "significance", "category"],
-      boost: { name: 2, category: 1.5, significance: 1 },
-    }),
-    []
+  const featured = useMemo(
+    () => featuredSevaIds.map((id) => sevas.find((seva) => seva.id === id)).filter((seva): seva is SevaRecord => Boolean(seva)),
+    [],
   );
-
-  const { results, ensureLoaded } = useLazyMiniSearch(
+  const categories = useMemo(
+    () => Array.from(new Map(sevas.map((seva) => [seva.category.code, seva.category])).entries())
+      .sort((left, right) => localized(left[1], lang).localeCompare(localized(right[1], lang))),
+    [lang],
+  );
+  const searchConfig = useMemo(
+    () => ({ fields: ["searchText"] as (keyof SevaRecord)[], boost: { searchText: 1 } }),
+    [],
+  );
+  const { results: searchResults, ensureLoaded } = useLazyMiniSearch(
     sevas,
     query,
     loadSevasSearchIndex,
-    sevasSearchConfig
+    searchConfig,
   );
 
-  const filteredResults = query.trim() ? results : null;
+  const visibleSevas = useMemo(() => {
+    const source = query.trim() ? searchResults : sevas;
+    return source.filter((seva) => !categoryFilter || seva.category.code === categoryFilter);
+  }, [categoryFilter, query, searchResults]);
 
   return (
-    <div className="px-3 lg:px-8 pt-1 pb-8 lg:py-12" id="donate">
-      {/* Search bar */}
-      <div className="sticky top-[56px] lg:top-[64px] z-30 bg-[var(--color-parchment)]/95 backdrop-blur-sm pt-3 pb-3 mb-4">
-        <div className="relative">
-          <label htmlFor={searchId} className="sr-only">Search sevas</label>
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]/50 pointer-events-none" />
+    <>
+      <section className="bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-sevas-title">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-xs font-semibold uppercase tracking-[.2em] text-[var(--color-text-brand)]">{tr.sevas_featured_label}</p>
+          <h2 id="featured-sevas-title" className="mt-1 font-display text-2xl font-bold text-[var(--color-text-primary)]">{tr.sevas_featured_title}</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {featured.map((seva) => {
+              const title = localized(seva.title, lang);
+              const amount = amountLabel(seva, lang, tr.sevas_any_amount);
+              return (
+                <button
+                  type="button"
+                  key={seva.id}
+                  onClick={() => setSelectedSeva(seva)}
+                  className="overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <SevaImage title={title} featured />
+                  <div className="p-4">
+                    <h3 className="font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
+                    <p className="mt-1 line-clamp-2 text-sm text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
+                    {amount && <p className="mt-3 font-bold text-[var(--color-text-brand)]">{amount}</p>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12" aria-labelledby="all-sevas-title">
+        <h2 id="all-sevas-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{tr.sevas_all_title}</h2>
+
+        <div className="mt-5 rounded-xl border border-[var(--color-line)] bg-[var(--color-parchment)] p-4">
+          <label className="text-sm font-semibold text-[var(--color-text-primary)]">
+            <span className="mb-1.5 block">{tr.sevas_filter_category}</span>
+            <select
+              value={categoryFilter}
+              onChange={(event) => setCategoryFilter(event.target.value)}
+              className="w-full rounded-lg border border-[var(--color-saffron-600)] bg-white px-3 py-2.5 font-normal text-[var(--color-text-primary)] outline-none focus:ring-2 focus:ring-[var(--color-saffron-600)]/20"
+            >
+              <option value="">{tr.sevas_all_categories}</option>
+              {categories.map(([key, label]) => <option key={key} value={key}>{localized(label, lang)}</option>)}
+            </select>
+          </label>
+          {categoryFilter && (
+            <button
+              type="button"
+              onClick={() => setCategoryFilter("")}
+              className="mt-3 text-xs font-semibold text-[var(--color-text-brand)] underline"
+            >
+              {tr.sevas_clear_filters}
+            </button>
+          )}
+        </div>
+
+        <div className="relative mt-5">
+          <label htmlFor={searchId} className="sr-only">{tr.sevas_search}</label>
+          <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]" />
           <input
             id={searchId}
             type="search"
             value={query}
             onFocus={ensureLoaded}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search sevas…"
-            className="w-full bg-white border border-[var(--color-saffron-600)] rounded-full pl-10 pr-4 py-2.5 font-body text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/40 focus:outline-none focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-600)]/20 transition-all"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={tr.sevas_search}
+            className="w-full rounded-full border border-[var(--color-saffron-600)] bg-white py-3 pl-11 pr-4 text-sm text-[var(--color-text-primary)] outline-none focus:ring-2 focus:ring-[var(--color-saffron-600)]/20"
           />
         </div>
-      </div>
 
-      {/* Search results */}
-      {filteredResults !== null ? (
-        <div>
-          <p className="font-body text-xs text-[var(--color-text-secondary)]/60 mb-3">{filteredResults.length} results for &quot;{query}&quot;</p>
-          {filteredResults.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {filteredResults.map((seva) => (
-                <SevaCard key={seva.id} seva={seva} onOffer={() => alert(`Booking for "${seva.name}" — coming soon.`)} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="font-display text-[var(--color-text-secondary)] text-xl mb-1">No sevas found</p>
-              <p className="font-body text-[var(--color-text-secondary)]/60 text-sm">Try a different search term.</p>
-            </div>
-          )}
-        </div>
-      ) : (
-        /* Accordion sections */
-        <>
-          <SevaSection title="Special Sevas" items={specialSevas} defaultOpen={true} />
-          <SevaSection title="Nitya Sevas" items={nityaSevas} defaultOpen={false} />
-          <SevaSection title="All Sevas" items={allSevas} defaultOpen={false} />
-        </>
-      )}
-    </div>
+        <p className="mt-4 text-xs text-[var(--color-text-secondary)]">
+          {tr.sevas_results_template.replace("{n}", String(visibleSevas.length))}
+        </p>
+        {visibleSevas.length > 0 ? (
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {visibleSevas.map((seva) => (
+              <SevaCard key={seva.id} seva={seva} lang={lang} anyAmount={tr.sevas_any_amount} onOpen={() => setSelectedSeva(seva)} />
+            ))}
+          </div>
+        ) : (
+          <div className="py-16 text-center">
+            <h3 className="font-display text-xl text-[var(--color-text-primary)]">{tr.sevas_empty_title}</h3>
+            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{tr.sevas_empty_sub}</p>
+          </div>
+        )}
+      </section>
+
+      {selectedSeva && <SevaModal seva={selectedSeva} lang={lang} onClose={() => setSelectedSeva(null)} />}
+    </>
   );
 }
