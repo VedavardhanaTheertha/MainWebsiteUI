@@ -339,13 +339,19 @@ build discovers all Markdown records under `library/sevas/`, generates typed cli
 and selects featured tiles in the order configured by
 `settings/<env>/topsevas.json`. Local builds use the development setting. A missing or
 empty setting falls back to Kanike, Donations, and Volunteer Sign-up. The page provides
-category filtering, shared MiniSearch behavior, and a sanitized details
-dialog. The generator stores independently sanitized English and Kannada guideline HTML,
-so the dialog immediately renders only the active language. Its booking action remains
-visible below the scrolling details and opens the record's `booking_url` in a new tab.
-Development exports use generated placeholder Seva fields and links so real library prose
-and brand terms cannot leak into non-production HTML; local and production exports use the
-Markdown values.
+category filtering, shared MiniSearch behavior, a responsive 3-column desktop grid (matching
+Events and Bhakti), and a sanitized details dialog. The generator stores independently
+sanitized English and Kannada guideline HTML, so the dialog immediately renders only the
+active language. Its booking action remains visible below the scrolling details and opens
+the record's `booking_url` in a new tab. In switchable environments (like `dev` and `local`),
+the build emits both `realSevas` and `placeholderSevas`, allowing `SevasBrowser` and
+`SevaPreview` to dynamically reflect the selected real or placeholder state from `useLang()`.
+
+All tile-based browsing pages (Sevas, Events, Bhakti, and Media) adhere to a progressive
+pagination standard: when more than 6 tiles exist, an initial batch of 6 tiles is rendered
+with a localized "Show more" button that reveals 9 additional tiles on each click
+(6 → 15 → 24...), resetting upon filter or query changes. By design, the Guru Parampara
+lineage page displays all historical pontiff tiles at once without pagination.
 
 The statically exported `/events` route uses the same centered `max-w-7xl` page rhythm
 as the Seva and Connect experiences. Upcoming, recurring, and catalog sections render as

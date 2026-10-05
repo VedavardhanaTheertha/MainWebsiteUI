@@ -33,7 +33,13 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const isKn = lang === "kn";
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
-  const [showAll, setShowAll] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [prevQuery, setPrevQuery] = useState(deferredQuery);
+
+  if (prevQuery !== deferredQuery) {
+    setPrevQuery(deferredQuery);
+    setVisibleCount(6);
+  }
   const [expanded, setExpanded] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loadedContent, setLoadedContent] = useState<Record<string, SongContent>>({});
@@ -74,7 +80,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
     bhaktiSearchConfig
   );
 
-  const visible = showAll ? filtered : filtered.slice(0, 6);
+  const visible = filtered.slice(0, visibleCount);
   const selected = items.find((item) => item.id === selectedId) ?? null;
   const selectedContent = selected ? loadedContent[selected.id] : null;
   const currentHtml = selected
@@ -183,7 +189,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
             type="search"
             value={query}
             onFocus={ensureLoaded}
-            onChange={(event) => { setQuery(event.target.value); setShowAll(false); }}
+            onChange={(event) => { setQuery(event.target.value); setVisibleCount(6); }}
             placeholder={copy.search_placeholder}
             className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-text-muted)]"
           />
@@ -242,9 +248,13 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
             ) : (
               <p className="rounded-lg border border-[var(--color-line)] bg-white/50 p-8 text-center text-sm text-[var(--color-text-secondary)]">{copy.no_results}</p>
             )}
-            {filtered.length > 6 && (
-              <button type="button" onClick={() => setShowAll((value) => !value)} className="mx-auto mt-3 block rounded-full border border-[var(--color-line-strong)] px-4 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60">
-                {showAll ? copy.show_less : copy.show_all}
+            {filtered.length > visibleCount && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + 9)}
+                className="mx-auto mt-3 block rounded-full border border-[var(--color-line-strong)] px-4 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
+              >
+                {copy.show_more || copy.show_all}
               </button>
             )}
           </>

@@ -1,15 +1,28 @@
 import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import yaml from "js-yaml";
 import MiniSearch from "minisearch";
 import { parseMarkdownFrontmatter } from "./content-utils.mjs";
 import { renderMarkdown } from "./markdown.mjs";
 import { withSearchDefaults } from "./search-config.mjs";
+import { describeContentMode } from "./environment-utils.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = path.join(projectRoot, "library", "sevas");
 const outputDir = path.join(projectRoot, "src", "gen", "sevas");
+
+// Resolve environment configuration
+const envName = process.env.SITE_ENV || "dev";
+const siteConfigFile = path.join(projectRoot, "config", "site.yml");
+const siteConfig = yaml.load(readFileSync(siteConfigFile, "utf8"));
+const envConfig = siteConfig.environments?.[envName] || siteConfig.environments?.dev;
+const mode = describeContentMode(envConfig?.content_mode, envConfig?.default_variant);
+const isPlaceholderDefault = mode.defaultVariant === "placeholder";
+const isSwitchable = mode.includesReal && mode.includesPlaceholder;
+
 const defaultFeaturedIds = [
   "seva-001-kanike",
   "seva-003-donations",
@@ -223,9 +236,10 @@ for (const file of files) {
 
 sevas.sort((a, b) => a.code - b.code || a.id.localeCompare(b.id, "en"));
 const featuredSevaIds = await loadFeaturedIds(ids);
-const outputSevas = process.env.SITE_ENV === "dev"
-  ? sevas.map(placeholderSeva)
-  : sevas;
+
+const realSevas = sevas;
+const placeholderSevas = sevas.map(placeholderSeva);
+const defaultSevas = isPlaceholderDefault ? placeholderSevas : realSevas;
 
 await mkdir(outputDir, { recursive: true });
 
@@ -249,11 +263,17 @@ export interface SevaRecord {
   detailsHtml: LocalizedSevaText;
   searchText: string;
 }
-export const sevas: SevaRecord[] = ${JSON.stringify(outputSevas, null, 2)};
+export const realSevas: SevaRecord[] = ${JSON.stringify(realSevas, null, 2)};
+export const placeholderSevas: SevaRecord[] = ${JSON.stringify(placeholderSevas, null, 2)};
+export const sevas: SevaRecord[] = ${JSON.stringify(defaultSevas, null, 2)};
 export const featuredSevaIds: string[] = ${JSON.stringify(featuredSevaIds, null, 2)};
 `;
 
-const docs = outputSevas.map((seva, index) => ({ ...seva, __search_id: index }));
+const docs = realSevas.map((seva, index) => ({
+  ...seva,
+  __search_id: index,
+  searchText: `${seva.searchText} ${placeholderSevas[index].searchText}`,
+}));
 const miniSearch = new MiniSearch(withSearchDefaults({
   idField: "__search_id",
   fields: ["searchText"],
@@ -273,4 +293,4 @@ await writeFile(path.join(outputDir, "data.ts"), dataCode, "utf8");
 await writeFile(path.join(outputDir, "search-index.ts"), searchIndexCode, "utf8");
 await writeFile(path.join(outputDir, "loaders.ts"), loadersCode, "utf8");
 
-console.log(`Built ${outputSevas.length} sevas from Markdown (${featuredSevaIds.length} featured).`);
+console.log(`Built ${realSevas.length} sevas from Markdown (${featuredSevaIds.length} featured).`);

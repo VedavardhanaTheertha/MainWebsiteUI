@@ -2,19 +2,25 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { featuredSevaIds, sevas, type LocalizedSevaText, type SevaRecord } from "@/gen/sevas/data";
+import {
+  featuredSevaIds,
+  realSevas,
+  placeholderSevas,
+  type LocalizedSevaText,
+  type SevaRecord,
+} from "@/gen/sevas/data";
 import { useLang } from "@/context/LanguageContext";
-
-const featuredSevas = featuredSevaIds
-  .map((id) => sevas.find((seva) => seva.id === id))
-  .filter((seva): seva is SevaRecord => Boolean(seva));
 
 function localized(value: LocalizedSevaText, lang: string) {
   return value[lang as keyof LocalizedSevaText] || value.en;
 }
 
 export default function SevaPreview() {
-  const { lang, tr } = useLang();
+  const { lang, contentMode, tr } = useLang();
+  const activeSevas = contentMode === "placeholder" ? placeholderSevas : realSevas;
+  const featuredSevas = featuredSevaIds
+    .map((id) => activeSevas.find((seva) => seva.id === id))
+    .filter((seva): seva is SevaRecord => Boolean(seva));
 
   return (
     <section className="py-16 lg:py-24 bg-[var(--color-cream)]" aria-labelledby="seva-preview-heading">

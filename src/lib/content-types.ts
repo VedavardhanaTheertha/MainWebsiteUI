@@ -212,6 +212,8 @@ export interface LegacyFlatKeys {
   sevas_significance: string;
   sevas_offer: string;
   sevas_close: string;
+  sevas_show_more?: string;
+  show_more?: string;
   events_label: string;
   events_title: string;
   events_subtitle: string;
@@ -264,6 +266,7 @@ export interface BhaktiPageContent {
   no_results: string;
   show_all: string;
   show_less: string;
+  show_more?: string;
   collapse: string;
   expand: string;
   by: string;
@@ -329,6 +332,7 @@ export interface EventsExactShape {
   loading_past?: string;
   recurring_badge?: string;
   close_modal?: string;
+  show_more?: string;
 }
 
 export interface EventsSectionsShape {

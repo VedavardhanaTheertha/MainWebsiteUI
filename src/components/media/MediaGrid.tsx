@@ -12,6 +12,13 @@ export default function MediaGrid({ type }: { type: "photo" | "video" }) {
   const list: Array<MediaVideo | { title: string; detail: string; img: string }> =
     type === "video" ? tr.media.videos : tr.media.photos;
   const [q, setQ] = useState("");
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [prevQ, setPrevQ] = useState(q);
+
+  if (prevQ !== q) {
+    setPrevQ(q);
+    setVisibleCount(6);
+  }
 
   const searchConfig = useMemo(
     () => ({
@@ -22,6 +29,11 @@ export default function MediaGrid({ type }: { type: "photo" | "video" }) {
   );
 
   const items = useMiniSearch(list, q, searchConfig);
+
+  const displayedItems = useMemo(
+    () => items.slice(0, visibleCount),
+    [items, visibleCount]
+  );
 
   return (
     <div>
@@ -37,7 +49,7 @@ export default function MediaGrid({ type }: { type: "photo" | "video" }) {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {items.map((x) => (
+        {displayedItems.map((x) => (
           <div key={x.title} className="rounded-[8px] overflow-hidden bg-[var(--color-paper)] border border-[var(--color-line)] shadow-[var(--shadow-xs)]">
             <div className="relative h-[120px]">
               <Image src={x.img} alt="" fill sizes="200px" className="object-cover" />
@@ -59,6 +71,18 @@ export default function MediaGrid({ type }: { type: "photo" | "video" }) {
           </div>
         ))}
       </div>
+
+      {items.length > visibleCount && (
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((c) => c + 9)}
+            className="rounded-full border border-[var(--color-line)] bg-white px-5 py-2 font-body text-xs font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-cream)] hover:shadow-sm"
+          >
+            {tr.show_more}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

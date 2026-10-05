@@ -161,6 +161,19 @@ export default function EventsExact() {
     upcomingCatalog,
   ]);
 
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [prevFilter, setPrevFilter] = useState({ cat: selectedCat, query: deferredQuery });
+
+  if (prevFilter.cat !== selectedCat || prevFilter.query !== deferredQuery) {
+    setPrevFilter({ cat: selectedCat, query: deferredQuery });
+    setVisibleCount(6);
+  }
+
+  const displayedEvents = useMemo(
+    () => filteredEvents.slice(0, visibleCount),
+    [filteredEvents, visibleCount]
+  );
+
   const tabs = copy.tabs || [
     { id: "upcoming", label: "All Upcoming" },
     { id: "festival", label: "Festivals" },
@@ -261,8 +274,9 @@ export default function EventsExact() {
 
       {/* Events List */}
       {(!isPastTab || !loadingPast) && filteredEvents.length > 0 && (
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredEvents.map((item: EventItem) => {
+        <>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {displayedEvents.map((item: EventItem) => {
             const title = isKn ? item.title?.kn : item.title?.en;
             const displayDate = isKn ? item.displayDate?.kn : item.displayDate?.en;
             const time = isKn ? item.time?.kn : item.time?.en;
@@ -364,7 +378,19 @@ export default function EventsExact() {
               </article>
             );
           })}
-        </div>
+          </div>
+          {filteredEvents.length > visibleCount && (
+            <div className="mt-8 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + 9)}
+                className="rounded-full border border-[var(--color-saffron-600)] bg-white px-6 py-2.5 font-body text-sm font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-saffron-50)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+              >
+                {copy.show_more}
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Event Details Modal Popup */}

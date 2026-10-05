@@ -108,6 +108,8 @@
   "sevas_significance": "Significance and spiritual benefits",
   "sevas_offer": "Offer this Seva",
   "sevas_close": "Close Seva details",
+  "sevas_show_more": "Show more",
+  "show_more": "Show more",
   "events_label": "Calendar",
   "events_title": "Events",
   "events_subtitle": "Festivals, utsavas, parayanasa, and more — the living rhythm of Paryaya 2026–2028.",
@@ -1004,6 +1006,7 @@
         "no_results": "No works match your search.",
         "show_all": "Show all",
         "show_less": "Show less",
+        "show_more": "Show more",
         "collapse": "Collapse results",
         "expand": "Expand results",
         "by": "By",
@@ -1107,6 +1110,7 @@
     "loading_past": "Loading past events...",
     "recurring_badge": "Recurring",
     "close_modal": "Close",
+    "show_more": "Show more",
     "tabs": [
       {
         "id": "upcoming",

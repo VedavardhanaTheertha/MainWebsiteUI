@@ -4,7 +4,13 @@ import { useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import { featuredSevaIds, sevas, type LocalizedSevaText, type SevaRecord } from "@/gen/sevas/data";
+import {
+  featuredSevaIds,
+  realSevas,
+  placeholderSevas,
+  type LocalizedSevaText,
+  type SevaRecord,
+} from "@/gen/sevas/data";
 import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 
@@ -173,36 +179,50 @@ function SevaModal({
 }
 
 export default function SevasBrowser() {
-  const { lang, tr } = useLang();
+  const { lang, contentMode, tr } = useLang();
   const [categoryFilter, setCategoryFilter] = useState("");
   const [query, setQuery] = useState("");
   const [selectedSeva, setSelectedSeva] = useState<SevaRecord | null>(null);
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [prevFilter, setPrevFilter] = useState({ cat: categoryFilter, query });
+
+  if (prevFilter.cat !== categoryFilter || prevFilter.query !== query) {
+    setPrevFilter({ cat: categoryFilter, query });
+    setVisibleCount(6);
+  }
   const searchId = useId();
 
+  const activeSevas = contentMode === "placeholder" ? placeholderSevas : realSevas;
+
   const featured = useMemo(
-    () => featuredSevaIds.map((id) => sevas.find((seva) => seva.id === id)).filter((seva): seva is SevaRecord => Boolean(seva)),
-    [],
+    () => featuredSevaIds.map((id) => activeSevas.find((seva) => seva.id === id)).filter((seva): seva is SevaRecord => Boolean(seva)),
+    [activeSevas],
   );
   const categories = useMemo(
-    () => Array.from(new Map(sevas.map((seva) => [seva.category.code, seva.category])).entries())
+    () => Array.from(new Map(activeSevas.map((seva) => [seva.category.code, seva.category])).entries())
       .sort((left, right) => localized(left[1], lang).localeCompare(localized(right[1], lang))),
-    [lang],
+    [activeSevas, lang],
   );
   const searchConfig = useMemo(
     () => ({ fields: ["searchText"] as (keyof SevaRecord)[], boost: { searchText: 1 } }),
     [],
   );
   const { results: searchResults, ensureLoaded } = useLazyMiniSearch(
-    sevas,
+    activeSevas,
     query,
     loadSevasSearchIndex,
     searchConfig,
   );
 
   const visibleSevas = useMemo(() => {
-    const source = query.trim() ? searchResults : sevas;
+    const source = query.trim() ? searchResults : activeSevas;
     return source.filter((seva) => !categoryFilter || seva.category.code === categoryFilter);
-  }, [categoryFilter, query, searchResults]);
+  }, [activeSevas, categoryFilter, query, searchResults]);
+
+  const displayedSevas = useMemo(
+    () => visibleSevas.slice(0, visibleCount),
+    [visibleSevas, visibleCount],
+  );
 
   return (
     <>
@@ -278,11 +298,24 @@ export default function SevasBrowser() {
           {tr.sevas_results_template.replace("{n}", String(visibleSevas.length))}
         </p>
         {visibleSevas.length > 0 ? (
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {visibleSevas.map((seva) => (
-              <SevaCard key={seva.id} seva={seva} lang={lang} anyAmount={tr.sevas_any_amount} onOpen={() => setSelectedSeva(seva)} />
-            ))}
-          </div>
+          <>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {displayedSevas.map((seva) => (
+                <SevaCard key={seva.id} seva={seva} lang={lang} anyAmount={tr.sevas_any_amount} onOpen={() => setSelectedSeva(seva)} />
+              ))}
+            </div>
+            {visibleSevas.length > visibleCount && (
+              <div className="mt-8 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((prev) => prev + 9)}
+                  className="rounded-full border border-[var(--color-saffron-600)] bg-white px-6 py-2.5 font-body text-sm font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-saffron-50)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+                >
+                  {tr.sevas_show_more || tr.show_more}
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="py-16 text-center">
             <h3 className="font-display text-xl text-[var(--color-text-primary)]">{tr.sevas_empty_title}</h3>
