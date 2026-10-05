@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLang } from "@/context/LanguageContext";
+import { siteConfig } from "@/gen/content";
 import { imagePaths } from "@/lib/images";
 
 // ─── DATA ────────────────────────────────────────────────────
@@ -141,7 +142,7 @@ function HeaderV2() {
       <div className="max-w-[1400px] mx-auto px-5 lg:px-8 h-16 flex items-center justify-between gap-6">
         {/* Logo */}
         <Link href="/v2" className="flex items-center gap-3 shrink-0">
-          <Image src={imagePaths.mainLogo} alt={tr.pages.v2.header_name} width={40} height={40} className="object-contain" />
+          <Image src={`${siteConfig.basePath}/main-logo.png`} alt={tr.pages.v2.header_name} width={40} height={40} className="object-contain" />
           <div className="leading-tight hidden sm:block">
             <p className="font-display font-semibold text-[14px] text-[var(--color-text-primary)]">{tr.pages.v2.header_name}</p>
             <p className="font-body text-[10px] text-[var(--color-text-secondary)]">{tr.pages.v2.header_tagline}</p>

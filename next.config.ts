@@ -42,6 +42,9 @@ const basePath = environment.base_path ?? "";
 
 const nextConfig: NextConfig = {
   output: "export",
+  env: {
+    SITE_ENV: process.env.SITE_ENV || "dev",
+  },
   turbopack: {
     root: process.cwd(),
   },

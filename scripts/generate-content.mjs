@@ -536,7 +536,7 @@ function requireLocalized(value, field, file) {
   return { en: value.en.trim(), kn: value.kn.trim() };
 }
 
-function discoverConnectContent() {
+function discoverConnectContent(basePath = "") {
   const branchesDir = path.join(rootDir, "library", "branches");
   const connectDir = path.join(rootDir, "library", "connect");
   for (const dir of [branchesDir, connectDir]) {
@@ -646,7 +646,7 @@ function discoverConnectContent() {
       audience: typeof metadata.audience === "string" ? metadata.audience : "",
       url: metadata.url,
       brandColor: metadata.brand_color,
-      icon: metadata.icon,
+      icon: metadata.icon.startsWith("/") && basePath ? `${basePath}${metadata.icon}` : metadata.icon,
     };
   }).sort((a, b) => a.order - b.order);
 
@@ -944,7 +944,7 @@ const parampara = mode.defaultVariant === "real" ? discoveredParampara : placeho
 const alternateParampara = mode.switchable
   ? mode.defaultVariant === "real" ? placeholderParamparaContent : discoveredParampara
   : null;
-const discoveredConnectContent = discoverConnectContent();
+const discoveredConnectContent = discoverConnectContent(env.base_path ?? "");
 const placeholderConnect = placeholderConnectContent(discoveredConnectContent);
 const connectContent = mode.defaultVariant === "real" ? discoveredConnectContent : placeholderConnect;
 const alternateConnectContent = mode.switchable

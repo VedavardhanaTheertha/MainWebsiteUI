@@ -137,6 +137,7 @@ Shirooru/
 │
 ├── public/                     ← existing static assets served from the site root
 │   ├── articles/               ← consistent location for new article media
+│   ├── icons/                  ← static UI icons (connect channels, placeholders)
 │   └── slide/                  ← existing legacy image collection
 ├── library/                    ← required content submodule
 │   ├── branches/               ← bilingual branch front matter and detailed Markdown
@@ -246,7 +247,10 @@ Local storage is an interim delivery model. The original image set was approxima
 approximately 5.3 MiB. The target architecture is to serve photographs from an image
 CDN while retaining only icons and essential interface assets in this repository. Pages
 should include dimensions and a small blurred preview so layout remains stable while the
-full image loads.
+full image loads. Essential UI assets committed under `public/` (such as `favicon.ico`,
+`main-logo.png`, `icons/seva-placeholder.svg`, and connect channel SVG icons) are copied
+to `out/` on static export and resolve with the environment-configured `basePath` (e.g.,
+`/MainWebsiteUI` in dev GitHub Pages deployments).
 
 The CDN provider and URL/content contract are not yet finalized. Cloudflare is the
 current recommendation because production hosting is planned there, but implementation

@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { siteConfig } from "@/gen/content";
 import {
   featuredSevaIds,
   realSevas,
@@ -29,10 +30,11 @@ function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
 }
 
 function SevaImage({ title, featured = false }: { title: string; featured?: boolean }) {
+  const placeholderSrc = `${siteConfig.basePath}/icons/seva-placeholder.svg`;
   return (
     <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
       <Image
-        src="/icons/seva-placeholder.svg"
+        src={placeholderSrc}
         alt=""
         fill
         sizes={featured ? "(max-width: 768px) 85vw, 33vw" : "80px"}

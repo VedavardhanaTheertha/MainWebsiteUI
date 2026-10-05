@@ -10,6 +10,7 @@ import {
   type SevaRecord,
 } from "@/gen/sevas/data";
 import { useLang } from "@/context/LanguageContext";
+import { siteConfig } from "@/gen/content";
 
 function localized(value: LocalizedSevaText, lang: string) {
   return value[lang as keyof LocalizedSevaText] || value.en;
@@ -47,7 +48,7 @@ export default function SevaPreview() {
               className="bg-white rounded-[18px] overflow-hidden flex flex-col border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.10)] hover:shadow-[0_8px_32px_rgba(60,7,83,0.18)] hover:-translate-y-0.5 transition-all duration-200"
             >
               <div className="relative h-32 bg-[var(--color-saffron-100)]">
-                <Image src="/icons/seva-placeholder.svg" alt="" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
+                <Image src={`${siteConfig.basePath}/icons/seva-placeholder.svg`} alt="" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
               </div>
               <div className="p-5 flex flex-1 flex-col gap-3">
                 <div className="flex-1">

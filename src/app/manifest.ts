@@ -1,15 +1,12 @@
 import type { MetadataRoute } from "next";
 import { content, defaultLang, siteConfig } from "@/gen/content";
-import { imagePaths } from "@/lib/images";
 
 export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   const basePath = siteConfig.basePath;
   const root = basePath ? `${basePath}/` : "/";
-  const favicon = imagePaths.favicon.startsWith("http")
-    ? imagePaths.favicon
-    : `${basePath}${imagePaths.favicon}`;
+  const favicon = `${basePath}/favicon.ico`;
 
   return {
     name: content[defaultLang].meta_title,
