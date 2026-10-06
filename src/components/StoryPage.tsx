@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import SiteFooter from "@/components/SiteFooter";
 import type { StoriesShape } from "@/lib/content-types";
 
 export default function StoryPage({ storyKey }: { storyKey: keyof StoriesShape }) {
@@ -48,7 +47,6 @@ export default function StoryPage({ storyKey }: { storyKey: keyof StoriesShape }
         </div>
       </div>
 
-      <SiteFooter />
     </>
   );
 }

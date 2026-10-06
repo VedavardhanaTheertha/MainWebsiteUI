@@ -1,5 +1,4 @@
 ﻿import type { Metadata } from "next";
-import SiteFooter from "@/components/SiteFooter";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
@@ -71,7 +70,6 @@ export default function TermsPage() {
           </section>
         </div>
       </div>
-      <SiteFooter />
     </>
   );
 }

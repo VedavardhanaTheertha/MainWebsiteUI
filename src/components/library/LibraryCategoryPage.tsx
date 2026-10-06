@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
-import SiteFooter from "@/components/SiteFooter";
 import type { LibraryShape } from "@/lib/content-types";
 
 export default function LibraryCategoryPage({ categoryKey }: { categoryKey: keyof Omit<LibraryShape, "eyebrow" | "page_title"> }) {
@@ -57,7 +56,6 @@ export default function LibraryCategoryPage({ categoryKey }: { categoryKey: keyo
         </div>
       </div>
 
-      <SiteFooter />
     </>
   );
 }

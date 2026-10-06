@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import SiteFooter from "@/components/SiteFooter";
 import BlogArticleView from "@/components/blog/BlogArticleView";
 import { blogPosts, content, defaultLang } from "@/gen/content";
 
@@ -43,7 +42,6 @@ export default async function BlogPostPage({
   return (
     <>
       <BlogArticleView post={post} />
-      <SiteFooter />
     </>
   );
 }

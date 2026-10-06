@@ -1,5 +1,4 @@
 ﻿import type { Metadata } from "next";
-import SiteFooter from "@/components/SiteFooter";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
@@ -76,7 +75,6 @@ export default function PrivacyPage() {
           </section>
         </div>
       </div>
-      <SiteFooter />
     </>
   );
 }

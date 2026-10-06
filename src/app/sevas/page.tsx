@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import SevasBrowser from "@/components/SevasBrowser";
-import SiteFooter from "@/components/SiteFooter";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.sevas;
@@ -15,7 +14,6 @@ export default function SevasPage() {
         <p className="mx-auto mt-3 max-w-2xl text-sm text-[var(--color-text-brand)]/75 lg:text-base"><LocalizedCopy path={["sevas_subtitle"]} /></p>
       </header>
       <SevasBrowser />
-      <SiteFooter />
     </>
   );
 }

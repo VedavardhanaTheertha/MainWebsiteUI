@@ -1,4 +1,3 @@
-import SiteFooter from "@/components/SiteFooter";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import GalleryGrid from "@/components/media/GalleryGrid";
 import MediaLinks from "@/components/media/MediaLinks";
@@ -23,7 +22,6 @@ export default function MediaPage() {
         <GalleryGrid />
       </div>
 
-      <SiteFooter />
     </>
   );
 }

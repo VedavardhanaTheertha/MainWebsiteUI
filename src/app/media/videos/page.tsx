@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import SiteFooter from "@/components/SiteFooter";
 import MediaGrid from "@/components/media/MediaGrid";
 import { content, defaultLang } from "@/gen/content";
 
@@ -16,7 +15,6 @@ export default function MediaVideosPage() {
         <h1 className="font-display text-2xl text-[var(--color-text-primary)] mb-5">Videos</h1>
         <MediaGrid type="video" />
       </div>
-      <SiteFooter />
     </>
   );
 }

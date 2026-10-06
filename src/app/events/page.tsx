@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import SiteFooter from "@/components/SiteFooter";
 import UpcomingEventRail from "@/components/UpcomingEventRail";
 import EventsAccordion from "@/components/EventsAccordion";
 import EventsExact from "@/components/EventsExact";
@@ -44,7 +43,6 @@ export default function EventsPage() {
         </section>
       </div>
 
-      <SiteFooter />
     </>
   );
 }

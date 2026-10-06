@@ -1,4 +1,3 @@
-import SiteFooter from "@/components/SiteFooter";
 
 const PANCH = [
   { label: "Tithi", value: "Shukla Saptami" },
@@ -50,9 +49,6 @@ export default function PanchangaPage() {
         ))}
       </div>
 
-      <div className="-mx-4 mt-10">
-        <SiteFooter />
-      </div>
     </div>
   );
 }

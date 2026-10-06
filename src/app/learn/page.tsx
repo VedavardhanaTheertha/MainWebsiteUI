@@ -1,4 +1,3 @@
-import SiteFooter from "@/components/SiteFooter";
 import ImageListCards from "@/components/ImageListCards";
 
 export default function LearnPage() {
@@ -16,7 +15,6 @@ export default function LearnPage() {
       <div className="max-w-7xl mx-auto px-4 lg:px-10 py-12">
         <ImageListCards contentKey="learn" />
       </div>
-      <SiteFooter />
     </>
   );
 }

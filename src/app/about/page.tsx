@@ -1,6 +1,5 @@
 ﻿import type { Metadata } from "next";
 import Image from "next/image";
-import SiteFooter from "@/components/SiteFooter";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import LocalizedImage from "@/components/LocalizedImage";
 import { content, defaultLang } from "@/gen/content";
@@ -160,7 +159,6 @@ export default function AboutPage() {
         </section>
       </div>
 
-      <SiteFooter />
     </>
   );
 }

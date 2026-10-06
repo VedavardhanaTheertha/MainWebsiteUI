@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { BookOpen, UserRound, X } from "lucide-react";
-import SiteFooter from "@/components/SiteFooter";
 import { useLang } from "@/context/LanguageContext";
 import {
   alternateParamparaByLanguage,
@@ -231,7 +230,6 @@ export default function ParamparaBrowser() {
         </div>
       )}
 
-      <SiteFooter />
     </>
   );
 }
