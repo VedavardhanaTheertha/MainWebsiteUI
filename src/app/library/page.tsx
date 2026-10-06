@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import SiteFooter from "@/components/SiteFooter";
 import LibraryGrid from "@/components/library/LibraryGrid";
 import { content, defaultLang } from "@/gen/content";
 
@@ -38,7 +37,6 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      <SiteFooter />
     </>
   );
 }

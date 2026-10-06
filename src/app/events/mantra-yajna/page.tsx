@@ -1,5 +1,4 @@
 ﻿import Image from "next/image";
-import SiteFooter from "@/components/SiteFooter";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 import { imagePaths } from "@/lib/images";
@@ -110,7 +109,6 @@ export default function MantraYajnaPage() {
         </div>
 
       </div>
-      <SiteFooter />
     </>
   );
 }

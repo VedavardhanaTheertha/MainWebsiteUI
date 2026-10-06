@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import SiteFooter from "@/components/SiteFooter";
 import BlogIndex from "@/components/blog/BlogIndex";
 import { blogPosts, content, defaultLang } from "@/gen/content";
 
@@ -41,7 +40,6 @@ export default function BlogPage() {
             <span className="w-2 h-2 rounded-full bg-[var(--color-saffron-600)] animate-bounce [animation-delay:300ms]" />
           </div>
         </div>
-        <SiteFooter />
       </>
     );
   }
@@ -51,7 +49,6 @@ export default function BlogPage() {
       <div className="px-5 py-8 min-h-[70vh]">
         <BlogIndex />
       </div>
-      <SiteFooter />
     </>
   );
 }

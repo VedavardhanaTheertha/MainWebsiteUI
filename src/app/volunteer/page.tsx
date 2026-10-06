@@ -1,5 +1,4 @@
 ﻿import type { Metadata } from "next";
-import SiteFooter from "@/components/SiteFooter";
 import ImageListCards from "@/components/ImageListCards";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
@@ -190,7 +189,6 @@ export default function VolunteerPage() {
         </section>
       </div>
 
-      <SiteFooter />
     </>
   );
 }
