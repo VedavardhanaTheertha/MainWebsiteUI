@@ -13,6 +13,7 @@ import {
   type SevaRecord,
 } from "@/gen/sevas/data";
 import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
+import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 
 function localized(value: LocalizedSevaText, lang: string) {
@@ -200,6 +201,8 @@ export default function SevasBrowser() {
     () => featuredSevaIds.map((id) => activeSevas.find((seva) => seva.id === id)).filter((seva): seva is SevaRecord => Boolean(seva)),
     [activeSevas],
   );
+  const featuredScrollRef = useAutoScrollRail(featured.length);
+
   const categories = useMemo(
     () => Array.from(new Map(activeSevas.map((seva) => [seva.category.code, seva.category])).entries())
       .sort((left, right) => localized(left[1], lang).localeCompare(localized(right[1], lang))),
@@ -232,7 +235,15 @@ export default function SevasBrowser() {
         <div className="mx-auto max-w-7xl">
           <p className="text-xs font-semibold uppercase tracking-[.2em] text-[var(--color-text-brand)]">{tr.sevas_featured_label}</p>
           <h2 id="featured-sevas-title" className="mt-1 font-display text-2xl font-bold text-[var(--color-text-primary)]">{tr.sevas_featured_title}</h2>
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <div
+            ref={featuredScrollRef}
+            className="mt-5 -mx-5 flex gap-4 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+            style={{
+              WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
             {featured.map((seva) => {
               const title = localized(seva.title, lang);
               const amount = amountLabel(seva, lang, tr.sevas_any_amount);
@@ -241,7 +252,7 @@ export default function SevasBrowser() {
                   type="button"
                   key={seva.id}
                   onClick={() => setSelectedSeva(seva)}
-                  className="overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                  className="w-[82vw] max-w-[320px] shrink-0 overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg md:w-auto md:max-w-none"
                 >
                   <SevaImage title={title} featured />
                   <div className="p-4">

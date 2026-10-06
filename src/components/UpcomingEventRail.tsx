@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useLang } from "@/context/LanguageContext";
 import {
@@ -9,6 +9,7 @@ import {
   type EventItem,
 } from "@/gen/events/data";
 import { imagePaths } from "@/lib/images";
+import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import EventDetailModal from "./EventDetailModal";
 
 const catColor: Record<string, string> = {
@@ -55,51 +56,7 @@ export default function UpcomingEventRail() {
     .sort((a, b) => a.startDate.localeCompare(b.startDate))
     .slice(0, 6);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number | null>(null);
-  const paused = useRef(false);
-  const returningToStart = useRef(false);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el || railEvents.length === 0) return;
-    const step = () => {
-      if (!paused.current && el) {
-        if (returningToStart.current) {
-          el.scrollLeft -= 6;
-          if (el.scrollLeft <= 0) returningToStart.current = false;
-        } else {
-          el.scrollLeft += 0.6;
-          if (el.scrollLeft >= el.scrollWidth - el.clientWidth) {
-            returningToStart.current = true;
-          }
-        }
-      }
-      rafRef.current = requestAnimationFrame(step);
-    };
-    rafRef.current = requestAnimationFrame(step);
-
-    const pause = () => {
-      paused.current = true;
-    };
-    const resume = () => {
-      setTimeout(() => {
-        paused.current = false;
-      }, 1500);
-    };
-    el.addEventListener("touchstart", pause);
-    el.addEventListener("touchend", resume);
-    el.addEventListener("mousedown", pause);
-    el.addEventListener("mouseup", resume);
-
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      el.removeEventListener("touchstart", pause);
-      el.removeEventListener("touchend", resume);
-      el.removeEventListener("mousedown", pause);
-      el.removeEventListener("mouseup", resume);
-    };
-  }, [railEvents.length]);
+  const scrollRef = useAutoScrollRail(railEvents.length);
 
   if (railEvents.length === 0) {
     return (
