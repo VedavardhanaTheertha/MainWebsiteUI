@@ -58,14 +58,22 @@ export default function UpcomingEventRail() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const paused = useRef(false);
+  const returningToStart = useRef(false);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || railEvents.length === 0) return;
     const step = () => {
       if (!paused.current && el) {
-        el.scrollLeft += 0.6;
-        if (el.scrollLeft >= el.scrollWidth - el.clientWidth) el.scrollLeft = 0;
+        if (returningToStart.current) {
+          el.scrollLeft -= 6;
+          if (el.scrollLeft <= 0) returningToStart.current = false;
+        } else {
+          el.scrollLeft += 0.6;
+          if (el.scrollLeft >= el.scrollWidth - el.clientWidth) {
+            returningToStart.current = true;
+          }
+        }
       }
       rafRef.current = requestAnimationFrame(step);
     };
