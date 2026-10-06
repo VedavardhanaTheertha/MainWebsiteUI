@@ -53,8 +53,8 @@ export default function EventsAccordion() {
     if (!el || recurringList.length <= 1) return;
     const step = () => {
       if (!paused.current && el) {
-        el.scrollLeft -= 0.6;
-        if (el.scrollLeft <= 0) el.scrollLeft = el.scrollWidth - el.clientWidth;
+        el.scrollLeft += 0.6;
+        if (el.scrollLeft >= el.scrollWidth - el.clientWidth) el.scrollLeft = 0;
       }
       rafRef.current = requestAnimationFrame(step);
     };

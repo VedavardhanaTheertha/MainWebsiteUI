@@ -64,8 +64,8 @@ export default function UpcomingEventRail() {
     if (!el || railEvents.length === 0) return;
     const step = () => {
       if (!paused.current && el) {
-        el.scrollLeft -= 0.6;
-        if (el.scrollLeft <= 0) el.scrollLeft = el.scrollWidth - el.clientWidth;
+        el.scrollLeft += 0.6;
+        if (el.scrollLeft >= el.scrollWidth - el.clientWidth) el.scrollLeft = 0;
       }
       rafRef.current = requestAnimationFrame(step);
     };
