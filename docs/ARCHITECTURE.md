@@ -100,12 +100,15 @@ Shirooru/
 │   └── site.yml                ← environment matrix, feature flags, deploy settings
 │
 ├── settings/
+│   ├── ui_elements.json        ← shared pagination counts and row auto-scroll speeds
 │   ├── dev/
 │   │   ├── images.json          ← independent development image map
-│   │   └── topsevas.json        ← ordered featured Seva IDs
+│   │   ├── recentalbums.json    ← ordered recent Media album IDs
+│   │   └── toplibrary.json      ← ordered top Seva, album, and knowledge IDs
 │   └── prod/
 │       ├── images.json          ← independent production image map
-│       └── topsevas.json        ← ordered featured Seva IDs
+│       ├── recentalbums.json    ← ordered recent Media album IDs
+│       └── toplibrary.json      ← ordered top Seva, album, and knowledge IDs
 │
 ├── docs/
 │   ├── ARCHITECTURE.md         ← this file — the design contract
@@ -132,6 +135,8 @@ Shirooru/
 │       ├── parampara/          ← lineage data module and standalone interactive HTML
 │       ├── connect/            ← generated branch and connection-channel data
 │       ├── bhakti/             ← generated devotional collection
+│       ├── library/            ← generated section catalogs and sanitized article HTML
+│       ├── media/              ← generated top and recent album IDs
 │       ├── sevas/              ← generated sevas collection
 │       └── events/             ← generated events collection and standalone HTML pages
 │
@@ -148,7 +153,10 @@ Shirooru/
 │   │   ├── dev/                ← development and local hero sources
 │   │   └── prod/               ← production hero sources
 │   ├── sevas/                  ← bilingual Seva metadata and complete Markdown details
-│   └── events/                 ← event Markdown entries (top-level only)
+│   ├── events/                 ← event Markdown entries (top-level only)
+│   ├── <section-id>/           ← one browsable knowledge page per direct folder
+│   │   └── <article-id>.md     ← bilingual tile metadata and complete article body
+│   └── ...                     ← additional section folders use the same contract
 ├── test_media/                 ← recursively initialized media submodule
 │
 └── .github/workflows/
@@ -341,25 +349,46 @@ link, and a Google Maps directions link. Connection cards are ordinary external 
 The statically exported `/sevas` route is the only Seva navigation destination. The
 build discovers all Markdown records under `library/sevas/`, generates typed client data,
 and selects featured tiles in the order configured by
-`settings/<env>/topsevas.json`. Local builds use the development setting. A missing or
-empty setting falls back to Kanike, Donations, and Volunteer Sign-up. The page provides
+`sections.sevas` in `settings/<env>/toplibrary.json`. Local builds use the development
+setting. A missing or empty list falls back to Kanike, Donations, and Volunteer Sign-up. The page provides
 category filtering, shared MiniSearch behavior, a responsive 3-column desktop grid (matching
-Events and Bhakti), and a sanitized details dialog. The generator stores independently
+Events and Bhakti), and a sanitized details dialog. Featured and complete-collection
+Sevas use the same vertical image-card treatment as the other visual collection pages,
+while retaining Seva-specific deity, description, and amount fields. The generator stores independently
 sanitized English and Kannada guideline HTML, so the dialog immediately renders only the
 active language. Its booking action remains visible below the scrolling details and opens
 the record's `booking_url` in a new tab. In switchable environments (like `dev` and `local`),
 the build emits both `realSevas` and `placeholderSevas`, allowing `SevasBrowser` and
 `SevaPreview` to dynamically reflect the selected real or placeholder state from `useLang()`.
 
-All tile-based browsing pages (Sevas, Events, Bhakti, and Media) adhere to a progressive
-pagination standard: when more than 6 tiles exist, an initial batch of 6 tiles is rendered
-with a localized "Show more" button that reveals 9 additional tiles on each click
-(6 → 15 → 24...), resetting upon filter or query changes. By design, the Guru Parampara
-lineage page displays all historical pontiff tiles at once without pagination.
+All established searchable tile pages (Sevas, Events, Bhakti, Media, and Markdown
+knowledge collections) adhere to one progressive pagination standard. The shared
+`settings/ui_elements.json` record controls both the initial visible count and the number
+revealed by each localized "Show more" action. Results reset to the configured initial
+count whenever filters or queries change. The build
+validates these values and emits `src/gen/settings/ui-elements.ts`; components never carry
+independent pagination constants. By design, the Guru Parampara
+lineage page displays all historical pontiff tiles at once without pagination. Knowledge
+section featured rails are unaffected because they are curated separately through
+`toplibrary.json`. Sevas, Events, and knowledge sections share the same responsive
+search-control treatment.
+
+The same settings record defines `autoScroll.pixelsPerSecond` (positive finite number)
+and `autoScroll.returnDurationMs` (positive integer). `build/build-ui-settings.mjs`
+generates the typed `railAutoScroll` configuration consumed by `useAutoScrollRail`.
+All auto-scrolling rows (upcoming and recurring events, featured Sevas and knowledge,
+and top and recent albums) share these settings. Forward movement is elapsed-time-based,
+so the configured speed is independent of display refresh rate; long frame gaps are
+capped at 100 ms to avoid jumps after inactive tabs. Touch/mouse pauses and the eased
+return to the start are retained. Pagination defaults remain 6 initially and 9 per batch;
+scroll defaults are 36 pixels/second forward and 2200 ms to return.
 
 The statically exported `/events` route uses the same centered `max-w-7xl` page rhythm
 as the Seva and Connect experiences. Upcoming, recurring, and catalog sections render as
 responsive three-column desktop card grids and collapse to touch-friendly mobile layouts.
+Events and Sevas pair their right-aligned search field with a compact filter panel directly
+below it: horizontally scrollable chips for Events and a labeled category selector for
+Sevas.
 
 ### 5.7 Full-text search with MiniSearch and build-time compression
 
@@ -420,6 +449,74 @@ and production build (`npm run events:build`).
    interactive testing. Titles and descriptions are prefixed with `Duplicate event for testing:`.
    These duplicates are added in addition to the original past events and are strictly excluded from
    production builds.
+
+### 5.9 Markdown knowledge sections
+
+`build/build-library-sections.mjs` reads the knowledge collections registered in
+`build/library-sections.config.mjs`. Each direct `library/<section-id>/` directory
+contains article files only, matching the Bhakti source layout, and must contain at
+least four Markdown records. The registry owns non-display route, order, and default
+image data. Localized section headings and descriptions live in
+`content/languages/*.json`. Article front matter owns its kebab-case ID, bilingual
+title, summary, status, image, and bilingual tags. Each body supplies complete English
+and Kannada Markdown under `## English` and `## ಕನ್ನಡ`; both versions are rendered with
+the shared sanitizer.
+
+The generator validates unique IDs and routes, resolves configured `@image.*` aliases,
+writes per-language sanitized fragments to `src/gen/library/content/`, and emits typed
+real, placeholder, and environment-default catalogs in `src/gen/library/data.ts`.
+Markdown controls tile copy and article prose while language JSON controls the page
+header; no display copy is kept in source components. Both the full build orchestrator and the local development
+orchestrator run this generator before Next.js starts. The ordered featured IDs for every
+section come from `settings/<env>/toplibrary.json`; local development uses the development
+setting. The standard
+configuration selects three items per page so the desktop presentation is the same fixed
+three-column grid used by Sevas and Events.
+
+The four `/library/<section>` destinations and six `/history/<section>` destinations use
+dynamic route segments whose `generateStaticParams` values come from the generated
+catalog. `/projects` uses the same browser with its existing fixed landing route. These
+remain eleven independent navigation destinations; the browser does not render links or
+tabs between them. Each page places its settings-ordered featured items in an
+auto-scrolling horizontal rail on smaller screens and a non-scrolling three-column grid
+from the tablet breakpoint upward, matching Sevas and Events. MiniSearch-powered search,
+a responsive complete-list grid, and progressive loading follow. Selecting either a
+featured or complete-list tile opens an accessible details modal containing the sanitized
+Markdown without changing routes. The sitemap adds every generated section landing route
+to the normal filesystem/content route catalog.
+
+The main navigation links directly to `/library` and `/story`; their former dropdown
+children are presented as localized landing-page tiles instead. Both landing pages use
+the shared `SectionHub` component and the `section_hubs` records in
+`content/languages/*.json`, so their tile style, labels, descriptions, images, and
+destinations stay consistent across languages. These hubs contain no search, featured
+rail, or complete-collection controls. Search and progressive collection browsing begin
+only after a visitor selects a destination tile.
+
+### 5.10 Media albums
+
+Localized Media album records live under `media.albums` in each
+`content/languages/<lang>.json` file. Each record has a stable machine ID, localized
+title, description and tags, a cover image alias, and localized photo or video items.
+Video records may include a display duration; they do not imply a playable URL. Album
+IDs and image aliases are preserved through placeholder generation.
+
+`build/build-media-albums.mjs` validates the English base catalog and reads ordered IDs
+from `sections.album` in `settings/<env>/toplibrary.json` and `album_ids` in
+`settings/<env>/recentalbums.json` (`local` uses `dev`). Unknown and duplicate IDs fail
+generation. The resulting `src/gen/media/albums.ts` drives two curated sections on
+`/albums`: auto-scrolling horizontal rails on small screens and fixed three-column grids
+from the tablet breakpoint. The All Albums section uses shared MiniSearch behavior and
+the global collection pagination settings.
+
+Every album tile navigates to a statically generated `/albums/<album-id>` page.
+`generateStaticParams` and the sitemap derive these routes from the default-language
+catalog. Album pages use the current language at runtime and show photo tiles plus
+non-interactive video previews with play and duration overlays. The main navigation
+links directly to `/albums`; the older `/media/photos` and `/media/videos` routes remain
+available for backward compatibility but are not menu children. Album detail pages use
+the same plain parchment title-and-summary header as other collection pages, without a
+cover-image background or a dedicated back control.
 
 ---
 

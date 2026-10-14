@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-const FORWARD_SCROLL_STEP = 0.6;
-const RETURN_DURATION_MS = 2200;
+import { railAutoScroll } from "@/gen/settings/ui-elements";
 
 function easeInOutCubic(progress: number) {
   return progress < 0.5
@@ -24,8 +22,13 @@ export function useAutoScrollRail(itemCount: number) {
     let returningToStart = false;
     let returnStartedAt: number | null = null;
     let returnStartLeft = 0;
+    let previousTimestamp: number | null = null;
+    let forwardPosition: number | null = null;
+    let lastScrollLeft = 0;
 
     const step = (timestamp: number) => {
+      const elapsedMs = previousTimestamp === null ? 0 : Math.min(timestamp - previousTimestamp, 100);
+      previousTimestamp = timestamp;
       if (!paused) {
         if (returningToStart) {
           if (returnStartedAt === null) {
@@ -33,18 +36,28 @@ export function useAutoScrollRail(itemCount: number) {
             returnStartLeft = el.scrollLeft;
           }
 
-          const progress = Math.min((timestamp - returnStartedAt) / RETURN_DURATION_MS, 1);
+          const progress = Math.min((timestamp - returnStartedAt) / railAutoScroll.returnDurationMs, 1);
           el.scrollLeft = returnStartLeft * (1 - easeInOutCubic(progress));
 
           if (progress === 1) {
             returningToStart = false;
             returnStartedAt = null;
+            forwardPosition = null;
           }
         } else {
           const maxScrollLeft = el.scrollWidth - el.clientWidth;
           if (maxScrollLeft > 0) {
-            el.scrollLeft += FORWARD_SCROLL_STEP;
-            if (el.scrollLeft >= maxScrollLeft) {
+            // Keep a precise target: browser zoom can round assigned scroll offsets.
+            if (forwardPosition === null || el.scrollLeft !== lastScrollLeft) {
+              forwardPosition = el.scrollLeft;
+            }
+            forwardPosition = Math.min(
+              forwardPosition + railAutoScroll.pixelsPerSecond * elapsedMs / 1000,
+              maxScrollLeft,
+            );
+            el.scrollLeft = forwardPosition;
+            lastScrollLeft = el.scrollLeft;
+            if (forwardPosition >= maxScrollLeft) {
               returningToStart = true;
             }
           }
@@ -57,6 +70,7 @@ export function useAutoScrollRail(itemCount: number) {
     const pause = () => {
       paused = true;
       returnStartedAt = null;
+      forwardPosition = null;
       if (resumeTimer !== null) {
         clearTimeout(resumeTimer);
         resumeTimer = null;

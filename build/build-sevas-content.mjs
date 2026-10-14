@@ -187,7 +187,7 @@ async function loadFeaturedIds(sevaIds) {
   const environmentName = process.env.SITE_ENV === "local"
     ? "dev"
     : (process.env.SITE_ENV || "dev");
-  const settingsFile = path.join(projectRoot, "settings", environmentName, "topsevas.json");
+  const settingsFile = path.join(projectRoot, "settings", environmentName, "toplibrary.json");
 
   try {
     await access(settingsFile);
@@ -197,7 +197,7 @@ async function loadFeaturedIds(sevaIds) {
   }
 
   const parsed = JSON.parse(await readFile(settingsFile, "utf8"));
-  const configured = Array.isArray(parsed) ? parsed : parsed?.seva_ids;
+  const configured = parsed?.sections?.sevas;
   const featuredIds = Array.isArray(configured) && configured.length > 0
     ? configured
     : defaultFeaturedIds;

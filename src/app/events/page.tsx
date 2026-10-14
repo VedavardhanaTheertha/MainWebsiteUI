@@ -17,28 +17,24 @@ export default function EventsPage() {
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           <LocalizedCopy path={["events_title"]} />
         </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-sm text-[var(--color-text-brand)]/75 lg:text-base">
+        <p className="mx-auto mt-3 flex min-h-10 max-w-2xl items-center justify-center text-sm text-[var(--color-text-brand)]/75 lg:min-h-12 lg:text-base">
           <LocalizedCopy path={["events_subtitle"]} />
         </p>
       </header>
 
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 lg:space-y-12 lg:px-8 lg:py-12">
         <section aria-labelledby="upcoming-events-heading">
-          <div className="mb-5 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <h2 id="upcoming-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-              <LocalizedCopy path={["events_upcoming"]} />
-            </h2>
+          <h2 id="upcoming-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+            <LocalizedCopy path={["events_upcoming"]} />
+          </h2>
+          <div className="mt-5">
+            <UpcomingEventRail />
           </div>
-          <UpcomingEventRail />
         </section>
 
         <EventsAccordion />
 
         <section className="border-t border-[var(--color-line)] pt-10" aria-labelledby="all-events-heading">
-          <h2 id="all-events-heading" className="mb-5 font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-            <LocalizedCopy path={["events_all"]} />
-          </h2>
           <EventsExact />
         </section>
       </div>

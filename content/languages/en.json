@@ -90,10 +90,10 @@
   "sevas_title": "Sevas & Donations",
   "sevas_subtitle": "Express your love for the Divine through volunteering, daily worship, and the grand Paryaya Annadaana feeding thousands.",
   "sevas_search": "Search sevas…",
+  "sevas_clear_search": "Clear seva search",
   "sevas_showing_template": "Showing {n} of {total} sevas",
   "sevas_empty_title": "No sevas found",
   "sevas_empty_sub": "Try a different category or clear your search.",
-  "sevas_featured_label": "Featured offerings",
   "sevas_featured_title": "Ways to Serve",
   "sevas_all_title": "All Sevas",
   "sevas_filter_category": "Category",
@@ -107,6 +107,7 @@
   "sevas_description": "Description",
   "sevas_significance": "Significance and spiritual benefits",
   "sevas_offer": "Offer this Seva",
+  "sevas_view_details": "View details",
   "sevas_close": "Close Seva details",
   "sevas_show_more": "Show more",
   "show_more": "Show more",
@@ -152,33 +153,7 @@
     {
       "key": "library",
       "label": "Library",
-      "children": [
-        {
-          "key": "library-mantra",
-          "label": "Mantra Nāda",
-          "href": "/library/mantra"
-        },
-        {
-          "key": "library-shastra",
-          "label": "Shāstra Vidya",
-          "href": "/library/shastra"
-        },
-        {
-          "key": "library-bhakti",
-          "label": "Bhakti Gāna",
-          "href": "/library/bhakti"
-        },
-        {
-          "key": "library-jnana",
-          "label": "Jnāna Kosha",
-          "href": "/library/jnana"
-        },
-        {
-          "key": "library-dharma",
-          "label": "Dharma Vidhi",
-          "href": "/library/dharma"
-        }
-      ]
+      "href": "/library"
     },
     {
       "key": "projects",
@@ -187,60 +162,13 @@
     },
     {
       "key": "media",
-      "label": "Media",
-      "children": [
-        {
-          "key": "media-photos",
-          "label": "Photos",
-          "href": "/media/photos"
-        },
-        {
-          "key": "media-videos",
-          "label": "Videos",
-          "href": "/media/videos"
-        }
-      ]
+      "label": "Album",
+      "href": "/albums"
     },
     {
       "key": "story",
       "label": "Know the Story",
-      "children": [
-        {
-          "key": "story-parampara",
-          "label": "Shiroor Matha & Guru Parampara",
-          "href": "/history/parampara"
-        },
-        {
-          "key": "story-stories",
-          "label": "Sadhana Stories & Chronicles",
-          "href": "/history/stories"
-        },
-        {
-          "key": "story-articles",
-          "label": "Blogs & Articles",
-          "href": "/history/articles"
-        },
-        {
-          "key": "story-symbolism",
-          "label": "Symbolism of Hindu Deities & Rituals",
-          "href": "/history/symbolism"
-        },
-        {
-          "key": "story-remedies",
-          "label": "Problem-Solving Mantras & Remedies",
-          "href": "/history/remedies"
-        },
-        {
-          "key": "story-science",
-          "label": "Hindu Science & Vedic Philosophy",
-          "href": "/history/science"
-        },
-        {
-          "key": "story-pilgrim",
-          "label": "Pilgrim Site Guide",
-          "href": "/history/pilgrim-guide"
-        }
-      ]
+      "href": "/story"
     },
     {
       "key": "learn",
@@ -344,7 +272,7 @@
         "title": "Udupi, Abode of Shiva",
         "sub": "Where Chandramaulīshvara is revered",
         "img": "@image.shiroorMutt",
-        "href": "/media"
+        "href": "/albums"
       }
     ],
     "tiles": [
@@ -374,8 +302,8 @@
       },
       {
         "icon": "video",
-        "label": "Media",
-        "href": "/media",
+        "label": "Albums",
+        "href": "/albums",
         "tone": "plum"
       }
     ],
@@ -390,7 +318,7 @@
         "img": "@image.shiroorMutt",
         "title": "Last Week — Solar Power Installed at the Matha",
         "cta_label": "Read the News",
-        "cta_href": "/media"
+        "cta_href": "/albums"
       }
     ],
     "carousel1": {
@@ -1000,7 +928,6 @@
         "description": "Explore a growing collection of Kannada devotional literature.",
         "search_label": "Search the Bhakti collection",
         "search_placeholder": "Search by title, author, ankita, or keyword…",
-        "collection": "Collection",
         "works": "Dasa compositions",
         "showing_template": "Showing {shown} of {total} works",
         "no_results": "No works match your search.",
@@ -1065,6 +992,164 @@
     },
     "eyebrow": "SPIRITUAL RESOURCES",
     "page_title": "Library"
+  },
+  "library_browser": {
+    "featured_title": "Top selections",
+    "all_items": "Complete collection",
+    "search_label": "Search this collection",
+    "search_placeholder": "Search by title, topic, or keyword…",
+    "showing_template": "Showing {shown} of {total} articles",
+    "no_results": "No articles match your search.",
+    "show_more": "Show more",
+    "view_details": "View details",
+    "close_article": "Close article details"
+  },
+  "library_sections": {
+    "mantra": {
+      "eyebrow": "Sacred Sound",
+      "title": "Mantra Nada",
+      "description": "Sacred chants and their meanings, gathered for careful study and recitation."
+    },
+    "shastra": {
+      "eyebrow": "Scriptural Study",
+      "title": "Shastra Vidya",
+      "description": "Introductions to foundational texts and ideas in the Dvaita tradition."
+    },
+    "jnana": {
+      "eyebrow": "Knowledge Treasury",
+      "title": "Jnana Kosha",
+      "description": "A growing glossary and reference collection for tradition, history, and philosophy."
+    },
+    "dharma": {
+      "eyebrow": "Practice and Observance",
+      "title": "Dharma Vidhi",
+      "description": "Practical introductions to daily observances, vows, rites, and festival practice."
+    },
+    "projects": {
+      "eyebrow": "Paryaya Initiatives",
+      "title": "Projects",
+      "description": "Completed, ongoing, and planned works serving worship, learning, heritage, and pilgrims."
+    },
+    "stories": {
+      "eyebrow": "Living Tradition",
+      "title": "Sadhana Stories and Chronicles",
+      "description": "Accounts of disciplined practice, devotion, service, and moments remembered by the community."
+    },
+    "articles": {
+      "eyebrow": "Reflections and Reading",
+      "title": "Blogs and Articles",
+      "description": "Reflections, explainers, news, and reading from the Matha community."
+    },
+    "symbolism": {
+      "eyebrow": "Sacred Meaning",
+      "title": "Symbolism of Hindu Deities and Rituals",
+      "description": "Introductory reflections on forms, gestures, offerings, and ritual symbols."
+    },
+    "remedies": {
+      "eyebrow": "Prayer and Resilience",
+      "title": "Problem-Solving Mantras and Remedies",
+      "description": "General devotional practices for reflection, steadiness, and seeking qualified guidance."
+    },
+    "science": {
+      "eyebrow": "Inquiry and Philosophy",
+      "title": "Hindu Science and Vedic Philosophy",
+      "description": "Introductions to philosophical inquiry, classical knowledge systems, and careful comparison."
+    },
+    "pilgrim": {
+      "eyebrow": "Plan Your Visit",
+      "title": "Pilgrim Site Guide",
+      "description": "Practical starting points for darshan, travel, nearby sacred sites, and accommodation."
+    }
+  },
+  "section_hubs": {
+    "library": {
+      "eyebrow": "Spiritual Resources",
+      "title": "Sacred Knowledge",
+      "description": "Choose a collection to explore chants, scripture, devotional literature, reference material, and practice.",
+      "open_label": "Explore collection",
+      "items": [
+        {
+          "title": "Mantra Nāda",
+          "description": "Sacred chants and their meanings, gathered for careful study and recitation.",
+          "image": "@image.krishna",
+          "href": "/library/mantra"
+        },
+        {
+          "title": "Shāstra Vidya",
+          "description": "Introductions to foundational texts and ideas in the Dvaita tradition.",
+          "image": "@image.swamiji",
+          "href": "/library/shastra"
+        },
+        {
+          "title": "Bhakti Gāna",
+          "description": "Kannada devotional compositions of the Haridasa tradition.",
+          "image": "@image.lordVitthala",
+          "href": "/library/bhakti"
+        },
+        {
+          "title": "Jnāna Kosha",
+          "description": "A growing glossary and reference collection for tradition, history, and philosophy.",
+          "image": "@image.shiroorMutt",
+          "href": "/library/jnana"
+        },
+        {
+          "title": "Dharma Vidhi",
+          "description": "Practical introductions to daily observances, vows, rites, and festival practice.",
+          "image": "@image.kraj0615",
+          "href": "/library/dharma"
+        }
+      ]
+    },
+    "story": {
+      "eyebrow": "Living Tradition",
+      "title": "Know the Story",
+      "description": "Explore the lineage, lived experiences, sacred symbols, philosophy, guidance, and pilgrimage traditions of Shri Shiroor Matha.",
+      "open_label": "Explore story",
+      "items": [
+        {
+          "title": "Shiroor Matha and Guru Parampara",
+          "description": "The unbroken lineage of gurus from Sri Madhwacharya to the present pontiff of Shri Shiroor Matha.",
+          "image": "@image.swamiji",
+          "href": "/history/parampara"
+        },
+        {
+          "title": "Sadhana Stories and Chronicles",
+          "description": "Accounts of disciplined practice, devotion, service, and moments remembered by the community.",
+          "image": "@image.swamiji",
+          "href": "/history/stories"
+        },
+        {
+          "title": "Blogs and Articles",
+          "description": "Reflections, explainers, news, and reading from the Matha community.",
+          "image": "@image.shiroorMutt",
+          "href": "/history/articles"
+        },
+        {
+          "title": "Symbolism of Hindu Deities and Rituals",
+          "description": "Introductory reflections on forms, gestures, offerings, and ritual symbols.",
+          "image": "@image.krishna",
+          "href": "/history/symbolism"
+        },
+        {
+          "title": "Problem-Solving Mantras and Remedies",
+          "description": "General devotional practices for reflection, steadiness, and seeking qualified guidance.",
+          "image": "@image.swamiji",
+          "href": "/history/remedies"
+        },
+        {
+          "title": "Hindu Science and Vedic Philosophy",
+          "description": "Introductions to philosophical inquiry, classical knowledge systems, and careful comparison.",
+          "image": "@image.madhwacharyaNew",
+          "href": "/history/science"
+        },
+        {
+          "title": "Pilgrim Site Guide",
+          "description": "Practical starting points for darshan, travel, nearby sacred sites, and accommodation.",
+          "image": "@image.shiroorMutt",
+          "href": "/history/pilgrim-guide"
+        }
+      ]
+    }
   },
   "connect2": {
     "address": "Paryāya Shri Shiroor Matha,\nCar Street, Udupi, Karnataka 576101",
@@ -1153,6 +1238,21 @@
   "events_this_week": "This Week",
   "events_all": "All Events",
   "media": {
+    "eyebrow": "Divine Darshan",
+    "title": "Albums",
+    "description": "Browse photographs and videos from worship, festivals, seva, learning, and life at Shri Shiroor Matha.",
+    "top_title": "Top Albums",
+    "recent_title": "Recent Albums",
+    "all_title": "All Albums",
+    "search_label": "Search albums",
+    "search_placeholder": "Search by album title, theme, or keyword…",
+    "showing_template": "Showing {shown} of {total} albums",
+    "no_results": "No albums match your search.",
+    "show_more": "Show more",
+    "open_album": "Open album",
+    "album_items": "Album items",
+    "photo_label": "Photo",
+    "video_label": "Video",
     "gallery": [
       "@image.kraj0615",
       "@image.krishna",
@@ -1217,6 +1317,229 @@
         "detail": "Go Shāla",
         "dur": "06:30",
         "img": "@image.goMatha"
+      }
+    ],
+    "albums": [
+      {
+        "id": "daily-worship",
+        "title": "Daily Worship",
+        "description": "Morning and evening worship, sacred offerings, and darshan from the sanctum.",
+        "cover": "@image.kraj0835",
+        "tags": ["worship", "mangalārathi", "darshan"],
+        "items": [
+          {
+            "title": "Morning Mangalārathi",
+            "detail": "Sanctum · June 2026",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "Sri Krishna Darshan",
+            "detail": "Daily alankāra",
+            "image": "@image.krishna",
+            "type": "photo"
+          },
+          {
+            "title": "Evening Mangalārathi",
+            "detail": "Daily worship",
+            "image": "@image.kraj0835",
+            "type": "video",
+            "duration": "12:40"
+          }
+        ]
+      },
+      {
+        "id": "sri-krishna-alankara",
+        "title": "Sri Krishna Alankāra",
+        "description": "A visual collection of sacred decorations and festival darshan.",
+        "cover": "@image.krishna",
+        "tags": ["Krishna", "alankāra", "darshan"],
+        "items": [
+          {
+            "title": "Festival Alankāra",
+            "detail": "Special darshan",
+            "image": "@image.krishna",
+            "type": "photo"
+          },
+          {
+            "title": "Flower Decoration",
+            "detail": "Seasonal offering",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "Sanctum Darshan",
+            "detail": "Sacred moments",
+            "image": "@image.krishna",
+            "type": "photo"
+          }
+        ]
+      },
+      {
+        "id": "festivals-and-rathotsava",
+        "title": "Festivals and Rathotsava",
+        "description": "Processions, chariot festivals, and community celebrations in Udupi.",
+        "cover": "@image.kraj0615",
+        "tags": ["festival", "rathotsava", "Udupi"],
+        "items": [
+          {
+            "title": "Rathotsava Procession",
+            "detail": "Car Street, Udupi",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          },
+          {
+            "title": "Festival Gathering",
+            "detail": "Devotees at the Matha",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "Rathotsava Highlights",
+            "detail": "Chariot festival",
+            "image": "@image.kraj0615",
+            "type": "video",
+            "duration": "08:15"
+          }
+        ]
+      },
+      {
+        "id": "guru-and-pravachana",
+        "title": "Guru and Pravachana",
+        "description": "Teachings, blessings, and public discourses by His Holiness.",
+        "cover": "@image.swamiji",
+        "tags": ["guru", "pravachana", "teachings"],
+        "items": [
+          {
+            "title": "His Holiness",
+            "detail": "Daily worship",
+            "image": "@image.swamiji",
+            "type": "photo"
+          },
+          {
+            "title": "Ashirvachana",
+            "detail": "Blessings to devotees",
+            "image": "@image.swamiji",
+            "type": "photo"
+          },
+          {
+            "title": "Paryāya Pravachana",
+            "detail": "Public discourse",
+            "image": "@image.swamiji",
+            "type": "video",
+            "duration": "24:02"
+          }
+        ]
+      },
+      {
+        "id": "annadana-seva",
+        "title": "Annadāna Seva",
+        "description": "Preparing and serving sacred meals to pilgrims and devotees.",
+        "cover": "@image.kraj0615",
+        "tags": ["annadāna", "seva", "community"],
+        "items": [
+          {
+            "title": "Annadāna Hall",
+            "detail": "Pilgrims served daily",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          },
+          {
+            "title": "Meal Preparation",
+            "detail": "Seva in the kitchen",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "Serving Devotees",
+            "detail": "Community meal",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          }
+        ]
+      },
+      {
+        "id": "go-shala",
+        "title": "Go Shāla",
+        "description": "Cow care, Go Pooja, and daily service at the Matha's sacred shelter.",
+        "cover": "@image.goMatha",
+        "tags": ["Go Shāla", "cow care", "Go Pooja"],
+        "items": [
+          {
+            "title": "The Go Shāla",
+            "detail": "Daily cattle care",
+            "image": "@image.goMatha",
+            "type": "photo"
+          },
+          {
+            "title": "Go Pooja",
+            "detail": "Sacred worship",
+            "image": "@image.goMatha",
+            "type": "photo"
+          },
+          {
+            "title": "Go Pooja Ceremony",
+            "detail": "Matha Go Shāla",
+            "image": "@image.goMatha",
+            "type": "video",
+            "duration": "06:30"
+          }
+        ]
+      },
+      {
+        "id": "shiroor-matha-campus",
+        "title": "Shiroor Matha Campus",
+        "description": "Sacred spaces, architecture, and everyday life around the Matha.",
+        "cover": "@image.shiroorMutt",
+        "tags": ["Matha", "architecture", "Udupi"],
+        "items": [
+          {
+            "title": "Shiroor Matha",
+            "detail": "Car Street, Udupi",
+            "image": "@image.shiroorMutt",
+            "type": "photo"
+          },
+          {
+            "title": "Matha Courtyard",
+            "detail": "Sacred architecture",
+            "image": "@image.shiroorMutt",
+            "type": "photo"
+          },
+          {
+            "title": "Life at the Matha",
+            "detail": "Daily activity",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          }
+        ]
+      },
+      {
+        "id": "paryaya-moments",
+        "title": "Paryāya Moments",
+        "description": "Ceremonies, preparations, and memorable moments from the Paryāya period.",
+        "cover": "@image.kraj0835",
+        "tags": ["Paryāya", "ceremony", "tradition"],
+        "items": [
+          {
+            "title": "Paryāya Preparations",
+            "detail": "Matha community",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "Ceremonial Worship",
+            "detail": "Sacred observance",
+            "image": "@image.krishna",
+            "type": "photo"
+          },
+          {
+            "title": "Paryāya Highlights",
+            "detail": "Selected moments",
+            "image": "@image.swamiji",
+            "type": "video",
+            "duration": "18:20"
+          }
+        ]
       }
     ]
   },

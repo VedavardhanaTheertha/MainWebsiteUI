@@ -11,7 +11,7 @@ export default function SevasPage() {
       <header className="bg-[var(--color-parchment)] px-5 py-7 text-center lg:py-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]"><LocalizedCopy path={["sevas_label"]} /></p>
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl"><LocalizedCopy path={["sevas_title"]} /></h1>
-        <p className="mx-auto mt-3 max-w-2xl text-sm text-[var(--color-text-brand)]/75 lg:text-base"><LocalizedCopy path={["sevas_subtitle"]} /></p>
+        <p className="mx-auto mt-3 flex min-h-10 max-w-2xl items-center justify-center text-sm text-[var(--color-text-brand)]/75 lg:min-h-12 lg:text-base"><LocalizedCopy path={["sevas_subtitle"]} /></p>
       </header>
       <SevasBrowser />
     </>

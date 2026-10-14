@@ -194,10 +194,10 @@ export interface LegacyFlatKeys {
   sevas_title: string;
   sevas_subtitle: string;
   sevas_search: string;
+  sevas_clear_search: string;
   sevas_showing_template: string;
   sevas_empty_title: string;
   sevas_empty_sub: string;
-  sevas_featured_label: string;
   sevas_featured_title: string;
   sevas_all_title: string;
   sevas_filter_category: string;
@@ -211,6 +211,7 @@ export interface LegacyFlatKeys {
   sevas_description: string;
   sevas_significance: string;
   sevas_offer: string;
+  sevas_view_details: string;
   sevas_close: string;
   sevas_show_more?: string;
   show_more?: string;
@@ -260,7 +261,6 @@ export interface BhaktiPageContent {
   description: string;
   search_label: string;
   search_placeholder: string;
-  collection: string;
   works: string;
   showing_template: string;
   no_results: string;
@@ -287,6 +287,46 @@ export interface LibraryShape {
   dharma: LibraryCategory;
   eyebrow: string;
   page_title: string;
+}
+
+export interface LibraryBrowserShape {
+  featured_title: string;
+  all_items: string;
+  search_label: string;
+  search_placeholder: string;
+  showing_template: string;
+  no_results: string;
+  show_more: string;
+  view_details: string;
+  close_article: string;
+}
+
+export interface LibrarySectionCopy {
+  eyebrow: string;
+  title: string;
+  description: string;
+}
+
+export type LibrarySectionsShape = Record<string, LibrarySectionCopy>;
+
+export interface SectionHubItem {
+  title: string;
+  description: string;
+  image: string;
+  href: string;
+}
+
+export interface SectionHubContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+  open_label: string;
+  items: SectionHubItem[];
+}
+
+export interface SectionHubsShape {
+  library: SectionHubContent;
+  story: SectionHubContent;
 }
 
 export interface Connect2Shape {
@@ -355,10 +395,43 @@ export interface MediaVideo {
   img: string;
 }
 
+export interface MediaAlbumItem {
+  title: string;
+  detail: string;
+  image: string;
+  type: "photo" | "video";
+  duration?: string;
+}
+
+export interface MediaAlbum {
+  id: string;
+  title: string;
+  description: string;
+  cover: string;
+  tags: string[];
+  items: MediaAlbumItem[];
+}
+
 export interface MediaShape {
+  eyebrow: string;
+  title: string;
+  description: string;
+  top_title: string;
+  recent_title: string;
+  all_title: string;
+  search_label: string;
+  search_placeholder: string;
+  showing_template: string;
+  no_results: string;
+  show_more: string;
+  open_album: string;
+  album_items: string;
+  photo_label: string;
+  video_label: string;
   gallery: string[];
   photos: MediaPhoto[];
   videos: MediaVideo[];
+  albums: MediaAlbum[];
 }
 
 export interface ImageListItem {
@@ -534,6 +607,9 @@ export interface ContentShape extends LegacyFlatKeys {
   footer: FooterShape;
   home: HomeShape;
   library: LibraryShape;
+  library_browser: LibraryBrowserShape;
+  library_sections: LibrarySectionsShape;
+  section_hubs: SectionHubsShape;
   connect2: Connect2Shape;
   connect_page: ConnectPageShape;
   events_exact: EventsExactShape;

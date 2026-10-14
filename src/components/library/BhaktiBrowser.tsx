@@ -4,6 +4,7 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "rea
 import { ChevronDown, Search } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
+import { collectionPagination } from "@/gen/settings/ui-elements";
 import { bhaktiContentLoaders, loadBhaktiSearchIndex } from "@/gen/bhakti/loaders";
 
 export interface BhaktiItem {
@@ -33,12 +34,12 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const isKn = lang === "kn";
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
   const [prevQuery, setPrevQuery] = useState(deferredQuery);
 
   if (prevQuery !== deferredQuery) {
     setPrevQuery(deferredQuery);
-    setVisibleCount(6);
+    setVisibleCount(collectionPagination.initialVisible);
   }
   const [expanded, setExpanded] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -189,7 +190,10 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
             type="search"
             value={query}
             onFocus={ensureLoaded}
-            onChange={(event) => { setQuery(event.target.value); setVisibleCount(6); }}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setVisibleCount(collectionPagination.initialVisible);
+            }}
             placeholder={copy.search_placeholder}
             className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-text-muted)]"
           />
@@ -198,10 +202,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
 
       <section id="bhakti-results" className="mx-auto mt-4 max-w-6xl border-t border-[var(--color-line-strong)] pt-3 scroll-mt-28">
         <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.collection}</p>
-            <h2 className="mt-0.5 font-display text-xl">{copy.works}</h2>
-          </div>
+          <h2 className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{copy.works}</h2>
           <button
             type="button"
             onClick={() => setExpanded((value) => !value)}
@@ -251,7 +252,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
             {filtered.length > visibleCount && (
               <button
                 type="button"
-                onClick={() => setVisibleCount((prev) => prev + 9)}
+                onClick={() => setVisibleCount((prev) => prev + collectionPagination.loadIncrement)}
                 className="mx-auto mt-3 block rounded-full border border-[var(--color-line-strong)] px-4 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
               >
                 {copy.show_more || copy.show_all}

@@ -75,10 +75,10 @@
   "sevas_title": "ಸೇವೆಗಳು ಮತ್ತು ದೇಣಿಗೆ",
   "sevas_subtitle": "ಸ್ವಯಂಸೇವೆ, ನಿತ್ಯ ಪೂಜೆ ಮತ್ತು ಸಾವಿರಾರು ಜನರಿಗೆ ಅನ್ನದಾನದ ಮೂಲಕ ಭಗವಂತನ ಮೇಲಿನ ಪ್ರೀತಿಯನ್ನು ವ್ಯಕ್ತಪಡಿಸಿ.",
   "sevas_search": "ಸೇವೆ ಹುಡುಕಿ…",
+  "sevas_clear_search": "ಸೇವಾ ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿಸಿ",
   "sevas_showing_template": "{total}ರಲ್ಲಿ {n} ಸೇವೆಗಳು ತೋರಿಸಲಾಗುತ್ತಿದೆ",
   "sevas_empty_title": "ಯಾವ ಸೇವೆಯೂ ಕಂಡುಬಂದಿಲ್ಲ",
   "sevas_empty_sub": "ಬೇರೆ ವರ್ಗ ಆಯ್ಕೆ ಮಾಡಿ ಅಥವಾ ಹುಡುಕಾಟ ತೆರವು ಮಾಡಿ.",
-  "sevas_featured_label": "ವಿಶೇಷ ಸೇವೆಗಳು",
   "sevas_featured_title": "ಸೇವೆಯ ಮಾರ್ಗಗಳು",
   "sevas_all_title": "ಎಲ್ಲ ಸೇವೆಗಳು",
   "sevas_filter_category": "ವರ್ಗ",
@@ -92,6 +92,7 @@
   "sevas_description": "ವಿವರಣೆ",
   "sevas_significance": "ಧಾರ್ಮಿಕ ಮಹತ್ವ ಮತ್ತು ಫಲಶ್ರುತಿ",
   "sevas_offer": "ಈ ಸೇವೆಯನ್ನು ಸಮರ್ಪಿಸಿ",
+  "sevas_view_details": "ವಿವರಗಳನ್ನು ನೋಡಿ",
   "sevas_close": "ಸೇವೆಯ ವಿವರಗಳನ್ನು ಮುಚ್ಚಿ",
   "sevas_show_more": "ಇನ್ನಷ್ಟು ತೋರಿಸಿ",
   "show_more": "ಇನ್ನಷ್ಟು ತೋರಿಸಿ",
@@ -137,33 +138,7 @@
     {
       "key": "library",
       "label": "ಗ್ರಂಥಾಲಯ",
-      "children": [
-        {
-          "key": "library-mantra",
-          "label": "ಮಂತ್ರ ನಾದ",
-          "href": "/library/mantra"
-        },
-        {
-          "key": "library-shastra",
-          "label": "ಶಾಸ್ತ್ರ ವಿದ್ಯಾ",
-          "href": "/library/shastra"
-        },
-        {
-          "key": "library-bhakti",
-          "label": "ಭಕ್ತಿ ಗಾನ",
-          "href": "/library/bhakti"
-        },
-        {
-          "key": "library-jnana",
-          "label": "ಜ್ಞಾನ ಕೋಶ",
-          "href": "/library/jnana"
-        },
-        {
-          "key": "library-dharma",
-          "label": "ಧರ್ಮ ವಿಧಿ",
-          "href": "/library/dharma"
-        }
-      ]
+      "href": "/library"
     },
     {
       "key": "projects",
@@ -172,60 +147,13 @@
     },
     {
       "key": "media",
-      "label": "ಮಾಧ್ಯಮ",
-      "children": [
-        {
-          "key": "media-photos",
-          "label": "ಫೋಟೋಗಳು",
-          "href": "/media/photos"
-        },
-        {
-          "key": "media-videos",
-          "label": "ವೀಡಿಯೊಗಳು",
-          "href": "/media/videos"
-        }
-      ]
+      "label": "ಆಲ್ಬಮ್",
+      "href": "/albums"
     },
     {
       "key": "story",
       "label": "ಪರಂಪರೆಯ ಕಥೆ",
-      "children": [
-        {
-          "key": "story-parampara",
-          "label": "ಶಿರೂರು ಮಠ ಮತ್ತು ಗುರು ಪರಂಪರೆ",
-          "href": "/history/parampara"
-        },
-        {
-          "key": "story-stories",
-          "label": "ಸಾಧನಾ ಕಥೆಗಳು",
-          "href": "/history/stories"
-        },
-        {
-          "key": "story-articles",
-          "label": "ಬ್ಲಾಗ್ ಮತ್ತು ಲೇಖನಗಳು",
-          "href": "/history/articles"
-        },
-        {
-          "key": "story-symbolism",
-          "label": "ಹಿಂದೂ ದೇವತೆಗಳ ಮತ್ತು ಆಚರಣೆಗಳ ಸಂಕೇತ",
-          "href": "/history/symbolism"
-        },
-        {
-          "key": "story-remedies",
-          "label": "ಸಮಸ್ಯೆ ಪರಿಹಾರ ಮಂತ್ರಗಳು ಮತ್ತು ಪರಿಹಾರಗಳು",
-          "href": "/history/remedies"
-        },
-        {
-          "key": "story-science",
-          "label": "ಹಿಂದೂ ವಿಜ್ಞಾನ ಮತ್ತು ವೈದಿಕ ತತ್ವಶಾಸ್ತ್ರ",
-          "href": "/history/science"
-        },
-        {
-          "key": "story-pilgrim",
-          "label": "ಯಾತ್ರಾ ಸ್ಥಳ ಮಾರ್ಗದರ್ಶಿ",
-          "href": "/history/pilgrim-guide"
-        }
-      ]
+      "href": "/story"
     },
     {
       "key": "learn",
@@ -329,7 +257,7 @@
         "title": "ಉಡುಪಿ, ಶಿವನ ನೆಲೆ",
         "sub": "ಚಂದ್ರಮೌಳೀಶ್ವರನನ್ನು ಪೂಜಿಸುವ ಸ್ಥಳ",
         "img": "@image.shiroorMutt",
-        "href": "/media"
+        "href": "/albums"
       }
     ],
     "tiles": [
@@ -359,8 +287,8 @@
       },
       {
         "icon": "video",
-        "label": "ಮಾಧ್ಯಮ",
-        "href": "/media",
+        "label": "ಆಲ್ಬಮ್‌ಗಳು",
+        "href": "/albums",
         "tone": "plum"
       }
     ],
@@ -375,7 +303,7 @@
         "img": "@image.shiroorMutt",
         "title": "ಕಳೆದ ವಾರ — ಮಠದಲ್ಲಿ ಸೌರ ವಿದ್ಯುತ್ ಅಳವಡಿಕೆ",
         "cta_label": "ಸುದ್ದಿ ಓದಿ",
-        "cta_href": "/media"
+        "cta_href": "/albums"
       }
     ],
     "carousel1": {
@@ -985,7 +913,6 @@
         "description": "ಕನ್ನಡ ಭಕ್ತಿ ಸಾಹಿತ್ಯದ ಬೆಳೆಯುತ್ತಿರುವ ಸಂಗ್ರಹವನ್ನು ಅನ್ವೇಷಿಸಿ.",
         "search_label": "ಭಕ್ತಿ ಸಂಗ್ರಹದಲ್ಲಿ ಹುಡುಕಿ",
         "search_placeholder": "ಶೀರ್ಷಿಕೆ, ಕೃತಿ, ಅಂಕಿತ ಅಥವಾ ಪದದಿಂದ ಹುಡುಕಿ…",
-        "collection": "ಸಂಗ್ರಹ",
         "works": "ದಾಸರ ಕೃತಿಗಳು",
         "showing_template": "{total} ಕೃತಿಗಳಲ್ಲಿ {shown} ತೋರಿಸಲಾಗುತ್ತಿದೆ",
         "no_results": "ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಹೊಂದುವ ಕೃತಿಗಳು ಸಿಗಲಿಲ್ಲ.",
@@ -1050,6 +977,164 @@
     },
     "eyebrow": "ಆಧ್ಯಾತ್ಮಿಕ ಸಂಪನ್ಮೂಲಗಳು",
     "page_title": "ಗ್ರಂಥಾಲಯ"
+  },
+  "library_browser": {
+    "featured_title": "ಪ್ರಮುಖ ಆಯ್ಕೆಗಳು",
+    "all_items": "ಸಂಪೂರ್ಣ ಸಂಗ್ರಹ",
+    "search_label": "ಈ ಸಂಗ್ರಹದಲ್ಲಿ ಹುಡುಕಿ",
+    "search_placeholder": "ಶೀರ್ಷಿಕೆ, ವಿಷಯ ಅಥವಾ ಕೀವರ್ಡ್ ಮೂಲಕ ಹುಡುಕಿ…",
+    "showing_template": "{total} ಲೇಖನಗಳಲ್ಲಿ {shown} ತೋರಿಸಲಾಗುತ್ತಿದೆ",
+    "no_results": "ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಹೊಂದುವ ಲೇಖನಗಳಿಲ್ಲ.",
+    "show_more": "ಇನ್ನಷ್ಟು ತೋರಿಸಿ",
+    "view_details": "ವಿವರಗಳನ್ನು ನೋಡಿ",
+    "close_article": "ಲೇಖನದ ವಿವರಗಳನ್ನು ಮುಚ್ಚಿ"
+  },
+  "library_sections": {
+    "mantra": {
+      "eyebrow": "ಪವಿತ್ರ ನಾದ",
+      "title": "ಮಂತ್ರ ನಾದ",
+      "description": "ಎಚ್ಚರಿಕೆಯಿಂದ ಅಧ್ಯಯನ ಮಾಡಲು ಮತ್ತು ಪಠಿಸಲು ಸಂಗ್ರಹಿಸಿದ ಪವಿತ್ರ ಮಂತ್ರಗಳು ಹಾಗೂ ಅವುಗಳ ಅರ್ಥಗಳು."
+    },
+    "shastra": {
+      "eyebrow": "ಶಾಸ್ತ್ರ ಅಧ್ಯಯನ",
+      "title": "ಶಾಸ್ತ್ರ ವಿದ್ಯಾ",
+      "description": "ದ್ವೈತ ಪರಂಪರೆಯ ಮೂಲಭೂತ ಗ್ರಂಥಗಳು ಮತ್ತು ತತ್ವಗಳ ಪರಿಚಯ."
+    },
+    "jnana": {
+      "eyebrow": "ಜ್ಞಾನ ಭಂಡಾರ",
+      "title": "ಜ್ಞಾನ ಕೋಶ",
+      "description": "ಪರಂಪರೆ, ಇತಿಹಾಸ ಮತ್ತು ತತ್ವಶಾಸ್ತ್ರದ ಪದಕೋಶ ಹಾಗೂ ಉಲ್ಲೇಖಗಳ ಬೆಳೆಯುತ್ತಿರುವ ಸಂಗ್ರಹ."
+    },
+    "dharma": {
+      "eyebrow": "ಆಚರಣೆ ಮತ್ತು ಅನುಷ್ಠಾನ",
+      "title": "ಧರ್ಮ ವಿಧಿ",
+      "description": "ದೈನಂದಿನ ಆಚರಣೆಗಳು, ವ್ರತಗಳು, ಸಂಸ್ಕಾರಗಳು ಮತ್ತು ಹಬ್ಬಗಳ ಆಚರಣೆಯ ಪ್ರಾಯೋಗಿಕ ಪರಿಚಯ."
+    },
+    "projects": {
+      "eyebrow": "ಪರ್ಯಾಯ ಉಪಕ್ರಮಗಳು",
+      "title": "ಯೋಜನೆಗಳು",
+      "description": "ಪೂಜೆ, ಶಿಕ್ಷಣ, ಪರಂಪರೆ ಮತ್ತು ಯಾತ್ರಿಕರ ಸೇವೆಗಾಗಿ ಪೂರ್ಣಗೊಂಡ, ನಡೆಯುತ್ತಿರುವ ಹಾಗೂ ಯೋಜಿತ ಕಾರ್ಯಗಳು."
+    },
+    "stories": {
+      "eyebrow": "ಜೀವಂತ ಪರಂಪರೆ",
+      "title": "ಸಾಧನಾ ಕಥೆಗಳು ಮತ್ತು ಚರಿತ್ರೆಗಳು",
+      "description": "ಶಿಸ್ತುಬದ್ಧ ಸಾಧನೆ, ಭಕ್ತಿ, ಸೇವೆ ಮತ್ತು ಸಮುದಾಯವು ಸ್ಮರಿಸುವ ಕ್ಷಣಗಳ ಕಥನಗಳು."
+    },
+    "articles": {
+      "eyebrow": "ಚಿಂತನೆ ಮತ್ತು ಓದು",
+      "title": "ಬ್ಲಾಗ್‌ಗಳು ಮತ್ತು ಲೇಖನಗಳು",
+      "description": "ಮಠದ ಸಮುದಾಯದಿಂದ ಚಿಂತನೆಗಳು, ವಿವರಣೆಗಳು, ಸುದ್ದಿಗಳು ಮತ್ತು ಓದುವಿಕೆ."
+    },
+    "symbolism": {
+      "eyebrow": "ಪವಿತ್ರ ಅರ್ಥ",
+      "title": "ಹಿಂದೂ ದೇವತೆಗಳು ಮತ್ತು ಆಚರಣೆಗಳ ಸಂಕೇತಾರ್ಥ",
+      "description": "ರೂಪಗಳು, ಮುದ್ರೆಗಳು, ಅರ್ಪಣೆಗಳು ಮತ್ತು ಧಾರ್ಮಿಕ ಸಂಕೇತಗಳ ಪರಿಚಯಾತ್ಮಕ ಚಿಂತನೆಗಳು."
+    },
+    "remedies": {
+      "eyebrow": "ಪ್ರಾರ್ಥನೆ ಮತ್ತು ಸ್ಥೈರ್ಯ",
+      "title": "ಸಮಸ್ಯಾ ಪರಿಹಾರ ಮಂತ್ರಗಳು ಮತ್ತು ಉಪಾಯಗಳು",
+      "description": "ಚಿಂತನೆ, ಮನೋಸ್ಥೈರ್ಯ ಮತ್ತು ಅರ್ಹ ಮಾರ್ಗದರ್ಶಕರ ಸಲಹೆ ಪಡೆಯಲು ಸಾಮಾನ್ಯ ಭಕ್ತಿಪರ ಆಚರಣೆಗಳು."
+    },
+    "science": {
+      "eyebrow": "ವಿಚಾರ ಮತ್ತು ತತ್ವಶಾಸ್ತ್ರ",
+      "title": "ಹಿಂದೂ ವಿಜ್ಞಾನ ಮತ್ತು ವೈದಿಕ ತತ್ವಶಾಸ್ತ್ರ",
+      "description": "ತಾತ್ವಿಕ ವಿಚಾರಣೆ, ಶಾಸ್ತ್ರೀಯ ಜ್ಞಾನ ಪದ್ಧತಿಗಳು ಮತ್ತು ಎಚ್ಚರಿಕೆಯ ತುಲನಾತ್ಮಕ ಅಧ್ಯಯನದ ಪರಿಚಯ."
+    },
+    "pilgrim": {
+      "eyebrow": "ನಿಮ್ಮ ಭೇಟಿಯನ್ನು ಯೋಜಿಸಿ",
+      "title": "ಯಾತ್ರಾ ಸ್ಥಳ ಮಾರ್ಗದರ್ಶಿ",
+      "description": "ದರ್ಶನ, ಪ್ರಯಾಣ, ಸಮೀಪದ ಪವಿತ್ರ ಸ್ಥಳಗಳು ಮತ್ತು ವಸತಿಗಾಗಿ ಪ್ರಾಯೋಗಿಕ ಆರಂಭಿಕ ಮಾಹಿತಿ."
+    }
+  },
+  "section_hubs": {
+    "library": {
+      "eyebrow": "ಆಧ್ಯಾತ್ಮಿಕ ಸಂಪನ್ಮೂಲಗಳು",
+      "title": "ಪವಿತ್ರ ಜ್ಞಾನ",
+      "description": "ಮಂತ್ರಗಳು, ಶಾಸ್ತ್ರಗಳು, ಭಕ್ತಿ ಸಾಹಿತ್ಯ, ಉಲ್ಲೇಖ ಸಾಮಗ್ರಿ ಮತ್ತು ಆಚರಣೆಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಒಂದು ಸಂಗ್ರಹವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+      "open_label": "ಸಂಗ್ರಹವನ್ನು ಅನ್ವೇಷಿಸಿ",
+      "items": [
+        {
+          "title": "ಮಂತ್ರ ನಾದ",
+          "description": "ಎಚ್ಚರಿಕೆಯಿಂದ ಅಧ್ಯಯನ ಮಾಡಲು ಮತ್ತು ಪಠಿಸಲು ಸಂಗ್ರಹಿಸಿದ ಪವಿತ್ರ ಮಂತ್ರಗಳು ಹಾಗೂ ಅವುಗಳ ಅರ್ಥಗಳು.",
+          "image": "@image.krishna",
+          "href": "/library/mantra"
+        },
+        {
+          "title": "ಶಾಸ್ತ್ರ ವಿದ್ಯಾ",
+          "description": "ದ್ವೈತ ಪರಂಪರೆಯ ಮೂಲಭೂತ ಗ್ರಂಥಗಳು ಮತ್ತು ತತ್ವಗಳ ಪರಿಚಯ.",
+          "image": "@image.swamiji",
+          "href": "/library/shastra"
+        },
+        {
+          "title": "ಭಕ್ತಿ ಗಾನ",
+          "description": "ಹರಿದಾಸ ಪರಂಪರೆಯ ಕನ್ನಡ ಭಕ್ತಿ ರಚನೆಗಳು.",
+          "image": "@image.lordVitthala",
+          "href": "/library/bhakti"
+        },
+        {
+          "title": "ಜ್ಞಾನ ಕೋಶ",
+          "description": "ಪರಂಪರೆ, ಇತಿಹಾಸ ಮತ್ತು ತತ್ವಶಾಸ್ತ್ರದ ಪದಕೋಶ ಹಾಗೂ ಉಲ್ಲೇಖಗಳ ಬೆಳೆಯುತ್ತಿರುವ ಸಂಗ್ರಹ.",
+          "image": "@image.shiroorMutt",
+          "href": "/library/jnana"
+        },
+        {
+          "title": "ಧರ್ಮ ವಿಧಿ",
+          "description": "ದೈನಂದಿನ ಆಚರಣೆಗಳು, ವ್ರತಗಳು, ಸಂಸ್ಕಾರಗಳು ಮತ್ತು ಹಬ್ಬಗಳ ಆಚರಣೆಯ ಪ್ರಾಯೋಗಿಕ ಪರಿಚಯ.",
+          "image": "@image.kraj0615",
+          "href": "/library/dharma"
+        }
+      ]
+    },
+    "story": {
+      "eyebrow": "ಜೀವಂತ ಪರಂಪರೆ",
+      "title": "ಪರಂಪರೆಯ ಕಥೆ",
+      "description": "ಶ್ರೀ ಶಿರೂರು ಮಠದ ಗುರು ಪರಂಪರೆ, ಸಾಧನಾ ಅನುಭವಗಳು, ಪವಿತ್ರ ಸಂಕೇತಗಳು, ತತ್ವಶಾಸ್ತ್ರ, ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಯಾತ್ರಾ ಪರಂಪರೆಗಳನ್ನು ಅನ್ವೇಷಿಸಿ.",
+      "open_label": "ಕಥೆಯನ್ನು ಅನ್ವೇಷಿಸಿ",
+      "items": [
+        {
+          "title": "ಶಿರೂರು ಮಠ ಮತ್ತು ಗುರು ಪರಂಪರೆ",
+          "description": "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರಿಂದ ಶ್ರೀ ಶಿರೂರು ಮಠದ ಇಂದಿನ ಪೀಠಾಧಿಪತಿಗಳವರೆಗಿನ ಗುರುಗಳ ಅವಿಚ್ಛಿನ್ನ ಪರಂಪರೆ.",
+          "image": "@image.swamiji",
+          "href": "/history/parampara"
+        },
+        {
+          "title": "ಸಾಧನಾ ಕಥೆಗಳು ಮತ್ತು ಚರಿತ್ರೆಗಳು",
+          "description": "ಶಿಸ್ತುಬದ್ಧ ಸಾಧನೆ, ಭಕ್ತಿ, ಸೇವೆ ಮತ್ತು ಸಮುದಾಯವು ಸ್ಮರಿಸುವ ಕ್ಷಣಗಳ ಕಥನಗಳು.",
+          "image": "@image.swamiji",
+          "href": "/history/stories"
+        },
+        {
+          "title": "ಬ್ಲಾಗ್‌ಗಳು ಮತ್ತು ಲೇಖನಗಳು",
+          "description": "ಮಠದ ಸಮುದಾಯದಿಂದ ಚಿಂತನೆಗಳು, ವಿವರಣೆಗಳು, ಸುದ್ದಿಗಳು ಮತ್ತು ಓದುವಿಕೆ.",
+          "image": "@image.shiroorMutt",
+          "href": "/history/articles"
+        },
+        {
+          "title": "ಹಿಂದೂ ದೇವತೆಗಳು ಮತ್ತು ಆಚರಣೆಗಳ ಸಂಕೇತಾರ್ಥ",
+          "description": "ರೂಪಗಳು, ಮುದ್ರೆಗಳು, ಅರ್ಪಣೆಗಳು ಮತ್ತು ಧಾರ್ಮಿಕ ಸಂಕೇತಗಳ ಪರಿಚಯಾತ್ಮಕ ಚಿಂತನೆಗಳು.",
+          "image": "@image.krishna",
+          "href": "/history/symbolism"
+        },
+        {
+          "title": "ಸಮಸ್ಯಾ ಪರಿಹಾರ ಮಂತ್ರಗಳು ಮತ್ತು ಉಪಾಯಗಳು",
+          "description": "ಚಿಂತನೆ, ಮನೋಸ್ಥೈರ್ಯ ಮತ್ತು ಅರ್ಹ ಮಾರ್ಗದರ್ಶಕರ ಸಲಹೆ ಪಡೆಯಲು ಸಾಮಾನ್ಯ ಭಕ್ತಿಪರ ಆಚರಣೆಗಳು.",
+          "image": "@image.swamiji",
+          "href": "/history/remedies"
+        },
+        {
+          "title": "ಹಿಂದೂ ವಿಜ್ಞಾನ ಮತ್ತು ವೈದಿಕ ತತ್ವಶಾಸ್ತ್ರ",
+          "description": "ತಾತ್ವಿಕ ವಿಚಾರಣೆ, ಶಾಸ್ತ್ರೀಯ ಜ್ಞಾನ ಪದ್ಧತಿಗಳು ಮತ್ತು ಎಚ್ಚರಿಕೆಯ ತುಲನಾತ್ಮಕ ಅಧ್ಯಯನದ ಪರಿಚಯ.",
+          "image": "@image.madhwacharyaNew",
+          "href": "/history/science"
+        },
+        {
+          "title": "ಯಾತ್ರಾ ಸ್ಥಳ ಮಾರ್ಗದರ್ಶಿ",
+          "description": "ದರ್ಶನ, ಪ್ರಯಾಣ, ಸಮೀಪದ ಪವಿತ್ರ ಸ್ಥಳಗಳು ಮತ್ತು ವಸತಿಗಾಗಿ ಪ್ರಾಯೋಗಿಕ ಆರಂಭಿಕ ಮಾಹಿತಿ.",
+          "image": "@image.shiroorMutt",
+          "href": "/history/pilgrim-guide"
+        }
+      ]
+    }
   },
   "connect2": {
     "address": "ಪರ್ಯಾಯ ಶ್ರೀ ಶಿರೂರು ಮಠ,\nಕಾರ್ ಸ್ಟ್ರೀಟ್, ಉಡುಪಿ, ಕರ್ನಾಟಕ 576101",
@@ -1138,6 +1223,21 @@
   "events_this_week": "ಈ ವಾರ",
   "events_all": "ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳು",
   "media": {
+    "eyebrow": "ದಿವ್ಯ ದರ್ಶನ",
+    "title": "ಆಲ್ಬಮ್‌ಗಳು",
+    "description": "ಶ್ರೀ ಶಿರೂರು ಮಠದ ಪೂಜೆ, ಹಬ್ಬಗಳು, ಸೇವೆ, ಅಧ್ಯಯನ ಮತ್ತು ದೈನಂದಿನ ಜೀವನದ ಛಾಯಾಚಿತ್ರಗಳು ಹಾಗೂ ವೀಡಿಯೊಗಳನ್ನು ವೀಕ್ಷಿಸಿ.",
+    "top_title": "ಪ್ರಮುಖ ಆಲ್ಬಮ್‌ಗಳು",
+    "recent_title": "ಇತ್ತೀಚಿನ ಆಲ್ಬಮ್‌ಗಳು",
+    "all_title": "ಎಲ್ಲಾ ಆಲ್ಬಮ್‌ಗಳು",
+    "search_label": "ಆಲ್ಬಮ್‌ಗಳನ್ನು ಹುಡುಕಿ",
+    "search_placeholder": "ಆಲ್ಬಮ್ ಶೀರ್ಷಿಕೆ, ವಿಷಯ ಅಥವಾ ಪದದ ಮೂಲಕ ಹುಡುಕಿ…",
+    "showing_template": "{total} ಆಲ್ಬಮ್‌ಗಳಲ್ಲಿ {shown} ತೋರಿಸಲಾಗುತ್ತಿದೆ",
+    "no_results": "ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಹೊಂದುವ ಆಲ್ಬಮ್‌ಗಳಿಲ್ಲ.",
+    "show_more": "ಇನ್ನಷ್ಟು ತೋರಿಸಿ",
+    "open_album": "ಆಲ್ಬಮ್ ತೆರೆಯಿರಿ",
+    "album_items": "ಆಲ್ಬಮ್ ವಿಷಯಗಳು",
+    "photo_label": "ಛಾಯಾಚಿತ್ರ",
+    "video_label": "ವೀಡಿಯೊ",
     "gallery": [
       "@image.kraj0615",
       "@image.krishna",
@@ -1202,6 +1302,229 @@
         "detail": "ಗೋಶಾಲೆ",
         "dur": "06:30",
         "img": "@image.goMatha"
+      }
+    ],
+    "albums": [
+      {
+        "id": "daily-worship",
+        "title": "ದೈನಂದಿನ ಪೂಜೆ",
+        "description": "ಗರ್ಭಗುಡಿಯ ಬೆಳಗಿನ ಮತ್ತು ಸಂಜೆಯ ಪೂಜೆ, ಪವಿತ್ರ ಅರ್ಪಣೆಗಳು ಹಾಗೂ ದರ್ಶನ.",
+        "cover": "@image.kraj0835",
+        "tags": ["ಪೂಜೆ", "ಮಂಗಳಾರತಿ", "ದರ್ಶನ"],
+        "items": [
+          {
+            "title": "ಬೆಳಗಿನ ಮಂಗಳಾರತಿ",
+            "detail": "ಗರ್ಭಗುಡಿ · ಜೂನ್ 2026",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "ಶ್ರೀ ಕೃಷ್ಣ ದರ್ಶನ",
+            "detail": "ದೈನಂದಿನ ಅಲಂಕಾರ",
+            "image": "@image.krishna",
+            "type": "photo"
+          },
+          {
+            "title": "ಸಂಜೆಯ ಮಂಗಳಾರತಿ",
+            "detail": "ದೈನಂದಿನ ಪೂಜೆ",
+            "image": "@image.kraj0835",
+            "type": "video",
+            "duration": "12:40"
+          }
+        ]
+      },
+      {
+        "id": "sri-krishna-alankara",
+        "title": "ಶ್ರೀ ಕೃಷ್ಣ ಅಲಂಕಾರ",
+        "description": "ಪವಿತ್ರ ಅಲಂಕಾರಗಳು ಮತ್ತು ಹಬ್ಬದ ದರ್ಶನದ ದೃಶ್ಯ ಸಂಗ್ರಹ.",
+        "cover": "@image.krishna",
+        "tags": ["ಕೃಷ್ಣ", "ಅಲಂಕಾರ", "ದರ್ಶನ"],
+        "items": [
+          {
+            "title": "ಹಬ್ಬದ ಅಲಂಕಾರ",
+            "detail": "ವಿಶೇಷ ದರ್ಶನ",
+            "image": "@image.krishna",
+            "type": "photo"
+          },
+          {
+            "title": "ಪುಷ್ಪ ಅಲಂಕಾರ",
+            "detail": "ಋತುಮಾನದ ಅರ್ಪಣೆ",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "ಗರ್ಭಗುಡಿ ದರ್ಶನ",
+            "detail": "ಪವಿತ್ರ ಕ್ಷಣಗಳು",
+            "image": "@image.krishna",
+            "type": "photo"
+          }
+        ]
+      },
+      {
+        "id": "festivals-and-rathotsava",
+        "title": "ಹಬ್ಬಗಳು ಮತ್ತು ರಥೋತ್ಸವ",
+        "description": "ಉಡುಪಿಯ ಮೆರವಣಿಗೆಗಳು, ರಥೋತ್ಸವಗಳು ಮತ್ತು ಸಾಮೂಹಿಕ ಆಚರಣೆಗಳು.",
+        "cover": "@image.kraj0615",
+        "tags": ["ಹಬ್ಬ", "ರಥೋತ್ಸವ", "ಉಡುಪಿ"],
+        "items": [
+          {
+            "title": "ರಥೋತ್ಸವ ಮೆರವಣಿಗೆ",
+            "detail": "ರಥಬೀದಿ, ಉಡುಪಿ",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          },
+          {
+            "title": "ಹಬ್ಬದ ಸಮಾಗಮ",
+            "detail": "ಮಠದಲ್ಲಿ ಭಕ್ತರು",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "ರಥೋತ್ಸವದ ಮುಖ್ಯಾಂಶಗಳು",
+            "detail": "ರಥ ಹಬ್ಬ",
+            "image": "@image.kraj0615",
+            "type": "video",
+            "duration": "08:15"
+          }
+        ]
+      },
+      {
+        "id": "guru-and-pravachana",
+        "title": "ಗುರು ಮತ್ತು ಪ್ರವಚನ",
+        "description": "ಪೂಜ್ಯ ಶ್ರೀಗಳ ಉಪದೇಶಗಳು, ಆಶೀರ್ವಾದಗಳು ಮತ್ತು ಸಾರ್ವಜನಿಕ ಪ್ರವಚನಗಳು.",
+        "cover": "@image.swamiji",
+        "tags": ["ಗುರು", "ಪ್ರವಚನ", "ಉಪದೇಶ"],
+        "items": [
+          {
+            "title": "ಪೂಜ್ಯ ಶ್ರೀಗಳು",
+            "detail": "ದೈನಂದಿನ ಪೂಜೆ",
+            "image": "@image.swamiji",
+            "type": "photo"
+          },
+          {
+            "title": "ಆಶೀರ್ವಚನ",
+            "detail": "ಭಕ್ತರಿಗೆ ಆಶೀರ್ವಾದ",
+            "image": "@image.swamiji",
+            "type": "photo"
+          },
+          {
+            "title": "ಪರ್ಯಾಯ ಪ್ರವಚನ",
+            "detail": "ಸಾರ್ವಜನಿಕ ಪ್ರವಚನ",
+            "image": "@image.swamiji",
+            "type": "video",
+            "duration": "24:02"
+          }
+        ]
+      },
+      {
+        "id": "annadana-seva",
+        "title": "ಅನ್ನದಾನ ಸೇವೆ",
+        "description": "ಯಾತ್ರಿಕರು ಮತ್ತು ಭಕ್ತರಿಗೆ ಪವಿತ್ರ ಭೋಜನವನ್ನು ತಯಾರಿಸಿ ಬಡಿಸುವ ಸೇವೆ.",
+        "cover": "@image.kraj0615",
+        "tags": ["ಅನ್ನದಾನ", "ಸೇವೆ", "ಸಮುದಾಯ"],
+        "items": [
+          {
+            "title": "ಅನ್ನದಾನ ಸಭಾಂಗಣ",
+            "detail": "ಪ್ರತಿದಿನ ಯಾತ್ರಿಕರಿಗೆ ಊಟ",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          },
+          {
+            "title": "ಭೋಜನ ತಯಾರಿ",
+            "detail": "ಅಡುಗೆಮನೆಯಲ್ಲಿ ಸೇವೆ",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "ಭಕ್ತರಿಗೆ ಭೋಜನ ಸೇವೆ",
+            "detail": "ಸಾಮೂಹಿಕ ಭೋಜನ",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          }
+        ]
+      },
+      {
+        "id": "go-shala",
+        "title": "ಗೋಶಾಲೆ",
+        "description": "ಮಠದ ಪವಿತ್ರ ಗೋಶಾಲೆಯಲ್ಲಿ ಗೋಸೇವೆ, ಗೋಪೂಜೆ ಮತ್ತು ದೈನಂದಿನ ಆರೈಕೆ.",
+        "cover": "@image.goMatha",
+        "tags": ["ಗೋಶಾಲೆ", "ಗೋಸೇವೆ", "ಗೋಪೂಜೆ"],
+        "items": [
+          {
+            "title": "ಗೋಶಾಲೆ",
+            "detail": "ದೈನಂದಿನ ಗೋಸೇವೆ",
+            "image": "@image.goMatha",
+            "type": "photo"
+          },
+          {
+            "title": "ಗೋಪೂಜೆ",
+            "detail": "ಪವಿತ್ರ ಪೂಜೆ",
+            "image": "@image.goMatha",
+            "type": "photo"
+          },
+          {
+            "title": "ಗೋಪೂಜಾ ಸಮಾರಂಭ",
+            "detail": "ಮಠದ ಗೋಶಾಲೆ",
+            "image": "@image.goMatha",
+            "type": "video",
+            "duration": "06:30"
+          }
+        ]
+      },
+      {
+        "id": "shiroor-matha-campus",
+        "title": "ಶಿರೂರು ಮಠದ ಆವರಣ",
+        "description": "ಮಠದ ಪವಿತ್ರ ಸ್ಥಳಗಳು, ವಾಸ್ತುಶಿಲ್ಪ ಮತ್ತು ದೈನಂದಿನ ಜೀವನ.",
+        "cover": "@image.shiroorMutt",
+        "tags": ["ಮಠ", "ವಾಸ್ತುಶಿಲ್ಪ", "ಉಡುಪಿ"],
+        "items": [
+          {
+            "title": "ಶಿರೂರು ಮಠ",
+            "detail": "ರಥಬೀದಿ, ಉಡುಪಿ",
+            "image": "@image.shiroorMutt",
+            "type": "photo"
+          },
+          {
+            "title": "ಮಠದ ಪ್ರಾಂಗಣ",
+            "detail": "ಪವಿತ್ರ ವಾಸ್ತುಶಿಲ್ಪ",
+            "image": "@image.shiroorMutt",
+            "type": "photo"
+          },
+          {
+            "title": "ಮಠದ ದೈನಂದಿನ ಜೀವನ",
+            "detail": "ದೈನಂದಿನ ಚಟುವಟಿಕೆ",
+            "image": "@image.kraj0615",
+            "type": "photo"
+          }
+        ]
+      },
+      {
+        "id": "paryaya-moments",
+        "title": "ಪರ್ಯಾಯದ ಕ್ಷಣಗಳು",
+        "description": "ಪರ್ಯಾಯ ಅವಧಿಯ ಸಮಾರಂಭಗಳು, ಸಿದ್ಧತೆಗಳು ಮತ್ತು ಸ್ಮರಣೀಯ ಕ್ಷಣಗಳು.",
+        "cover": "@image.kraj0835",
+        "tags": ["ಪರ್ಯಾಯ", "ಸಮಾರಂಭ", "ಪರಂಪರೆ"],
+        "items": [
+          {
+            "title": "ಪರ್ಯಾಯದ ಸಿದ್ಧತೆಗಳು",
+            "detail": "ಮಠದ ಸಮುದಾಯ",
+            "image": "@image.kraj0835",
+            "type": "photo"
+          },
+          {
+            "title": "ವಿಧಿವತ್ತಾದ ಪೂಜೆ",
+            "detail": "ಪವಿತ್ರ ಆಚರಣೆ",
+            "image": "@image.krishna",
+            "type": "photo"
+          },
+          {
+            "title": "ಪರ್ಯಾಯದ ಮುಖ್ಯಾಂಶಗಳು",
+            "detail": "ಆಯ್ದ ಕ್ಷಣಗಳು",
+            "image": "@image.swamiji",
+            "type": "video",
+            "duration": "18:20"
+          }
+        ]
       }
     ]
   },
