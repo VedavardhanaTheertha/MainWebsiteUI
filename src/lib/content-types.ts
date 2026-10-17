@@ -1,64 +1,27 @@
 // Hand-authored shape for the generated content object (src/gen/content.ts).
-// The codegen script emits plain JS object literals from YAML — this interface
-// gives both locales one common, widened type (rather than each locale inferring
-// its own literal-string type from `as const`, which made content.en and
-// content.kn structurally incompatible with each other).
+// Codegen assembles object literals from canonical JSON and Markdown sources.
+// Discovered languages share a widened type rather than incompatible literal types.
 import type { NavItem } from "./nav-types";
-import type { Schedulable } from "./scheduler";
+import type { EditorialCopy, UiCopy } from "./ui-copy-types";
 
 interface LinkRef {
   label: string;
   href: string;
 }
 
-export type Carousel1Popup =
-  | { kind: "body"; heading: string; body: string; link: LinkRef }
-  | { kind: "seva-list"; heading: string; seva_list: { name: string; desc: string }[]; link: LinkRef };
-
-export interface Carousel1Item extends Schedulable {
+export interface HomePageCard {
   id: string;
-  tag: string;
   title: string;
-  summary: string;
-  bg: string;
-  img_position: string;
-  launch_date: string | null;
-  end_date: string | null;
-  pinned_date: string | null;
-  popup: Carousel1Popup;
+  description: string;
+  image: string;
+  page_type: string;
+  url: string;
+  footnote: string;
 }
 
-export type Carousel2Popup =
-  | { kind: "body"; heading: string; body: string; link: LinkRef }
-  | { kind: "events"; heading: string; events: { date: string; name: string }[]; link: LinkRef }
-  | { kind: "projects"; heading: string; projects: { status: string; name: string }[]; link: LinkRef }
-  | { kind: "stats"; heading: string; stats: { value: string; label: string }[]; link: LinkRef }
-  | { kind: "volunteer"; heading: string; body: string; link: LinkRef };
-
-export interface Carousel2Item extends Schedulable {
-  id: string;
-  tag: string;
-  title: string;
-  teaser: string;
-  img: string;
-  launch_date: string | null;
-  end_date: string | null;
-  pinned_date: string | null;
-  popup: Carousel2Popup;
-}
-
-export interface ExploreLink {
-  title: string;
-  desc: string;
-  href: string;
-  cta: string;
-}
-
-export interface GuidanceCard {
-  symbol: string;
-  heading: string;
-  sub: string;
-  href: string;
+export interface HomeIconCard extends HomePageCard {
+  icon: "calendar" | "hand-heart" | "sparkles" | "book-open" | "video";
+  tone: "saffron" | "green" | "amber" | "rose" | "plum";
 }
 
 export interface FooterShape {
@@ -66,7 +29,7 @@ export interface FooterShape {
   address: string;
   policies_label: string;
   policies: LinkRef[];
-  social: LinkRef[];
+  social: (LinkRef & { connectId: string })[];
 }
 
 export interface HeroIntro {
@@ -76,54 +39,26 @@ export interface HeroIntro {
   images: string[];
 }
 
-export interface SpotlightItem {
-  tag: string;
-  title: string;
-  sub: string;
-  img: string;
-  href: string;
-}
-
-export interface TileItem {
-  icon: string;
-  label: string;
-  href: string;
-  tone: string;
-}
-
-export interface FeatureItem {
-  img: string;
-  title: string;
-  cta_label: string;
-  cta_href: string;
-}
-
 export interface HomeShape {
   hero: { invocation: string; title: string; subtitle: string; body: string };
   hero_intro: HeroIntro;
-  spotlight: SpotlightItem[];
-  tiles: TileItem[];
-  features: FeatureItem[];
-  carousel1: { items: Carousel1Item[] };
-  carousel2: { items: Carousel2Item[] };
-  explore_links: ExploreLink[];
-  guidance_cards: GuidanceCard[];
+  top_carousel: HomePageCard[];
+  icon_carousel: HomeIconCard[];
+  bottom_carousel: HomePageCard[];
+  explore_carousel: HomePageCard[];
+  remidies_carousel: HomePageCard[];
   explore_label: string;
   explore_title: string;
   guidance_label: string;
   guidance_title: string;
 }
 
-// Legacy flat keys mechanically migrated from src/lib/translations.ts — every
-// value is a plain string, accessed directly as e.g. tr.about_heritage.
-export interface LegacyFlatKeys {
+// Shared top-level labels consumed directly from the localized dictionary.
+export interface FlatCopyKeys {
   /** Institution name as shown in the footer. */
   site_name: string;
   /** Alt text for the logo, used in every header and the footer. */
   logo_alt: string;
-  blog_eyebrow: string;
-  blog_title: string;
-  blog_back: string;
   /** Browser tab title and search-result headline. */
   meta_title: string;
   /** Search-result summary text. */
@@ -131,10 +66,8 @@ export interface LegacyFlatKeys {
   /** Search keywords. Held in content so they are placeholder-substituted outside production. */
   meta_keywords: string[];
   nav_home: string;
-  nav_about: string;
   nav_sevas: string;
   nav_events: string;
-  nav_blog: string;
   nav_contact: string;
   header_tagline: string;
   donate: string;
@@ -142,54 +75,11 @@ export interface LegacyFlatKeys {
   offer_seva: string;
   qr_title: string;
   qr_subtitle: string;
-  qr_upi_label: string;
-  hero_invocation: string;
-  hero_title: string;
-  hero_subtitle: string;
-  hero_body: string;
-  qa_volunteer: string;
-  qa_kotilekhana: string;
-  qa_events: string;
-  qa_volunteer_sub: string;
-  qa_kotilekhana_sub: string;
-  qa_events_sub: string;
-  swamiji_label: string;
-  swamiji_lineage: string;
-  swamiji_paryaya: string;
-  timings_label: string;
-  timings_darshan: string;
-  seva_label: string;
-  seva_title: string;
-  seva_body: string;
-  seva_view_all: string;
-  seva_from: string;
-  seva_offer: string;
-  seva_special: string;
-  volunteer_label: string;
-  volunteer_title: string;
-  volunteer_body: string;
-  volunteer_cta: string;
-  volunteer_needed: string;
-  sig_label: string;
-  sig_title: string;
-  mile_label: string;
-  mile_title: string;
-  mile_upcoming: string;
-  mile_view_all: string;
-  mile_learn: string;
   footer_explore: string;
   footer_policies: string;
   footer_tagline: string;
   footer_built: string;
   footer_touch: string;
-  about_heritage: string;
-  about_title: string;
-  about_subtitle: string;
-  about_founding: string;
-  about_pontiff: string;
-  about_parampara: string;
-  about_parampara_sub: string;
-  about_placeholder: string;
   sevas_label: string;
   sevas_title: string;
   sevas_subtitle: string;
@@ -201,6 +91,14 @@ export interface LegacyFlatKeys {
   sevas_featured_title: string;
   sevas_all_title: string;
   sevas_filter_category: string;
+  sevas_filter_deity: string;
+  sevas_all_deities: string;
+  sevas_amount_min: string;
+  sevas_amount_max: string;
+  sevas_sort: string;
+  sevas_sort_default: string;
+  sevas_sort_ascending: string;
+  sevas_sort_descending: string;
   sevas_all_categories: string;
   sevas_clear_filters: string;
   sevas_results_template: string;
@@ -240,19 +138,6 @@ export interface LegacyFlatKeys {
   contact_call_btn: string;
 }
 
-export interface LibraryCategoryItem {
-  name: string;
-  sub: string;
-}
-
-export interface LibraryCategory {
-  title: string;
-  kn: string;
-  img: string;
-  desc: string;
-  items: LibraryCategoryItem[];
-}
-
 export interface BhaktiPageContent {
   metadata_title: string;
   metadata_description: string;
@@ -275,21 +160,24 @@ export interface BhaktiPageContent {
   reading: string;
 }
 
-export interface BhaktiCategory extends LibraryCategory {
-  page: BhaktiPageContent;
-}
-
 export interface LibraryShape {
-  mantra: LibraryCategory;
-  shastra: LibraryCategory;
-  bhakti: BhaktiCategory;
-  jnana: LibraryCategory;
-  dharma: LibraryCategory;
-  eyebrow: string;
-  page_title: string;
+  bhakti: { page: BhaktiPageContent };
 }
 
 export interface LibraryBrowserShape {
+  clear_search: string;
+  open_article: string;
+  related_articles: string;
+  back_collection: string;
+  unavailable: string;
+  loading: string;
+  error: string;
+  retry: string;
+  collection_count: string;
+  read_minutes: string;
+  estimated_read_minutes: string;
+  devotional_context: string;
+  detail_labels: Record<string, string>;
   featured_title: string;
   all_items: string;
   search_label: string;
@@ -329,13 +217,6 @@ export interface SectionHubsShape {
   story: SectionHubContent;
 }
 
-export interface Connect2Shape {
-  address: string;
-  phone: string;
-  email: string;
-  hours: string;
-}
-
 export interface EventTab {
   id: string;
   label: string;
@@ -354,6 +235,22 @@ export interface EventListItem {
 }
 
 export interface EventsExactShape {
+  date_from: string;
+  date_to: string;
+  month: string;
+  clear_filters: string;
+  results_template: string;
+  load_error: string;
+  retry: string;
+  event_not_found: string;
+  copy_link: string;
+  link_copied: string;
+  share: string;
+  share_error: string;
+  add_calendar: string;
+  sort_label: string;
+  sort_earliest: string;
+  sort_latest: string;
   tabs: EventTab[];
   list?: EventListItem[];
   search_placeholder?: string;
@@ -382,25 +279,23 @@ export interface EventsSectionsShape {
   pooja_rituals: string;
 }
 
-export interface MediaPhoto {
-  title: string;
-  detail: string;
-  img: string;
+export interface MediaMetadata {
+  id?: string;
+  caption?: string;
+  fullImage?: string;
+  albumId?: string;
+  recordedAt?: string;
+  language?: string;
 }
 
-export interface MediaVideo {
-  title: string;
-  detail: string;
-  dur: string;
-  img: string;
-}
-
-export interface MediaAlbumItem {
+export interface MediaAlbumItem extends MediaMetadata {
   title: string;
   detail: string;
   image: string;
   type: "photo" | "video";
   duration?: string;
+  videoUrl?: string;
+  externalUrl?: string;
 }
 
 export interface MediaAlbum {
@@ -409,6 +304,8 @@ export interface MediaAlbum {
   description: string;
   cover: string;
   tags: string[];
+  date?: string;
+  event?: string;
   items: MediaAlbumItem[];
 }
 
@@ -425,12 +322,39 @@ export interface MediaShape {
   no_results: string;
   show_more: string;
   open_album: string;
+  no_media_results: string;
   album_items: string;
   photo_label: string;
   video_label: string;
-  gallery: string[];
-  photos: MediaPhoto[];
-  videos: MediaVideo[];
+  photos_label: string;
+  videos_label: string;
+  date_from: string;
+  date_to: string;
+  event_filter: string;
+  all_events: string;
+  type_filter: string;
+  all_types: string;
+  sort_label: string;
+  newest: string;
+  oldest: string;
+  clear_filters: string;
+  date_unknown: string;
+  close_viewer: string;
+  previous_item: string;
+  next_item: string;
+  position_template: string;
+  back_to_albums: string;
+  parent_album: string;
+  item_link: string;
+  open_photo: string;
+  open_video: string;
+  playback_unavailable: string;
+  media_error: string;
+  item_not_found: string;
+  album_not_found: string;
+  duration_label: string;
+  recorded_label: string;
+  language_label: string;
   albums: MediaAlbum[];
 }
 
@@ -440,36 +364,16 @@ export interface ImageListItem {
   img: string;
 }
 
-export interface DonationMaterial {
-  name: string;
-  sub: string;
-  unit: string;
-  icon: string;
-}
-
-export interface DonationShape {
-  amounts: string[];
-  upi: string;
-  materials: DonationMaterial[];
-}
-
-export interface StoryItem {
-  name: string;
-  sub: string;
-}
-
-export interface StoryEntry {
-  title: string;
-  img: string;
-  intro: string;
-  items: StoryItem[];
-}
-
-export interface StoriesShape {
-  parampara: StoryEntry;
-  articles: StoryEntry;
-  science: StoryEntry;
-  pilgrim: StoryEntry;
+export interface LearnItem extends ImageListItem {
+  id?: string;
+  href?: string;
+  description?: string;
+  level?: string;
+  language?: string;
+  format?: string;
+  duration?: string;
+  enrollmentUrl?: string;
+  availability?: string;
 }
 
 export interface PageMetadataEntry {
@@ -499,18 +403,26 @@ export interface ConnectPageShape {
   audience: string;
 }
 
-export interface EventPageItem {
-  date: string;
-  displayDate: string;
-  category: string;
-  title: string;
-  location: string;
-  time: string;
-  description: string;
-  thisWeek: boolean;
-}
-
 export interface PagesShape {
+  local_copy: Record<string, string>;
+  learn: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    details: string;
+    back: string;
+    level: string;
+    language: string;
+    format: string;
+    duration: string;
+    unspecified: string;
+    availability: string;
+    enroll: string;
+    paths_title: string;
+    empty: string;
+    not_found: string;
+    suggested_paths: Array<{ title: string; description: string; itemIds: string[] }>;
+  };
   parampara: {
     title: string;
     intro: string;
@@ -527,37 +439,30 @@ export interface PagesShape {
     summary: string;
     details: string;
     details_placeholder: string;
+    timeline: string;
+    list: string;
+    show_timeline: string;
+    show_list: string;
+    view: string;
+    search: string;
+    no_results: string;
+    clear_search: string;
+    not_found: string;
+    references: string;
+    related_places: string;
+    related_works: string;
   };
   detected: Record<string, string>;
-  about: {
-    title: string;
-    subtitle: string;
-    founder_alt: string;
-    founder_caption: string;
-    founding_paragraphs: string[];
-    pontiff_alt: string;
-    pontiff_name: string;
-    pontiff_line: string;
-    pontiff_paragraphs: string[];
-    parampara_intro: string;
-    parampara_note: string;
-    parampara: string[];
-  };
   contact: {
     reach_title: string;
     branches: Array<{ name: string; type: string; address: string; phone: string; email: string; hours: string; mapLink: string }>;
   };
-  events: { items: EventPageItem[] };
   media_subtitle: string;
   projects: {
     eyebrow: string;
-    completed: Array<{ name: string; year: string; desc: string }>;
-    ongoing: Array<{ name: string; desc: string; progress: number }>;
-    upcoming: Array<{ name: string; desc: string }>;
     vision: string;
   };
   terms: { acceptance: string; donations: string; property: string; disclaimer: string };
-  v2: Record<string, string>;
   volunteer_question: string;
 }
 
@@ -578,24 +483,47 @@ export interface LanguageDescriptor {
   is_default: boolean;
 }
 
-// One entry per folder found in content/blog/. `articles` is keyed by language
-// code and always has an entry for every discovered language: a post without a
-// translation resolves to the default language rather than disappearing.
-export interface BlogArticle {
-  title: string;
-  /** Body pre-rendered to HTML at build time. */
-  html: string;
-}
-
-export interface BlogPost {
-  slug: string;
-  date: string;
-  hero: string | null;
-  tags: string[];
-  articles: Record<string, BlogArticle>;
-}
-
-export interface ContentShape extends LegacyFlatKeys {
+export interface ContentShape extends FlatCopyKeys {
+  ui: UiCopy;
+  editorial: EditorialCopy;
+  bhakti_controls: {
+    composer: string; ankita: string; composition_type: string; all: string;
+    reading_size: string; print: string; copy_link: string; copied: string;
+    copy_failed: string; load_failed: string; retry: string; loading: string;
+    clear_filters: string; type_unavailable: string;
+  };
+  page_controls: {
+    open_filters: string;
+    close_filters: string;
+    pause_motion: string;
+    resume_motion: string;
+    close: string;
+    unavailable: string;
+    call: string;
+    email: string;
+  };
+  public_actions: {
+    whatsapp_label: string;
+    subscribe_label: string;
+    donate_label: string;
+    donate_tooltip: string;
+    volunteer_label: string;
+    payment_label: string;
+    whatsapp_channel: string;
+    send_email: string;
+    donation_note: string;
+    donation_email_message: string;
+    donation_email_subject: string;
+  };
+  announcement: {
+    label: string;
+    dismiss: string;
+    eyebrow: string;
+    title: string;
+    body: string;
+    cta: string;
+    href: string;
+  };
   /** Self-description of the language file. Metadata, not display content. */
   _language?: LanguageDescriptor;
   local_preview: {
@@ -610,7 +538,6 @@ export interface ContentShape extends LegacyFlatKeys {
   library_browser: LibraryBrowserShape;
   library_sections: LibrarySectionsShape;
   section_hubs: SectionHubsShape;
-  connect2: Connect2Shape;
   connect_page: ConnectPageShape;
   events_exact: EventsExactShape;
   events_sections?: EventsSectionsShape;
@@ -618,10 +545,8 @@ export interface ContentShape extends LegacyFlatKeys {
   events_this_week?: string;
   events_all?: string;
   media: MediaShape;
-  learn: ImageListItem[];
+  learn: LearnItem[];
   volunteer_ops: ImageListItem[];
-  donation: DonationShape;
   page_metadata: Record<string, PageMetadataEntry>;
   pages: PagesShape;
-  stories: StoriesShape;
 }

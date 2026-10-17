@@ -1,4 +1,10 @@
 import MiniSearch, { type SearchOptions } from "minisearch";
+import { searchSettings } from "@/gen/settings/search";
+
+export function getSearchProfile(profile: keyof typeof searchSettings.profiles) {
+  const boost = searchSettings.profiles[profile];
+  return { fields: Object.keys(boost), boost };
+}
 
 export interface MiniSearchConfig<T> {
   fields: (keyof T & string)[] | string[];
@@ -23,7 +29,21 @@ export function expandSearchTerm(term: string): string[] {
 }
 
 export function fuzzySearchTerm(term: string): number | false {
-  return Array.from(term).length > 3 ? 0.2 : false;
+  return searchSettings.fuzzyTolerance > 0 &&
+    Array.from(term).length >= searchSettings.fuzzyMinLength
+    ? searchSettings.fuzzyTolerance
+    : false;
+}
+
+function searchOptions<T>(config: MiniSearchConfig<T>): SearchOptions {
+  return {
+    boost: (config.boost ?? {}) as Record<string, number>,
+    prefix: searchSettings.prefix,
+    fuzzy: fuzzySearchTerm,
+    combineWith: "AND",
+    processTerm: normalizeSearchTerm,
+    ...config.searchOptions,
+  };
 }
 
 /**
@@ -53,14 +73,7 @@ export function createSearchIndex<T extends object>(
       }
       return val != null ? String(val) : "";
     },
-    searchOptions: {
-      boost: config.boost as Record<string, number> | undefined,
-      prefix: true,
-      fuzzy: fuzzySearchTerm,
-      combineWith: "AND",
-      processTerm: normalizeSearchTerm,
-      ...config.searchOptions,
-    },
+    searchOptions: searchOptions(config),
   });
 
   miniSearch.addAll(docs);
@@ -75,7 +88,7 @@ export function createSearchIndex<T extends object>(
 /**
  * Executes a full-text search against the given MiniSearch index.
  * If query is empty or only whitespace, returns original items.
- * Falls back to OR combination if an AND search on multiple words yields zero hits.
+ * Optionally falls back to OR if an AND search on multiple words yields zero hits.
  */
 export function searchItems<T extends object>(
   index: SearchIndex<T>,
@@ -96,13 +109,10 @@ export function searchItems<T extends object>(
   let results = index.miniSearch.search(trimmed, options);
 
   // 2. Fallback to OR combination if multiple terms yielded zero results
-  if (results.length === 0 && /\s+/.test(trimmed)) {
+  if (searchSettings.multiwordOrFallback && results.length === 0 && /\s+/.test(trimmed)) {
     results = index.miniSearch.search(trimmed, {
       ...options,
       combineWith: "OR",
-      prefix: true,
-      fuzzy: fuzzySearchTerm,
-      processTerm: normalizeSearchTerm,
     });
   }
 
@@ -138,14 +148,7 @@ export async function loadCompressedIndex<T extends object>(
     fields: config.fields as string[],
     idField: "__search_id",
     processTerm: expandSearchTerm,
-    searchOptions: {
-      boost: config.boost as Record<string, number> | undefined,
-      prefix: true,
-      fuzzy: fuzzySearchTerm,
-      combineWith: "AND",
-      processTerm: normalizeSearchTerm,
-      ...config.searchOptions,
-    },
+    searchOptions: searchOptions(config),
   });
 
   return {

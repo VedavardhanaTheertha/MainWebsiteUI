@@ -8,10 +8,10 @@ import SiteHeader from "@/components/SiteHeader";
 import MobileHeader from "@/components/MobileHeader";
 import SiteFooter from "@/components/SiteFooter";
 import QRModal from "@/components/QRModal";
-import VolunteerModal from "@/components/VolunteerModal";
 import DonateModal from "@/components/DonateModal";
 import YajnaAnnouncement from "@/components/YajnaAnnouncement";
 import LocalContentToggle from "@/components/LocalContentToggle";
+import HorizontalScrollSupport from "@/components/HorizontalScrollSupport";
 
 const marcellus = Marcellus({
   subsets: ["latin"],
@@ -73,6 +73,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">
         <LanguageProvider>
+          <HorizontalScrollSupport />
           <LocalContentToggle />
           {/* Top utility bar — language switcher, centre sloka, social icons */}
           <TopBar />
@@ -87,7 +88,6 @@ export default function RootLayout({
 
           {/* Modals */}
           <QRModal />
-          <VolunteerModal />
           <DonateModal />
           <YajnaAnnouncement />
         </LanguageProvider>

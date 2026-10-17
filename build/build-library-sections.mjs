@@ -7,67 +7,53 @@ import { parseMarkdownFrontmatter, normalizeSearchText } from "./content-utils.m
 import { renderMarkdown } from "./markdown.mjs";
 import { describeContentMode } from "./environment-utils.mjs";
 import { librarySections as sectionDefinitions } from "./library-sections.config.mjs";
+import { parseKnowledge, validateRelatedArticles, knowledgeCollectionCounts } from "./knowledge-schema.mjs";
+import { loadEditorialContent, mergeAuthoredSources } from "./editorial-content.mjs";
+import { resolveImageUrl } from "./image-resolution.mjs";
+import { discoverLanguageContent, resolveLocalizedValues, splitLocalizedArticleBody } from "./language-content.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceRoot = path.join(projectRoot, "library");
 const outputRoot = path.join(projectRoot, "src", "gen", "library");
 const idPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+const { codes: languageCodes, defaultLanguage, metadata: languageMetadata } = discoverLanguageContent(projectRoot);
 
 const environmentName = process.env.SITE_ENV || "dev";
 const siteConfig = yaml.load(
   readFileSync(path.join(projectRoot, "config", "site.yml"), "utf8"),
 );
-const defaultLanguageContent = JSON.parse(
-  readFileSync(path.join(projectRoot, "content", "languages", "en.json"), "utf8"),
-);
+const defaultLanguageContent = mergeAuthoredSources(JSON.parse(
+  readFileSync(path.join(projectRoot, siteConfig.content.languages_dir, `${siteConfig.site.default_language}.json`), "utf8"),
+), loadEditorialContent(projectRoot, siteConfig.site.default_language));
 const environment = siteConfig.environments?.[environmentName];
 if (!environment) {
   throw new Error(`SITE_ENV="${environmentName}" is not defined in config/site.yml.`);
 }
 
-function requireBilingual(value, field, sourceName) {
+function requireLocalized(value, field, sourceName) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`${sourceName} must define ${field} with en and kn values.`);
+    throw new Error(`${sourceName} must define ${field} as a language map.`);
   }
-  return {
-    en: requireString(value.en, `${field}.en`, sourceName),
-    kn: requireString(value.kn, `${field}.kn`, sourceName),
-  };
+  requireString(value[defaultLanguage], `${field}.${defaultLanguage}`, sourceName);
+  for (const [code, text] of Object.entries(value)) requireString(text, `${field}.${code}`, sourceName);
+  return resolveLocalizedValues(value, languageCodes, defaultLanguage);
 }
 
-function requireBilingualTags(value, sourceName) {
+function requireLocalizedTags(value, sourceName) {
   if (!Array.isArray(value)) {
     throw new Error(`${sourceName} tags must be an array.`);
   }
   return value.map((tag, index) => {
     if (!tag || typeof tag !== "object" || Array.isArray(tag)) {
-      throw new Error(`${sourceName} tags[${index}] must define code, en, and kn.`);
+      throw new Error(`${sourceName} tags[${index}] must define code and localized labels.`);
     }
     return {
       code: requireId(tag.code, `tags[${index}].code`, sourceName),
-      en: requireString(tag.en, `tags[${index}].en`, sourceName),
-      kn: requireString(tag.kn, `tags[${index}].kn`, sourceName),
+      ...requireLocalized(Object.fromEntries(Object.entries(tag).filter(([key]) => key !== "code")), `tags[${index}]`, sourceName),
     };
   });
 }
 
-function splitBilingualBody(body, sourceName) {
-  const match = body.match(
-    /^## English\s*\r?\n([\s\S]*?)\r?\n## ಕನ್ನಡ\s*\r?\n([\s\S]*?)\s*$/u,
-  );
-  if (!match) {
-    throw new Error(
-      `${sourceName} body must contain complete English and Kannada content under ` +
-        '"## English" and "## ಕನ್ನಡ" headings.',
-    );
-  }
-  const en = match[1].trim();
-  const kn = match[2].trim();
-  if (!en || !kn) {
-    throw new Error(`${sourceName} must contain non-empty English and Kannada body content.`);
-  }
-  return { en, kn };
-}
 const contentMode = describeContentMode(
   environment.content_mode,
   environment.default_variant,
@@ -113,39 +99,28 @@ function loadImageResolver() {
     if (typeof imagePath !== "string") {
       throw new Error(`${recordName} ${field} references unknown image alias "${image}".`);
     }
-    return `${baseUrl}${imagePath}`;
+    return resolveImageUrl(imagePath, baseUrl);
   };
 }
 
 function placeholderSection(section, sectionIndex) {
+  const localized = (text) => Object.fromEntries(languageCodes.map((code) => [code, text]));
   return {
     ...section,
     metadataTitle: `dev·library metadata title ${sectionIndex + 1}`,
     metadataDescription: `dev·library metadata description ${sectionIndex + 1} — placeholder copy for layout preview only`,
     items: section.items.map((item, itemIndex) => ({
       ...item,
-      title: {
-        en: `dev·library item title ${sectionIndex + 1}.${itemIndex + 1}`,
-        kn: `dev·library item title ${sectionIndex + 1}.${itemIndex + 1}`,
-      },
-      summary: {
-        en: `dev·library item summary ${sectionIndex + 1}.${itemIndex + 1} — placeholder copy for layout preview only`,
-        kn: `dev·library item summary ${sectionIndex + 1}.${itemIndex + 1} — placeholder copy for layout preview only`,
-      },
-      status: {
-        en: `dev·library status ${itemIndex + 1}`,
-        kn: `dev·library status ${itemIndex + 1}`,
-      },
+      knowledge: undefined,
+      title: localized(`dev·library item title ${sectionIndex + 1}.${itemIndex + 1}`),
+      summary: localized(`dev·library item summary ${sectionIndex + 1}.${itemIndex + 1} — placeholder copy for layout preview only`),
+      status: localized(`dev·library status ${itemIndex + 1}`),
       tags: item.tags.map((tag, tagIndex) => ({
         ...tag,
-        en: `tag ${tagIndex + 1}`,
-        kn: `tag ${tagIndex + 1}`,
+        ...localized(`tag ${tagIndex + 1}`),
       })),
       searchText: `dev library item ${sectionIndex + 1} ${itemIndex + 1} placeholder`,
-      html: {
-        en: `<p>dev·library article ${sectionIndex + 1}.${itemIndex + 1} — placeholder copy for layout preview only.</p>`,
-        kn: `<p>dev·library article ${sectionIndex + 1}.${itemIndex + 1} — placeholder copy for layout preview only.</p>`,
-      },
+      html: localized(`<p>dev·library article ${sectionIndex + 1}.${itemIndex + 1} — placeholder copy for layout preview only.</p>`),
     })),
   };
 }
@@ -157,10 +132,10 @@ async function loadSections(resolveImage) {
     const sectionSourceName = `library/${id}`;
     const sectionCopy = defaultLanguageContent.library_sections?.[id];
     if (!sectionCopy || typeof sectionCopy !== "object" || Array.isArray(sectionCopy)) {
-      throw new Error(`content/languages/en.json must define library_sections.${id}.`);
+      throw new Error(`The configured default language must define library_sections.${id}.`);
     }
     const files = (await readdir(sectionRoot))
-      .filter((file) => file.endsWith(".md"))
+      .filter((file) => file.endsWith(".md") && file !== "_index.md")
       .sort();
     if (files.length < 4) {
       throw new Error(`${sectionSourceName} requires at least four article Markdown files.`);
@@ -174,39 +149,34 @@ async function loadSections(resolveImage) {
       if (`${itemId}.md` !== file) {
         throw new Error(`${sourceName} id must match its filename.`);
       }
-      const title = requireBilingual(metadata.title, "title", sourceName);
-      const summary = requireBilingual(metadata.summary, "summary", sourceName);
-      const status = requireBilingual(metadata.status, "status", sourceName);
-      const tags = requireBilingualTags(metadata.tags, sourceName);
-      const markdown = splitBilingualBody(body, sourceName);
-      const html = {
-        en: renderMarkdown(markdown.en),
-        kn: renderMarkdown(markdown.kn),
-      };
+      const title = requireLocalized(metadata.title, "title", sourceName);
+      const summary = requireLocalized(metadata.summary, "summary", sourceName);
+      const status = requireLocalized(metadata.status, "status", sourceName);
+      const tags = requireLocalizedTags(metadata.tags, sourceName);
+      const markdown = splitLocalizedArticleBody(body, sourceName, languageCodes, defaultLanguage, languageMetadata);
+      const html = Object.fromEntries(Object.entries(markdown).map(([code, text]) => [code, renderMarkdown(text)]));
 
       return {
         id: itemId,
+        knowledge: parseKnowledge(metadata.knowledge, id, sourceName),
         title,
         summary,
         status,
         image: resolveImage(metadata.image ?? definition.image, "image", sourceName),
         tags,
         searchText: normalizeSearchText([
-          title.en,
-          title.kn,
-          summary.en,
-          summary.kn,
-          status.en,
-          status.kn,
-          tags.flatMap((tag) => [tag.code, tag.en, tag.kn]).join(" "),
-          markdown.en,
-          markdown.kn,
+          ...Object.values(title),
+          ...Object.values(summary),
+          ...Object.values(status),
+          ...tags.flatMap((tag) => Object.values(tag)),
+          ...Object.values(markdown),
         ].join(" ")),
         html,
       };
     }));
 
     const itemIds = new Set();
+    validateRelatedArticles(items, sectionSourceName);
     for (const item of items) {
       if (itemIds.has(item.id)) {
         throw new Error(`${sectionSourceName} contains duplicate article id "${item.id}".`);
@@ -287,6 +257,13 @@ const placeholderSections = realSections.map(placeholderSection);
 const defaultSections = contentMode.defaultVariant === "placeholder"
   ? placeholderSections
   : realSections;
+let bhaktiIndex;
+try {
+  bhaktiIndex = JSON.parse(await readFile(path.join(projectRoot, "src", "gen", "bhakti", "index.json"), "utf8"));
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
+const collectionCounts = knowledgeCollectionCounts(realSections, bhaktiIndex);
 
 await rm(outputRoot, { recursive: true, force: true });
 await mkdir(path.join(outputRoot, "content"), { recursive: true });
@@ -295,23 +272,23 @@ for (const section of realSections) {
   const sectionOutput = path.join(outputRoot, "content", section.id);
   await mkdir(sectionOutput, { recursive: true });
   await Promise.all(section.items.map((item) =>
-    Promise.all([
-      writeFile(path.join(sectionOutput, `${item.id}-en.html`), item.html.en, "utf8"),
-      writeFile(path.join(sectionOutput, `${item.id}-kn.html`), item.html.kn, "utf8"),
-    ]),
+    Promise.all(Object.entries(item.html).map(([code, html]) =>
+      writeFile(path.join(sectionOutput, `${item.id}-${code}.html`), html, "utf8"))),
   ));
 }
 
 const output = `// Generated by build/build-library-sections.mjs — do not edit
+import type { KnowledgeDetails } from "@/lib/knowledge-types";
 export interface LibraryArticle {
   id: string;
-  title: { en: string; kn: string };
-  summary: { en: string; kn: string };
-  status: { en: string; kn: string };
+  knowledge?: KnowledgeDetails;
+  title: Record<string, string>;
+  summary: Record<string, string>;
+  status: Record<string, string>;
   image: string;
-  tags: Array<{ code: string; en: string; kn: string }>;
+  tags: Array<{ code: string } & Record<string, string>>;
   searchText: string;
-  html: { en: string; kn: string };
+  html: Record<string, string>;
 }
 
 export interface LibrarySection {
@@ -331,6 +308,13 @@ export const librarySections: LibrarySection[] = ${JSON.stringify(defaultSection
 `;
 
 await writeFile(path.join(outputRoot, "data.ts"), output, "utf8");
+await writeFile(
+  path.join(outputRoot, "presentation.ts"),
+  `// Generated by build/build-library-sections.mjs — do not edit\n` +
+    `export const knowledgeCollectionCounts: Record<string, number> = ${JSON.stringify(collectionCounts)};\n` +
+    `export const knowledgeSections = ${JSON.stringify(realSections.map(({ route, order, image }) => ({ route, order, image })))};\n`,
+  "utf8",
+);
 console.log(
   `Built ${realSections.length} library sections with ` +
     `${realSections.reduce((total, section) => total + section.items.length, 0)} articles.`,

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useLang } from "@/context/LanguageContext";
+import { localizedText } from "@/lib/localization";
 import {
   realEvents,
   placeholderEvents,
@@ -10,7 +11,10 @@ import {
 } from "@/gen/events/data";
 import { imagePaths } from "@/lib/images";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
+import { upcomingEventSettings } from "@/gen/settings/ui-elements";
+import { selectUpcomingEvents } from "@/lib/ui-settings";
 import EventDetailModal from "./EventDetailModal";
+import RailMotionControl from "./RailMotionControl";
 
 const catColor: Record<string, string> = {
   festival: "bg-[#FFF7C5] text-[#92400E]",
@@ -38,32 +42,20 @@ function CategoryBadge({ category, code }: { category: string; code?: string }) 
 
 export default function UpcomingEventRail() {
   const { lang, contentMode, tr } = useLang();
-  const isKn = lang === "kn";
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
-  const viewDetails = tr.events_exact.view_details ?? tr.library_browser.view_details;
 
   const upcomingList = contentMode === "placeholder" ? placeholderEvents : realEvents;
 
-  const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
-  const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const railEvents = selectUpcomingEvents(upcomingList, upcomingEventSettings);
 
-  const railEvents = upcomingList
-    .filter((ev) => {
-      const start = ev.startDate;
-      const end = ev.endDate || ev.startDate;
-      return start <= thirtyDaysLater && end >= todayStr;
-    })
-    .sort((a, b) => a.startDate.localeCompare(b.startDate))
-    .slice(0, 6);
-
-  const scrollRef = useAutoScrollRail(railEvents.length);
+  const [paused, setPaused] = useState(false);
+  const scrollRef = useAutoScrollRail(railEvents.length, paused);
 
   if (railEvents.length === 0) {
     return (
       <div className="py-6 text-center bg-white rounded-2xl border border-[var(--color-line)] p-4">
         <p className="font-body text-xs sm:text-sm text-[var(--color-text-secondary)] italic">
-          {tr.events_exact?.no_upcoming_events || "No scheduled upcoming events at this time."}
+          {tr.events_exact.no_upcoming_events}
         </p>
       </div>
     );
@@ -71,6 +63,10 @@ export default function UpcomingEventRail() {
 
   return (
     <>
+      <div className="relative">
+      {railEvents.length > 1 && (
+        <RailMotionControl className="lg:hidden" paused={paused} onToggle={() => setPaused((value) => !value)} />
+      )}
       {/* Mobile: smooth scrolling carousel */}
       <div
         ref={scrollRef}
@@ -83,12 +79,12 @@ export default function UpcomingEventRail() {
         }}
       >
         {railEvents.map((ev) => {
-          const title = isKn ? ev.title?.kn : ev.title?.en;
-          const displayDate = isKn ? ev.displayDate?.kn : ev.displayDate?.en;
-          const time = isKn ? ev.time?.kn : ev.time?.en;
-          const location = isKn ? ev.location?.kn : ev.location?.en;
+          const title = localizedText(ev.title, lang);
+          const displayDate = localizedText(ev.displayDate, lang);
+          const time = localizedText(ev.time, lang);
+          const location = localizedText(ev.location, lang);
           const primaryCat = ev.categories?.[0];
-          const catLabel = primaryCat ? (isKn ? primaryCat.kn : primaryCat.en) : "";
+          const catLabel = localizedText(primaryCat, lang);
           const imgUrl = ev.image || imagePaths.event || "/slide/1.jpg";
 
           return (
@@ -121,33 +117,31 @@ export default function UpcomingEventRail() {
                 )}
               </div>
               <div className="flex flex-1 flex-col p-4">
-                <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 mb-0.5">
+                <p className="font-body text-sm text-[var(--color-text-secondary)]/80 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>
                 <p className="mb-1 line-clamp-2 font-display text-base font-bold leading-snug text-[var(--color-text-primary)]">
                   {title}
                 </p>
-                <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 line-clamp-1">
+                <p className="font-body text-sm text-[var(--color-text-secondary)]/80 line-clamp-1">
                   {location}
                 </p>
-                <span className="mt-auto pt-3 text-xs font-semibold text-[var(--color-text-brand)]">
-                  {viewDetails}
-                </span>
               </div>
             </div>
           );
         })}
       </div>
+      </div>
 
       {/* Desktop: bounded card grid */}
       <div className="hidden lg:grid grid-cols-3 gap-5">
         {railEvents.map((ev) => {
-          const title = isKn ? ev.title?.kn : ev.title?.en;
-          const displayDate = isKn ? ev.displayDate?.kn : ev.displayDate?.en;
-          const time = isKn ? ev.time?.kn : ev.time?.en;
-          const location = isKn ? ev.location?.kn : ev.location?.en;
+          const title = localizedText(ev.title, lang);
+          const displayDate = localizedText(ev.displayDate, lang);
+          const time = localizedText(ev.time, lang);
+          const location = localizedText(ev.location, lang);
           const primaryCat = ev.categories?.[0];
-          const catLabel = primaryCat ? (isKn ? primaryCat.kn : primaryCat.en) : "";
+          const catLabel = localizedText(primaryCat, lang);
           const imgUrl = ev.image || imagePaths.event || "/slide/1.jpg";
 
           return (
@@ -180,7 +174,7 @@ export default function UpcomingEventRail() {
                 )}
               </div>
               <div className="flex flex-1 flex-col p-4">
-                <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 mb-0.5">
+                <p className="font-body text-sm text-[var(--color-text-secondary)]/80 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>
                 <p className="font-display font-bold text-[var(--color-text-primary)] text-base leading-snug mb-1 line-clamp-2">
@@ -189,9 +183,6 @@ export default function UpcomingEventRail() {
                 <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 line-clamp-1">
                   {location}
                 </p>
-                <span className="mt-auto pt-3 text-xs font-semibold text-[var(--color-text-brand)]">
-                  {viewDetails}
-                </span>
               </div>
             </article>
           );

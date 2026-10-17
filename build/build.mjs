@@ -79,6 +79,7 @@ console.log(`  base path   : ${environment.base_path || "(site root)"}`);
 console.log("─".repeat(70));
 
 run("cleaning stale output", path.join(rootDir, "build", "clean.mjs"));
+run("generating shared theme", path.join(rootDir, "build", "build-theme-settings.mjs"));
 run("generating shared settings", path.join(rootDir, "build", "build-ui-settings.mjs"));
 run("generating media albums", path.join(rootDir, "build", "build-media-albums.mjs"));
 run("generating Bhakti", path.join(rootDir, "build", "build-bhakti-content.mjs"));

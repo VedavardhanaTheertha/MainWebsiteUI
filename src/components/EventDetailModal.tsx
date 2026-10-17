@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { X, Calendar, Clock, MapPin, User, Tag } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { localized, localizedText } from "@/lib/localization";
 import type { EventItem, EventCategory } from "@/gen/events/data";
 import { imagePaths } from "@/lib/images";
+import { siteConfig } from "@/gen/content";
+import { useDialog } from "@/hooks/useDialog";
+import { createEventCalendar, eventDetailUrl, validEventDate } from "@/lib/event-tools";
 
 interface EventDetailModalProps {
   event: EventItem | null;
@@ -14,36 +18,54 @@ interface EventDetailModalProps {
 
 export default function EventDetailModal({ event, onClose }: EventDetailModalProps) {
   const { lang, tr } = useLang();
-  const isKn = lang === "kn";
   const copy = tr.events_exact;
-
-  useEffect(() => {
-    if (!event) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [event, onClose]);
+  const dialogRef = useDialog(Boolean(event), onClose);
+  const [actionStatus, setActionStatus] = useState({ slug: "", message: "" });
 
   if (!event) return null;
 
-  const title = isKn ? event.title?.kn : event.title?.en;
-  const displayDate = isKn ? event.displayDate?.kn : event.displayDate?.en;
-  const time = isKn ? event.time?.kn : event.time?.en;
-  const location = isKn ? event.location?.kn : event.location?.en;
-  const performers = isKn ? event.performers?.kn : event.performers?.en;
-  const description = isKn ? event.description?.kn : event.description?.en;
-  const details = isKn ? event.details?.kn : event.details?.en;
+  const title = localizedText(event.title, lang);
+  const displayDate = localizedText(event.displayDate, lang);
+  const time = localizedText(event.time, lang);
+  const location = localizedText(event.location, lang);
+  const performers = localized(event.performers, lang);
+  const description = localizedText(event.description, lang);
+  const details = localizedText(event.details, lang);
   const imgUrl = event.image || imagePaths.event || "/slide/1.jpg";
+  const detailUrl = () => eventDetailUrl(window.location.href, event.slug, `${siteConfig.basePath}/events/`);
+  const shareEvent = async (nativeShare: boolean) => {
+    const url = detailUrl();
+    try {
+      if (nativeShare && navigator.share) {
+        await navigator.share({ title, url });
+        setActionStatus({ slug: event.slug, message: "" });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setActionStatus({ slug: event.slug, message: copy.link_copied });
+      }
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        setActionStatus({ slug: event.slug, message: copy.share_error });
+      }
+    }
+  };
+  const downloadCalendar = () => {
+    const calendar = createEventCalendar(event, title, description, location,
+      detailUrl());
+    if (!calendar) return;
+    const url = URL.createObjectURL(new Blob([calendar], { type: "text/calendar;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${event.slug}.ics`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -69,8 +91,8 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-xs transition-colors"
-            aria-label={copy.close_modal ?? "Close"}
+            className="absolute top-3 right-3 z-10 min-h-11 min-w-11 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-xs transition-colors"
+            aria-label={copy.close_modal}
           >
             <X size={20} />
           </button>
@@ -82,12 +104,12 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
                 key={cat.code}
                 className="bg-[rgba(26,17,8,0.8)] backdrop-blur-xs text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
               >
-                {isKn ? cat.kn : cat.en}
+                {localizedText(cat, lang)}
               </span>
             ))}
             {event.isRecurring && (
               <span className="bg-[#166534]/90 text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
-                {copy.recurring_badge ?? "Recurring"}
+                {copy.recurring_badge}
               </span>
             )}
           </div>
@@ -100,7 +122,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
           </h2>
 
           {/* Metadata badges */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[var(--color-text-secondary)] bg-[var(--color-cream-soft)]/60 p-3 rounded-xl border border-[var(--color-line)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm leading-relaxed text-[var(--color-text-secondary)] bg-[var(--color-cream-soft)]/60 p-3 rounded-xl border border-[var(--color-line)]">
             <div className="flex items-center gap-2">
               <Calendar size={15} className="text-[var(--color-saffron-800)] shrink-0" />
               <span className="font-semibold text-[var(--color-text-primary)]">{displayDate}</span>
@@ -129,14 +151,14 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
 
           {/* Description */}
           {description && (
-            <div className="text-sm text-[var(--color-text-primary)] leading-relaxed">
+            <div className="text-base text-[var(--color-text-primary)] leading-relaxed">
               <p>{description}</p>
             </div>
           )}
 
           {/* Details */}
           {details && details !== description && (
-            <div className="text-xs text-[var(--color-text-secondary)] leading-relaxed border-t border-[var(--color-line)] pt-3 whitespace-pre-line">
+            <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed border-t border-[var(--color-line)] pt-3 whitespace-pre-line">
               <p>{details}</p>
             </div>
           )}
@@ -160,7 +182,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
           {event.images && event.images.length > 0 && (
             <div className="pt-2">
               <h4 className="font-body text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-2">
-                {copy.gallery ?? "Event Gallery"}
+                {copy.gallery}
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {event.images.map((gImg, gIdx) => (
@@ -177,14 +199,22 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
         </div>
 
         {/* Footer actions */}
-        <div className="px-4 py-3 sm:px-6 bg-[var(--color-cream-soft)] border-t border-[var(--color-line)] flex items-center justify-end">
+        <div className="px-4 py-3 sm:px-6 bg-[var(--color-cream-soft)] border-t border-[var(--color-line)]">
+          <p role="status" className="text-xs text-[var(--color-text-brand)]">{actionStatus.slug === event.slug ? actionStatus.message : ""}</p>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+          <button type="button" onClick={() => void shareEvent(false)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-xs font-semibold">{copy.copy_link}</button>
+          <button type="button" onClick={() => void shareEvent(true)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-xs font-semibold">{copy.share}</button>
+          <button type="button" onClick={downloadCalendar}
+            disabled={!validEventDate(event.startDate)}
+            className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-xs font-semibold disabled:opacity-40">{copy.add_calendar}</button>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 rounded-xl bg-[var(--color-saffron-600)] text-white font-body text-xs font-semibold hover:bg-[var(--color-saffron-800)] transition-colors"
+            className="min-h-11 px-4 py-1.5 rounded-xl bg-[var(--color-saffron-600)] text-white font-body text-xs font-semibold hover:bg-[var(--color-saffron-800)] transition-colors"
           >
-            {copy.close_modal ?? "Close"}
+            {copy.close_modal}
           </button>
+          </div>
         </div>
       </div>
     </div>

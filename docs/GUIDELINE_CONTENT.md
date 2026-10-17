@@ -7,12 +7,13 @@ integrity, clarity, and consistency.
 >
 > | You are changing | Repository | Path |
 > |---|---|---|
-> | Words shown on a page of the website | **this one** | `content/languages/<code>.json` |
-> | A blog article | **this one** | `content/blog/<slug>/` |
+> | Short UI labels and retained media catalogs | **this one** | `content/languages/<code>.json` |
+> | Editorial pages, Learn and articles | **WebsiteLibrary** | `library/<topic>/` |
+> | Homepage copy and configuration | **Settings submodule** | `settings/` JSON |
 > | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
 >
-> The Bhakti page is generated from the `library` Git submodule. UI labels and blog
-> articles come from this repository's `content/` tree. Initialize submodules recursively.
+> Editorial and Bhakti content is generated from the `library` Git submodule. UI labels
+> remain in this repository's language JSON. Initialize submodules recursively.
 
 ## 1. Respect the Tradition
 
@@ -23,8 +24,8 @@ integrity, clarity, and consistency.
 ## 2. Follow a Structured Format
 
 - Use Markdown headings to create a clear structure.
-- For blog posts, keep shared metadata in `meta.json` and begin each language Markdown
-  file with its level-one title; this project does not use frontmatter.
+- Follow the canonical topic's existing Markdown schema for publication metadata,
+  translated titles, and bodies. Preserve stable IDs and reviewed status.
 - Keep paragraphs concise and readable.
 
 ## 3. Cite Sources

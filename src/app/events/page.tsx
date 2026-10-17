@@ -17,7 +17,7 @@ export default function EventsPage() {
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           <LocalizedCopy path={["events_title"]} />
         </h1>
-        <p className="mx-auto mt-3 flex min-h-10 max-w-2xl items-center justify-center text-sm text-[var(--color-text-brand)]/75 lg:min-h-12 lg:text-base">
+        <p className="mx-auto mt-3 flex min-h-10 max-w-2xl items-center justify-center text-base leading-relaxed text-[var(--color-text-brand)]/75 lg:min-h-12">
           <LocalizedCopy path={["events_subtitle"]} />
         </p>
       </header>

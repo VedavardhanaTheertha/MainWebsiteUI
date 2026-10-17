@@ -27,14 +27,14 @@ import path from "node:path";
 import yaml from "js-yaml";
 import { canonicalForRoute, routeForHtml } from "./canonical-utils.mjs";
 import { describeContentMode } from "./environment-utils.mjs";
+import { loadAuthoredLanguage } from "./authored-content.mjs";
+import { discoverParampara } from "./parampara-content.mjs";
+import { collectRealProse } from "./content-values.mjs";
+import { loadRemedyCarouselCandidates } from "./home-carousels.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outDir = path.join(rootDir, "out");
 const envName = process.env.SITE_ENV || "dev";
-
-// Strings shorter than this are too common to attribute to a content leak
-// ("Donate", "Home"), and would produce noise rather than findings.
-const MIN_LEAK_LENGTH = 30;
 
 const config = yaml.load(readFileSync(path.join(rootDir, "config", "site.yml"), "utf8"));
 const environment = config.environments?.[envName];
@@ -70,34 +70,6 @@ function decodeEntities(html) {
     .replace(/&amp;/g, "&");
 }
 
-/**
- * Gathers the real prose from the default language file — the text that must NOT
- * appear in placeholder-default rendered output. Machine values are excluded
- * because they are deliberately preserved in every environment.
- */
-function collectRealProse(node, out = []) {
-  if (typeof node === "string") {
-    const value = node.trim();
-    const isMachineValue =
-      value.startsWith("/") ||
-      value.startsWith("#") ||
-      value.startsWith("http") ||
-      /^\d{4}-\d{2}-\d{2}$/.test(value);
-    if (value.length >= MIN_LEAK_LENGTH && !isMachineValue) out.push(value);
-    return out;
-  }
-  if (Array.isArray(node)) {
-    for (const item of node) collectRealProse(item, out);
-    return out;
-  }
-  if (node && typeof node === "object") {
-    for (const [key, value] of Object.entries(node)) {
-      if (!key.startsWith("_")) collectRealProse(value, out);
-    }
-  }
-  return out;
-}
-
 // ── Check 1: out/ exists ─────────────────────────────────────────────────────
 
 if (!existsSync(outDir)) {
@@ -106,9 +78,20 @@ if (!existsSync(outDir)) {
 }
 
 const htmlFiles = collectHtmlFiles(outDir);
-const sitemapEligibleHtmlFiles = htmlFiles.filter((file) => routeForHtml(outDir, file) !== null);
+const sitemapEligibleHtmlFiles = htmlFiles.filter((file) => {
+  const route = routeForHtml(outDir, file);
+  return route !== null;
+});
 if (!htmlFiles.length) {
   problems.push("out/ contains no HTML files — the export produced nothing.");
+}
+const defaultLanguage = config.site.default_language;
+const authoredCopy = loadAuthoredLanguage(rootDir, defaultLanguage, config.content.languages_dir);
+const remedyCandidates = loadRemedyCarouselCandidates(rootDir, defaultLanguage, defaultLanguage);
+const exportedRoutes = new Set(sitemapEligibleHtmlFiles.map((file) => routeForHtml(outDir, file)));
+const homeCards = Object.entries(authoredCopy.home).filter(([key]) => key.endsWith("_carousel")).flatMap(([, cards]) => cards);
+for (const url of new Set([...homeCards, ...remedyCandidates].map((card) => card.url))) {
+  if (!exportedRoutes.has(url)) problems.push(`homepage carousel destination ${url} has no exported page.`);
 }
 
 // ── Check 2: web manifest is generated for the selected environment ─────────
@@ -255,8 +238,7 @@ if (mode.switchable && existsSync(generatedContentFile)) {
 }
 if (!mode.switchable && existsSync(generatedContentFile)) {
   const generatedContent = readFileSync(generatedContentFile, "utf8");
-  if (!/alternateContent = null/.test(generatedContent) ||
-      !/alternateBlogPosts: BlogPost\[\] \| null = null/.test(generatedContent)) {
+  if (!/alternateContent = null/.test(generatedContent)) {
     problems.push(`the ${envName} bundle must not contain switchable alternate content.`);
   }
   if (!/alternateHomeHero: HomeHeroData \| null = null/.test(generatedContent)) {
@@ -272,12 +254,12 @@ if (!mode.switchable && existsSync(generatedContentFile)) {
 // ── Check 8: placeholder-default HTML contains no real content ────────────────
 
 if (mode.defaultVariant === "placeholder") {
-  const defaultLangFile = path.join(
-    rootDir,
-    config.content.languages_dir,
-    `${config.site.default_language}.json`
-  );
-  const realProse = collectRealProse(JSON.parse(readFileSync(defaultLangFile, "utf8")));
+  const defaultLang = config.site.default_language;
+  const realProse = [...new Set(collectRealProse({
+    copy: authoredCopy,
+    parampara: discoverParampara(rootDir, [defaultLang], defaultLang),
+    remedies: remedyCandidates,
+  }))];
 
   // Include the generated module to prove real content was not merely hidden from
   // rendered HTML while remaining available in the development client bundle.

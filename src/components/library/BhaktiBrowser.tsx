@@ -1,44 +1,56 @@
 "use client";
 
-import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
-import { collectionPagination } from "@/gen/settings/ui-elements";
-import { bhaktiContentLoaders, loadBhaktiSearchIndex } from "@/gen/bhakti/loaders";
+import { getSearchProfile } from "@/lib/search";
+import { bhaktiReaderSettings, collectionPagination } from "@/gen/settings/ui-elements";
+import { bhaktiContentLoaders, bhaktiPresentation, loadBhaktiSearchIndex } from "@/gen/bhakti/loaders";
+import { localized, localizedText } from "@/lib/localization";
+import { copyReaderLink, matchesBhaktiFilter } from "@/lib/reader-utils";
+import "./bhakti-print.css";
+import AdvancedFilters from "@/components/AdvancedFilters";
 
 export interface BhaktiItem {
   id: string;
   title: string;
-  titleKn?: string;
-  titleEn?: string;
   kruti: string;
-  krutiKn: string;
   ankita: string;
-  ankitaKn: string;
+  localized: Record<string, { title: string; kruti: string; ankita: string }>;
+  searchFields?: Record<string, string>;
+  compositionType?: string;
   searchText?: string;
   html?: string;
-  htmlKn?: string;
-  htmlEn?: string;
+  localizedHtml?: Record<string, string>;
 }
 
 interface SongContent {
   html: string;
-  htmlKn?: string;
-  htmlEn?: string;
+  localizedHtml?: Record<string, string>;
 }
 
 export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const { lang, tr } = useLang();
   const copy = tr.library.bhakti.page;
-  const isKn = lang === "kn";
+  const controls = tr.bhakti_controls;
+  const presentation = localized(bhaktiPresentation, lang);
+  const display = (item: BhaktiItem) => localized(item.localized, lang) ?? item;
   const [query, setQuery] = useState("");
+  const [composer, setComposer] = useState("");
+  const [ankita, setAnkita] = useState("");
+  const [compositionType, setCompositionType] = useState("");
+  const [readingSize, setReadingSize] = useState<number>(bhaktiReaderSettings.initialSize);
+  const [linkStatus, setLinkStatus] = useState("");
+  const [loadFailures, setLoadFailures] = useState<Record<string, boolean>>({});
+  const pendingLoads = useRef(new Map<string, Promise<void>>());
   const deferredQuery = useDeferredValue(query);
   const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
-  const [prevQuery, setPrevQuery] = useState(deferredQuery);
+  const filterKey = JSON.stringify([deferredQuery, composer, ankita, compositionType]);
+  const [prevQuery, setPrevQuery] = useState(filterKey);
 
-  if (prevQuery !== deferredQuery) {
-    setPrevQuery(deferredQuery);
+  if (prevQuery !== filterKey) {
+    setPrevQuery(filterKey);
     setVisibleCount(collectionPagination.initialVisible);
   }
   const [expanded, setExpanded] = useState(true);
@@ -47,87 +59,58 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
 
   const bhaktiSearchConfig = useMemo(
     () => ({
-      fields: [
-        "title",
-        "titleKn",
-        "titleEn",
-        "kruti",
-        "krutiKn",
-        "ankita",
-        "ankitaKn",
-        "searchText",
-      ],
-      boost: {
-        title: 3,
-        titleKn: 3,
-        titleEn: 3,
-        ankita: 2,
-        ankitaKn: 2,
-        kruti: 1.5,
-        krutiKn: 1.5,
-      },
+      ...getSearchProfile("bhakti"),
       extractField: (item: BhaktiItem, field: string) => {
-        const val = (item as unknown as Record<string, unknown>)[field];
+        const val = item.searchFields?.[field] ?? item[field as keyof BhaktiItem];
         return val != null ? String(val) : "";
       },
     }),
     []
   );
 
-  const { results: filtered, ensureLoaded } = useLazyMiniSearch(
+  const { results: searched, ensureLoaded } = useLazyMiniSearch(
     items,
     deferredQuery,
     loadBhaktiSearchIndex,
     bhaktiSearchConfig
   );
 
+  const filtered = searched.filter((item) => matchesBhaktiFilter(item, composer, ankita, compositionType));
+  const composers = useMemo(() => [...new Set(items.map((item) => item.kruti).filter(Boolean))].sort(), [items]);
+  const ankitas = useMemo(() => [...new Set(items.map((item) => item.ankita).filter(Boolean))].sort(), [items]);
+  const compositionTypes = useMemo(() => [...new Set(items.map((item) => item.compositionType).filter((value): value is string => Boolean(value)))].sort(), [items]);
   const visible = filtered.slice(0, visibleCount);
   const selected = items.find((item) => item.id === selectedId) ?? null;
   const selectedContent = selected ? loadedContent[selected.id] : null;
   const currentHtml = selected
-    ? isKn
-      ? selected.htmlKn || selectedContent?.htmlKn || selected.html || selectedContent?.html || null
-      : selected.htmlEn || selectedContent?.htmlEn || selected.html || selectedContent?.html || null
+    ? localizedText(selected.localizedHtml, lang) || localizedText(selectedContent?.localizedHtml, lang) ||
+      selected.html || selectedContent?.html || null
     : null;
 
   const loadSongContent = useCallback((id: string) => {
-    setLoadedContent((prev) => {
-      if (prev[id]) return prev;
-      const item = items.find((i) => i.id === id);
-      if (item?.html || item?.htmlKn || item?.htmlEn) {
-        return {
-          ...prev,
-          [id]: {
-            html: item.html || "",
-            htmlKn: item.htmlKn,
-            htmlEn: item.htmlEn,
-          },
-        };
-      }
-      const loader = bhaktiContentLoaders[id];
-      if (loader) {
-        loader()
-          .then((mod) => {
-            setLoadedContent((current) => ({
-              ...current,
-              [id]: {
-                html: mod.html,
-                htmlKn: mod.htmlKn,
-                htmlEn: mod.htmlEn,
-              },
-            }));
-          })
-          .catch((err) => {
-            console.error("Failed to load bhakti content:", err);
-          });
-      }
-      return prev;
+    if (pendingLoads.current.has(id)) return;
+    const item = items.find((candidate) => candidate.id === id);
+    const inlineContent = item && (item.html || Object.values(item.localizedHtml ?? {}).some(Boolean));
+    const loader = bhaktiContentLoaders[id];
+    setLoadFailures((current) => ({ ...current, [id]: false }));
+    const pending = Promise.resolve().then(async () => {
+      const content = inlineContent
+        ? { html: item.html || "", localizedHtml: item.localizedHtml }
+        : loader ? await loader() : null;
+      if (!content || !(content.html || Object.values(content.localizedHtml ?? {}).some(Boolean))) throw new Error();
+      setLoadedContent((current) => ({ ...current, [id]: content }));
+    }).catch(() => {
+      setLoadFailures((current) => ({ ...current, [id]: true }));
+      pendingLoads.current.delete(id);
     });
+    pendingLoads.current.set(id, pending);
   }, [items]);
 
   useEffect(() => {
     const selectFromHash = () => {
-      const id = decodeURIComponent(window.location.hash.slice(1));
+      let id = "";
+      try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { /* Ignore malformed external links. */ }
+      setLinkStatus("");
       if (id && items.some((item) => item.id === id)) {
         setSelectedId(id);
         setExpanded(false);
@@ -142,6 +125,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   }, [items, loadSongContent]);
 
   const selectItem = (item: BhaktiItem) => {
+    setLinkStatus("");
     setSelectedId(item.id);
     setExpanded(false);
     loadSongContent(item.id);
@@ -150,24 +134,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   };
 
   const prefetchItem = (id: string) => {
-    if (!loadedContent[id] && bhaktiContentLoaders[id]) {
-      bhaktiContentLoaders[id]()
-        .then((mod) => {
-          setLoadedContent((current) =>
-            current[id]
-              ? current
-              : {
-                  ...current,
-                  [id]: {
-                    html: mod.html,
-                    htmlKn: mod.htmlKn,
-                    htmlEn: mod.htmlEn,
-                  },
-                },
-          );
-        })
-        .catch(() => {});
-    }
+    if (!loadedContent[id]) loadSongContent(id);
   };
 
   const backToResults = () => {
@@ -178,12 +145,14 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   };
 
   return (
-    <div className="bg-[radial-gradient(circle_at_12%_8%,rgba(216,170,77,.1),transparent_28rem),linear-gradient(180deg,#fbf3e5_0%,#f7efe4_70%,#f5ecdf_100%)] px-4 py-4 text-[var(--color-text-primary)] sm:px-6">
+    <div className="bhakti-reader-page bg-[radial-gradient(circle_at_12%_8%,rgba(216,170,77,.1),transparent_28rem),linear-gradient(180deg,#fbf3e5_0%,#f7efe4_70%,#f5ecdf_100%)] px-4 py-4 text-[var(--color-text-primary)] sm:px-6">
       <section className="mx-auto max-w-[820px] text-center">
         <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.eyebrow}</p>
         <h1 className="mt-1 font-display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight">{copy.title}</h1>
         <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{copy.description}</p>
-        <label className="mx-auto mt-3 flex h-11 max-w-[690px] items-center gap-3 rounded-full border border-[var(--color-line-strong)] bg-white/80 px-4 shadow-sm focus-within:border-[var(--color-saffron-400)] focus-within:ring-2 focus-within:ring-[var(--color-saffron-100)]">
+        <div className="mx-auto mt-3 max-w-[690px]">
+        <AdvancedFilters active={Boolean(composer || ankita || compositionType)} search={
+        <label className="flex h-11 items-center gap-3 rounded-full border border-[var(--color-line-strong)] bg-white/80 px-4 shadow-sm focus-within:border-[var(--color-saffron-400)] focus-within:ring-2 focus-within:ring-[var(--color-saffron-100)]">
           <span className="sr-only">{copy.search_label}</span>
           <Search aria-hidden="true" className="size-4 text-[var(--color-text-brand)]" />
           <input
@@ -198,6 +167,42 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
             className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-text-muted)]"
           />
         </label>
+        }>
+        <div className="flex flex-wrap gap-3 text-left text-sm">
+          <label className="flex-1 min-w-40">
+            <span className="block mb-1">{controls.composer}</span>
+            <select value={composer} onChange={(event) => setComposer(event.target.value)} className="min-h-11 w-full rounded border border-[var(--color-line)] bg-white px-2">
+              <option value="">{controls.all}</option>
+              {composers.map((value) => <option key={value} value={value}>
+                {display(items.find((item) => item.kruti === value)!).kruti || value}
+              </option>)}
+            </select>
+          </label>
+          <label className="flex-1 min-w-40">
+            <span className="block mb-1">{controls.ankita}</span>
+            <select value={ankita} onChange={(event) => setAnkita(event.target.value)} className="min-h-11 w-full rounded border border-[var(--color-line)] bg-white px-2">
+              <option value="">{controls.all}</option>
+              {ankitas.map((value) => <option key={value} value={value}>
+                {display(items.find((item) => item.ankita === value)!).ankita || value}
+              </option>)}
+            </select>
+          </label>
+          <label className="flex-1 min-w-40">
+            <span className="block mb-1">{controls.composition_type}</span>
+            <select value={compositionType} onChange={(event) => setCompositionType(event.target.value)}
+              disabled={!compositionTypes.length} aria-describedby={!compositionTypes.length ? "bhakti-type-note" : undefined}
+              className="min-h-11 w-full rounded border border-[var(--color-line)] bg-white px-2 disabled:opacity-60">
+              <option value="">{controls.all}</option>
+              {compositionTypes.map((value) => <option key={value} value={value}>{value}</option>)}
+            </select>
+          </label>
+          {!compositionTypes.length && <p id="bhakti-type-note" className="w-full text-xs text-[var(--color-text-secondary)]">{controls.type_unavailable}</p>}
+          {(query || composer || ankita || compositionType) && <button type="button" className="min-h-11 px-3 underline" onClick={() => {
+            setQuery(""); setComposer(""); setAnkita(""); setCompositionType("");
+          }}>{controls.clear_filters}</button>}
+        </div>
+        </AdvancedFilters>
+        </div>
       </section>
 
       <section id="bhakti-results" className="mx-auto mt-4 max-w-6xl border-t border-[var(--color-line-strong)] pt-3 scroll-mt-28">
@@ -207,7 +212,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
             type="button"
             onClick={() => setExpanded((value) => !value)}
             aria-expanded={expanded}
-            className="flex items-center gap-1.5 rounded-full border border-[var(--color-line-strong)] bg-white/50 px-3 py-1.5 text-xs text-[var(--color-text-secondary)] hover:bg-white"
+            className="flex min-h-11 items-center gap-1.5 rounded-full border border-[var(--color-line-strong)] bg-white/50 px-3 py-1.5 text-xs text-[var(--color-text-secondary)] hover:bg-white"
           >
             {expanded ? copy.collapse : copy.expand}
             <ChevronDown className={`size-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
@@ -233,14 +238,14 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
                     className="group relative min-h-30 overflow-hidden rounded-lg border border-[var(--color-line-strong)] bg-white/75 p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-gold-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                   >
                     <span className="absolute left-4 top-0 h-[3px] w-8 bg-[var(--color-gold-500)]" />
-                    <strong className={`block pr-5 text-sm leading-relaxed ${isKn ? "font-kannada" : "font-sans font-semibold"}`}>
-                      {isKn ? item.titleKn || item.title : item.titleEn || item.title}
+                    <strong className={`block pr-5 text-sm leading-relaxed ${presentation?.title_class}`}>
+                      {display(item).title}
                     </strong>
                     <span className="mt-1.5 block text-[11px] text-[var(--color-text-muted)]">
-                      {copy.by}: {isKn ? item.krutiKn || item.kruti : item.kruti}
+                      {copy.by}: {display(item).kruti}
                     </span>
                     <span className="mt-2 block pr-6 text-[11px] text-[var(--color-text-brand)]">
-                      {copy.ankita}: {isKn ? item.ankitaKn || item.ankita : item.ankita}
+                      {copy.ankita}: {display(item).ankita}
                     </span>
                     <span aria-hidden="true" className="absolute bottom-3 right-3 grid size-5 place-items-center rounded-full bg-[var(--color-saffron-600)] text-xs text-white">→</span>
                   </button>
@@ -253,7 +258,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
               <button
                 type="button"
                 onClick={() => setVisibleCount((prev) => prev + collectionPagination.loadIncrement)}
-                className="mx-auto mt-3 block rounded-full border border-[var(--color-line-strong)] px-4 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
+                className="mx-auto mt-3 block min-h-11 rounded-full border border-[var(--color-line-strong)] px-4 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
               >
                 {copy.show_more || copy.show_all}
               </button>
@@ -264,19 +269,41 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
 
       {selected && (
         <section id="bhakti-reading" className="mx-auto mt-4 max-w-6xl scroll-mt-28 pt-2">
-          <div className="flex items-center justify-between border-b border-[var(--color-line-strong)]">
-            <button type="button" onClick={backToResults} className="py-3 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
+          <div className="bhakti-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)]">
+            <button type="button" onClick={backToResults} className="min-h-11 py-3 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
             <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>
+          </div>
+          <div className="bhakti-reading-controls flex flex-wrap items-center gap-3 py-3 text-sm">
+            <label className="flex min-h-11 items-center gap-2">
+              {controls.reading_size}
+              <input type="range" min={bhaktiReaderSettings.minSize} max={bhaktiReaderSettings.maxSize} step={bhaktiReaderSettings.step} value={readingSize}
+                onChange={(event) => setReadingSize(Number(event.target.value))} className="min-h-11 w-28" />
+              <output>{readingSize}%</output>
+            </label>
+            <button type="button" disabled={!currentHtml} onClick={() => window.print()}
+              className="min-h-11 rounded border border-[var(--color-line)] px-3 disabled:opacity-50">{controls.print}</button>
+            <button type="button" onClick={async () => setLinkStatus(
+              await copyReaderLink(window.location.href) ? controls.copied : controls.copy_failed,
+            )} className="min-h-11 rounded border border-[var(--color-line)] px-3">{controls.copy_link}</button>
+            <p role="status">{linkStatus}</p>
           </div>
           {currentHtml ? (
             <article
-              className={`bhakti-literature-content ${isKn ? "font-kannada" : "font-sans"}`}
+              className={`bhakti-literature-content ${presentation?.reader_class}`}
               lang={lang}
+              style={{ fontSize: `${0.95 * readingSize / 100}rem` }}
               dangerouslySetInnerHTML={{ __html: currentHtml }}
             />
+          ) : loadFailures[selected.id] ? (
+            <div role="alert" className="py-12 text-center">
+              <p>{controls.load_failed}</p>
+              <button type="button" onClick={() => loadSongContent(selected.id)}
+                className="min-h-11 mt-3 rounded border border-[var(--color-line)] px-4">{controls.retry}</button>
+            </div>
           ) : (
-            <div className="flex items-center justify-center py-16">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-saffron-600)] border-t-transparent" />
+            <div role="status" className="flex items-center justify-center gap-3 py-16">
+              <div aria-hidden="true" className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-saffron-600)] border-t-transparent" />
+              {controls.loading}
             </div>
           )}
         </section>

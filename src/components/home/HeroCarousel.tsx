@@ -5,33 +5,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 import { alternateHomeHero, defaultContentMode, homeHero } from "@/gen/content";
-
-const AUTO_MS = 4500;
+import { heroSettings } from "@/gen/settings/ui-elements";
 
 export default function HeroCarousel() {
-  const { lang, tr, contentMode } = useLang();
+  const { lang, contentMode } = useLang();
   const hero = contentMode !== defaultContentMode && alternateHomeHero
     ? alternateHomeHero
     : homeHero;
-  const { cta_label } = tr.home.hero_intro;
   const title = hero.titles[lang];
   const { href, images } = hero;
   const [i, setI] = useState(0);
 
   useEffect(() => {
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return undefined;
-    const t = setInterval(() => setI((p) => (p + 1) % images.length), AUTO_MS);
+    if (reduce || !heroSettings.autoplay || images.length <= 1) return undefined;
+    const t = setInterval(() => setI((p) => (p + 1) % images.length), heroSettings.intervalMs);
     return () => clearInterval(t);
   }, [images.length]);
 
   return (
-    <section className="relative w-full h-[462px] lg:h-[600px] overflow-hidden rounded-b-[22px]">
+    <Link href={href} className="relative block w-full h-[462px] lg:h-[600px] overflow-hidden rounded-b-[22px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
       {images.map((src, k) => (
         <div
           key={src}
-          className="absolute inset-0 transition-opacity duration-[900ms]"
-          style={{ opacity: k === i ? 1 : 0 }}
+          className="absolute inset-0 transition-opacity"
+          style={{ opacity: k === i ? 1 : 0, transitionDuration: `${heroSettings.fadeDurationMs}ms` }}
         >
           <Image
             src={src}
@@ -40,7 +38,7 @@ export default function HeroCarousel() {
             priority={k === 0}
             sizes="100vw"
             className="object-cover"
-            style={{ transform: k === i ? "scale(1)" : "scale(1.04)", transition: "transform 7s ease-out" }}
+            style={{ transform: k === i ? "scale(1)" : "scale(1.04)", transition: `transform ${heroSettings.zoomDurationMs}ms ease-out` }}
           />
         </div>
       ))}
@@ -60,14 +58,7 @@ export default function HeroCarousel() {
         >
           {title}
         </h1>
-        <Link
-          href={href}
-          className="inline-block font-body font-semibold text-[15px] text-[var(--color-text-on-brand)] bg-[var(--color-saffron-500)] hover:bg-[var(--color-saffron-600)] active:bg-[var(--color-saffron-700)] rounded-full px-[30px] py-[14px] transition-colors"
-          style={{ boxShadow: "0 8px 22px -8px rgba(0,0,0,.55)" }}
-        >
-          {cta_label}
-        </Link>
       </div>
-    </section>
+    </Link>
   );
 }

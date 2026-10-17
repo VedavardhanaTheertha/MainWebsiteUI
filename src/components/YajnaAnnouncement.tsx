@@ -2,18 +2,55 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useLang } from "@/context/LanguageContext";
+import { announcementSettings } from "@/gen/settings/announcements";
+import { announcementMatchesPage, announcementWindow } from "@/lib/ui-settings";
 
 export default function YajnaAnnouncement() {
-  const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  return <Announcement key={pathname} pathname={pathname} />;
+}
+
+function Announcement({ pathname }: { pathname: string }) {
+  const { tr } = useLang();
+  const copy = tr.announcement;
+  const [visibleFor, setVisibleFor] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    if (sessionStorage.getItem("yajna_dismissed")) return;
-    const timer = setTimeout(() => setVisible(true), 1800);
-    return () => clearTimeout(timer);
-  }, []);
+    if (dismissed || !announcementMatchesPage(announcementSettings, pathname)) return;
+    const storage = announcementSettings.dismissal === "session" ? sessionStorage
+      : announcementSettings.dismissal === "persistent" ? localStorage : null;
+    if (storage?.getItem("yajna_dismissed")) return;
+    const { startsAt, endsAt } = announcementWindow(announcementSettings);
+    let showTimer: ReturnType<typeof setTimeout> | undefined;
+    let boundaryTimer: ReturnType<typeof setTimeout> | undefined;
+    const refresh = () => {
+      const now = Date.now();
+      if (now >= endsAt) {
+        setVisibleFor(null);
+        return;
+      }
+      if (now >= startsAt && showTimer === undefined) {
+        showTimer = setTimeout(() => {
+          if (Date.now() < endsAt) setVisibleFor(pathname);
+        }, announcementSettings.delayMs);
+      }
+      const next = now < startsAt ? startsAt : endsAt;
+      if (Number.isFinite(next)) {
+        boundaryTimer = setTimeout(refresh, Math.min(next - now, 2147483647));
+      }
+    };
+    // Defer state updates until after the effect, including an already-ended schedule.
+    boundaryTimer = setTimeout(refresh, 0);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(boundaryTimer);
+    };
+  }, [pathname, dismissed]);
 
-  if (dismissed) return null;
+  if (dismissed || visibleFor !== pathname || !announcementMatchesPage(announcementSettings, pathname)) return null;
 
   return (
     <>
@@ -39,11 +76,11 @@ export default function YajnaAnnouncement() {
         }
       `}</style>
 
-      {visible && (
+      {visibleFor === pathname && (
         <div
           className="yajna-card fixed bottom-20 lg:bottom-6 right-4 z-[8000] w-[220px] sm:w-[270px]"
           role="complementary"
-          aria-label="Announcement"
+          aria-label={copy.label}
         >
           <div className="relative bg-[var(--color-paper)] border border-[var(--color-saffron-600)]/40 rounded-2xl shadow-2xl overflow-hidden">
 
@@ -52,8 +89,12 @@ export default function YajnaAnnouncement() {
 
             {/* Dismiss */}
             <button
-              onClick={() => { setDismissed(true); sessionStorage.setItem("yajna_dismissed", "1"); }}
-              aria-label="Dismiss"
+              onClick={() => {
+                setDismissed(true);
+                if (announcementSettings.dismissal === "session") sessionStorage.setItem("yajna_dismissed", "1");
+                if (announcementSettings.dismissal === "persistent") localStorage.setItem("yajna_dismissed", "1");
+              }}
+              aria-label={copy.dismiss}
               className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-[var(--color-text-secondary)]/60 hover:text-[var(--color-text-primary)] transition-colors rounded-full"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -62,18 +103,18 @@ export default function YajnaAnnouncement() {
             </button>
 
             {/* Content — clickable, navigates to yajna page */}
-            <Link href="/events/mantra-yajna" className="block px-4 pt-3 pb-4 group">
+            <Link href={copy.href} className="block px-4 pt-3 pb-4 group">
               <p className="font-body text-[9px] tracking-[.2em] uppercase text-[var(--color-text-brand)]/70 font-semibold mb-1">
-                Now Open — Join Us
+                {copy.eyebrow}
               </p>
               <h3 className="yajna-shimmer font-display font-bold text-[13px] leading-snug mb-1.5">
-                Krishna Mantra Lekhana Yajna
+                {copy.title}
               </h3>
               <p className="font-body text-[var(--color-text-brand)]/60 text-[11px] leading-relaxed mb-2">
-                Write &quot;...&quot;
+                {copy.body}
               </p>
               <span className="inline-flex items-center gap-1.5 font-body text-[11px] font-semibold text-[var(--color-text-brand)] group-hover:underline">
-                Register &amp; Know More
+                {copy.cta}
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                 </svg>

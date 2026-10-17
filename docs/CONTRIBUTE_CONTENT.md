@@ -1,104 +1,95 @@
 # How to Add or Update Content
 
-This project has three distinct content workflows. Choose the one that matches the
-material; they are not interchangeable.
+Choose the canonical owner before editing:
 
-| Content | Repository and location | Format |
-|---|---|---|
-| Website labels, page copy, forms, and page metadata | This repository: `content/languages/<code>.json` | JSON |
-| Blog/news articles | This repository: `content/blog/<slug>/` | JSON metadata plus Markdown bodies |
-| Bhakti/library corpus | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary), checked out here as `library/` | Corpus metadata plus Markdown |
+| Content | Location |
+|---|---|
+| Short reusable UI labels and language descriptors | `content/languages/<code>.json` |
+| Topic prose, page metadata, articles, and collection introductions | `library/<topic>/` Markdown |
+| Homepage copy and card selection | `settings/home.json` |
+| Homepage card metadata | `library/pages/*.md` |
+| Original hero groups | `library/hero/{dev,prod}/*.hero.json` |
+| Behavior, navigation, search, images, and theme | Relevant `settings/` JSON |
 
-## Website UI text
+`library/` and `settings/` are separate repositories checked out as Git submodules.
+Publish reviewed changes there before updating the website's submodule references.
+Do not edit generated files under `src/gen/` or place visitor-facing text in `src/`.
 
-1. Edit the value of the appropriate key in `content/languages/en.json`; do not rename
-   keys or put display text in `src/`.
-2. Update translated values where possible. A translation may omit unfinished keys;
-   those keys fall back to the default language and are reported during generation.
-3. Keep the `_language` descriptor intact. See
-   [How to Add or Update Languages](./CONTRIBUTE_LANGUAGE.md) when adding a language.
-4. Run `npm run ci` for a local code checkout, or explain in the pull request when local
-   validation was not possible.
+## UI labels and translations
 
-The generator discovers language JSON files automatically. No component, registry, or
-type file needs to be updated for a content-only change.
+Edit the appropriate default-language value, preserving its key and type. The default
+language is configured in `config/site.yml`. Add translations where they are genuinely
+available; omitted object keys inherit the default. Arrays are replaced as complete
+values, not merged item by item.
 
-## Blog or news article
+Language JSON files are discovered automatically. Follow
+[CONTRIBUTE_LANGUAGE.md](CONTRIBUTE_LANGUAGE.md); no component registry is needed.
 
-1. Create `content/blog/<slug>/`, where `<slug>` is lowercase words separated by
-   hyphens and becomes the URL segment.
-2. Add `meta.json` with a required ISO `YYYY-MM-DD` date. Optional shared fields are
-   `hero` and `tags`.
-3. Add the default-language Markdown file. Its first line must be one level-one title;
-   the remaining Markdown is the body. Do **not** add frontmatter.
-4. Add optional translations as `<code>.md`. When one is absent, that article falls
-   back to the default-language Markdown.
-5. Put new optimized article media under the tracked `public/articles/` directory and
-   reference it as `/articles/<descriptive-file>.webp`. Existing older assets remain
-   directly under `public/` and `public/slide/`; do not move them as part of an article.
-   Do not use `public/media/`; that directory does not exist.
-6. Record new text and media provenance in `ASSET_PROVENANCE.md`.
-7. Run `npm run ci`.
+## Topic and collection Markdown
 
-The build discovers article folders and creates listing, route, sitemap, and canonical
-output automatically. Missing `meta.json`, an invalid date, a missing default-language
-file, or a missing first-line title fails generation. Raw HTML is disabled and rendered
-Markdown is sanitized.
+Follow an existing record of the same kind and retain stable IDs, frontmatter keys,
+source attribution, citations, and review status. Structured page copy uses
+language-keyed frontmatter fields; knowledge articles use the topic's supported
+metadata and Markdown body schema. Do not duplicate frontmatter prose in an unused
+body or in language JSON. Raw HTML is disabled and rendered Markdown is sanitized.
 
-## WebsiteLibrary corpus
+Common owners:
 
-Bhakti corpus changes belong in the
-[WebsiteLibrary repository](https://github.com/VedavardhanaTheertha/WebsiteLibrary), not
-in generated files under `src/gen/` and not as a blog post here.
+- `learn/index.md` and subject Markdown own learning labels, order, metadata, and
+  suggested paths. Do not create a separate Learn settings file.
+- `parampara/` owns guru facts and portraits; numeric filename prefixes determine
+  order. Preserve optional facts and translation fallback.
+- `branches/` owns verified branch details. Use an empty phone only where no verified
+  number is available; do not invent contact data.
+- `connect/` owns official channels used by Connect, footer, and public actions.
+  The support email is `support@shiroormatha.org`; WhatsApp is a broadcast channel,
+  not a direct-message inbox.
+- `sevas/` owns offerings and the material-enquiry catalog. Preserve localized
+  metadata, booking destinations, and language-specific guideline bodies; do not
+  maintain a second donations catalog.
+- `dasasahitya/` owns the Bhakti corpus. Preserve verse layout, IDs, attribution,
+  ankita, and source metadata. The build indexes complete text; do not add manual
+  search tags to song records.
+- Knowledge topics such as `mantra/`, `shastra/`, `projects/`, and `remedies/` have
+  validated section-specific metadata. Match the source schema and retain visible
+  knowledge/review status.
 
-1. Follow the corpus structure already present in WebsiteLibrary's `dasasahitya/`
-   directory: every Markdown source file begins with YAML front matter containing its
-   `id`, titles, attribution, ankita, and source filename. Do not add manual search tags;
-   the build indexes the complete Kannada and transliterated English song text.
-2. Update the Markdown body and its front matter together in the library repository.
-   Preserve existing identifiers and required fields.
-3. Submit and review that change in WebsiteLibrary first.
-4. A later MainWebsiteUI change may advance the `library` submodule reference. Run
-   `git submodule update --init --recursive` and `npm run ci` when validating that
-   integration.
+Use the active articles and events collections for their respective published
+material. Add page references only for routes that actually exist; a reference file
+does not create a page.
 
-The MainWebsiteUI build discovers `library/dasasahitya/*.md`, reads and validates each
-file's front matter, sanitizes its Markdown body, and generates disposable output under
-`src/gen/bhakti/`.
+## Homepage
 
-Branch and connection-channel content also belongs in WebsiteLibrary:
+The four curated lists in `settings/home.json` reference `library/pages/` filenames:
+six top cards, five icon cards, six bottom cards, and three explore cards. Titles,
+descriptions, image references, destinations, types, and footnotes live in the
+multilingual page-reference Markdown.
 
-- Add one bilingual, front-matter Markdown file per branch under `branches/`. Keep its
-  coordinates, email, map link, summary, and detailed English/Kannada sections current.
-  Keep `phone` as a string; it may be empty only when no verified branch number is available.
-- Add one front-matter Markdown file per official channel under `connect/`. Each record
-  requires a stable ID, display order, platform, handle, HTTPS or `mailto:` URL, brand
-  colour, and local icon path. Audience is optional for channels such as email.
-- Do not edit `src/gen/connect/data.ts`; `generate-content.mjs` recreates it and the
-  statically exported `/connect` page during every content build.
+Do not author `remidies_carousel` in settings. Generation selects three distinct
+remedy articles and shares the selection across language/content variants; maintain
+at least four eligible articles. Keep the original hero groups in their existing
+environment folders.
 
-Seva content also belongs in WebsiteLibrary:
+## Accuracy, dates, and actions
 
-- Add one Markdown file under `sevas/` with the same bilingual YAML structure used by
-  existing records. Required display fields include a stable `id`, numeric `code`,
-  localized title, category, deity, sannidhi, location, amount, description,
-  significance, and `booking_url`.
-- Keep the complete bilingual details in the Markdown body. Use separate
-  `### Seva Guidelines & Offerings (English)` and
-  `### ಸೇವಾ ನಿಯಮಗಳು ಮತ್ತು ಸಮರ್ಪಣೆ (ಕನ್ನಡ)` sections. The build sanitizes them
-  independently so the dialog renders only the selected language, while search indexes
-  the complete bilingual body together with all localized metadata.
-- An amount of `0` displays as `₹ --` in the catalog.
-- To feature a Seva, add its ID to the ordered `sections.sevas` array in
-  `settings/<env>/toplibrary.json`. A missing or empty list uses Kanike, Donations, and
-  Volunteer Sign-up.
-- Do not edit `src/gen/sevas/`; `build/build-sevas-content.mjs` recreates the typed data
-  and compressed search index during every content build.
+Do not invent translations, dates, enrollment URLs, citations, or institutional claims.
+The Yajna announcement owns its popup, associated page copy, and metadata in one
+Markdown source. Its progress snapshot is dated **2026-07-01** and requires `as_of`;
+do not call it today's progress. Keep Panchanga's temporary test-data note visible.
 
-## Review requirements
+Volunteer registration uses `https://volunteer.shiroormatha.org/`; Mantra Lekhana
+registration uses `https://kmly.shiroormatha.org/`. Monetary offerings use exactly
+`https://pay.shiroormatha.org/?entity_id=3&event_id=4&seva_id=3`. Do not remove the query
+parameters, invent a private WhatsApp destination, or imply an unsubmitted form
+succeeded.
 
-- Follow the [content guidelines](./GUIDELINE_CONTENT.md).
-- Ask a subject-matter reviewer to check devotional, historical, and scholarly claims.
-- Verify links, spelling, title hierarchy, permissions, and attribution.
-- Keep each pull request focused on one content purpose and describe translations that
-   are intentionally partial.
+## Review and validation
+
+1. Follow [GUIDELINE_CONTENT.md](GUIDELINE_CONTENT.md).
+2. Have devotional, historical, and scholarly claims checked by an appropriate reviewer.
+3. Record new text/media rights and attribution in `ASSET_PROVENANCE.md`.
+4. Check links, spelling, heading hierarchy, and mobile readability.
+5. Run `npm run content:validate` for generation/schema feedback and `npm run ci`
+   before requesting integration review. Read the build verification reports.
+6. State which translations and factual reviews are incomplete, and disclose any
+   validation that could not be performed.

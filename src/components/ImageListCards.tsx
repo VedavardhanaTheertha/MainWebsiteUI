@@ -1,12 +1,48 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { approvedLearningUrl, learningDestination } from "@/lib/learn";
 
 export default function ImageListCards({ contentKey }: { contentKey: "learn" | "volunteer_ops" }) {
   const { tr } = useLang();
   const items = tr[contentKey];
+  if (contentKey === "learn") {
+    const labels = tr.pages.learn;
+    return (
+      <div className="grid gap-5 sm:grid-cols-2">
+        {tr.learn.map((item) => {
+          const href = learningDestination(item);
+          const enrollmentUrl = approvedLearningUrl(item.enrollmentUrl);
+          return (
+            <article key={item.id ?? item.title} className="relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)]">
+              <div className="relative h-44">
+                <Image src={item.img} alt="" fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover" />
+              </div>
+              <div className="p-5">
+                <h2 className="font-display text-xl font-bold">
+                  {href ? <Link href={href} className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-[var(--color-saffron-600)]">{item.title}</Link> : item.title}
+                </h2>
+                <p className="mt-2 text-sm text-[var(--color-text-secondary)]">{item.sub}</p>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  {(["level", "language", "format", "duration"] as const).map((field) => (
+                    <div key={field}><dt className="font-semibold">{labels[field]}</dt><dd className="text-[var(--color-text-muted)]">{item[field] || labels.unspecified}</dd></div>
+                  ))}
+                </dl>
+                {(item.availability || !enrollmentUrl) && <p className="mt-4 text-sm text-[var(--color-text-muted)]">{item.availability || labels.availability}</p>}
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {enrollmentUrl && <a href={enrollmentUrl} className="relative z-10 inline-flex min-h-11 items-center font-semibold text-[var(--color-text-brand)]">{labels.enroll}</a>}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+        {!tr.learn.length && <p role="status">{labels.empty}</p>}
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-2.5 max-w-xl">
       {items.map((it) => (

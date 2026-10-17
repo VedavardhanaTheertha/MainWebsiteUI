@@ -24,10 +24,9 @@ site:
   production_url: "https://shiroormatha.org"
 
 content:
-  # Folders scanned at build time. Adding a file to either of these is all a
-  # contributor has to do — nothing needs registering in code.
+  # Language descriptors scanned at build time; editorial content is discovered
+  # independently from canonical Markdown under library/.
   languages_dir: "content/languages"
-  blog_dir: "content/blog"
 
 environments:
   # ── Local testing — root URL, selectable copy ─────────────────────────────

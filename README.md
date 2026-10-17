@@ -45,9 +45,9 @@ Preserving and sharing our sacred heritage requires a collective effort. Serving
 
 ### 💻 For Developers & Tech Enthusiasts
 
-- **Modern Tech Stack:** Work with a clean, high-performance tech stack.
-- **Clean Architecture:** Participate in a project designed around a "Content as Data, Code as Structure" paradigm, built for speed, security, and static export reliability.
-- **High-Impact Features:** Build search functionality for the digital library, interactive event calendars, photo galleries, audio integrations, learning tools for a global audience, and new ideas for the community.
+The site uses Next.js static export with filesystem-discovered languages, searchable
+Markdown collections, media albums, and settings-driven interactions. Content and
+configuration are reviewed separately from rendering code.
 
 ### 🎨 For Designers & Media Artists
 
@@ -55,7 +55,28 @@ Preserving and sharing our sacred heritage requires a collective effort. Serving
 
 ---
 
-## 🚀 How to Get Started
+## 🚀 Getting Started
+
+For a local checkout, use Node.js 22 LTS and npm 10:
+
+```powershell
+git clone --recurse-submodules <repository-url>
+Set-Location MainWebsiteUI
+npm ci
+npm run dev:local
+```
+
+`library/` and `settings/` are Git submodules and must be initialized. UI labels live
+in `content/languages/`, canonical topic content in `library/`, and homepage/navigation
+behavior in `settings/`. Do not edit generated files in `src/gen/`.
+
+Use `npm run build:dev` or `npm run build:prod` for a verified static export. Read the
+[Developer Guide](docs/DEVELOPER.md) for preview commands, base paths, validation,
+and clean-checkout checks.
+
+After a matching build, `npm start -- dev` previews the existing development export
+at `http://localhost:3000/MainWebsiteUI/`. Use `local` or `prod` instead after building
+that environment; both preview at the site root. Preview does not rebuild content.
 
 - **General contribution guide:** Read [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -77,9 +98,8 @@ Choose the path that best aligns with your background and interests:
 - **Set Up Your Environment:** Read [Developer Environment Setup](docs/DEVELOPER.md).
 - **Review Code Guidelines:** Read [Software Contribution Guidelines](docs/GUIDELINE_SOURCE_CODE.md).
 - **Submit Pull Requests:** Follow [How to Contribute to Source Code](docs/CONTRIBUTE_SOURCE_CODE.md).
-- **Understand the design:** Read [Architecture](docs/ARCHITECTURE.md) — how the site is
-  built, why it is built that way, and its known gaps.
-- **Day-to-day work:** Read the [Developer Guide](docs/DEVELOPER.md).
+- **Understand the design:** Read [Architecture](docs/ARCHITECTURE.md) for current
+  content ownership, environments, build flow, and trust boundaries.
 
 ### 🎨 UI/UX & Graphic Design
 

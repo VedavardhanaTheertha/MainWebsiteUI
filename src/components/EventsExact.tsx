@@ -1,9 +1,10 @@
 "use client";
 
-import { useDeferredValue, useMemo, useState, useCallback } from "react";
+import { useDeferredValue, useMemo, useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { MapPin, Calendar, Clock, User, Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { localized, localizedText } from "@/lib/localization";
 import {
   realEvents,
   placeholderEvents,
@@ -12,13 +13,16 @@ import {
 } from "@/gen/events/data";
 import {
   loadEventsSearchIndex,
-  loadPastEventsSearchIndex,
   loadPastEvents,
 } from "@/gen/events/loaders";
-import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
+import { useLazyMiniSearch, useMiniSearch } from "@/hooks/useMiniSearch";
+import { getSearchProfile } from "@/lib/search";
+import { sortEventsByDateTime, type EventSortOrder } from "@/lib/event-sorting";
+import { eventDetailUrl, matchesEventDates } from "@/lib/event-tools";
 import { imagePaths } from "@/lib/images";
-import { collectionPagination } from "@/gen/settings/ui-elements";
+import { browserDefaults, collectionPagination } from "@/gen/settings/ui-elements";
 import EventDetailModal from "./EventDetailModal";
+import AdvancedFilters from "./AdvancedFilters";
 
 const catColor: Record<string, { bg: string; text: string }> = {
   festival: { bg: "bg-[#FFF7C5]", text: "text-[#92400E]" },
@@ -35,12 +39,17 @@ const catColor: Record<string, { bg: string; text: string }> = {
 export default function EventsExact() {
   const { lang, contentMode, tr } = useLang();
   const copy = tr.events_exact;
-  const isKn = lang === "kn";
 
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [selectedCat, setSelectedCat] = useState("upcoming");
-  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const [sortOrder, setSortOrder] = useState<EventSortOrder>(browserDefaults.eventsUpcomingSort);
+  const [eventSlug, setEventSlug] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [month, setMonth] = useState("");
+  const [pastError, setPastError] = useState(false);
+  const pastRequest = useRef<Promise<unknown> | null>(null);
 
   // Lazy loaded past events data state
   const [pastDataModule, setPastDataModule] = useState<{
@@ -52,18 +61,20 @@ export default function EventsExact() {
   const isPastTab = selectedCat === "past";
 
   const loadPast = useCallback(() => {
-    if (pastDataModule || loadingPast) return;
+    if (pastDataModule || pastRequest.current) return;
     setLoadingPast(true);
-    loadPastEvents()
+    setPastError(false);
+    pastRequest.current = loadPastEvents()
       .then((mod) => {
         setPastDataModule(mod);
         setLoadingPast(false);
       })
       .catch((err) => {
         console.error("Failed to load past events:", err);
+        setPastError(true);
         setLoadingPast(false);
-      });
-  }, [pastDataModule, loadingPast]);
+      }).finally(() => { pastRequest.current = null; });
+  }, [pastDataModule]);
 
   // Upcoming catalog (always contains only future events)
   const upcomingCatalog = useMemo(() => {
@@ -77,39 +88,44 @@ export default function EventsExact() {
       ? pastDataModule.placeholderPastEvents
       : pastDataModule.realPastEvents;
   }, [pastDataModule, contentMode]);
+  const selectedEvent = [...upcomingCatalog, ...pastCatalog].find((event) => event.slug === eventSlug) ?? null;
+
+  useEffect(() => {
+    const readLink = () => {
+      const slug = new URL(window.location.href).searchParams.get("event") ?? "";
+      setEventSlug(slug);
+      if (slug && !upcomingCatalog.some((event) => event.slug === slug)) {
+        setSelectedCat("past");
+        setSortOrder(browserDefaults.eventsPastSort);
+        if (!pastError) loadPast();
+      }
+    };
+    // Keep both initial deep links and browser Back/Forward in sync.
+    const timer = setTimeout(readLink, 0);
+    window.addEventListener("popstate", readLink);
+    return () => { clearTimeout(timer); window.removeEventListener("popstate", readLink); };
+  }, [upcomingCatalog, loadPast, pastError]);
+
+  const openEvent = (event: EventItem) => {
+    window.history.pushState(null, "", eventDetailUrl(window.location.href, event.slug));
+    setEventSlug(event.slug);
+  };
+  const closeEvent = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("event");
+    window.history.pushState(null, "", url);
+    setEventSlug("");
+  };
 
   const searchConfig = useMemo(
     () => ({
-      fields: [
-        "titleEn",
-        "titleKn",
-        "categoriesText",
-        "locationEn",
-        "locationKn",
-        "performersText",
-        "tagsText",
-        "searchText",
-      ],
-      boost: {
-        titleEn: 3,
-        titleKn: 3,
-        categoriesText: 2,
-        performersText: 1.8,
-        locationEn: 1.5,
-        locationKn: 1.5,
-        tagsText: 1.2,
-        searchText: 1,
-      },
+      ...getSearchProfile("events"),
     }),
     []
   );
 
   const loadFutureIndex = useCallback(
     () => loadEventsSearchIndex().then((m) => m.compressedEventsSearchIndex),
-    []
-  );
-  const loadPastIndex = useCallback(
-    () => loadPastEventsSearchIndex().then((m) => m.compressedPastEventsSearchIndex),
     []
   );
 
@@ -123,25 +139,22 @@ export default function EventsExact() {
     );
 
   // Search past events when on past tab
-  const { results: pastSearchResults, ensureLoaded: loadPastIndexFn } =
-    useLazyMiniSearch<EventItem>(
+  const pastSearchResults = useMiniSearch<EventItem>(
       pastCatalog,
       isPastTab ? deferredQuery : "",
-      loadPastIndex,
       searchConfig
     );
 
   const handleSearchFocus = () => {
     if (isPastTab) {
       loadPast();
-      loadPastIndexFn();
     } else {
       loadUpcomingIndex();
     }
   };
 
   // Filter events based on active tab
-  const filteredEvents: EventItem[] = useMemo(() => {
+  const categoryEvents: EventItem[] = useMemo(() => {
     if (isPastTab) {
       return deferredQuery.trim() ? pastSearchResults : pastCatalog;
     }
@@ -161,37 +174,47 @@ export default function EventsExact() {
     upcomingSearchResults,
     upcomingCatalog,
   ]);
+  const filteredEvents = useMemo(
+    () => categoryEvents.filter((event) => matchesEventDates(event, dateFrom, dateTo, month)),
+    [categoryEvents, dateFrom, dateTo, month],
+  );
+  const clearFilters = () => {
+    setQuery(""); setDateFrom(""); setDateTo(""); setMonth("");
+    setSelectedCat(isPastTab ? "past" : "upcoming");
+    setSortOrder(isPastTab ? browserDefaults.eventsPastSort : browserDefaults.eventsUpcomingSort);
+  };
 
   const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
-  const [prevFilter, setPrevFilter] = useState({ cat: selectedCat, query: deferredQuery });
+  const filterKey = JSON.stringify([selectedCat, deferredQuery, sortOrder, dateFrom, dateTo, month]);
+  const [prevFilter, setPrevFilter] = useState(filterKey);
 
-  if (prevFilter.cat !== selectedCat || prevFilter.query !== deferredQuery) {
-    setPrevFilter({ cat: selectedCat, query: deferredQuery });
+  if (prevFilter !== filterKey) {
+    setPrevFilter(filterKey);
     setVisibleCount(collectionPagination.initialVisible);
   }
 
+  const sortedEvents = useMemo(
+    () => sortEventsByDateTime(filteredEvents, sortOrder),
+    [filteredEvents, sortOrder]
+  );
   const displayedEvents = useMemo(
-    () => filteredEvents.slice(0, visibleCount),
-    [filteredEvents, visibleCount]
+    () => sortedEvents.slice(0, visibleCount),
+    [sortedEvents, visibleCount]
   );
 
-  const tabs = copy.tabs || [
-    { id: "upcoming", label: "All Upcoming" },
-    { id: "festival", label: "Festivals" },
-    { id: "concert", label: "Concerts" },
-    { id: "dance", label: "Dance" },
-    { id: "pooja", label: "Pooja" },
-    { id: "special", label: "Special" },
-    { id: "past", label: "All Past Events" },
-  ];
+  const tabs = copy.tabs;
 
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <AdvancedFilters
+        active={Boolean(dateFrom || dateTo || month || sortOrder !== (isPastTab ? browserDefaults.eventsPastSort : browserDefaults.eventsUpcomingSort))}
+        heading={
         <h2 id="all-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
           {tr.events_all}
         </h2>
-        <div className="relative w-full sm:max-w-md">
+        }
+        search={
+        <div className="relative w-full">
           <Search
             size={18}
             className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
@@ -204,22 +227,50 @@ export default function EventsExact() {
               handleSearchFocus();
             }}
             onFocus={handleSearchFocus}
-            placeholder={copy.search_placeholder ?? "Search events, artists, dates..."}
-            className="w-full rounded-xl border border-[var(--color-line-strong)] bg-white py-2.5 pl-10 pr-10 text-sm text-[var(--color-text-primary)] outline-none transition placeholder:text-[var(--color-text-secondary)]/50 focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)]"
-            aria-label={copy.search_placeholder ?? "Search events"}
+            placeholder={copy.search_placeholder}
+            className="min-h-11 w-full rounded-xl border border-[var(--color-line-strong)] bg-white py-2.5 pl-10 pr-10 text-sm text-[var(--color-text-primary)] outline-none transition placeholder:text-[var(--color-text-secondary)]/50 focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)]"
+            aria-label={copy.search_placeholder}
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-              aria-label={copy.clear_search ?? "Clear search"}
+              className="absolute right-0 top-1/2 -translate-y-1/2 min-h-11 min-w-11 grid place-items-center rounded-full p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+              aria-label={copy.clear_search}
             >
               <X size={16} />
             </button>
           )}
         </div>
+        }
+      >
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="grid gap-1 text-sm">{copy.date_from}
+          <input type="date" value={dateFrom} max={dateTo || undefined} onChange={(event) => setDateFrom(event.target.value)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] bg-white px-3" />
+        </label>
+        <label className="grid gap-1 text-sm">{copy.date_to}
+          <input type="date" value={dateTo} min={dateFrom || undefined} onChange={(event) => setDateTo(event.target.value)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] bg-white px-3" />
+        </label>
+        <label className="grid gap-1 text-sm">{copy.month}
+          <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] bg-white px-3" />
+        </label>
+        <button type="button" onClick={clearFilters} className="min-h-11 px-3 text-sm font-semibold text-[var(--color-text-brand)]">{copy.clear_filters}</button>
+        <label className="flex w-full flex-wrap items-center gap-2 text-sm font-semibold text-[var(--color-text-secondary)] sm:w-auto">
+          <span>{copy.sort_label}</span>
+          <select
+            value={sortOrder}
+            onChange={(event) => {
+              const value = event.target.value;
+              if (value === "earliest" || value === "latest") setSortOrder(value);
+            }}
+            className="min-h-11 min-w-0 flex-1 rounded-xl border border-[var(--color-line-strong)] bg-white px-3 py-2 font-body text-sm font-normal text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)] sm:flex-none"
+          >
+            <option value="earliest">{copy.sort_earliest}</option>
+            <option value="latest">{copy.sort_latest}</option>
+          </select>
+        </label>
       </div>
+      </AdvancedFilters>
 
       {/* Category Tabs */}
       <div className="mt-5 flex gap-2 overflow-x-auto rounded-xl border border-[var(--color-line)] bg-[var(--color-parchment)] p-2 scrollbar-none">
@@ -228,12 +279,16 @@ export default function EventsExact() {
             key={t.id}
             type="button"
             onClick={() => {
+              if ((t.id === "past") !== isPastTab) {
+                setSortOrder(t.id === "past" ? browserDefaults.eventsPastSort : browserDefaults.eventsUpcomingSort);
+              }
               setSelectedCat(t.id);
               if (t.id === "past") {
                 loadPast();
               }
             }}
-            className={`shrink-0 px-4 py-1.5 rounded-full border font-body text-xs font-semibold transition-colors ${
+            aria-pressed={selectedCat === t.id}
+            className={`min-h-11 shrink-0 px-4 py-1.5 rounded-full border font-body text-xs font-semibold transition-colors ${
               selectedCat === t.id
                 ? "bg-[var(--color-saffron-600)] text-white border-transparent shadow-sm"
                 : "bg-white text-[var(--color-text-secondary)] border-[var(--color-line-strong)] hover:border-[var(--color-saffron-600)]"
@@ -243,33 +298,45 @@ export default function EventsExact() {
           </button>
         ))}
       </div>
+      <p role="status" aria-live="polite" className="mt-4 text-xs text-[var(--color-text-secondary)]">
+        {isPastTab && loadingPast ? copy.loading_past : copy.results_template.replace("{n}", String(filteredEvents.length))}
+      </p>
+      {pastError && isPastTab && (
+        <div role="alert" className="mt-4 rounded-xl border border-[var(--color-line)] bg-white p-4">
+          <p>{copy.load_error}</p>
+          <button type="button" onClick={loadPast} className="min-h-11 px-3 font-semibold text-[var(--color-text-brand)]">{copy.retry}</button>
+        </div>
+      )}
+      {eventSlug && !selectedEvent && pastDataModule && !loadingPast && (
+        <p role="status" className="mt-4 text-sm">{copy.event_not_found}</p>
+      )}
 
       {/* Loading state for past events */}
       {isPastTab && loadingPast && (
         <div className="text-center py-12 bg-white rounded-2xl border border-[var(--color-line)] mt-4 p-6">
           <p className="font-body text-sm text-[var(--color-text-secondary)] animate-pulse">
-            {copy.loading_past ?? "Loading past events..."}
+            {copy.loading_past}
           </p>
         </div>
       )}
 
       {/* Empty State */}
-      {(!isPastTab || !loadingPast) && filteredEvents.length === 0 && (
+      {(!isPastTab || !loadingPast && !pastError) && filteredEvents.length === 0 && (
         <div className="text-center py-12 bg-white rounded-2xl border border-[var(--color-line)] mt-4 p-6">
           <p className="font-body text-sm text-[var(--color-text-secondary)]">
-            {deferredQuery.trim()
-              ? copy.no_results ?? "No events found matching your search."
+            {deferredQuery.trim() || dateFrom || dateTo || month
+              ? copy.no_results
               : isPastTab
-              ? copy.no_past_events ?? "No past events recorded."
-              : copy.no_upcoming_events ?? "No scheduled upcoming events at this time."}
+              ? copy.no_past_events
+              : copy.no_upcoming_events}
           </p>
-          {query && (
+          {(query || dateFrom || dateTo || month) && (
             <button
               type="button"
-              onClick={() => setQuery("")}
-              className="mt-3 font-body text-xs font-semibold text-[var(--color-saffron-600)] hover:underline"
+              onClick={clearFilters}
+              className="mt-3 min-h-11 px-3 font-body text-xs font-semibold text-[var(--color-saffron-600)] hover:underline"
             >
-              {copy.clear_search ?? "Clear Search"}
+              {copy.clear_filters}
             </button>
           )}
         </div>
@@ -280,29 +347,28 @@ export default function EventsExact() {
         <>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedEvents.map((item: EventItem) => {
-            const title = isKn ? item.title?.kn : item.title?.en;
-            const displayDate = isKn ? item.displayDate?.kn : item.displayDate?.en;
-            const time = isKn ? item.time?.kn : item.time?.en;
-            const location = isKn ? item.location?.kn : item.location?.en;
-            const performers = isKn ? item.performers?.kn : item.performers?.en;
-            const description = isKn ? item.description?.kn : item.description?.en;
+            const title = localizedText(item.title, lang);
+            const displayDate = localizedText(item.displayDate, lang);
+            const time = localizedText(item.time, lang);
+            const location = localizedText(item.location, lang);
+            const performers = localized(item.performers, lang);
+            const description = localizedText(item.description, lang);
             const imgUrl = item.image || imagePaths.event || "/slide/1.jpg";
 
             return (
               <article
                 key={item.slug}
-                role="button"
-                tabIndex={0}
-                onClick={() => setSelectedEvent(item)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSelectedEvent(item);
-                  }
-                }}
                 className="h-[360px] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-[var(--color-saffron-600)] hover:shadow-lg cursor-pointer"
               >
-                <div className="flex h-full flex-col">
+                <a
+                  href={`?event=${encodeURIComponent(item.slug)}`}
+                  onClick={(event) => {
+                    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+                    event.preventDefault();
+                    openEvent(item);
+                  }}
+                  className="flex h-full flex-col focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+                >
                   {/* Event Thumbnail */}
                   <div className="relative h-40 w-full shrink-0 overflow-hidden bg-[var(--color-cream-soft)]">
                     <Image
@@ -314,7 +380,7 @@ export default function EventsExact() {
                     />
                     {item.categories?.[0] && (
                       <span className="absolute top-2 left-2 bg-[rgba(26,17,8,0.75)] backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
-                        {isKn ? item.categories[0].kn : item.categories[0].en}
+                        {localizedText(item.categories[0], lang)}
                       </span>
                     )}
                   </div>
@@ -356,7 +422,7 @@ export default function EventsExact() {
                       )}
 
                       {/* Short Description */}
-                      <p className="font-body text-xs text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
+                      <p className="font-body text-sm text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
                         {description}
                       </p>
                     </div>
@@ -370,16 +436,13 @@ export default function EventsExact() {
                               catColor[cat.code]?.bg ?? "bg-[var(--color-cream)]"
                             } ${catColor[cat.code]?.text ?? "text-[var(--color-text-secondary)]"}`}
                           >
-                            {isKn ? cat.kn : cat.en}
+                            {localizedText(cat, lang)}
                           </span>
                         ))}
                       </div>
-                      <span className="shrink-0 text-xs font-semibold text-[var(--color-text-brand)]">
-                        {copy.view_details}
-                      </span>
                     </div>
                   </div>
-                </div>
+                </a>
               </article>
             );
           })}
@@ -389,7 +452,7 @@ export default function EventsExact() {
               <button
                 type="button"
                 onClick={() => setVisibleCount((prev) => prev + collectionPagination.loadIncrement)}
-                className="rounded-full border border-[var(--color-saffron-600)] bg-white px-6 py-2.5 font-body text-sm font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-saffron-50)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+                className="min-h-11 rounded-full border border-[var(--color-saffron-600)] bg-white px-6 py-2.5 font-body text-sm font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-saffron-50)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
               >
                 {copy.show_more}
               </button>
@@ -399,7 +462,7 @@ export default function EventsExact() {
       )}
 
       {/* Event Details Modal Popup */}
-      <EventDetailModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+      <EventDetailModal key={selectedEvent?.slug ?? ""} event={selectedEvent} onClose={closeEvent} />
     </div>
   );
 }

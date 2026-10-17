@@ -2,82 +2,23 @@
 import ImageListCards from "@/components/ImageListCards";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
+import { actionDestinations } from "@/gen/settings/actions";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.volunteer;
 
-// TODO: Confirm roles, contact details, and form link with management
-const roles = [
-  {
-    icon: "📦",
-    title: "Logistics & Operations",
-    description:
-      "Coordinate crowd management, prasada distribution, material movement, and day-to-day operations during events and utsavas.",
-    commitment: "Flexible — event-based or continuous",
-  },
-  {
-    icon: "🤝",
-    title: "Guest Services & Reception",
-    description:
-      "Welcome devotees, assist with navigation, answer questions, and ensure a warm, dignified experience for all visitors.",
-    commitment: "Weekend shifts available",
-  },
-  {
-    icon: "📸",
-    title: "Digital Media & Documentation",
-    description:
-      "Photography, videography, social media content creation, and live-streaming of poojas and events for the global community.",
-    commitment: "Project-based",
-  },
-  {
-    icon: "🍽️",
-    title: "Annadaana Support",
-    description:
-      "Assist in the Bhojana Shala — serving meals, preparation support, and clean-up during mass feeding events.",
-    commitment: "Daily or event-based",
-  },
-  {
-    icon: "📚",
-    title: "Translation & Content",
-    description:
-      "Translate devotional content into regional languages, help document the Matha's history, or write for the website and newsletters.",
-    commitment: "Remote-friendly",
-  },
-  {
-    icon: "🧒",
-    title: "Youth Engagement",
-    description: "",
-    commitment: "Weekends",
-  },
-];
-
-const whyVolunteer = [
-  {
-    icon: "🙏",
-    title: "Sacred Service",
-    body: "",
-  },
-  {
-    icon: "🌐",
-    title: "Global Community",
-    body: "Join thousands of volunteers from across India and the world who come together for this once-in-twelve-years event.",
-  },
-  {
-    icon: "✨",
-    title: "Transformative Experience",
-    body: "Many volunteers describe the experience as life-changing — a deepening of faith and a renewed sense of purpose.",
-  },
-];
+const roles = ["📦", "🤝", "📸", "🍽️", "📚", "🧒"];
+const whyVolunteer = ["🙏", "🌐", "✨"];
 
 export default function VolunteerPage() {
   return (
-    <>
+    <div>
       {/* Page hero */}
       <div className="bg-[var(--color-parchment)] pt-4 pb-3 lg:pt-7 lg:pb-6 text-center px-5">
         <p className="font-body text-[11px] tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-3">
-          Give Your Time
+          <LocalizedCopy path={["pages", "local_copy", "volunteer_eyebrow"]} />
         </p>
         <h1 className="font-display font-bold text-[var(--color-text-primary)] text-4xl sm:text-5xl lg:text-6xl mb-3">
-          Become a Volunteer
+          <LocalizedCopy path={["pages", "local_copy", "volunteer_title"]} />
         </h1>
         <p className="font-body text-[var(--color-text-brand)]/75 text-base max-w-xl mx-auto">
           <LocalizedCopy path={["vol_subtitle"]} />
@@ -91,20 +32,20 @@ export default function VolunteerPage() {
             id="why-heading"
             className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-8 text-center"
           >
-            Why Volunteer?
+            <LocalizedCopy path={["pages", "local_copy", "volunteer_why_title"]} />
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {whyVolunteer.map((item, index) => (
               <div
-                key={item.title}
+                key={index}
                 className="bg-white rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.08)] text-center"
               >
-                <span className="text-4xl block mb-3" aria-hidden="true">{item.icon}</span>
-                <h3 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-2">{item.title}</h3>
+                <span className="text-4xl block mb-3" aria-hidden="true">{item}</span>
+                <h3 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-2"><LocalizedCopy path={["pages", "local_copy", `volunteer_reason_${index}_title`]} /></h3>
                 <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">
                   {index === 0
                     ? <LocalizedCopy path={["pages", "detected", "volunteer_why"]} />
-                    : item.body}
+                    : <LocalizedCopy path={["pages", "local_copy", `volunteer_reason_${index}_body`]} />}
                 </p>
               </div>
             ))}
@@ -114,7 +55,7 @@ export default function VolunteerPage() {
         {/* Volunteer Opportunities — matches the design reference's VolunteerScreen list */}
         <section aria-labelledby="opportunities-heading" className="mb-14">
           <h2 id="opportunities-heading" className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-8">
-            Volunteer Opportunities
+            <LocalizedCopy path={["pages", "local_copy", "volunteer_opportunities"]} />
           </h2>
           <ImageListCards contentKey="volunteer_ops" />
         </section>
@@ -125,30 +66,30 @@ export default function VolunteerPage() {
             id="roles-heading"
             className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-8"
           >
-            Volunteer Roles
+            <LocalizedCopy path={["pages", "local_copy", "volunteer_roles"]} />
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {roles.map((role, index) => (
               <article
-                key={role.title}
+                key={index}
                 className="bg-white rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.08)] flex gap-4"
-                aria-labelledby={`role-${role.title}`}
+                aria-labelledby={`role-${index}`}
               >
-                <span className="text-3xl shrink-0 mt-0.5" aria-hidden="true">{role.icon}</span>
+                <span className="text-3xl shrink-0 mt-0.5" aria-hidden="true">{role}</span>
                 <div>
                   <h3
-                    id={`role-${role.title}`}
+                    id={`role-${index}`}
                     className="font-display font-semibold text-[var(--color-text-primary)] text-lg mb-1"
                   >
-                    {role.title}
+                    <LocalizedCopy path={["pages", "local_copy", `volunteer_role_${index}_title`]} />
                   </h3>
                   <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed mb-3">
                     {index === roles.length - 1
                       ? <LocalizedCopy path={["pages", "detected", "volunteer_role"]} />
-                      : role.description}
+                      : <LocalizedCopy path={["pages", "local_copy", `volunteer_role_${index}_description`]} />}
                   </p>
                   <span className="inline-block font-body text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-brand)] bg-[var(--color-saffron-100)] rounded-full px-3 py-1">
-                    {role.commitment}
+                    <LocalizedCopy path={["pages", "local_copy", `volunteer_role_${index}_commitment`]} />
                   </span>
                 </div>
               </article>
@@ -165,20 +106,19 @@ export default function VolunteerPage() {
             id="signup-heading"
             className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-xl lg:text-3xl mb-4"
           >
-            Ready to Serve?
+            <LocalizedCopy path={["pages", "local_copy", "volunteer_ready"]} />
           </h2>
           <p className="font-body text-[var(--color-text-brand)]/75 text-base mb-6 max-w-xl mx-auto">
             <LocalizedCopy path={["vol_ready_body"]} />
           </p>
 
-          {/* TODO: Replace href with actual volunteer registration form link from management */}
           <a
-            href="#"
+            href={actionDestinations.volunteer}
             className="inline-flex items-center gap-2 font-body font-semibold text-white bg-gradient-to-r from-[var(--color-saffron-600)] to-[var(--color-saffron-600)] rounded-full px-8 py-3.5 text-base hover:shadow-lg hover:scale-[1.02] transition-all focus-visible:outline-white focus-visible:outline-2"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Register as Volunteer
+            <LocalizedCopy path={["pages", "local_copy", "volunteer_register"]} />
             <span aria-hidden="true">→</span>
           </a>
 
@@ -189,6 +129,6 @@ export default function VolunteerPage() {
         </section>
       </div>
 
-    </>
+    </div>
   );
 }

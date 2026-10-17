@@ -22,14 +22,14 @@
   default language and are reported by the generator. Arrays are all-or-nothing values;
   they do not merge item by item.
 
-## Blog Markdown
+## Topic Markdown
 
-- Put an article translation in `content/blog/<slug>/<code>.md`; do not place article
-  prose in the interface JSON.
-- Begin with exactly one level-one translated title and continue with the body. Do not
-  add frontmatter; shared article metadata stays in `meta.json`.
+- Put translations with the canonical source in `library/<topic>/`; do not place
+  article prose in interface JSON.
+- Follow that record's language-keyed frontmatter/body-section or translated-sibling
+  schema. Keep shared publication and factual metadata in its canonical source.
 - Preserve heading order, link destinations, quotations, citations, and verse layout.
-  An absent article translation falls back to the default-language Markdown.
+  Use configured default-language fallback where supported rather than inventing text.
 
 ## Readability and encoding
 

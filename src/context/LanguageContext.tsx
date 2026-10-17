@@ -3,8 +3,6 @@
 import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import {
   content,
-  blogPosts,
-  alternateBlogPosts,
   alternateContent,
   defaultContentMode,
   isContentSwitchable,
@@ -13,7 +11,6 @@ import {
   type Lang,
   type ContentShape,
 } from "@/gen/content";
-import type { BlogPost } from "@/lib/content-types";
 
 export type ContentMode = "real" | "placeholder";
 
@@ -23,7 +20,6 @@ interface LangCtx {
   tr: ContentShape;
   contentMode: ContentMode;
   setContentMode: (mode: ContentMode) => void;
-  blogPosts: BlogPost[];
   /** Languages discovered at build time — drives the switcher UI. */
   languages: typeof languages;
 }
@@ -34,7 +30,6 @@ const LanguageContext = createContext<LangCtx>({
   tr: content[defaultLang],
   contentMode: defaultContentMode,
   setContentMode: () => {},
-  blogPosts,
   languages,
 });
 
@@ -113,9 +108,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const activeContent = contentMode !== defaultContentMode && alternateContent
     ? alternateContent
     : content;
-  const activeBlogPosts = contentMode !== defaultContentMode && alternateBlogPosts
-    ? alternateBlogPosts
-    : blogPosts;
 
   return (
     <LanguageContext.Provider value={{
@@ -125,7 +117,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       languages,
       contentMode,
       setContentMode,
-      blogPosts: activeBlogPosts,
     }}>
       {children}
     </LanguageContext.Provider>
