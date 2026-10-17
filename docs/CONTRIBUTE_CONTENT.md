@@ -89,8 +89,8 @@ Seva content also belongs in WebsiteLibrary:
   independently so the dialog renders only the selected language, while search indexes
   the complete bilingual body together with all localized metadata.
 - An amount of `0` displays as `₹ --` in the catalog.
-- To feature a Seva, add its ID to the ordered `seva_ids` array in
-  `settings/<env>/topsevas.json`. A missing or empty list uses Kanike, Donations, and
+- To feature a Seva, add its ID to the ordered `sections.sevas` array in
+  `settings/<env>/toplibrary.json`. A missing or empty list uses Kanike, Donations, and
   Volunteer Sign-up.
 - Do not edit `src/gen/sevas/`; `build/build-sevas-content.mjs` recreates the typed data
   and compressed search index during every content build.

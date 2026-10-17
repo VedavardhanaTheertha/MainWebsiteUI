@@ -6,18 +6,19 @@ import { Search, Play } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
 import type { MediaVideo } from "@/lib/content-types";
+import { collectionPagination } from "@/gen/settings/ui-elements";
 
 export default function MediaGrid({ type }: { type: "photo" | "video" }) {
   const { tr } = useLang();
   const list: Array<MediaVideo | { title: string; detail: string; img: string }> =
     type === "video" ? tr.media.videos : tr.media.photos;
   const [q, setQ] = useState("");
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
   const [prevQ, setPrevQ] = useState(q);
 
   if (prevQ !== q) {
     setPrevQ(q);
-    setVisibleCount(6);
+    setVisibleCount(collectionPagination.initialVisible);
   }
 
   const searchConfig = useMemo(
@@ -76,7 +77,7 @@ export default function MediaGrid({ type }: { type: "photo" | "video" }) {
         <div className="mt-6 flex justify-center">
           <button
             type="button"
-            onClick={() => setVisibleCount((c) => c + 9)}
+            onClick={() => setVisibleCount((c) => c + collectionPagination.loadIncrement)}
             className="rounded-full border border-[var(--color-line)] bg-white px-5 py-2 font-body text-xs font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-cream)] hover:shadow-sm"
           >
             {tr.show_more}

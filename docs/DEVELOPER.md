@@ -140,12 +140,13 @@ src/lib/       shared logic: content-types.ts, nav-types.ts, scheduler.ts
 src/context/   LanguageContext.tsx — the useLang() provider (see §8)
 src/gen/       generated website data — gitignored, recreated by each dev/build command
 public/        images and static files served as-is
-library/       required submodule → WebsiteLibrary (Bhakti, hero, and Parampara content)
+library/       required submodule → WebsiteLibrary (Bhakti, hero, Parampara, and knowledge content)
   branches/    branch summaries, contacts, coordinates, maps, and detailed Markdown
   connect/     official social and connection-channel Markdown records
   hero/dev/    development and local hero groups; default.hero.json is selected
   hero/prod/   production hero groups; default.hero.json is selected
   parampara/   index.json plus one Markdown file per guru
+  <section-id>/  one direct folder per searchable knowledge page; bilingual articles only
 test_media/    recursively initialized submodule → WebsiteTestMedia
 .github/workflows/deploy-dev.yml  thin CI wrapper around build/build.mjs
 ```
@@ -162,7 +163,7 @@ CI runs the scripts under `build/`; developers can run the same pipeline locally
 |---|---|
 | `build.mjs` | Runs the whole build: clean → generate → export → normalize canonicals → verify |
 | `clean.mjs` | Removes stale outputs before generation |
-| `markdown.mjs` | Parses and sanitizes blog and Bhakti Markdown |
+| `markdown.mjs` | Parses and sanitizes blog, Bhakti, and knowledge-section Markdown |
 | `write-canonicals.mjs` | Derives each page's production canonical from its exported HTML path |
 | `verify.mjs` | Checks the built output before it is published |
 
@@ -186,7 +187,7 @@ around `build.mjs`. This keeps the build portable and provides two practical ben
 
 | Command | Runs | Produces |
 |---|---|---|
-| `npm run content:build` | Bhakti and website content generators | `src/gen/`, `public/robots.txt` |
+| `npm run content:build` | Settings, Media album, Bhakti, Seva, Event, knowledge-section, and website generators | `src/gen/`, `public/robots.txt` |
 | `npm run clean` | Delete stale generated output | clean working build outputs |
 | `npm run typecheck` | Generate content, then `tsc --noEmit` | pass/fail |
 | `npm run test:unit` | Content utility and Markdown security tests | pass/fail |
@@ -211,10 +212,41 @@ the default. `npm run build:dev` / `build:prod` set it for you via their `node
 build/build.mjs <env>` argument; set it yourself only when running `next dev` or
 `next build` directly.
 
-Seva generation reads `settings/<env>/topsevas.json`; the `local` environment uses
-the development setting. Set `seva_ids` to an ordered array of IDs from
+Seva generation reads `sections.sevas` from `settings/<env>/toplibrary.json`; the `local`
+environment uses the development setting. Set it to an ordered array of IDs from
 `library/sevas/*.md`. Missing or empty configuration falls back to Kanike, Donations,
 and Volunteer Sign-up.
+
+Knowledge-section generation similarly reads `settings/<env>/toplibrary.json`. Its
+`sections` object maps each section ID to an ordered array of article IDs. Those records
+form the auto-scrolling mobile featured rail and fixed three-column desktop grid at the
+top of that independent page. Configure three IDs to preserve the shared Sevas/Events
+desktop layout. Every ID must exist in the matching direct `library/<section-id>/`
+folder; unknown, duplicate, or empty featured lists fail generation.
+
+Media album generation reads `sections.album` from `settings/<env>/toplibrary.json` and
+`album_ids` from `settings/<env>/recentalbums.json`; the `local` environment uses the
+development files. Both reference records under `media.albums` in the English base
+language file. Unknown or duplicate IDs fail generation. These lists
+control the two curated rails on `/albums`; the complete searchable catalog is independent
+of either list.
+
+All searchable tile collections read pagination counts from the single
+`settings/ui_elements.json` file. `collections.initialVisible` controls the first batch,
+and `collections.loadIncrement` controls each "Show more" batch. Both must be positive
+integers. The settings generator validates the file and creates the typed module consumed
+by Events, Sevas, Bhakti, Media, and every Markdown knowledge collection.
+
+In that same file, `autoScroll.pixelsPerSecond` sets the shared forward speed of every
+auto-scrolling row (a positive finite number, default 36). `autoScroll.returnDurationMs`
+sets the eased return duration in milliseconds (a positive integer, default 2200).
+Higher forward speeds move faster; lower return durations return faster. This covers
+upcoming/recurring events, featured Sevas and knowledge, and top/recent albums; static
+desktop grids and manually controlled carousels are unchanged.
+After editing, run `npm run settings:build` to regenerate the typed settings for an
+already running server, or restart `npm run dev:local`. Build commands regenerate the
+settings automatically. The settings folder is a submodule: publish its changes first,
+then commit the updated submodule pointer with the corresponding UI changes.
 
 The equivalent direct invocation is:
 
@@ -315,9 +347,10 @@ no code change needed (`build/build.mjs`, `next.config.ts`, and
 wording or registries of languages and articles. The build discovers content from the
 filesystem, allowing contributors to add a language or article without changing code.
 
-**No user-facing wording may be written into a page or component file.** Every string a
-visitor reads comes from `content/languages/en.json` (and its per-language overrides),
-never a literal in `src/`. This is stated in `AGENTS.md` and is not optional.
+**No user-facing wording may be written into a page or component file.** Interface copy
+comes from `content/languages/en.json` (and its per-language overrides); long-form
+knowledge content comes from the validated Markdown collections under `library/`.
+Neither belongs as a literal in `src/`. This is stated in `AGENTS.md` and is not optional.
 
 - Read content through `useLang()` (`src/context/LanguageContext.tsx:69`), which
   returns `{ lang, tr, languages, setLang }`. `tr` is the merged, typed content object
@@ -404,7 +437,78 @@ is needed. A valid date and level-one title are mandatory. Raw HTML is escaped, 
 HTML is sanitized, and links are limited to safe relative URLs plus `http`, `https`, and
 `mailto`. Script, data, and protocol-relative URLs are rejected.
 
-### 8.4 Placeholder and real-content previews
+### 8.4 Adding a knowledge-section article
+
+Knowledge pages come from the WebsiteLibrary submodule under
+`library/<section-id>/`. To add an article:
+
+1. Choose the existing section directory for the destination page.
+2. Add `<article-id>.md`, using lowercase kebab-case for both the filename and `id`.
+3. Supply the required front matter and a Markdown body:
+
+  ```markdown
+  ---
+  id: article-id
+  title:
+    en: Article title
+    kn: ಲೇಖನದ ಶೀರ್ಷಿಕೆ
+  summary:
+    en: A short tile and metadata description.
+    kn: ಟೈಲ್ ಮತ್ತು ಮೆಟಾಡೇಟಾಕ್ಕಾಗಿ ಕಿರು ವಿವರಣೆ.
+  status:
+    en: Draft
+    kn: ಕರಡು
+  image: "@image.krishna"
+  tags:
+    - code: topic
+      en: Topic
+      kn: ವಿಷಯ
+  ---
+
+  ## English
+
+  Complete English article content begins here.
+
+  ## ಕನ್ನಡ
+
+  ಸಂಪೂರ್ಣ ಕನ್ನಡ ಲೇಖನದ ವಿಷಯ ಇಲ್ಲಿ ಆರಂಭವಾಗುತ್ತದೆ.
+  ```
+
+4. Run `npm run content:build`. The generator rejects missing fields, filename/ID
+   mismatches, unknown image aliases, missing English or Kannada content, empty bodies,
+   duplicate IDs, and sections with fewer than four articles.
+5. If the item belongs in the featured rail, add its ID at the intended position in both
+   environment files under `settings/<env>/toplibrary.json`.
+6. Run `npm run build:dev`, open the section landing page, and confirm the item opens in
+   the details modal without navigating away.
+
+To add a section, create its direct directory with at least four bilingual article files,
+add its non-display ID, order, route, and image to `build/library-sections.config.mjs`,
+and add its localized eyebrow, title, and description to every
+`content/languages/*.json` file under `library_sections`. Add the section's featured ID
+list to both environment settings files. Do not create `_section.md`; knowledge folders
+follow the same article-only source layout as Bhakti.
+
+Library and Know the Story destinations are not navigation dropdowns. Their landing-page
+tiles come from `section_hubs.library.items` and `section_hubs.story.items` in each
+language file. When adding or renaming a destination, update the matching hub item in
+every language while keeping its `href` and image alias consistent.
+
+### 8.5 Adding or curating a Media album
+
+1. Add an album with a unique kebab-case `id` under `media.albums` in
+   `content/languages/en.json`. Supply its title, description, cover image alias, search
+   tags, and at least one photo or video item.
+2. Add the matching ID and translated display fields to `media.albums` in every language
+   file. Keep IDs, item types, image aliases, and optional video durations consistent.
+3. To feature it, add the ID in the intended order to `sections.album` in
+   `toplibrary.json`, `album_ids` in `recentalbums.json`, or both under each
+   `settings/<env>/` directory.
+4. Run `npm run media:build` for settings validation, then `npm run build:dev`. Check
+   both language variants, the responsive rails, All Albums search and pagination, and
+   the generated `/albums/<album-id>` page.
+
+### 8.6 Placeholder and real-content previews
 
 The hosted development environment uses generated placeholders so search engines cannot
 index a duplicate of production and so hardcoded content remains detectable. Placeholders

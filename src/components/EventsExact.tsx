@@ -17,6 +17,7 @@ import {
 } from "@/gen/events/loaders";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 import { imagePaths } from "@/lib/images";
+import { collectionPagination } from "@/gen/settings/ui-elements";
 import EventDetailModal from "./EventDetailModal";
 
 const catColor: Record<string, { bg: string; text: string }> = {
@@ -161,12 +162,12 @@ export default function EventsExact() {
     upcomingCatalog,
   ]);
 
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
   const [prevFilter, setPrevFilter] = useState({ cat: selectedCat, query: deferredQuery });
 
   if (prevFilter.cat !== selectedCat || prevFilter.query !== deferredQuery) {
     setPrevFilter({ cat: selectedCat, query: deferredQuery });
-    setVisibleCount(6);
+    setVisibleCount(collectionPagination.initialVisible);
   }
 
   const displayedEvents = useMemo(
@@ -186,12 +187,14 @@ export default function EventsExact() {
 
   return (
     <div className="w-full">
-      {/* Search Bar */}
-      <div className="mb-4">
-        <div className="relative flex items-center">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <h2 id="all-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+          {tr.events_all}
+        </h2>
+        <div className="relative w-full sm:max-w-md">
           <Search
             size={18}
-            className="absolute left-3.5 text-[var(--color-text-secondary)]/60 pointer-events-none"
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
           />
           <input
             type="search"
@@ -202,14 +205,14 @@ export default function EventsExact() {
             }}
             onFocus={handleSearchFocus}
             placeholder={copy.search_placeholder ?? "Search events, artists, dates..."}
-            className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[var(--color-line-strong)] bg-white text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-saffron-600)] transition-all"
+            className="w-full rounded-xl border border-[var(--color-line-strong)] bg-white py-2.5 pl-10 pr-10 text-sm text-[var(--color-text-primary)] outline-none transition placeholder:text-[var(--color-text-secondary)]/50 focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)]"
             aria-label={copy.search_placeholder ?? "Search events"}
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="absolute right-3 p-1 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
               aria-label={copy.clear_search ?? "Clear search"}
             >
               <X size={16} />
@@ -219,7 +222,7 @@ export default function EventsExact() {
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-3 px-3 lg:mx-0 lg:px-0 scrollbar-none">
+      <div className="mt-5 flex gap-2 overflow-x-auto rounded-xl border border-[var(--color-line)] bg-[var(--color-parchment)] p-2 scrollbar-none">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -275,7 +278,7 @@ export default function EventsExact() {
       {/* Events List */}
       {(!isPastTab || !loadingPast) && filteredEvents.length > 0 && (
         <>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedEvents.map((item: EventItem) => {
             const title = isKn ? item.title?.kn : item.title?.en;
             const displayDate = isKn ? item.displayDate?.kn : item.displayDate?.en;
@@ -297,11 +300,11 @@ export default function EventsExact() {
                     setSelectedEvent(item);
                   }
                 }}
-                className="bg-white rounded-xl border border-[var(--color-line)] hover:border-[var(--color-saffron-600)] shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all overflow-hidden"
+                className="h-[360px] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-[var(--color-saffron-600)] hover:shadow-lg cursor-pointer"
               >
                 <div className="flex h-full flex-col">
                   {/* Event Thumbnail */}
-                  <div className="relative h-44 w-full shrink-0 overflow-hidden bg-[var(--color-cream-soft)]">
+                  <div className="relative h-40 w-full shrink-0 overflow-hidden bg-[var(--color-cream-soft)]">
                     <Image
                       src={imgUrl}
                       alt=""
@@ -317,16 +320,16 @@ export default function EventsExact() {
                   </div>
 
                   {/* Main Event Info */}
-                  <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
+                  <div className="flex min-h-0 min-w-0 flex-1 flex-col p-4">
                     <div>
                       {/* Meta badges */}
-                      <div className="flex flex-wrap items-center gap-2 mb-1.5 text-xs text-[var(--color-text-secondary)]">
-                        <span className="inline-flex items-center gap-1 font-semibold text-[var(--color-saffron-800)]">
+                      <div className="mb-1.5 flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-[var(--color-text-secondary)]">
+                        <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-[var(--color-saffron-800)]">
                           <Calendar size={13} />
                           {displayDate}
                         </span>
                         {time && (
-                          <span className="inline-flex items-center gap-1 text-[var(--color-text-muted)]">
+                          <span className="inline-flex shrink-0 items-center gap-1 text-[var(--color-text-muted)]">
                             <Clock size={13} />
                             {time}
                           </span>
@@ -340,7 +343,7 @@ export default function EventsExact() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-display font-bold text-lg text-[var(--color-text-primary)] leading-snug mb-1">
+                      <h3 className="mb-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">
                         {title}
                       </h3>
 
@@ -358,13 +361,12 @@ export default function EventsExact() {
                       </p>
                     </div>
 
-                    {/* Bottom Category badges */}
-                    {item.categories && item.categories.length > 1 && (
-                      <div className="mt-3 pt-2 border-t border-[var(--color-line)] flex items-center gap-1">
-                        {item.categories.slice(1, 3).map((cat: EventCategory) => (
+                    <div className="mt-auto flex items-center justify-between gap-2 border-t border-[var(--color-line)] pt-2">
+                      <div className="flex min-w-0 items-center gap-1 overflow-hidden">
+                        {item.categories?.slice(1, 3).map((cat: EventCategory) => (
                           <span
                             key={cat.code}
-                            className={`text-[9.5px] px-2 py-0.5 rounded-full font-medium ${
+                            className={`shrink-0 text-[9.5px] px-2 py-0.5 rounded-full font-medium ${
                               catColor[cat.code]?.bg ?? "bg-[var(--color-cream)]"
                             } ${catColor[cat.code]?.text ?? "text-[var(--color-text-secondary)]"}`}
                           >
@@ -372,7 +374,10 @@ export default function EventsExact() {
                           </span>
                         ))}
                       </div>
-                    )}
+                      <span className="shrink-0 text-xs font-semibold text-[var(--color-text-brand)]">
+                        {copy.view_details}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -383,7 +388,7 @@ export default function EventsExact() {
             <div className="mt-8 flex justify-center">
               <button
                 type="button"
-                onClick={() => setVisibleCount((prev) => prev + 9)}
+                onClick={() => setVisibleCount((prev) => prev + collectionPagination.loadIncrement)}
                 className="rounded-full border border-[var(--color-saffron-600)] bg-white px-6 py-2.5 font-body text-sm font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-saffron-50)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
               >
                 {copy.show_more}

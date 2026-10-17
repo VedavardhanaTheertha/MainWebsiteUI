@@ -21,6 +21,10 @@
 # generated from content/ — run `npm run content:build` to regenerate
 /src/gen/
 
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+.vscode/
+
 # generated per environment by scripts/generate-content.mjs (see config/site.yml)
 /public/robots.txt
 

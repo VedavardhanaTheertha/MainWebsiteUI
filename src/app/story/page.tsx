@@ -1,14 +1,8 @@
-import LegacySection from "@/components/home/LegacySection";
-import SignificanceSection from "@/components/home/SignificanceSection";
+import SectionHub from "@/components/SectionHub";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata = content[defaultLang].page_metadata.story;
 
 export default function StoryPage() {
-  return (
-    <>
-      <LegacySection />
-      <SignificanceSection />
-    </>
-  );
+  return <SectionHub hubKey="story" />;
 }

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Repeat } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import {
   realRecurringEvents,
@@ -41,6 +40,7 @@ export default function EventsAccordion() {
   const { lang, contentMode, tr } = useLang();
   const isKn = lang === "kn";
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const viewDetails = tr.events_exact.view_details ?? tr.library_browser.view_details;
 
   const recurringList =
     contentMode === "placeholder" ? placeholderRecurringEvents : realRecurringEvents;
@@ -56,17 +56,14 @@ export default function EventsAccordion() {
 
   return (
     <section className="border-t border-[var(--color-line)] pt-10" aria-labelledby="recurring-events-heading">
-      <div className="flex items-center gap-2 mb-5">
-        <Repeat size={18} className="text-[var(--color-saffron-800)]" />
-        <h2 id="recurring-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-          {sectionTitle}
-        </h2>
-      </div>
+      <h2 id="recurring-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+        {sectionTitle}
+      </h2>
 
       {/* Mobile: horizontal scroll */}
       <div
         ref={scrollRef}
-        className="lg:hidden flex gap-3 -mx-3 px-3 pb-2"
+        className="-mx-4 mt-5 flex gap-5 px-4 pb-2 lg:hidden"
         style={{
           overflowX: "auto",
           WebkitOverflowScrolling: "touch",
@@ -95,15 +92,15 @@ export default function EventsAccordion() {
                   setSelectedEvent(ev);
                 }
               }}
-              className="event-card shrink-0 w-[200px] bg-white border border-[var(--color-saffron-600)] rounded-xl overflow-hidden shadow-sm hover:shadow-md cursor-pointer transition-all duration-300"
+              className="event-card flex h-80 w-[82vw] max-w-[320px] shrink-0 flex-col overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white shadow-sm transition-all duration-300 hover:shadow-md cursor-pointer"
             >
-              <div className="relative w-full h-[110px]">
+              <div className="relative h-40 w-full shrink-0">
                 <Image
                   src={imgUrl}
                   alt=""
                   fill
                   className="object-cover"
-                  sizes="200px"
+                  sizes="(max-width: 768px) 82vw, 320px"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/70 to-transparent" />
                 {catLabel && (
@@ -112,16 +109,19 @@ export default function EventsAccordion() {
                   </span>
                 )}
               </div>
-              <div className="p-3">
+              <div className="flex flex-1 flex-col p-4">
                 <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>
-                <p className="font-display font-bold text-[var(--color-text-primary)] text-[13px] leading-snug mb-1 line-clamp-1">
+                <p className="mb-1 line-clamp-2 font-display text-base font-bold leading-snug text-[var(--color-text-primary)]">
                   {title}
                 </p>
                 <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 line-clamp-1">
                   {location}
                 </p>
+                <span className="mt-auto pt-3 text-xs font-semibold text-[var(--color-text-brand)]">
+                  {viewDetails}
+                </span>
               </div>
             </div>
           );
@@ -129,7 +129,7 @@ export default function EventsAccordion() {
       </div>
 
       {/* Desktop: bounded card grid */}
-      <div className="hidden lg:grid grid-cols-3 gap-5">
+      <div className="mt-5 hidden lg:grid grid-cols-3 gap-5">
         {recurringList.map((ev) => {
           const title = isKn ? ev.title?.kn : ev.title?.en;
           const displayDate = isKn ? ev.displayDate?.kn : ev.displayDate?.en;
@@ -151,9 +151,9 @@ export default function EventsAccordion() {
                   setSelectedEvent(ev);
                 }
               }}
-              className="event-card bg-white rounded-xl overflow-hidden border border-[var(--color-saffron-600)] shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300"
+              className="event-card flex h-80 flex-col overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
             >
-              <div className="relative w-full h-44">
+              <div className="relative h-40 w-full shrink-0">
                 <Image
                   src={imgUrl}
                   alt=""
@@ -168,7 +168,7 @@ export default function EventsAccordion() {
                   </span>
                 )}
               </div>
-              <div className="p-3">
+              <div className="flex flex-1 flex-col p-4">
                 <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>
@@ -178,6 +178,9 @@ export default function EventsAccordion() {
                 <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 line-clamp-1">
                   {location}
                 </p>
+                <span className="mt-auto pt-3 text-xs font-semibold text-[var(--color-text-brand)]">
+                  {viewDetails}
+                </span>
               </div>
             </article>
           );

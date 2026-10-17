@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
@@ -15,6 +15,7 @@ import {
 import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
+import { collectionPagination } from "@/gen/settings/ui-elements";
 
 function localized(value: LocalizedSevaText, lang: string) {
   return value[lang as keyof LocalizedSevaText] || value.en;
@@ -50,11 +51,13 @@ function SevaCard({
   seva,
   lang,
   anyAmount,
+  viewDetails,
   onOpen,
 }: {
   seva: SevaRecord;
   lang: string;
   anyAmount: string;
+  viewDetails: string;
   onOpen: () => void;
 }) {
   const title = localized(seva.title, lang);
@@ -64,14 +67,28 @@ function SevaCard({
     <button
       type="button"
       onClick={onOpen}
-      className="w-full bg-white border border-[var(--color-saffron-600)] rounded-xl p-3 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      className="group flex h-[360px] w-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg"
     >
-      <div className="flex items-center gap-3">
-        <SevaImage title={title} />
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display font-semibold text-[var(--color-text-primary)] leading-snug">{title}</h3>
-          <p className="mt-1 text-xs text-[var(--color-text-secondary)] line-clamp-1">{localized(seva.deity, lang)}</p>
-          {amount && <p className="mt-2 font-body font-bold text-[var(--color-text-brand)]">{amount}</p>}
+      <SevaImage title={title} featured />
+      <div className="flex flex-1 flex-col p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-brand)]">
+          {localized(seva.deity, lang)}
+        </p>
+        <h3 className="mt-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">
+          {title}
+        </h3>
+        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
+          {localized(seva.description, lang)}
+        </p>
+        <div className="mt-auto flex items-end justify-between gap-3 pt-3">
+          {amount && (
+            <p className="font-body font-bold text-[var(--color-text-brand)]">
+              {amount}
+            </p>
+          )}
+          <span className="ml-auto text-xs font-semibold text-[var(--color-text-brand)]">
+            {viewDetails}
+          </span>
         </div>
       </div>
     </button>
@@ -186,15 +203,13 @@ export default function SevasBrowser() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [query, setQuery] = useState("");
   const [selectedSeva, setSelectedSeva] = useState<SevaRecord | null>(null);
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
   const [prevFilter, setPrevFilter] = useState({ cat: categoryFilter, query });
 
   if (prevFilter.cat !== categoryFilter || prevFilter.query !== query) {
     setPrevFilter({ cat: categoryFilter, query });
-    setVisibleCount(6);
+    setVisibleCount(collectionPagination.initialVisible);
   }
-  const searchId = useId();
-
   const activeSevas = contentMode === "placeholder" ? placeholderSevas : realSevas;
 
   const featured = useMemo(
@@ -233,11 +248,10 @@ export default function SevasBrowser() {
     <>
       <section className="bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-sevas-title">
         <div className="mx-auto max-w-7xl">
-          <p className="text-xs font-semibold uppercase tracking-[.2em] text-[var(--color-text-brand)]">{tr.sevas_featured_label}</p>
-          <h2 id="featured-sevas-title" className="mt-1 font-display text-2xl font-bold text-[var(--color-text-primary)]">{tr.sevas_featured_title}</h2>
+          <h2 id="featured-sevas-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{tr.sevas_featured_title}</h2>
           <div
             ref={featuredScrollRef}
-            className="mt-5 -mx-5 flex gap-4 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+            className="mt-5 -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
             style={{
               WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
@@ -252,13 +266,16 @@ export default function SevasBrowser() {
                   type="button"
                   key={seva.id}
                   onClick={() => setSelectedSeva(seva)}
-                  className="w-[82vw] max-w-[320px] shrink-0 overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg md:w-auto md:max-w-none"
+                  className="flex h-80 w-[82vw] max-w-[320px] shrink-0 flex-col overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg md:w-auto md:max-w-none"
                 >
                   <SevaImage title={title} featured />
-                  <div className="p-4">
-                    <h3 className="font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
+                  <div className="flex flex-1 flex-col p-4">
+                    <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
-                    {amount && <p className="mt-3 font-bold text-[var(--color-text-brand)]">{amount}</p>}
+                    <div className="mt-auto flex items-end justify-between gap-3 pt-3">
+                      {amount && <p className="font-bold text-[var(--color-text-brand)]">{amount}</p>}
+                      <span className="ml-auto text-xs font-semibold text-[var(--color-text-brand)]">{tr.sevas_view_details}</span>
+                    </div>
                   </div>
                 </button>
               );
@@ -268,15 +285,41 @@ export default function SevasBrowser() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12" aria-labelledby="all-sevas-title">
-        <h2 id="all-sevas-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{tr.sevas_all_title}</h2>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <h2 id="all-sevas-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+            {tr.sevas_all_title}
+          </h2>
+          <label className="relative block w-full sm:max-w-md">
+            <span className="sr-only">{tr.sevas_search}</span>
+            <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <input
+              type="search"
+              value={query}
+              onFocus={ensureLoaded}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={tr.sevas_search}
+              className="w-full rounded-xl border border-[var(--color-line-strong)] bg-white py-2.5 pl-10 pr-10 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)]"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                aria-label={tr.sevas_clear_search}
+              >
+                <X className="size-4" />
+              </button>
+            )}
+          </label>
+        </div>
 
-        <div className="mt-5 rounded-xl border border-[var(--color-line)] bg-[var(--color-parchment)] p-4">
-          <label className="text-sm font-semibold text-[var(--color-text-primary)]">
-            <span className="mb-1.5 block">{tr.sevas_filter_category}</span>
+        <div className="mt-5 flex flex-col gap-2 rounded-xl border border-[var(--color-line)] bg-[var(--color-parchment)] p-2 sm:flex-row sm:items-center">
+          <label className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
+            <span className="shrink-0 px-1">{tr.sevas_filter_category}</span>
             <select
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value)}
-              className="w-full rounded-lg border border-[var(--color-saffron-600)] bg-white px-3 py-2.5 font-normal text-[var(--color-text-primary)] outline-none focus:ring-2 focus:ring-[var(--color-saffron-600)]/20"
+              className="min-w-0 flex-1 rounded-lg border border-[var(--color-line-strong)] bg-white px-3 py-2 font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)] sm:max-w-sm"
             >
               <option value="">{tr.sevas_all_categories}</option>
               {categories.map(([key, label]) => <option key={key} value={key}>{localized(label, lang)}</option>)}
@@ -286,25 +329,11 @@ export default function SevasBrowser() {
             <button
               type="button"
               onClick={() => setCategoryFilter("")}
-              className="mt-3 text-xs font-semibold text-[var(--color-text-brand)] underline"
+              className="self-start rounded-full px-3 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white sm:self-auto"
             >
               {tr.sevas_clear_filters}
             </button>
           )}
-        </div>
-
-        <div className="relative mt-5">
-          <label htmlFor={searchId} className="sr-only">{tr.sevas_search}</label>
-          <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]" />
-          <input
-            id={searchId}
-            type="search"
-            value={query}
-            onFocus={ensureLoaded}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={tr.sevas_search}
-            className="w-full rounded-full border border-[var(--color-saffron-600)] bg-white py-3 pl-11 pr-4 text-sm text-[var(--color-text-primary)] outline-none focus:ring-2 focus:ring-[var(--color-saffron-600)]/20"
-          />
         </div>
 
         <p className="mt-4 text-xs text-[var(--color-text-secondary)]">
@@ -312,16 +341,23 @@ export default function SevasBrowser() {
         </p>
         {visibleSevas.length > 0 ? (
           <>
-            <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-3 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {displayedSevas.map((seva) => (
-                <SevaCard key={seva.id} seva={seva} lang={lang} anyAmount={tr.sevas_any_amount} onOpen={() => setSelectedSeva(seva)} />
+                <SevaCard
+                  key={seva.id}
+                  seva={seva}
+                  lang={lang}
+                  anyAmount={tr.sevas_any_amount}
+                  viewDetails={tr.sevas_view_details}
+                  onOpen={() => setSelectedSeva(seva)}
+                />
               ))}
             </div>
             {visibleSevas.length > visibleCount && (
               <div className="mt-8 flex justify-center">
                 <button
                   type="button"
-                  onClick={() => setVisibleCount((prev) => prev + 9)}
+                  onClick={() => setVisibleCount((prev) => prev + collectionPagination.loadIncrement)}
                   className="rounded-full border border-[var(--color-saffron-600)] bg-white px-6 py-2.5 font-body text-sm font-semibold text-[var(--color-text-brand)] shadow-xs transition hover:bg-[var(--color-saffron-50)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                 >
                   {tr.sevas_show_more || tr.show_more}

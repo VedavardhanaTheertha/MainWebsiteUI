@@ -9,7 +9,7 @@ export default function MediaPhotosPage() {
   return (
     <>
       <div className="max-w-6xl mx-auto px-4 py-6 lg:py-10">
-        <Link href="/media" className="inline-block font-body text-[var(--color-text-brand)] text-xs mb-4 hover:underline">
+        <Link href="/albums" className="inline-block font-body text-[var(--color-text-brand)] text-xs mb-4 hover:underline">
           ← Media
         </Link>
         <h1 className="font-display text-2xl text-[var(--color-text-primary)] mb-5">Photos</h1>
