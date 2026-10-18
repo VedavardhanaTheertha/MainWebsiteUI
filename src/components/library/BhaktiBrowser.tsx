@@ -11,6 +11,7 @@ import { localized, localizedText } from "@/lib/localization";
 import { copyReaderLink, matchesBhaktiFilter } from "@/lib/reader-utils";
 import "./bhakti-print.css";
 import AdvancedFilters from "@/components/AdvancedFilters";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export interface BhaktiItem {
   id: string;
@@ -32,6 +33,21 @@ interface SongContent {
 
 export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const { lang, tr } = useLang();
+  const reducedMotion = useReducedMotion();
+  const returnToId = useRef<string | null>(null);
+  const focusFrame = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
+  }, []);
+  const focusAfterRender = (find: () => HTMLElement | null) => {
+    if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
+    focusFrame.current = requestAnimationFrame(() => {
+      focusFrame.current = null;
+      const target = find();
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" });
+    });
+  };
   const copy = tr.library.bhakti.page;
   const controls = tr.bhakti_controls;
   const presentation = localized(bhaktiPresentation, lang);
@@ -125,12 +141,13 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   }, [items, loadSongContent]);
 
   const selectItem = (item: BhaktiItem) => {
+    returnToId.current = item.id;
     setLinkStatus("");
     setSelectedId(item.id);
     setExpanded(false);
     loadSongContent(item.id);
     window.history.replaceState(null, "", `#${encodeURIComponent(item.id)}`);
-    window.setTimeout(() => document.getElementById("bhakti-reading")?.scrollIntoView({ behavior: "smooth" }), 0);
+    focusAfterRender(() => document.getElementById("bhakti-reading"));
   };
 
   const prefetchItem = (id: string) => {
@@ -141,7 +158,8 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
     setSelectedId(null);
     setExpanded(true);
     window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    window.setTimeout(() => document.getElementById("bhakti-results")?.scrollIntoView({ behavior: "smooth" }), 0);
+    focusAfterRender(() => Array.from(document.querySelectorAll<HTMLButtonElement>("[data-bhakti-id]"))
+      .find((button) => button.dataset.bhaktiId === returnToId.current) ?? document.getElementById("bhakti-results"));
   };
 
   return (
@@ -205,7 +223,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
         </div>
       </section>
 
-      <section id="bhakti-results" className="mx-auto mt-4 max-w-6xl border-t border-[var(--color-line-strong)] pt-3 scroll-mt-28">
+      <section id="bhakti-results" tabIndex={-1} aria-label={copy.works} className="mx-auto mt-4 max-w-6xl border-t border-[var(--color-line-strong)] pt-3 scroll-mt-28">
         <div className="flex items-end justify-between gap-4">
           <h2 className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{copy.works}</h2>
           <button
@@ -231,6 +249,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
                 {visible.map((item) => (
                   <button
                     key={item.id}
+                    data-bhakti-id={item.id}
                     type="button"
                     onClick={() => selectItem(item)}
                     onMouseEnter={() => prefetchItem(item.id)}
@@ -268,7 +287,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
       </section>
 
       {selected && (
-        <section id="bhakti-reading" className="mx-auto mt-4 max-w-6xl scroll-mt-28 pt-2">
+        <section id="bhakti-reading" tabIndex={-1} aria-label={display(selected).title} className="mx-auto mt-4 max-w-6xl scroll-mt-28 pt-2">
           <div className="bhakti-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)]">
             <button type="button" onClick={backToResults} className="min-h-11 py-3 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
             <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>

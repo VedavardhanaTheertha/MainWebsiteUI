@@ -7,7 +7,9 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "js-yaml";
 import { canonicalForRoute, routeForHtml } from "./canonical-utils.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 
+holdWorkspaceLock("canonical URL normalization");
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outDir = path.join(rootDir, "out");
 const config = yaml.load(readFileSync(path.join(rootDir, "config", "site.yml"), "utf8"));

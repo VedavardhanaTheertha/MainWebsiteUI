@@ -14,11 +14,14 @@ import { fileURLToPath } from "node:url";
 import yaml from "js-yaml";
 import MiniSearch from "minisearch";
 import { normalizeSearchText } from "./content-utils.mjs";
+import { parseEventSource } from "./event-dates.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 import { describeContentMode } from "./environment-utils.mjs";
 import { generateSyntheticEventDates } from "./synthetic-events.mjs";
 import { getSearchProfile, withSearchDefaults } from "./search-config.mjs";
 import { discoverLanguageContent, resolveLocalizedValues } from "./language-content.mjs";
 
+holdWorkspaceLock("event generation");
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const eventsSourceDir = path.join(rootDir, "library", "events");
 const outputDir = path.join(rootDir, "src", "gen", "events");
@@ -43,7 +46,8 @@ function localizeEventField(metadata, field, legacy, fallback = "") {
 const envName = process.env.SITE_ENV || "dev";
 const siteConfigFile = path.join(rootDir, "config", "site.yml");
 const siteConfig = yaml.load(readFileSync(siteConfigFile, "utf8"));
-const envConfig = siteConfig.environments?.[envName] || siteConfig.environments?.dev;
+const envConfig = siteConfig.environments?.[envName];
+if (!envConfig) throw new Error(`SITE_ENV="${envName}" is not defined in config/site.yml.`);
 const mode = describeContentMode(envConfig?.content_mode, envConfig?.default_variant);
 const isPlaceholderDefault = mode.defaultVariant === "placeholder";
 const isSwitchable = mode.includesReal && mode.includesPlaceholder;
@@ -80,23 +84,8 @@ for (const file of eventFiles) {
   const fullPath = path.join(eventsSourceDir, file);
   const raw = await readFile(fullPath, "utf8");
 
-  // Parse frontmatter
-  const fmMatch = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
-  if (!fmMatch) {
-    console.warn(`[events] Skipping ${file} (missing YAML frontmatter)`);
-    continue;
-  }
-
-  const fmRaw = fmMatch[1];
-  const bodyMarkdown = fmMatch[2].trim();
-
-  let fm = {};
-  try {
-    fm = yaml.load(fmRaw) || {};
-  } catch (err) {
-    console.error(`[events] Error parsing YAML in ${file}:`, err.message);
-    continue;
-  }
+  const sourceName = `library/events/${file}`;
+  const { metadata: fm, body: bodyMarkdown } = parseEventSource(raw, sourceName);
 
   const resolveBilingual = (field) => {
     if (!field) return { en: "", kn: "" };

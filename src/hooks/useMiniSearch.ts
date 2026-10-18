@@ -47,23 +47,39 @@ export function useLazyMiniSearch<T extends object>(
   isLoaded: boolean;
   ensureLoaded: () => void;
 } {
-  const [index, setIndex] = useState<SearchIndex<T> | null>(null);
-  const loadingRef = useRef(false);
+  const [loaded, setLoaded] = useState<{
+    items: T[];
+    config: MiniSearchConfig<T>;
+    index: SearchIndex<T>;
+  } | null>(null);
+  const index = loaded?.items === items && loaded.config === config ? loaded.index : null;
+  const loadingRef = useRef<{ items: T[]; config: MiniSearchConfig<T> } | null>(null);
 
   const ensureLoaded = useCallback(() => {
-    if (index || loadingRef.current) return;
-    loadingRef.current = true;
+    if (index || loadingRef.current?.items === items && loadingRef.current.config === config) return;
+    const request = { items, config };
+    loadingRef.current = request;
+    const finish = (next: SearchIndex<T>) => {
+      if (loadingRef.current !== request) return;
+      loadingRef.current = null;
+      setLoaded({ items, config, index: next });
+    };
     loadCompressedIndexModule()
       .then(async (mod) => {
         const raw = typeof mod === "string" ? mod : Object.values(mod)[0];
-        const loaded = await loadCompressedIndex(raw, items, config);
-        setIndex(loaded);
+        const next = await loadCompressedIndex(raw, items, config);
+        finish(next);
       })
       .catch((err) => {
+        if (loadingRef.current !== request) return;
         console.error("Failed to load compressed search index, falling back to in-memory index:", err);
-        setIndex(createSearchIndex(items, config));
+        finish(createSearchIndex(items, config));
       });
   }, [items, config, index, loadCompressedIndexModule]);
+
+  useEffect(() => {
+    return () => { loadingRef.current = null; };
+  }, [items, config, loadCompressedIndexModule]);
 
   // Lazy-load in idle time after component mounts so critical paint is unblocked
   useEffect(() => {

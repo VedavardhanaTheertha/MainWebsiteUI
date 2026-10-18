@@ -21,6 +21,8 @@ import { useDialog } from "@/hooks/useDialog";
 import { filterAndSortSevas } from "@/lib/seva-filtering";
 import RailMotionControl from "./RailMotionControl";
 import AdvancedFilters from "./AdvancedFilters";
+import CollectionEmptyState from "./presentation/CollectionEmptyState";
+import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/collection-presentation";
 
 function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
   if (seva.amount <= 0) return anyAmount;
@@ -69,10 +71,10 @@ function SevaCard({
     <button
       type="button"
       onClick={onOpen}
-      className="group flex h-[360px] w-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg"
+      className={`${collectionCardClassName("collection")} w-full`}
     >
       <SevaImage title={title} image={seva.image} featured />
-      <div className="flex flex-1 flex-col p-4">
+      <div className={collectionCardBodyClassName}>
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-brand)]">
           {localized(seva.deity, lang)}
         </p>
@@ -272,10 +274,10 @@ export default function SevasBrowser() {
                   type="button"
                   key={seva.id}
                   onClick={() => setSelectedSeva(seva)}
-                  className="flex h-80 w-[82vw] max-w-[320px] shrink-0 flex-col overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg md:w-auto md:max-w-none"
+                  className={`${collectionCardClassName("featured")} w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none`}
                 >
                   <SevaImage title={title} image={seva.image} featured />
-                  <div className="flex flex-1 flex-col p-4">
+                  <div className={collectionCardBodyClassName}>
                     <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
                     <p className="mt-1 line-clamp-2 text-sm text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
                     <div className="mt-auto flex items-end justify-between gap-3 pt-3">
@@ -395,11 +397,11 @@ export default function SevasBrowser() {
             )}
           </>
         ) : (
-          <div className="py-16 text-center">
+          <CollectionEmptyState>
             <h3 className="font-display text-xl text-[var(--color-text-primary)]">{tr.sevas_empty_title}</h3>
             <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{tr.sevas_empty_sub}</p>
             <button type="button" onClick={clearFilters} className="mt-3 min-h-11 px-4 font-semibold text-[var(--color-text-brand)]">{tr.sevas_clear_filters}</button>
-          </div>
+          </CollectionEmptyState>
         )}
       </section>
 

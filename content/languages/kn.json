@@ -21,6 +21,7 @@
     "native_name": "ಕನ್ನಡ",
     "label": "ಕನ್ನಡ",
     "short_label": "ಕ",
+    "font_family": "var(--font-kannada)",
     "bhakti": {
       "variant": "original",
       "title_class": "font-kannada",

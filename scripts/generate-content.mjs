@@ -5,14 +5,12 @@
 // merges every language over the default language, optionally replaces all real
 // text with placeholders, and emits generated website content under src/gen/.
 //
-// Nothing in src/ lists languages or blog posts by name — this script discovers
-// them from the filesystem, which is what lets a contributor add a language or
-// an article by adding a single file.
+// Languages and canonical library content are discovered from authored sources.
 //
-// Runs automatically via the "predev"/"prebuild" npm scripts.
+// Runs through the shared content pipeline before development and export builds.
 // Never edit src/gen/content.ts directly — edit the canonical authored sources.
 //
-// See docs/ARCHITECTURE.md §5 (content system) and §6 (environments).
+// See docs/ARCHITECTURE.md, Languages and editorial content / Environments.
 // ─────────────────────────────────────────────────────────────────────────────
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -28,7 +26,11 @@ import { discoverParampara as discoverMarkdownParampara } from "../build/parampa
 import { loadAuthoredLanguage } from "../build/authored-content.mjs";
 import { applyNavigation, loadNavigation } from "../build/navigation-content.mjs";
 import { isMachineContentValue as isMachineValue, isPreservedContentField } from "../build/content-values.mjs";
+import { resolveHeroTitles } from "../build/hero-content.mjs";
+import { holdWorkspaceLock } from "../build/workspace-lock.mjs";
+import { createLanguageDescriptor } from "../build/language-content.mjs";
 
+holdWorkspaceLock("website content generation");
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const { heroSettings } = loadUiSettings();
 
@@ -582,7 +584,8 @@ function loadDefaultHero(imageLookup, environmentName) {
     throw new Error(`${path.join(relativeHeroDir, defaultFile)} is not valid JSON — ${err.message}`);
   }
 
-  for (const key of ["title_en", "title_kn", "href"]) {
+  const titles = resolveHeroTitles(hero, languageCodes, defaultLang, path.join(relativeHeroDir, defaultFile));
+  for (const key of ["href"]) {
     if (typeof hero[key] !== "string" || !hero[key].trim()) {
       throw new Error(`${path.join(relativeHeroDir, defaultFile)} needs a non-empty "${key}" string.`);
     }
@@ -602,7 +605,11 @@ function loadDefaultHero(imageLookup, environmentName) {
   });
 
   console.log(`[content] hero env=${heroEnvironment} groups=[${groupFiles.map((name) => name.replace(/\.hero\.json$/, "")).join(", ")}] selected=default`);
-  return { ...hero, images };
+  return {
+    ...hero, images,
+    title_en: titles.en ?? titles[defaultLang],
+    title_kn: titles.kn ?? titles[defaultLang],
+  };
 }
 
 function resolveHeroHref(href, basePath) {
@@ -731,15 +738,9 @@ for (const code of languageCodes) {
 
   if (fallbacks.length) fallbackReport[code] = fallbacks;
 
-  const descriptor = merged._language ?? {};
-  descriptors.push({
-    code,
-    name: descriptor.name ?? code,
-    native_name: descriptor.native_name ?? descriptor.name ?? code,
-    label: descriptor.label ?? code.toUpperCase(),
-    short_label: descriptor.short_label ?? code.toUpperCase(),
-    is_default: code === defaultLang,
-  });
+  descriptors.push(createLanguageDescriptor(
+    code, raw._language, merged._language, defaultLang, `${config.content.languages_dir}/${code}.json`,
+  ));
 
   if (mode.includesReal) realContent[code] = merged;
   if (mode.includesPlaceholder) placeholderContent[code] = toPlaceholders(merged, code);
@@ -763,6 +764,10 @@ const connectContent = mode.defaultVariant === "real" ? discoveredConnectContent
 const alternateConnectContent = mode.switchable
   ? mode.defaultVariant === "real" ? placeholderConnect : discoveredConnectContent
   : null;
+const realHeroTitles = resolveHeroTitles(defaultHero, languageCodes, defaultLang);
+const placeholderHeroTitles = Object.fromEntries(languageCodes.map((code) => [
+  code, makePlaceholder("hero.default.title", realHeroTitles[code], code),
+]));
 const placeholderHero = {
   ...defaultHero,
   title_en: makePlaceholder("hero.default.title", defaultHero.title_en, "en"),
@@ -773,7 +778,7 @@ const alternateHero = mode.switchable
   ? mode.defaultVariant === "real" ? placeholderHero : defaultHero
   : null;
 const toHomeHero = (heroData) => ({
-  titles: { en: heroData.title_en, kn: heroData.title_kn },
+  titles: heroData === placeholderHero ? placeholderHeroTitles : realHeroTitles,
   href: heroData.href,
   images: heroData.images.map((image) => imageLookup.get(image) ?? image),
 });

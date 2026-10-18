@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { createPreferenceStore } from "@/lib/browser-preferences";
 import {
   content,
   alternateContent,
@@ -34,9 +35,7 @@ const LanguageContext = createContext<LangCtx>({
 });
 
 const STORAGE_KEY = "shiroor-lang";
-const LANGUAGE_EVENT = "site-language-change";
 const CONTENT_MODE_STORAGE_KEY = "site-content-mode";
-const CONTENT_MODE_EVENT = "site-content-mode-change";
 
 /**
  * Narrows an arbitrary stored string to a language this build actually contains.
@@ -47,6 +46,14 @@ function isKnownLang(value: string | null): value is Lang {
   return value !== null && languages.some((l) => l.code === value);
 }
 
+const languagePreference = createPreferenceStore(STORAGE_KEY, defaultLang, isKnownLang);
+const contentPreference = createPreferenceStore<ContentMode>(
+  CONTENT_MODE_STORAGE_KEY, defaultContentMode,
+  (value): value is ContentMode => value === "real" || value === "placeholder",
+);
+const noSubscription = () => () => {};
+const defaultModeSnapshot = () => defaultContentMode;
+
 /**
  * Supplies the active language and its content to the whole app. The set of
  * languages comes from the generated content module, which discovers them by
@@ -55,54 +62,31 @@ function isKnownLang(value: string | null): value is Lang {
  */
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const lang = useSyncExternalStore(
-    (notify) => {
-      window.addEventListener("storage", notify);
-      window.addEventListener(LANGUAGE_EVENT, notify);
-      return () => {
-        window.removeEventListener("storage", notify);
-        window.removeEventListener(LANGUAGE_EVENT, notify);
-      };
-    },
-    () => {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      return isKnownLang(stored) ? stored : defaultLang;
-    },
-    () => defaultLang,
+    languagePreference.subscribe,
+    languagePreference.getSnapshot,
+    languagePreference.getServerSnapshot,
   );
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    const fontFamily = languages.find(({ code }) => code === lang)?.font_family;
+    if (fontFamily) document.documentElement.style.setProperty("--font-localized", fontFamily);
+    else document.documentElement.style.removeProperty("--font-localized");
   }, [lang]);
 
   const setLang = (l: Lang) => {
-    window.localStorage.setItem(STORAGE_KEY, l);
-    window.dispatchEvent(new Event(LANGUAGE_EVENT));
+    languagePreference.setValue(l);
   };
 
   const contentMode = useSyncExternalStore<ContentMode>(
-    (notify) => {
-      if (!isContentSwitchable) return () => {};
-      window.addEventListener("storage", notify);
-      window.addEventListener(CONTENT_MODE_EVENT, notify);
-      return () => {
-        window.removeEventListener("storage", notify);
-        window.removeEventListener(CONTENT_MODE_EVENT, notify);
-      };
-    },
-    () => {
-      if (!isContentSwitchable) return defaultContentMode;
-      const storedMode = window.localStorage.getItem(CONTENT_MODE_STORAGE_KEY);
-      return storedMode === "real" || storedMode === "placeholder"
-        ? storedMode
-        : defaultContentMode;
-    },
-    () => defaultContentMode,
+    isContentSwitchable ? contentPreference.subscribe : noSubscription,
+    isContentSwitchable ? contentPreference.getSnapshot : defaultModeSnapshot,
+    defaultModeSnapshot,
   );
 
   const setContentMode = (nextMode: ContentMode) => {
     if (!isContentSwitchable) return;
-    window.localStorage.setItem(CONTENT_MODE_STORAGE_KEY, nextMode);
-    window.dispatchEvent(new Event(CONTENT_MODE_EVENT));
+    contentPreference.setValue(nextMode);
   };
 
   const activeContent = contentMode !== defaultContentMode && alternateContent

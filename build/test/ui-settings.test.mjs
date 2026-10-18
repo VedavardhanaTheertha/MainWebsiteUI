@@ -57,6 +57,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   await mkdir(path.join(root, "settings"));
   const script = path.join(root, "build", "build-ui-settings.mjs");
   await copyFile(new URL("../build-ui-settings.mjs", import.meta.url), script);
+  await copyFile(new URL("../workspace-lock.mjs", import.meta.url), path.join(root, "build", "workspace-lock.mjs"));
   await copyFile(new URL("../ui-settings.mjs", import.meta.url), path.join(root, "build", "ui-settings.mjs"));
   await copyFile(new URL("../action-settings.mjs", import.meta.url), path.join(root, "build", "action-settings.mjs"));
   await copyFile(new URL("../../settings/public_actions.json", import.meta.url), path.join(root, "settings", "public_actions.json"));
@@ -71,7 +72,8 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   };
 
   const custom = { ...defaults, autoScroll: { ...defaults.autoScroll, pixelsPerSecond: 12.5, returnDurationMs: 900 } };
-  assert.equal((await run(custom)).status, 0);
+  const generatedResult = await run(custom);
+  assert.equal(generatedResult.status, 0, generatedResult.stderr);
   const generated = await readFile(path.join(root, "src", "gen", "settings", "ui-elements.ts"), "utf8");
   assert.match(generated, /collectionPagination = \{"initialVisible":6,"loadIncrement":9\} as const/);
   assert.match(generated, /railAutoScroll = \{"enabled":true,"pixelsPerSecond":12.5,"returnDurationMs":900,"resumeDelayMs":1500\} as const/);
@@ -113,6 +115,7 @@ async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyP
     get scrollLeft() { return scrollLeft; },
     set scrollLeft(value) { scrollLeft = Math.round(value * 4 / 5) * 5 / 4; },
     scrollWidth: 10000, clientWidth: 300,
+    contains: () => false,
     addEventListener: (name, callback) => listeners.set(name, callback),
     removeEventListener: (name) => listeners.delete(name),
   };
@@ -123,14 +126,20 @@ async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyP
   const exports = {};
   vm.runInNewContext(outputText, {
     exports,
-    window: { matchMedia: () => motion },
+    window: { addEventListener() {}, removeEventListener() {} },
+    document: { hidden: false, activeElement: null, addEventListener() {}, removeEventListener() {} },
+    Node: class {},
+    ResizeObserver: class { observe() {} disconnect() {} },
+    IntersectionObserver: class { observe() {} disconnect() {} },
     require: (name) => {
       if (name === "react") {
         return {
           useRef: () => ({ current: el }),
-          useEffect: (effect) => { cleanup = effect(); },
+          useEffect: (effect) => { cleanup?.(); cleanup = effect(); },
         };
       }
+      if (name === "@/hooks/useReducedMotion") return { useReducedMotion: () => motion.matches };
+      if (name === "@/hooks/useDialog") return { useDialogsOpen: () => false };
       assert.equal(name, "@/gen/settings/ui-elements");
       return { railAutoScroll: config };
     },
@@ -140,7 +149,12 @@ async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyP
     clearTimeout: () => { resume = undefined; },
   });
   exports.useAutoScrollRail(itemCount, manuallyPaused);
-  return { el, listeners, tick: (time) => frame(time), resume: () => resume(), cleanup, hasFrame: () => !!frame, resumeDelay: () => resumeDelay };
+  return {
+    el, listeners, tick: (time) => frame?.(time), resume: () => resume(),
+    cleanup: () => cleanup?.(),
+    render: () => exports.useAutoScrollRail(itemCount, manuallyPaused),
+    hasFrame: () => !!frame, resumeDelay: () => resumeDelay,
+  };
 }
 
 test("row speed is configurable and independent of refresh rate, including slow speeds", async () => {
@@ -174,6 +188,8 @@ test("rows retain interaction pauses and honor configured return duration", asyn
   assert.equal(rail.resumeDelay(), 250);
   rail.resume();
   rail.tick(800);
+  assert.equal(rail.el.scrollLeft, 0, "resuming starts a fresh animation clock");
+  rail.tick(900);
   assert.equal(rail.el.scrollLeft, 10);
   rail.cleanup();
 });
@@ -201,12 +217,16 @@ test("desktop rail dragging and wheel input pause automatic movement until the c
   assert.equal(rail.resumeDelay(), 350);
   rail.resume();
   rail.tick(200);
-  assert.equal(rail.el.scrollLeft, 160);
-  rail.listeners.get("wheel")();
+  assert.equal(rail.el.scrollLeft, 150);
   rail.tick(300);
   assert.equal(rail.el.scrollLeft, 160);
-  rail.resume();
+  rail.listeners.get("wheel")();
   rail.tick(400);
+  assert.equal(rail.el.scrollLeft, 160);
+  rail.resume();
+  rail.tick(500);
+  assert.equal(rail.el.scrollLeft, 160);
+  rail.tick(600);
   assert.equal(rail.el.scrollLeft, 170);
   rail.cleanup();
 });
@@ -221,10 +241,12 @@ test("non-home rows support manual pause and changing reduced-motion preference"
   rail.tick(100);
   assert.equal(rail.el.scrollLeft, 0);
   motion.matches = false;
+  rail.render();
   rail.tick(200);
   rail.tick(300);
   assert.equal(rail.el.scrollLeft, 10);
   motion.matches = true;
+  rail.render();
   rail.tick(400);
   assert.equal(rail.el.scrollLeft, 10);
   rail.cleanup();

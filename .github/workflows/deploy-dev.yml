@@ -1,7 +1,8 @@
 # Builds and publishes the development site to GitHub Pages.
 #
 # Deliberately thin: all build logic lives in build/build.mjs so it can be run
-# and debugged locally. See docs/DEVELOPER.md §6 and docs/ARCHITECTURE.md §7.
+# and debugged locally. See docs/DEVELOPER.md (Deployment) and
+# docs/ARCHITECTURE.md (Build and deployment).
 name: Deploy dev site
 
 on:
@@ -10,8 +11,7 @@ on:
     branches: [main]
 
   # GitHub runs schedules from the default branch, so this rebuild publishes main.
-  # It is currently a daily build canary; it will also refresh date-sensitive static
-  # output once the scheduler is connected to rendered content.
+  # Daily builds also refresh date-sensitive upcoming/past event partitions.
   schedule:
     - cron: "0 21 * * *"
 
@@ -47,14 +47,8 @@ jobs:
 
       - run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit tests
-        run: npm run test:unit
+      - name: Generate content, lint, typecheck, and unit tests
+        run: npm run check
 
       - name: Build and verify
         run: npm run build:dev

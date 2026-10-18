@@ -36,17 +36,17 @@ export default function SiteFooter() {
         <div className="flex justify-center gap-3 mt-[18px] mb-4">
           {footer.social.map((s) => (
             <a key={s.label} href={s.href} aria-label={s.label}
-              className="w-[38px] h-[38px] rounded-full bg-[var(--color-paper)] border border-[var(--color-line)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] hover:border-[var(--color-saffron-300)] transition-colors">
+              className="touch-target rounded-full bg-[var(--color-paper)] border border-[var(--color-line)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] hover:border-[var(--color-saffron-300)] transition-colors">
               {SOCIAL_ICONS[s.label]}
             </a>
           ))}
         </div>
-        <p className="text-[10.5px] text-[var(--color-text-muted)] leading-relaxed">
+        <p className="text-policy text-[var(--color-text-secondary)] leading-relaxed">
           © {new Date().getFullYear()} {footer.copyright_text}<br />{footer.address}
         </p>
         <div className="flex items-center justify-center gap-4 flex-wrap mt-4">
           {footer.policies.map((p) => (
-            <Link key={p.href} href={p.href} className="font-body text-[10px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+            <Link key={p.href} href={p.href} className="touch-target inline-flex items-center justify-center font-body text-policy text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
               {p.label}
             </Link>
           ))}
@@ -58,7 +58,7 @@ export default function SiteFooter() {
         <div className="max-w-7xl mx-auto flex flex-col gap-2">
           <div className="flex items-center justify-center gap-4 flex-wrap">
             {footer.policies.map((p) => (
-              <Link key={p.href} href={p.href} className="font-body text-[10px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+              <Link key={p.href} href={p.href} className="touch-target inline-flex items-center justify-center font-body text-policy text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                 {p.label}
               </Link>
             ))}
@@ -67,7 +67,7 @@ export default function SiteFooter() {
             {/* Left — logo + copyright stacked */}
             <div className="flex items-center gap-2.5">
               <Image src={`${siteConfig.basePath}/main-logo.png`} alt={tr.logo_alt} width={40} height={40} className="object-contain shrink-0" />
-              <p className="font-body text-[10px] text-[var(--color-text-muted)] leading-snug">
+              <p className="font-body text-policy text-[var(--color-text-secondary)] leading-snug">
                 © {new Date().getFullYear()} {footer.copyright_text}
               </p>
             </div>
@@ -75,7 +75,7 @@ export default function SiteFooter() {
             <div className="flex items-center gap-3 shrink-0">
               {footer.social.map((s) => (
                 <a key={s.label} href={s.href} aria-label={s.label}
-                  className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] transition-colors">
+                  className="touch-target inline-flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] transition-colors">
                   {SOCIAL_ICONS[s.label]}
                 </a>
               ))}

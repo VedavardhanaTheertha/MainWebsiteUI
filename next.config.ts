@@ -18,7 +18,7 @@ interface SiteConfigFile {
  *
  * Defaults to "dev" when SITE_ENV is unset — showing production content must be
  * an explicit choice, so an unconfigured build can never behave like production.
- * See docs/ARCHITECTURE.md §6.3.
+ * See docs/ARCHITECTURE.md, Environments.
  */
 function loadEnvironment(): SiteEnvironment {
   const file = path.join(process.cwd(), "config", "site.yml");

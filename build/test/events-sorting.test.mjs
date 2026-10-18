@@ -14,6 +14,10 @@ const compile = (source) => ts.transpileModule(source, {
 }).outputText;
 const helpers = {};
 const eventTools = {};
+const categoryTones = {};
+vm.runInNewContext(compile(await readFile(
+  new URL("../../src/lib/category-tones.ts", import.meta.url), "utf8",
+)), { exports: categoryTones });
 vm.runInNewContext(compile(await readFile(
   new URL("../../src/lib/event-tools.ts", import.meta.url), "utf8",
 )), { exports: eventTools, URL, TextEncoder });
@@ -164,6 +168,7 @@ async function mountEvents(options = {}) {
       };
       if (name === "@/lib/event-sorting") return helpers;
       if (name === "@/lib/event-tools") return eventTools;
+      if (name === "@/lib/category-tones") return categoryTones;
       if (name === "@/lib/images") return { imagePaths: {} };
       if (name === "@/gen/settings/ui-elements") return {
         collectionPagination: { initialVisible: 2, loadIncrement: 2 },

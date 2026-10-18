@@ -11,7 +11,9 @@ import { getSearchProfile, withSearchDefaults } from "./search-config.mjs";
 import { describeContentMode } from "./environment-utils.mjs";
 import { parseSevaImage } from "./seva-image.mjs";
 import { discoverLanguageContent, resolveLocalizedValues } from "./language-content.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 
+holdWorkspaceLock("Sevas generation");
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = path.join(projectRoot, "library", "sevas");
 const outputDir = path.join(projectRoot, "src", "gen", "sevas");
@@ -21,7 +23,8 @@ const { codes: languageCodes, defaultLanguage } = discoverLanguageContent(projec
 const envName = process.env.SITE_ENV || "dev";
 const siteConfigFile = path.join(projectRoot, "config", "site.yml");
 const siteConfig = yaml.load(readFileSync(siteConfigFile, "utf8"));
-const envConfig = siteConfig.environments?.[envName] || siteConfig.environments?.dev;
+const envConfig = siteConfig.environments?.[envName];
+if (!envConfig) throw new Error(`SITE_ENV="${envName}" is not defined in config/site.yml.`);
 const mode = describeContentMode(envConfig?.content_mode, envConfig?.default_variant);
 const isPlaceholderDefault = mode.defaultVariant === "placeholder";
 const isSwitchable = mode.includesReal && mode.includesPlaceholder;

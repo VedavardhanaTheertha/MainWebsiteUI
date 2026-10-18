@@ -1,9 +1,33 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 
 const dialogs: HTMLElement[] = [];
+const listeners = new Set<() => void>();
+let scrollLocks = 0;
 let previousOverflow = "";
+
+export function lockPageScroll() {
+  if (scrollLocks++ === 0) {
+    previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--scrollLocks === 0) document.body.style.overflow = previousOverflow;
+  };
+}
+
+function subscribeDialogs(listener: () => void) {
+  listeners.add(listener);
+  return () => { listeners.delete(listener); };
+}
+
+export function useDialogsOpen() {
+  return useSyncExternalStore(subscribeDialogs, () => dialogs.length > 0, () => false);
+}
 const focusableSelector = [
   "a[href]", "button:not([disabled])", "input:not([disabled])",
   "select:not([disabled])", "textarea:not([disabled])",
@@ -24,11 +48,9 @@ export function useDialog(open: boolean, onClose: () => void) {
     const dialog = ref.current;
     if (!open || !dialog) return;
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    if (dialogs.length === 0) {
-      previousOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-    }
+    const unlockScroll = lockPageScroll();
     dialogs.push(dialog);
+    listeners.forEach((listener) => listener());
     const previousTabIndex = dialog.getAttribute("tabindex");
     dialog.tabIndex = -1;
     const focusFirst = () => (focusableElements(dialog)[0] ?? dialog).focus();
@@ -71,7 +93,8 @@ export function useDialog(open: boolean, onClose: () => void) {
       document.removeEventListener("focusin", onFocusIn);
       if (previousTabIndex === null) dialog.removeAttribute("tabindex");
       else dialog.setAttribute("tabindex", previousTabIndex);
-      if (dialogs.length === 0) document.body.style.overflow = previousOverflow;
+      unlockScroll();
+      listeners.forEach((listener) => listener());
       if (wasTop) {
         const next = dialogs.at(-1);
         if (opener?.isConnected && (!next || next.contains(opener))) opener.focus();

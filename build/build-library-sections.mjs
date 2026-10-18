@@ -11,7 +11,9 @@ import { parseKnowledge, validateRelatedArticles, knowledgeCollectionCounts } fr
 import { loadEditorialContent, mergeAuthoredSources } from "./editorial-content.mjs";
 import { resolveImageUrl } from "./image-resolution.mjs";
 import { discoverLanguageContent, resolveLocalizedValues, splitLocalizedArticleBody } from "./language-content.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 
+holdWorkspaceLock("library generation");
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceRoot = path.join(projectRoot, "library");
 const outputRoot = path.join(projectRoot, "src", "gen", "library");

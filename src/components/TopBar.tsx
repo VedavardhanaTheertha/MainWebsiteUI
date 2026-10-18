@@ -42,12 +42,12 @@ export default function TopBar() {
   const copy = tr.public_actions;
 
   return (
-    <div className="hidden lg:block w-full bg-[#1a1108] text-[var(--color-text-brand)]">
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 h-9 grid grid-cols-3 items-center">
+    <div className="hidden xl:block w-full bg-[#1a1108] text-[var(--color-text-brand)]">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 min-h-14 grid grid-cols-3 gap-3 items-center">
 
         {/* Left — language switcher, rendered from the languages discovered at
             build time so a new content/languages/*.json file appears here on its own */}
-        <div className="flex items-center gap-1 border border-[var(--color-saffron-600)]/30 rounded-md px-2 py-1" role="group" aria-label={tr.ui.language_selector}>
+        <div className="flex min-w-0 flex-wrap items-center gap-1 border border-[var(--color-saffron-600)]/30 rounded-md px-2 py-1" role="group" aria-label={tr.ui.language_selector}>
           {languages.map((option, index) => (
             <Fragment key={option.code}>
               {index > 0 && (
@@ -55,7 +55,7 @@ export default function TopBar() {
               )}
               <button
                 onClick={() => setLang(option.code as Lang)}
-                className={`font-body text-[14px] font-bold px-3 py-1 rounded transition-colors focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2 ${
+                className={`inline-flex min-w-11 min-h-11 items-center justify-center font-body text-[14px] font-bold px-3 py-1 rounded transition-colors focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2 ${
                   lang === option.code ? "text-white bg-[var(--color-saffron-600)]/80" : "text-[var(--color-text-brand)]/70 hover:text-[var(--color-text-brand)]"
                 }`}
                 aria-pressed={lang === option.code}
@@ -77,20 +77,20 @@ export default function TopBar() {
           {/* YouTube — Subscribe */}
           {actions.filter(a => a.id === "subscribe").map(({ id, svg }) => (
             <a key={id} href={actionDestinations.subscribe} target="_blank" rel="noopener noreferrer" aria-label={copy.subscribe_label}
-              className="group relative text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
+              className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
               {svg}
               <span className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap bg-[#1a1108] text-[var(--color-text-brand)] text-[10px] font-body px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[9999] border border-[var(--color-saffron-600)]/20">{copy.subscribe_label}</span>
             </a>
           ))}
           {/* Donate */}
           <button onClick={openDonateModal} aria-label={copy.donate_label}
-            className="group relative text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
+            className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
             {actions.find(a => a.id === "donate")?.svg}
             <span className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap bg-[#1a1108] text-[var(--color-text-brand)] text-[10px] font-body px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[9999] border border-[var(--color-saffron-600)]/20">{copy.donate_tooltip}</span>
           </button>
           {/* Volunteer */}
           <a href={actionDestinations.volunteer} target="_blank" rel="noopener noreferrer" aria-label={copy.volunteer_label}
-            className="group relative text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
+            className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
             {actions.find(a => a.id === "volunteer")?.svg}
             <span className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap bg-[#1a1108] text-[var(--color-text-brand)] text-[10px] font-body px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[9999] border border-[var(--color-saffron-600)]/20">{copy.volunteer_label}</span>
           </a>

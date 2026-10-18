@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
@@ -12,13 +11,15 @@ const rootDir = fileURLToPath(new URL("../../", import.meta.url));
 const require = createRequire(import.meta.url);
 const settings = loadThemeSettings();
 
-test("all 77 original token names and exact values survive the settings migration", () => {
-  const entries = Object.entries(settings.tokens).sort(([a], [b]) => a.localeCompare(b));
-  assert.equal(entries.length, 77);
-  // Fingerprinted from the original globals.css @theme before migration.
-  assert.equal(createHash("sha256").update(JSON.stringify(entries)).digest("hex"),
-    "75bd546983037e1449b1865db8915c6a2b3ce88c78d36ca80ce23135813842dc");
+test("live theme settings remain configurable and fixture tokens render exactly", () => {
+  const fixture = JSON.parse(readFileSync(new URL("./fixtures/theme.json", import.meta.url), "utf8"));
+  assert.deepEqual(parseThemeSettings(fixture), fixture);
+  const css = renderThemeCss(fixture);
+  for (const [name, value] of Object.entries(fixture.tokens)) assert.ok(css.includes(`${name}: ${value};`));
   assert.deepEqual(loadThemeSettings(rootDir), settings);
+  const changed = structuredClone(settings);
+  changed.tokens["--color-custom-fixture"] = "#abcdef";
+  assert.doesNotThrow(() => parseThemeSettings(changed));
 });
 
 test("generated CSS is deterministic, static, and exactly matches the JSON authority", () => {
@@ -72,7 +73,7 @@ test("references must resolve without cycles while next/font variables remain ex
   assert.doesNotThrow(() => parseThemeSettings(settings));
 });
 
-test("imported static theme generates Tailwind utilities and retains language font overrides", async () => {
+test("imported static theme generates utilities and metadata-driven font overrides", async () => {
   const globals = path.join(rootDir, "src", "app", "globals.css");
   const source = readFileSync(globals, "utf8");
   assert.match(source, /@import "\.\.\/gen\/settings\/theme\.css";/);
@@ -89,25 +90,27 @@ test("imported static theme generates Tailwind utilities and retains language fo
       };
     },
   });
-  const css = compiler.build(["bg-saffron-600", "text-ink-800", "font-display", "p-4", "rounded-lg", "shadow-md"]);
-  for (const name of ["bg-saffron-600", "text-ink-800", "font-display", "p-4", "rounded-lg", "shadow-md"]) {
+  const css = compiler.build(["bg-saffron-600", "text-ink-800", "font-body", "font-display", "p-4", "rounded-lg", "shadow-md"]);
+  for (const name of ["bg-saffron-600", "text-ink-800", "font-body", "font-display", "p-4", "rounded-lg", "shadow-md"]) {
     assert.ok(css.includes(`.${name} {`), `missing generated utility ${name}`);
   }
-  assert.match(css, /--font-sanskrit:/, "static must retain tokens even without utility candidates");
-  assert.match(css, /html\[lang="kn"\] body \{\s*font-family: var\(--font-kannada\);/);
-  assert.match(css, /\.bhakti-literature-content\[lang="en"\] h1 \{\s*font-family: var\(--font-display\);/);
-  assert.match(css, /\.bhakti-literature-content\[lang="en"\] h2 \{\s*font-family: var\(--font-display\);/);
+  for (const name of Object.keys(settings.tokens)) {
+    assert.ok(css.includes(`${name}:`), `static theme must retain configured token ${name}`);
+  }
+  assert.match(css, /body \{[^}]*font-family: var\(--font-localized, var\(--font-body\)\);/);
+  assert.match(css, /\.font-body \{\s*font-family: var\(--font-localized, var\(--font-body\)\);/);
+  assert.match(css, /\.font-display \{\s*font-family: var\(--font-localized, var\(--font-display\)\);/);
+  assert.match(css, /h1,\s*h2,\s*h3,\s*h4,\s*h5,\s*h6 \{\s*font-family: var\(--font-localized, var\(--font-display\)\);/);
 });
 
 test("both content lifecycle and deployment builds generate theme before compilation", () => {
   const pkg = JSON.parse(readFileSync(path.join(rootDir, "package.json"), "utf8"));
   assert.equal(pkg.scripts["theme:build"], "node build/build-theme-settings.mjs");
-  assert.match(pkg.scripts["content:build"], /npm run theme:build/);
-  for (const lifecycle of ["predev", "prebuild"]) {
-    assert.match(pkg.scripts[lifecycle], /content:build/);
+  assert.equal(pkg.scripts["content:build"], "node build/generate.mjs");
+  assert.equal(pkg.scripts.dev, "node build/dev.mjs");
+  for (const file of ["dev.mjs", "build.mjs"]) {
+    const source = readFileSync(path.join(rootDir, "build", file), "utf8");
+    assert.ok(source.indexOf("generateContent(") < source.indexOf('["dev"') ||
+      source.indexOf("generateContent(") < source.indexOf('["build"'));
   }
-  const build = readFileSync(path.join(rootDir, "build", "build.mjs"), "utf8");
-  const theme = build.indexOf('"build-theme-settings.mjs"');
-  assert.ok(theme > build.indexOf('"clean.mjs"'));
-  assert.ok(theme < build.indexOf('"next", "dist", "bin", "next"'));
 });

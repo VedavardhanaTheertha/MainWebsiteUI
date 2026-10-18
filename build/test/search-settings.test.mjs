@@ -283,7 +283,7 @@ async function lazyHook(client) {
       memoIndex = 0;
       return exports.useLazyMiniSearch(items, query, () => new Promise(() => {}), config);
     },
-    setIndex: (value) => { index = value; },
+    setIndex: (value, items, config) => { index = { index: value, items, config }; },
     get creations() { return creations; },
   };
 }
@@ -312,12 +312,12 @@ for (const settings of [
       assert.equal(result.isLoaded, false);
     }
     assert.equal(hook.creations, 1, "pending queries reuse the same in-memory index");
-    hook.setIndex(expectedIndex);
+    hook.setIndex(expectedIndex, items, config);
     assert.deepEqual(hook.render(items, "arhitecture", config).results,
       client.searchItems(expectedIndex, "arhitecture"));
     assert.equal(hook.creations, 1, "loaded index does not trigger a fallback build");
     const loadedHook = await lazyHook(client);
-    loadedHook.setIndex(expectedIndex);
+    loadedHook.setIndex(expectedIndex, items, config);
     assert.equal(loadedHook.render(items, "architecture", config).isLoaded, true);
     assert.equal(loadedHook.creations, 0, "already-loaded hook never builds the pending index");
   });

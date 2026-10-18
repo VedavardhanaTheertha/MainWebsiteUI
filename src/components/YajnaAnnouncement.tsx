@@ -1,11 +1,19 @@
 ﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLang } from "@/context/LanguageContext";
 import { announcementSettings } from "@/gen/settings/announcements";
 import { announcementMatchesPage, announcementWindow } from "@/lib/ui-settings";
+import { useDialogsOpen } from "@/hooks/useDialog";
+import { createPreferenceStore } from "@/lib/browser-preferences";
+
+const dismissalPreference = createPreferenceStore(
+  "yajna_dismissed", "",
+  (value): value is string => value === "1",
+  announcementSettings.dismissal === "session" ? "sessionStorage" : "localStorage",
+);
 
 export default function YajnaAnnouncement() {
   const pathname = usePathname();
@@ -17,12 +25,15 @@ function Announcement({ pathname }: { pathname: string }) {
   const copy = tr.announcement;
   const [visibleFor, setVisibleFor] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  const dialogsOpen = useDialogsOpen();
+  const storedDismissal = useSyncExternalStore(
+    dismissalPreference.subscribe,
+    announcementSettings.dismissal === "none" ? dismissalPreference.getServerSnapshot : dismissalPreference.getSnapshot,
+    dismissalPreference.getServerSnapshot,
+  );
 
   useEffect(() => {
-    if (dismissed || !announcementMatchesPage(announcementSettings, pathname)) return;
-    const storage = announcementSettings.dismissal === "session" ? sessionStorage
-      : announcementSettings.dismissal === "persistent" ? localStorage : null;
-    if (storage?.getItem("yajna_dismissed")) return;
+    if (dismissed || storedDismissal || !announcementMatchesPage(announcementSettings, pathname)) return;
     const { startsAt, endsAt } = announcementWindow(announcementSettings);
     let showTimer: ReturnType<typeof setTimeout> | undefined;
     let boundaryTimer: ReturnType<typeof setTimeout> | undefined;
@@ -48,9 +59,9 @@ function Announcement({ pathname }: { pathname: string }) {
       clearTimeout(showTimer);
       clearTimeout(boundaryTimer);
     };
-  }, [pathname, dismissed]);
+  }, [pathname, dismissed, storedDismissal]);
 
-  if (dismissed || visibleFor !== pathname || !announcementMatchesPage(announcementSettings, pathname)) return null;
+  if (dismissed || storedDismissal || dialogsOpen || visibleFor !== pathname || !announcementMatchesPage(announcementSettings, pathname)) return null;
 
   return (
     <>
@@ -91,11 +102,10 @@ function Announcement({ pathname }: { pathname: string }) {
             <button
               onClick={() => {
                 setDismissed(true);
-                if (announcementSettings.dismissal === "session") sessionStorage.setItem("yajna_dismissed", "1");
-                if (announcementSettings.dismissal === "persistent") localStorage.setItem("yajna_dismissed", "1");
+                if (announcementSettings.dismissal !== "none") dismissalPreference.setValue("1");
               }}
               aria-label={copy.dismiss}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-[var(--color-text-secondary)]/60 hover:text-[var(--color-text-primary)] transition-colors rounded-full"
+              className="absolute top-0 right-0 z-10 grid min-w-11 min-h-11 place-items-center text-[var(--color-text-secondary)]/60 hover:text-[var(--color-text-primary)] transition-colors rounded-full"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>

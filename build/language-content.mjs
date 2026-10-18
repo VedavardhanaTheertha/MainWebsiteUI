@@ -2,6 +2,32 @@ import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 
+export function validateLanguageDescriptor(value, source) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${source}: _language must be an object.`);
+  }
+  for (const field of ["name", "native_name", "label", "short_label", "content_heading", "font_family"]) {
+    if (value[field] !== undefined && (typeof value[field] !== "string" || !value[field].trim())) {
+      throw new Error(`${source}: _language.${field} must be a non-empty string.`);
+    }
+  }
+  return value;
+}
+
+export function createLanguageDescriptor(code, authored, resolved, defaultLanguage, source) {
+  const original = validateLanguageDescriptor(authored ?? {}, source);
+  const descriptor = validateLanguageDescriptor(resolved ?? {}, source);
+  return {
+    code,
+    name: descriptor.name ?? code,
+    native_name: descriptor.native_name ?? descriptor.name ?? code,
+    label: descriptor.label ?? code.toUpperCase(),
+    short_label: descriptor.short_label ?? code.toUpperCase(),
+    ...(original.font_family === undefined ? {} : { font_family: original.font_family }),
+    is_default: code === defaultLanguage,
+  };
+}
+
 export function discoverLanguageContent(rootDir) {
   const config = yaml.load(readFileSync(path.join(rootDir, "config", "site.yml"), "utf8"));
   const directory = path.join(rootDir, config.content.languages_dir);
@@ -10,7 +36,10 @@ export function discoverLanguageContent(rootDir) {
   const defaultLanguage = config.site.default_language;
   if (!codes.includes(defaultLanguage)) throw new Error(`Missing default language: ${defaultLanguage}`);
   const metadata = Object.fromEntries(codes.map((code) => [
-    code, JSON.parse(readFileSync(path.join(directory, `${code}.json`), "utf8"))._language ?? {},
+    code, validateLanguageDescriptor(
+      JSON.parse(readFileSync(path.join(directory, `${code}.json`), "utf8"))._language ?? {},
+      path.join(directory, `${code}.json`),
+    ),
   ]));
   return { codes, defaultLanguage, metadata };
 }

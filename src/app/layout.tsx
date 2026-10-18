@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { Marcellus, Montserrat, Noto_Sans_Kannada, Noto_Serif_Devanagari } from "next/font/google";
 import "./globals.css";
-import { siteConfig, defaultLang, content } from "@/gen/content";
+import { siteConfig, defaultLang, content, languages } from "@/gen/content";
 import { LanguageProvider } from "@/context/LanguageContext";
 import TopBar from "@/components/TopBar";
 import SiteHeader from "@/components/SiteHeader";
@@ -44,11 +45,11 @@ const notoDevanagari = Noto_Serif_Devanagari({
 // Non-production environments must never appear in search results, where they
 // would compete with the live site. `indexable` comes from config/site.yml, so
 // this behaviour is changed by editing configuration rather than code.
-// See docs/ARCHITECTURE.md §6.2.
+// See the Environments section in docs/ARCHITECTURE.md.
 export const metadata: Metadata = {
   // Title and description come from content so they are placeholder-substituted
   // in dev too — otherwise the real name would leak into dev page titles and
-  // search results, which is exactly what §6.2 exists to prevent.
+  // search results.
   title: content[defaultLang].meta_title,
   description: content[defaultLang].meta_description,
   keywords: content[defaultLang].meta_keywords,
@@ -64,11 +65,15 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const fontStyle: CSSProperties & { "--font-localized"?: string } = {
+    "--font-localized": languages.find(({ code }) => code === defaultLang)?.font_family,
+  };
   return (
     <html
       // Server-rendered with the default language; LanguageProvider updates this
       // on the client once a stored preference is read.
       lang={defaultLang}
+      style={fontStyle}
       className={`${marcellus.variable} ${montserrat.variable} ${notoKannada.variable} ${notoDevanagari.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">

@@ -13,12 +13,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Content never goes in code
 
 **Never hardcode a display string in `src/`.** Short UI labels and the explicitly
-retained media catalogs live in `content/languages/*.json`. Editorial content lives in
+media catalogs live in `content/languages/*.json`. Editorial content lives in
 topic Markdown under `library/`: About/policies/legal in `general/`, announcements in
 `announcement/`, all Learn content and configuration in `learn/`, and multilingual
-articles in `blog/<slug>.md`. Page copy and its metadata share one Markdown source.
-Homepage content and configuration, including legacy/demo content, live in `settings/`
-JSON; the original environment hero groups stay in `library/hero/{dev,prod}/`.
+articles in their owning knowledge-topic folders. Page copy and its metadata share
+one Markdown source. Homepage content and configuration live in `settings/`
+JSON; environment-specific hero groups live in `library/hero/{dev,prod}/`.
 Lineage order comes from guru Markdown numeric filename prefixes, with no settings index.
 Other presentation and navigation configuration
 also belongs in `settings/`. Keep `config/site.yml` as the central YAML environment
@@ -33,6 +33,13 @@ filesystem at build time by `scripts/generate-content.mjs`.
 Any change to the structure, content system, environments, or build pipeline **must**
 update `docs/ARCHITECTURE.md` in the same change. Changes to how contributors do things
 update `docs/DEVELOPER.md`. Documentation that lies is worse than none, because people trust it.
+
+Document only existing behavior, source ownership, contributor procedures, and explicit
+restrictions. Exclude implementation history, removed or unimplemented features, and
+absence-only statements unless they express a restriction. Link to authoritative
+configuration instead of copying external-action URLs, contact details, or dated
+content snapshots into documentation. Preserve institutional history and required
+attribution/provenance.
 
 ## Never revert or discard verified changes
 
@@ -51,9 +58,7 @@ cannot, but it is not a complete source-level guarantee: short, altered, or non-
 language literals may evade it. Review `src/` for display strings as well.
 
 **A passing local build does not prove CI will pass.** Local builds run against the
-working directory, which includes files git ignores; CI only gets what is committed. A
-`.gitignore` rule once excluded the whole `build/` directory, so every local build passed
-while CI failed instantly on a missing script.
+working directory, which includes files git ignores; CI only gets what is committed.
 
 Before trusting a build, reproduce what CI actually checks out:
 

@@ -14,7 +14,9 @@ import { renderMarkdown } from "./markdown.mjs";
 import { getSearchProfile, withSearchDefaults } from "./search-config.mjs";
 import { bhaktiSummaryModule, compositionTypeFromMetadata } from "./bhakti-metadata.mjs";
 import { bhaktiLocalePresentation, discoverLanguageContent, localizeBhaktiSong } from "./language-content.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 
+holdWorkspaceLock("Bhakti generation");
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const libraryRoot = path.join(projectRoot, "library");
 const dataRoot = path.join(projectRoot, "src", "gen");

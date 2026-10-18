@@ -6,9 +6,11 @@ import ts from "typescript";
 
 async function fixture() {
   const listeners = new Map();
+  const captures = new Map();
   const document = {
     body: { style: { overflow: "auto" } },
-    addEventListener: (name, callback) => {
+    addEventListener: (name, callback, capture = false) => {
+      captures.set(name, capture);
       const set = listeners.get(name) ?? new Set();
       set.add(callback);
       listeners.set(name, set);
@@ -16,8 +18,9 @@ async function fixture() {
     removeEventListener: (name, callback) => listeners.get(name)?.delete(callback),
   };
   class Element {
-    constructor(children = []) {
+    constructor(children = [], tagName = "BUTTON") {
       this.children = children;
+      this.tagName = tagName;
       this.isConnected = true;
       this.attrs = new Map();
     }
@@ -46,9 +49,9 @@ async function fixture() {
     }),
   });
   return {
-    document, Element,
-    mount: (open, onClose) => {
-      currentDialog = new Element([new Element(), new Element()]);
+    document, Element, captures,
+    mount: (open, onClose, children = [new Element(), new Element()]) => {
+      currentDialog = new Element(children, "DIV");
       effects = [];
       refIndex = 0;
       const ref = exports.useDialog(open, onClose);
@@ -56,7 +59,11 @@ async function fixture() {
       return { ref, cleanup: () => cleanups.forEach((cleanup) => cleanup()) };
     },
     key: (key, shiftKey = false) => {
-      const event = { key, shiftKey, prevented: false, preventDefault() { this.prevented = true; }, stopPropagation() {} };
+      const event = {
+        key, shiftKey, target: document.activeElement, prevented: false, stopped: false,
+        preventDefault() { this.prevented = true; },
+        stopPropagation() { this.stopped = true; },
+      };
       for (const callback of listeners.get("keydown") ?? []) callback(event);
       return event;
     },
@@ -114,4 +121,24 @@ test("inactive dialog leaves focus and page scrolling unchanged", async () => {
   f.key("Escape");
   assert.equal(f.document.activeElement, opener);
   assert.equal(f.document.body.style.overflow, "auto");
+});
+
+test("Escape from a focused form input reaches the capture listener and releases the dialog lock", async () => {
+  const f = await fixture();
+  const opener = new f.Element();
+  opener.focus();
+  const input = new f.Element([], "INPUT");
+  const textarea = new f.Element([], "TEXTAREA");
+  let closed = 0;
+  const dialog = f.mount(true, () => closed++, [input, textarea]);
+  assert.equal(f.document.activeElement, input);
+  assert.equal(f.captures.get("keydown"), true, "Escape listens in capture before editable controls");
+  const event = f.key("Escape");
+  assert.equal(event.target, input);
+  assert.equal(event.prevented, true);
+  assert.equal(event.stopped, true);
+  assert.equal(closed, 1);
+  dialog.cleanup();
+  assert.equal(f.document.body.style.overflow, "auto");
+  assert.equal(f.document.activeElement, opener);
 });

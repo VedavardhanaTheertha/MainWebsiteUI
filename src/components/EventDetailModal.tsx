@@ -73,11 +73,11 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-2xl shadow-2xl border border-[var(--color-line)] flex flex-col overflow-hidden"
+        className="relative w-full max-w-2xl max-h-[calc(100dvh-2rem)] bg-white rounded-2xl shadow-2xl border border-[var(--color-line)] flex flex-col overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header / Hero */}
-        <div className="relative w-full h-48 sm:h-64 shrink-0 bg-[var(--color-cream-soft)] overflow-hidden">
+        <div className="relative w-full h-[min(12rem,30dvh)] sm:h-[min(16rem,30dvh)] shrink-0 bg-[var(--color-cream-soft)] overflow-hidden">
           <Image
             src={imgUrl}
             alt=""
@@ -116,7 +116,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
         </div>
 
         {/* Content body */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
+        <div className="min-h-0 p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
           <h2 className="font-display font-bold text-xl sm:text-2xl text-[var(--color-text-primary)] leading-tight">
             {title}
           </h2>
@@ -199,7 +199,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
         </div>
 
         {/* Footer actions */}
-        <div className="px-4 py-3 sm:px-6 bg-[var(--color-cream-soft)] border-t border-[var(--color-line)]">
+        <div className="shrink-0 px-4 py-3 sm:px-6 bg-[var(--color-cream-soft)] border-t border-[var(--color-line)]">
           <p role="status" className="text-xs text-[var(--color-text-brand)]">{actionStatus.slug === event.slug ? actionStatus.message : ""}</p>
           <div className="flex flex-wrap items-center justify-end gap-2">
           <button type="button" onClick={() => void shareEvent(false)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-xs font-semibold">{copy.copy_link}</button>

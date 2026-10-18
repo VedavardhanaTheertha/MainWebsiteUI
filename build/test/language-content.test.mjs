@@ -6,7 +6,22 @@ import { fileURLToPath } from "node:url";
 import ts from "typescript";
 import {
   bhaktiLocalePresentation, discoverLanguageContent, localizeBhaktiSong, resolveLocalizedValues,
+  validateLanguageDescriptor,
+  createLanguageDescriptor,
 } from "../language-content.mjs";
+
+test("language descriptors preserve optional authored font families and validate their shape", () => {
+  const descriptor = { name: "Example", font_family: "var(--font-example), serif" };
+  assert.deepEqual(validateLanguageDescriptor(descriptor, "example.json"), descriptor);
+  assert.deepEqual(validateLanguageDescriptor({ name: "Example" }, "example.json"), { name: "Example" });
+  for (const value of [null, [], { font_family: 42 }, { font_family: "" }, { font_family: "  " }]) {
+    assert.throws(() => validateLanguageDescriptor(value, "example.json"), /example\.json.*_language/);
+  }
+  assert.equal(createLanguageDescriptor("example", descriptor, descriptor, "example", "example.json").font_family,
+    descriptor.font_family);
+  assert.equal(Object.hasOwn(createLanguageDescriptor("other", {}, descriptor, "example", "other.json"), "font_family"),
+    false, "a language without its own font must not inherit the default language's font");
+});
 
 test("localized maps use the configured default, keep authored empty values and preserve arrays", () => {
   const codes = ["first", "default", "third"];
