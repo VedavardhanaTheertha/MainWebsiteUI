@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -20,6 +21,7 @@ test("modal reset uses the configured delay and cancels stale resets on reopenin
   }).outputText, {
     exports,
     require: (name) => {
+      if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({ interactionSettings: { modalResetDelayMs: 750 } }) }) };
       if (name === "@/gen/settings/ui-elements") return { interactionSettings: { modalResetDelayMs: 750 } };
       assert.equal(name, "react");
       return {

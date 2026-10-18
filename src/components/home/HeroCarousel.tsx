@@ -5,13 +5,14 @@ import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 import { alternateHomeHero, defaultContentMode, homeHero } from "@/gen/content";
-import { heroSettings } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { Pause, Play } from "lucide-react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useDialogsOpen } from "@/hooks/useDialog";
 
 export default function HeroCarousel() {
   const { lang, contentMode, tr } = useLang();
+  const { heroSettings } = useUiSettings();
   const reducedMotion = useReducedMotion();
   const dialogsOpen = useDialogsOpen();
   const hero = contentMode !== defaultContentMode && alternateHomeHero
@@ -29,7 +30,7 @@ export default function HeroCarousel() {
     if (reducedMotion || paused || hovered || focused || dialogsOpen || !heroSettings.autoplay || images.length <= 1) return undefined;
     const t = setInterval(() => setI((p) => (p + 1) % images.length), heroSettings.intervalMs);
     return () => clearInterval(t);
-  }, [images.length, reducedMotion, paused, hovered, focused, dialogsOpen]);
+  }, [images.length, reducedMotion, paused, hovered, focused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
 
   return (
     <div className="relative"

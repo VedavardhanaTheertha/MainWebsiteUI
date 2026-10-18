@@ -18,7 +18,7 @@ import path from "node:path";
 import yaml from "js-yaml";
 import { renderMarkdown } from "../build/markdown.mjs";
 import { describeContentMode } from "../build/environment-utils.mjs";
-import { loadUiSettings } from "../build/ui-settings.mjs";
+import { loadUiElements, loadUiSettings } from "../build/ui-settings.mjs";
 import { loadActionSettings, resolveActionSettings, validateActionCopy } from "../build/action-settings.mjs";
 import { resolveFooterLinks } from "../build/footer-links.mjs";
 import { resolveImageUrl } from "../build/image-resolution.mjs";
@@ -29,7 +29,8 @@ import { isMachineContentValue as isMachineValue, isPreservedContentField } from
 import { resolveHeroTitles } from "../build/hero-content.mjs";
 import { holdWorkspaceLock } from "../build/workspace-lock.mjs";
 import { createLanguageDescriptor } from "../build/language-content.mjs";
-import { appendDeveloperNavigation, developerOptionsForEnvironment, imageTreatmentStorageKey } from "../build/developer-options.mjs";
+import { appendDeveloperNavigation, developerOptionsForEnvironment, imageTreatmentStorageKey, uiSettingsStorageKey } from "../build/developer-options.mjs";
+import { uiFieldDefinitions } from "../build/ui-settings-schema.mjs";
 
 holdWorkspaceLock("website content generation");
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -620,6 +621,8 @@ function resolveHeroHref(href, basePath) {
 
 /** Writes a standalone HTML rendering of the home page's hero carousel. */
 function writeHeroImages(hero, content, lang, basePath) {
+  const uiDefaults = loadUiElements();
+  const uiSchema = readFileSync(path.join(rootDir, "build", "ui-settings-schema.mjs"), "utf8").replace(/^export /gm, "");
   const titleEn = escapeHtml(hero.title_en);
   const titleKn = escapeHtml(hero.title_kn);
   const activeTitle = lang === "kn" ? titleKn : titleEn;
@@ -643,7 +646,7 @@ function writeHeroImages(hero, content, lang, basePath) {
     html, body { margin: 0; }
     .hero { position: relative; width: 100%; overflow: hidden; border-radius: 0 0 22px 22px; background: #fffaf0; }
     .hero-images { position: relative; height: 462px; overflow: hidden; background: #140c04; }
-    .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity ${heroSettings.fadeDurationMs}ms ease; }
+    .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity var(--hero-fade-duration, ${heroSettings.fadeDurationMs}ms) ease; }
     .hero-image img { position: absolute; inset: 0; width: 100%; height: 100%; }
     .hero-backdrop { display: none; object-fit: cover; filter: blur(14px) brightness(.65); transform: scale(1.12); pointer-events: none; }
     .hero-foreground { object-fit: cover; padding: 0; }
@@ -675,7 +678,12 @@ function writeHeroImages(hero, content, lang, basePath) {
   </section>
   <script>
     (() => {
+      ${uiSchema}
       const hero = document.querySelector(".hero");
+      const slides = [...document.querySelectorAll(".hero-image")];
+      let active = 0;
+      let timer = null;
+      let settings = parseUiSettings(${JSON.stringify(uiDefaults)});
       let warnedAboutStorage = false;
       const readPreference = (key) => {
         try { return localStorage.getItem(key); }
@@ -688,7 +696,18 @@ function writeHeroImages(hero, content, lang, basePath) {
         }
       };
       const applyImageTreatment = () => {
-        document.documentElement.dataset.imageTreatment = readPreference(${JSON.stringify(imageTreatmentStorageKey)}) === "on" ? "on" : "off";
+        const stored = readPreference(${JSON.stringify(uiSettingsStorageKey)});
+        try {
+          settings = parseUiSettings(stored === null ? ${JSON.stringify(uiDefaults)} : JSON.parse(stored));
+        } catch (error) {
+          if (!(error instanceof SyntaxError) && !(error instanceof UiSettingsError)) throw error;
+          console.warn("[preferences] Invalid saved UI settings; using configured defaults.", error);
+          settings = parseUiSettings(${JSON.stringify(uiDefaults)});
+        }
+        const legacy = readPreference(${JSON.stringify(imageTreatmentStorageKey)});
+        const enabled = legacy === "on" || legacy !== "off" && settings.presentationSettings.imageTreatment;
+        document.documentElement.dataset.imageTreatment = enabled ? "on" : "off";
+        document.documentElement.style.setProperty("--hero-fade-duration", settings.heroSettings.fadeDurationMs + "ms");
       };
       applyImageTreatment();
       const applyLanguage = (lang) => {
@@ -700,21 +719,26 @@ function writeHeroImages(hero, content, lang, basePath) {
       };
       applyLanguage(new URLSearchParams(location.search).get("lang") || readPreference("shiroor-lang") || "${escapeHtml(lang)}");
       window.addEventListener("storage", (event) => {
-        if (event.key === null || event.key === ${JSON.stringify(imageTreatmentStorageKey)}) applyImageTreatment();
+        if (event.key === null || event.key === ${JSON.stringify(imageTreatmentStorageKey)} || event.key === ${JSON.stringify(uiSettingsStorageKey)}) {
+          applyImageTreatment();
+          startHero();
+        }
         if (event.key === "shiroor-lang") applyLanguage(event.newValue);
       });
       window.addEventListener("site-language-change", () => applyLanguage(readPreference("shiroor-lang")));
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-      const slides = [...document.querySelectorAll(".hero-image")];
-      if (!${heroSettings.autoplay} || slides.length <= 1) return;
-      let active = 0;
-      window.setInterval(() => {
-        slides[active].classList.remove("is-active");
-        slides[active].setAttribute("aria-hidden", "true");
-        active = (active + 1) % slides.length;
-        slides[active].classList.add("is-active");
-        slides[active].setAttribute("aria-hidden", "false");
-      }, ${heroSettings.intervalMs});
+      function startHero() {
+        if (timer !== null) window.clearInterval(timer);
+        timer = null;
+        if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches || !settings.heroSettings.autoplay || slides.length <= 1) return;
+        timer = window.setInterval(() => {
+          slides[active].classList.remove("is-active");
+          slides[active].setAttribute("aria-hidden", "true");
+          active = (active + 1) % slides.length;
+          slides[active].classList.add("is-active");
+          slides[active].setAttribute("aria-hidden", "false");
+        }, settings.heroSettings.intervalMs);
+      }
+      startHero();
     })();
   </script>
 </body>
@@ -756,6 +780,13 @@ for (const code of languageCodes) {
     : mergeOverDefault(defaultContent, raw, fallbacks);
   const merged = resolveFooterLinks(applyNavigation(translated, navigation), discoveredConnectContent.connectLinks, `${code}.json`);
   validateActionCopy(merged.public_actions, `${config.content.languages_dir}/${code}.json`);
+  for (const field of uiFieldDefinitions) {
+    const copy = merged.developer_options;
+    if (!copy?.groups?.[field.group] || !copy.fields?.[`${field.group}.${field.key}`]?.label ||
+        field.kind === "choice" && field.options.some((option) => !copy.choices?.[option])) {
+      throw new Error(`${code}.json: developer_options needs labels for ${field.group}.${field.key}.`);
+    }
+  }
 
   if (fallbacks.length) fallbackReport[code] = fallbacks;
 

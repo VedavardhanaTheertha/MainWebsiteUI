@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { browserDefaults } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import ContentImage from "@/components/presentation/ContentImage";
 import { BookOpen, GitBranch, List, UserRound, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
@@ -17,6 +17,7 @@ import { useMiniSearch } from "@/hooks/useMiniSearch";
 
 export default function ParamparaBrowser() {
   const { lang, tr, contentMode } = useLang();
+  const { browserDefaults } = useUiSettings();
   const parampara = contentMode !== defaultContentMode && alternateParamparaByLanguage
     ? alternateParamparaByLanguage
     : paramparaByLanguage;

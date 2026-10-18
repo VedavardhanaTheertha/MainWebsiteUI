@@ -537,8 +537,13 @@ export interface ContentShape extends FlatCopyKeys {
     menu_label: string;
     title: string;
     description: string;
-    image_title: string;
-    image_description: string;
+    groups: Record<string, string>;
+    group_descriptions: Record<string, string>;
+    fields: Record<string, { label: string; description?: string }>;
+    choices: Record<string, string>;
+    apply: string;
+    invalid_settings: string;
+    storage_warning: string;
     copy_description: string;
     reset: string;
   };

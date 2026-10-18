@@ -11,7 +11,7 @@ import {
 } from "@/gen/events/data";
 import { imagePaths } from "@/lib/images";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
-import { upcomingEventSettings } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { selectUpcomingEvents } from "@/lib/ui-settings";
 import EventDetailModal from "./EventDetailModal";
 import RailMotionControl from "./RailMotionControl";
@@ -21,6 +21,7 @@ import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/coll
 
 export default function UpcomingEventRail() {
   const { lang, contentMode, tr } = useLang();
+  const { upcomingEventSettings } = useUiSettings();
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
   const upcomingList = contentMode === "placeholder" ? placeholderEvents : realEvents;

@@ -17,7 +17,7 @@ import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
-import { collectionPagination } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { useDialog } from "@/hooks/useDialog";
 import { filterAndSortSevas } from "@/lib/seva-filtering";
 import RailMotionControl from "./RailMotionControl";
@@ -192,6 +192,7 @@ function SevaModal({
 
 export default function SevasBrowser() {
   const { lang, contentMode, tr } = useLang();
+  const { collectionPagination } = useUiSettings();
   const [categoryFilter, setCategoryFilter] = useState("");
   const [deityFilter, setDeityFilter] = useState("");
   const [minimum, setMinimum] = useState("");

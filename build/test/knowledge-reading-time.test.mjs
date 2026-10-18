@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -21,6 +22,7 @@ function loadModule(relativePath, dependencies) {
   runInNewContext(compiled, {
     exports,
     require: (name) => {
+      if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...settings }) };
       assert.ok(Object.hasOwn(dependencies, name), `Unexpected dependency: ${name}`);
       return dependencies[name];
     },
@@ -30,7 +32,8 @@ function loadModule(relativePath, dependencies) {
 
 const settings = { readingTimeSettings: { wordsPerMinute: 200 } };
 const knowledge = loadModule("../../src/lib/knowledge.ts", {
-  "@/gen/content": { defaultLang: "en" }, "@/gen/settings/ui-elements": settings,
+  "@/gen/content": { defaultLang: "en" }, "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...(settings) }) },
+  "@/gen/settings/ui-elements": settings,
 });
 const { knowledgeReadingTime, localizeArticle } = knowledge;
 const article = (wordCount) => ({
@@ -66,6 +69,11 @@ test("story estimates use configured reading speed while explicit minutes still 
   } finally {
     settings.readingTimeSettings.wordsPerMinute = 200;
   }
+});
+
+test("runtime reading speed is supplied by the caller without changing authored minutes", () => {
+  assert.equal(knowledgeReadingTime(article(200), { wordsPerMinute: 100 }).minutes, 3);
+  assert.equal(knowledgeReadingTime({ ...article(800), knowledge: { readMinutes: 2 } }, { wordsPerMinute: 100 }).minutes, 2);
 });
 
 test("estimates count visible localized title and body text, not markup, entities, comments, or embedded code", () => {

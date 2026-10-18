@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -258,6 +259,9 @@ async function lazyHook(client) {
           return client.createSearchIndex(...args);
         },
       };
+      if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({
+        interactionSettings: { searchPreloadDelayMs: 300 },
+      }) }) };
       if (name === "@/gen/settings/ui-elements") return {
         interactionSettings: { searchPreloadDelayMs: 300 },
       };

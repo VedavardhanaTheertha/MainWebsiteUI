@@ -1,7 +1,7 @@
 "use client";
 
 import { useLang } from "@/context/LanguageContext";
-import { railAutoScroll } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { Pause, Play } from "lucide-react";
 
 export default function RailMotionControl({
@@ -12,6 +12,7 @@ export default function RailMotionControl({
   className?: string;
 }) {
   const { tr } = useLang();
+  const { railAutoScroll } = useUiSettings();
   if (!railAutoScroll.enabled) return null;
   const label = paused ? tr.page_controls.resume_motion : tr.page_controls.pause_motion;
   const Icon = paused ? Play : Pause;

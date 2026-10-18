@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -170,6 +171,10 @@ async function mountEvents(options = {}) {
       if (name === "@/lib/event-tools") return eventTools;
       if (name === "@/lib/category-tones") return categoryTones;
       if (name === "@/lib/images") return { imagePaths: {} };
+      if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({
+        collectionPagination: { initialVisible: 2, loadIncrement: 2 },
+        browserDefaults: { eventsUpcomingSort: "earliest", eventsPastSort: "latest", ...options.defaults },
+      }) }) };
       if (name === "@/gen/settings/ui-elements") return {
         collectionPagination: { initialVisible: 2, loadIncrement: 2 },
         browserDefaults: { eventsUpcomingSort: "earliest", eventsPastSort: "latest", ...options.defaults },

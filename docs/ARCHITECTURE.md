@@ -57,17 +57,25 @@ Missing translated object keys inherit default-language values. Arrays are compl
 replacement values, not item-by-item merges. The default language must be complete.
 Library translation discovery and fallback follow the same configured language set;
 missing translations are not a reason to fabricate a body.
-Language, image-treatment, and preview preferences are persisted when browser storage is available;
+Language, UI settings, and preview preferences are persisted when browser storage is available;
 otherwise they remain usable in memory for the current page session.
 
 The Developer options page is exported only for `local` and `dev`. Its localized
 entry is appended after the configured menu entries in both real and placeholder
-catalogs; it is the last entry in desktop and compact navigation. The page contains
-the copy-preview selector and an image-treatment checkbox. Local copy defaults to
-real; development copy defaults to placeholders. Reset restores these build defaults
-and disables the image treatment without changing the selected language.
+catalogs; it is the last entry in desktop and compact navigation. The page exposes
+every supported field in `settings/ui_elements.json` through generated, localized
+checkboxes, numeric inputs, and choice controls. Edits remain drafts until **Apply
+and reload** validates and saves them. The separate copy checkbox selects
+placeholders when checked and real copy when unchecked. Local copy defaults to
+real; development copy defaults to placeholders, and copy changes apply immediately.
+Reset restores the configured UI values and environment-default copy, then reloads,
+without changing the selected language. If storage is unavailable, Apply and Reset
+apply settings in memory and show a warning instead of reloading away those changes.
 
-`build/developer-options.mjs` owns the technical route and preference configuration.
+`build/developer-options.mjs` owns the technical route and storage keys;
+`settings/ui_elements.json` owns all UI defaults, including the image treatment,
+desktop header shortcuts, and top Subscribe visibility (all initially false).
+Copy-preview defaults remain environment-owned.
 The page uses `page.preview.tsx`; Next configuration recognizes the `preview.tsx`
 extension only in local/dev while retaining all standard page extensions.
 Production never registers the route. The page also has a defensive not-found guard.
@@ -77,13 +85,26 @@ Developer control copy is preserved in placeholder catalogs so controls remain r
 Production exports neither this page nor its menu entry and always uses real copy,
 regardless of the saved copy preference.
 
-The image preference uses `site-image-treatment` in per-origin `localStorage`
-(`on` or `off`, default `off`). The root preference subscriber updates
-`data-image-treatment` after hydration; the server snapshot is always off.
-The standalone hero reads the same key and follows cross-document storage events.
-Production supports this browser-local image override without exposing a developer
-page or enabling placeholder catalogs. These preferences are not runtime environment
-variables, secrets, or an authorization mechanism.
+`build/ui-settings-schema.mjs` is the shared build/browser validator and field
+descriptor source. Generation rejects unknown or invalid settings and missing
+localized control labels. Generated raw defaults and normalized aliases feed
+`UiSettingsProvider`, which supplies runtime values to every interactive consumer.
+The provider's server snapshot always uses configured defaults. When a complete
+saved configuration loads or changes, a keyed provider remount initializes
+pagination, sort/view/filter state, and reader size from those settings.
+
+The browser stores a complete validated raw configuration as JSON in
+`site-ui-settings` in per-origin `localStorage`. Invalid saved data produces a
+warning and falls back to configured defaults. Legacy `site-image-treatment`,
+`site-header-actions`, and `site-top-subscribe` values of `on` or `off` override the
+corresponding presentation fields; absent or other values inherit the configuration.
+Apply and Reset clear their precedence with `default`. Legacy-only changes do not
+remount the site. The root image subscriber updates `data-image-treatment` after
+hydration. The standalone generated hero embeds the same validator and defaults,
+applies image/autoplay/interval/fade settings, and follows cross-document storage
+events. Production supports all browser-local UI overrides without exposing a
+developer page or enabling placeholder catalogs. These preferences are not runtime
+environment variables, secrets, or an authorization mechanism.
 
 Structured page copy uses multilingual frontmatter, for example:
 
@@ -210,7 +231,11 @@ and valid image/video metadata; do not infer publication rights from remote avai
 
 `settings/ui_elements.json` supplies collection pagination, reader controls, viewer
 boundaries, default filters/sorting, upcoming-event limits, slideshow timing,
-interaction delays, and horizontal auto-scroll behavior. Horizontal rails preserve
+interaction delays, presentation flags, and horizontal auto-scroll behavior.
+The obsolete `hero.zoomDurationMs` option is unsupported; foreground images do not
+zoom. `searchPreloadDelayMs` is the fallback preload delay when idle callbacks are
+unavailable. Reading-speed overrides affect estimates, not authored reading times.
+Horizontal rails preserve
 manual touch scrolling, desktop dragging, interaction pause/resume, and reduced-motion
 preferences. Turning autoplay off does not disable manual navigation. Runtime callers
 use the shared settings-aware scroll API.

@@ -93,21 +93,52 @@ treat the preview or `noindex` as access control.
 
 Open the final navigation entry, **Developer options**, in local or development
 builds (`/developer-options`, under the configured base path). Copy-preview controls
-live on this page rather than in a global toolbar. The image checkbox is off by
-default: images cover their frames, potentially cropping edges. Turning it on shows
+live on this page rather than in a global toolbar. The copy checkbox is checked for
+placeholder copy and unchecked for real copy (local defaults to unchecked; development
+defaults to checked) and changes immediately. All 30 supported settings from
+`settings/ui_elements.json` also appear as grouped checkboxes, numeric inputs, and
+selectors. Edit these as drafts, then use **Apply and reload** to validate and use
+them throughout the site, including initial pagination, reader size, sorting, and
+filter/view defaults.
+
+The image treatment, desktop header shortcuts (Panchanga, Scan QR, Join WhatsApp),
+and top YouTube Subscribe controls default to false in `presentation` in that JSON
+file. Copy-preview defaults remain defined by the environment, not UI settings.
+With image treatment off, images cover their frames, potentially cropping edges.
+Turning it on shows
 the complete image over a blurred copy. Captions remain outside images and portrait
 frames remain rectangular in either mode. The full-screen album viewer, logos,
 QR codes, functional icons, and fallback icons are unaffected.
 
 Changes are saved per browser and origin, including the port, not per deployment
-path. **Reset developer options** disables the image effect and restores real copy
-for local or placeholder copy for development, without resetting language.
+path. **Reset and reload** restores the JSON UI defaults and real copy for local
+or placeholder copy for development, without resetting language.
 Control labels stay readable in placeholder mode. Denied storage produces a warning
-and leaves preferences usable in memory for the current page session.
+and leaves preferences usable in memory for the current page session; Apply and
+Reset do not reload when that would discard unsaved in-memory preferences.
+
+`build/ui-settings-schema.mjs` defines the supported fields, ranges, choices, and
+reader-size relationships. Update the schema and localized `developer_options`
+labels when adding a setting; the generator verifies coverage. UI defaults belong
+only in `settings/ui_elements.json`, never in the developer-route configuration.
+Remove obsolete `hero.zoomDurationMs` from older settings files: it has no visual
+effect and is rejected as unknown. The search preload delay is only used when
+`requestIdleCallback` is unavailable.
 
 Production exports no Developer options page or menu entry, and saved copy-preview
-values cannot enable placeholder copy. To enable only the image effect in production,
-run this in that site's browser developer console:
+values cannot enable placeholder copy. All UI settings can still be overridden
+locally in the browser. Save settings in a local/dev Developer page, then copy the
+complete JSON string from `localStorage.getItem("site-ui-settings")`. On the desired
+production origin, store that exact JSON string under `site-ui-settings` and reload.
+Partial objects, unknown fields, invalid ranges, and invalid reader-size
+relationships are rejected with a console warning and configured-default fallback.
+Remove that key and reload to restore configured defaults.
+
+For individual presentation flags, the compatibility keys
+`site-image-treatment`, `site-header-actions`, and `site-top-subscribe` accept `on`
+or `off` and take precedence over the JSON configuration. Apply or Reset on the
+Developer page replaces these with `default` so stale flags cannot defeat its
+choices. For example, to enable only the image effect in production:
 
 ```js
 localStorage.setItem("site-image-treatment", "on");
@@ -116,10 +147,13 @@ location.reload();
 
 To disable it, use `localStorage.setItem("site-image-treatment", "off"); location.reload();`.
 To restore the default, use `localStorage.removeItem("site-image-treatment"); location.reload();`.
-Invalid or absent values default to off. These are public browser preferences,
+Invalid or absent legacy values inherit the JSON override or configured default.
+These are public browser preferences,
 not mutable build environment variables or a security boundary. Same-tab manual
-storage edits require a reload; page controls update immediately and other open
-documents follow storage events. The standalone generated hero honors the same flag.
+storage edits require a reload; Developer page UI edits apply only through Apply,
+copy changes immediately, and other open documents follow storage events.
+The standalone generated hero honors the same image override plus configured
+autoplay, interval, and fade settings. Reduced-motion preferences remain respected.
 
 Preview-only utility pages use `page.preview.tsx`. The shared developer-options
 build helper enables that extension in local/dev only; keep standard pages on

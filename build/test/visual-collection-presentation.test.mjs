@@ -6,6 +6,7 @@ import vm from "node:vm";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import ts from "typescript";
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 
 const require = createRequire(import.meta.url);
 function load(relativePath, dependencies = {}) {
@@ -19,7 +20,8 @@ function load(relativePath, dependencies = {}) {
     },
   }).outputText, {
     exports,
-    require: (id) => Object.hasOwn(dependencies, id) ? dependencies[id] : require(id),
+    require: (id) => id === "@/context/UiSettingsContext" ? { useUiSettings: () => testUiSettings } :
+      Object.hasOwn(dependencies, id) ? dependencies[id] : require(id),
   });
   return exports;
 }

@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -142,6 +143,7 @@ function searchFixture() {
   const config = { fields: ["title"] };
   const { useLazyMiniSearch } = loadSource("hooks/useMiniSearch.ts", {
     react: lifecycle.react,
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({ interactionSettings: { searchPreloadDelayMs: 100 } }) }) },
     "@/gen/settings/ui-elements": { interactionSettings: { searchPreloadDelayMs: 100 } },
     "@/lib/search": {
       createSearchIndex: (items) => ({ items }),
@@ -295,6 +297,9 @@ test("rail frames stop when idle, hidden, focused or reduced, and canceled touch
     react,
     "@/hooks/useReducedMotion": { useReducedMotion: () => reduced },
     "@/hooks/useDialog": { useDialogsOpen: () => dialog },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({ railAutoScroll: {
+      enabled: true, pixelsPerSecond: 100, returnDurationMs: 500, resumeDelayMs: 100,
+    } }) }) },
     "@/gen/settings/ui-elements": { railAutoScroll: {
       enabled: true, pixelsPerSecond: 100, returnDurationMs: 500, resumeDelayMs: 100,
     } },

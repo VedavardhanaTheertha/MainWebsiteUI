@@ -8,7 +8,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useDialog } from "@/hooks/useDialog";
 import type { MediaAlbumItem } from "@/lib/content-types";
 import { mediaItemId, safeMediaUrl } from "@/lib/media-utils";
-import { mediaViewerSettings } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 
 export type ViewerItem = MediaAlbumItem & { viewerId: string };
 
@@ -101,6 +101,7 @@ export default function MediaViewer({
   onMove: (id: string) => void;
 }) {
   const { tr } = useLang();
+  const { mediaViewerSettings } = useUiSettings();
   const copy = tr.media;
   const headingId = useId();
   const dialogRef = useDialog(itemId !== null, onClose);

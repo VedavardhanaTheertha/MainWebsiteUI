@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { topAlbumIds, recentAlbumIds } from "@/gen/media/albums";
-import { browserDefaults, collectionPagination } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import RailMotionControl from "@/components/RailMotionControl";
 import AdvancedFilters from "@/components/AdvancedFilters";
@@ -16,8 +16,6 @@ import type { MediaAlbum } from "@/lib/content-types";
 import { filterMediaAlbums, mediaCounts, type MediaFilters } from "@/lib/media-utils";
 import CollectionEmptyState from "@/components/presentation/CollectionEmptyState";
 import { collectionCardBodyClassName, collectionCardClassName, collectionCardImageClassName } from "@/lib/collection-presentation";
-
-const defaultFilters: MediaFilters = { from: "", to: "", event: "", type: "", sort: browserDefaults.albumsSort };
 
 function AlbumTile({
   album,
@@ -69,6 +67,11 @@ function AlbumTile({
 
 export default function MediaAlbumsBrowser() {
   const { tr } = useLang();
+  const { browserDefaults, collectionPagination } = useUiSettings();
+  const defaultFilters = useMemo<MediaFilters>(
+    () => ({ from: "", to: "", event: "", type: "", sort: browserDefaults.albumsSort }),
+    [browserDefaults.albumsSort],
+  );
   const copy = tr.media;
   const albums = copy.albums;
   const [query, setQuery] = useState("");

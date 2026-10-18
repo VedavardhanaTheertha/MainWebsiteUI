@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -48,6 +49,9 @@ async function mount(name, enabled = true, additional = {}) {
       if (dependency === "@/components/presentation/ContentImage") return { default: "image" };
       if (dependency === "@/hooks/useReducedMotion") return { useReducedMotion: () => false };
       if (dependency === "@/hooks/useDialog") return { useDialogsOpen: () => false };
+      if (dependency === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({
+        railAutoScroll: { enabled }, browserDefaults: { advancedFiltersOpen: false, lineageView: "list" },
+      }) }) };
       if (dependency === "@/gen/settings/ui-elements") return {
         railAutoScroll: { enabled }, browserDefaults: { advancedFiltersOpen: false, lineageView: "list" },
       };
@@ -78,6 +82,7 @@ test("homepage hero and feature tiles are single links with no separate CTA butt
     const hero = await mount("home/HeroCarousel", true, {
       "@/context/LanguageContext": language,
       "@/gen/content": { defaultContentMode: "real", homeHero: { titles: { fixture: "Hero" }, href: "/about", images: ["/hero.jpg"] } },
+      "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({ heroSettings: { autoplay: false } }) }) },
       "@/gen/settings/ui-elements": { heroSettings: { autoplay: false } },
     });
     const banner = nodes(hero(), (node) => node.type === "link")[0];
@@ -218,6 +223,7 @@ test("lineage uses one icon to switch timeline/list while preserving its search"
 
 test("advanced filter initial openness follows settings and remains user-toggleable", async () => {
   const render = await mount("AdvancedFilters", true, {
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({ browserDefaults: { advancedFiltersOpen: true } }) }) },
     "@/gen/settings/ui-elements": { browserDefaults: { advancedFiltersOpen: true } },
   });
   const props = { children: "controls", search: "search" };
@@ -237,6 +243,10 @@ test("Bhakti reader range uses configured initial size and bounds", async () => 
       useState: (value) => [value === null ? "song" : value, () => {}],
     },
     "@/context/LanguageContext": { useLang: () => ({ lang: "fixture", tr }) },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({
+      collectionPagination: { initialVisible: 6 },
+      bhaktiReaderSettings: { initialSize: 110, minSize: 90, maxSize: 170, step: 10 },
+    }) }) },
     "@/gen/settings/ui-elements": {
       collectionPagination: { initialVisible: 6 },
       bhaktiReaderSettings: { initialSize: 110, minSize: 90, maxSize: 170, step: 10 },

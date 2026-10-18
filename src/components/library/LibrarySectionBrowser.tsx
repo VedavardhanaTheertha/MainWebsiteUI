@@ -14,7 +14,7 @@ import {
   placeholderLibrarySections,
   realLibrarySections,
 } from "@/gen/library/data";
-import { collectionPagination } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { articleHref, knowledgeReadingTime, knowledgeText, localizeArticle, type DisplayArticle } from "@/lib/knowledge";
 import KnowledgeBody from "./KnowledgeBody";
 import CollectionEmptyState from "@/components/presentation/CollectionEmptyState";
@@ -99,9 +99,10 @@ function ArticleTile({
   onOpen: () => void;
 }) {
   const { tr } = useLang();
+  const { readingTimeSettings } = useUiSettings();
   const copy = tr.library_browser;
   const projectStatus = article.knowledge?.project?.status;
-  const readingTime = sectionId === "stories" || article.knowledge?.readMinutes ? knowledgeReadingTime(article) : undefined;
+  const readingTime = sectionId === "stories" || article.knowledge?.readMinutes ? knowledgeReadingTime(article, readingTimeSettings) : undefined;
   return (
     <button
       type="button"
@@ -135,6 +136,7 @@ function ArticleTile({
 
 export default function LibrarySectionBrowser({ sectionId }: { sectionId: string }) {
   const { lang, contentMode, tr } = useLang();
+  const { collectionPagination } = useUiSettings();
   const copy = tr.library_browser;
   const sections = contentMode === "placeholder"
     ? placeholderLibrarySections

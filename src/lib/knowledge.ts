@@ -29,6 +29,7 @@ export function localizeArticle(item: KnowledgeArticle, lang: string): DisplayAr
 
 export function knowledgeReadingTime(
   article: Pick<DisplayArticle, "title" | "html" | "knowledge">,
+  settings: { wordsPerMinute: number } = readingTimeSettings,
 ): { minutes: number; estimated: boolean } {
   const supplied = article.knowledge?.readMinutes;
   if (typeof supplied === "number" && Number.isSafeInteger(supplied) && supplied > 0) {
@@ -40,7 +41,7 @@ export function knowledgeReadingTime(
     .replace(/<[^>]*>/gu, " ")
     .replace(/&(?:#\d+|#x[\da-f]+|[a-z][\da-z]+);/giu, " ");
   const words = `${article.title} ${body}`.match(/[\p{L}\p{N}][\p{L}\p{M}\p{N}]*(?:['’][\p{L}\p{M}\p{N}]+)*/gu);
-  return { minutes: Math.max(1, Math.ceil((words?.length ?? 0) / readingTimeSettings.wordsPerMinute)), estimated: true };
+  return { minutes: Math.max(1, Math.ceil((words?.length ?? 0) / settings.wordsPerMinute)), estimated: true };
 }
 
 export function articleHref(section: Pick<LibrarySection, "route">, id: string): string {

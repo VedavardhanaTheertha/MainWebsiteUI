@@ -27,6 +27,7 @@ export function createPreferenceStore<T>(
     if (event.key === null || event.key === key) notify();
   };
   return {
+    isPersistent: () => !unavailable,
     getSnapshot,
     getServerSnapshot: () => fallback,
     subscribe(listener: () => void) {

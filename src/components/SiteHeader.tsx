@@ -5,17 +5,18 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useId } from "react";
 import { useQRModal } from "@/hooks/useQRModal";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { useLang } from "@/context/LanguageContext";
 import { navigationRoutes, siteConfig } from "@/gen/content";
 import type { NavItem } from "@/lib/nav-types";
 import { actionDestinations } from "@/gen/settings/actions";
-import { interactionSettings } from "@/gen/settings/ui-elements";
 
 type DropKey = string | null;
 
 export default function SiteHeader() {
   const pathname = usePathname();
   const { openQR } = useQRModal();
+  const { interactionSettings, presentationSettings } = useUiSettings();
   const { tr } = useLang();
   const NAV = tr.nav as unknown as NavItem[];
   const [open, setOpen] = useState<DropKey>(null);
@@ -127,7 +128,7 @@ export default function SiteHeader() {
         </nav>
 
         {/* Right actions */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {presentationSettings.headerActions && <div data-header-actions className="flex items-center gap-1.5 shrink-0">
           <Link href={navigationRoutes.panchanga}
             className="flex items-center gap-1 px-3 py-1.5 rounded-full font-body text-[11px] font-medium text-[var(--color-text-secondary)] border border-[var(--color-saffron-600)] hover:border-[var(--color-saffron-600)] hover:text-[var(--color-text-brand)] transition-colors">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -146,7 +147,7 @@ export default function SiteHeader() {
             </svg>
             {tr.public_actions.whatsapp_label}
           </a>
-        </div>
+        </div>}
 
       </div>
     </header>

@@ -1,12 +1,17 @@
 export const developerOptionsRoute = "/developer-options";
 export const imageTreatmentStorageKey = "site-image-treatment";
+export const headerActionsStorageKey = "site-header-actions";
+export const topSubscribeStorageKey = "site-top-subscribe";
+export const uiSettingsStorageKey = "site-ui-settings";
 
 export function developerOptionsForEnvironment(environment) {
   return {
     enabled: environment === "local" || environment === "dev",
     route: developerOptionsRoute,
     imageStorageKey: imageTreatmentStorageKey,
-    defaultImageTreatment: "off",
+    headerActionsStorageKey,
+    topSubscribeStorageKey,
+    uiSettingsStorageKey,
   };
 }
 

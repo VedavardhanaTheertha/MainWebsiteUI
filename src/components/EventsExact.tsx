@@ -20,13 +20,14 @@ import { getSearchProfile } from "@/lib/search";
 import { sortEventsByDateTime, type EventSortOrder } from "@/lib/event-sorting";
 import { eventDetailUrl, matchesEventDates } from "@/lib/event-tools";
 import { imagePaths } from "@/lib/images";
-import { browserDefaults, collectionPagination } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import EventDetailModal from "./EventDetailModal";
 import AdvancedFilters from "./AdvancedFilters";
 import { categoryToneClassName } from "@/lib/category-tones";
 
 export default function EventsExact() {
   const { lang, contentMode, tr } = useLang();
+  const { browserDefaults, collectionPagination } = useUiSettings();
   const copy = tr.events_exact;
 
   const [query, setQuery] = useState("");
@@ -93,7 +94,7 @@ export default function EventsExact() {
     const timer = setTimeout(readLink, 0);
     window.addEventListener("popstate", readLink);
     return () => { clearTimeout(timer); window.removeEventListener("popstate", readLink); };
-  }, [upcomingCatalog, loadPast, pastError]);
+  }, [upcomingCatalog, loadPast, pastError, browserDefaults.eventsPastSort]);
 
   const openEvent = (event: EventItem) => {
     window.history.pushState(null, "", eventDetailUrl(window.location.href, event.slug));

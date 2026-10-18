@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -29,6 +30,7 @@ function render(file, props, tr) {
     "@/lib/search": { getSearchProfile: () => ({}) },
     "@/components/RailMotionControl": { default: "motion-control" },
     "@/gen/library/data": { placeholderLibrarySections: [section], realLibrarySections: [section] },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({ collectionPagination: { initialVisible: 10 } }) }) },
     "@/gen/settings/ui-elements": { collectionPagination: { initialVisible: 10 } },
     "@/lib/knowledge": {
       articleHref: (collection, id) => `${collection.route}/${id}`,
