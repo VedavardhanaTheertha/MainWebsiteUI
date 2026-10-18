@@ -15,7 +15,7 @@ export default function KnowledgeArticlePage({ sectionId, articleId }: { section
   const article = localizeArticle(item, lang);
   const related = relatedArticles(section, item);
   return (
-    <div className="mx-auto max-w-3xl px-5 py-8 sm:px-8 sm:py-12">
+    <div className="layout-reading layout-section mx-auto max-w-3xl px-5 py-8 sm:px-8 sm:py-12">
       <Link href={section.route} className="inline-flex min-h-11 items-center text-base font-semibold text-[var(--color-text-brand)] underline underline-offset-4">{copy.back_collection}</Link>
       <article>
         <header className="border-b border-[var(--color-line)] pb-6">

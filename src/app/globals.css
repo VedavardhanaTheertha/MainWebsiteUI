@@ -44,6 +44,15 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-cream-soft);
 }
 
+.collection-tile {
+  border-radius: var(--tile-corner-radius, var(--radius-xl));
+}
+
+.hero-rounded-frame {
+  border-bottom-left-radius: var(--tile-corner-radius, 22px);
+  border-bottom-right-radius: var(--tile-corner-radius, 22px);
+}
+
 .content-image-frame {
   position: absolute;
   inset: 0;
@@ -93,6 +102,82 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   height: auto;
   padding: 0;
+}
+
+.hero-text-overlay {
+  color: #fff8ed;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 70%);
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 22.5rem;
+  padding: 6rem 0 0;
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body {
+  position: static;
+  flex: 0 0 auto;
+  min-width: 0;
+  margin-top: auto;
+  padding: 3rem 1rem 1rem;
+  background: linear-gradient(to bottom, transparent, rgb(20 12 4 / var(--tile-overlay-opacity, 0.4)) 2rem);
+  color: #fff8ed;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 90%);
+  overflow-wrap: anywhere;
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-art .content-image-foreground {
+  object-position: center top;
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
+  color: #fff8ed;
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(h2, h3) {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body .visual-tile-badge {
+  background: rgb(20 12 4 / calc(var(--tile-overlay-opacity, 0.4) * 0.625));
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(a, button):focus-visible {
+  outline-color: #fff8ed;
+}
+
+@media (forced-colors: active) {
+  :root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body {
+    background: Canvas;
+  }
+  :root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
+    color: CanvasText;
+  }
+  :root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body .visual-tile-badge {
+    background: Canvas;
+  }
 }
 
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {

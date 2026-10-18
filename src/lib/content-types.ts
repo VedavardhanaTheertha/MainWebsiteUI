@@ -533,6 +533,17 @@ export interface ContentShape extends FlatCopyKeys {
     real: string;
     placeholder: string;
   };
+  layout_experiments: {
+    spotlight_title: string;
+    spotlight_description: string;
+    features_title: string;
+    features_description: string;
+    explore_description: string;
+    guidance_description: string;
+    view_all: string;
+    previous: string;
+    next: string;
+  };
   developer_options: {
     menu_label: string;
     title: string;

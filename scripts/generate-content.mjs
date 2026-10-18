@@ -644,8 +644,9 @@ function writeHeroImages(hero, content, lang, basePath) {
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; }
-    .hero { position: relative; width: 100%; overflow: hidden; border-radius: 0 0 22px 22px; background: #fffaf0; }
+    .hero { position: relative; width: 100%; overflow: hidden; border-radius: 0 0 var(--tile-corner-radius, 22px) var(--tile-corner-radius, 22px); background: #fffaf0; }
     .hero-images { position: relative; height: 462px; overflow: hidden; background: #140c04; }
+    :root[data-adaptive-hero="on"] .hero-images { height: clamp(20rem, 65svh, 28.875rem); }
     .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity var(--hero-fade-duration, ${heroSettings.fadeDurationMs}ms) ease; }
     .hero-image img { position: absolute; inset: 0; width: 100%; height: 100%; }
     .hero-backdrop { display: none; object-fit: cover; filter: blur(14px) brightness(.65); transform: scale(1.12); pointer-events: none; }
@@ -653,13 +654,14 @@ function writeHeroImages(hero, content, lang, basePath) {
     :root[data-image-treatment="on"] .hero-backdrop { display: block; }
     :root[data-image-treatment="on"] .hero-foreground { object-fit: contain; padding: 8px; }
     .hero-image.is-active { opacity: 1; }
-    .hero-content { position: relative; padding: 24px; text-align: center; }
-    .hero-title { margin: 0 0 20px; color: #261b12; font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.25; white-space: pre-line; }
-    .hero-cta { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #c86d1d; color: #fff; font-family: sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 8px 22px -8px rgba(0,0,0,.55); transition: background-color 150ms ease; }
-    .hero-cta:hover { background: #a95315; }
-    .hero-cta:active { background: #85400f; }
+    .hero-content { position: absolute; inset: auto 0 0; padding: 48px 24px 24px; text-align: center; }
+    .hero-title { margin: 0 0 20px; color: #fff8ed; text-shadow: 0 1px 4px rgb(0 0 0 / 70%); font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.25; white-space: pre-line; }
+    .hero-cta { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #85400f; color: #fff; font-family: sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 8px 22px -8px rgba(0,0,0,.55); transition: background-color 150ms ease; }
+    .hero-cta:hover { background: #73330f; }
+    .hero-cta:active { background: #62290c; }
     @media (min-width: 1024px) {
       .hero-images { height: 600px; }
+      :root[data-adaptive-hero="on"] .hero-images { height: clamp(22.5rem, 70svh, 37.5rem); }
       .hero-title { font-size: 36px; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -698,7 +700,7 @@ function writeHeroImages(hero, content, lang, basePath) {
       const applyImageTreatment = () => {
         const stored = readPreference(${JSON.stringify(uiSettingsStorageKey)});
         try {
-          settings = parseUiSettings(stored === null ? ${JSON.stringify(uiDefaults)} : JSON.parse(stored));
+          settings = parseUiSettings(validateUiPreferences(stored === null ? ${JSON.stringify(uiDefaults)} : JSON.parse(stored), ${JSON.stringify(uiDefaults)}));
         } catch (error) {
           if (!(error instanceof SyntaxError) && !(error instanceof UiSettingsError)) throw error;
           console.warn("[preferences] Invalid saved UI settings; using configured defaults.", error);
@@ -707,6 +709,8 @@ function writeHeroImages(hero, content, lang, basePath) {
         const legacy = readPreference(${JSON.stringify(imageTreatmentStorageKey)});
         const enabled = legacy === "on" || legacy !== "off" && settings.presentationSettings.imageTreatment;
         document.documentElement.dataset.imageTreatment = enabled ? "on" : "off";
+        document.documentElement.dataset.adaptiveHero = settings.layoutSettings.adaptiveHero ? "on" : "off";
+        document.documentElement.style.setProperty("--tile-corner-radius", settings.presentationSettings.tileCornerRadius + "px");
         document.documentElement.style.setProperty("--hero-fade-duration", settings.heroSettings.fadeDurationMs + "ms");
       };
       applyImageTreatment();

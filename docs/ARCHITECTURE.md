@@ -74,7 +74,7 @@ apply settings in memory and show a warning instead of reloading away those chan
 
 `build/developer-options.mjs` owns the technical route and storage keys;
 `settings/ui_elements.json` owns all UI defaults, including the image treatment,
-desktop header shortcuts, and top Subscribe visibility (all initially false).
+image-backed tiles, desktop header shortcuts, and top Subscribe visibility (all initially false).
 Copy-preview defaults remain environment-owned.
 The page uses `page.preview.tsx`; Next configuration recognizes the `preview.tsx`
 extension only in local/dev while retaining all standard page extensions.
@@ -95,7 +95,13 @@ pagination, sort/view/filter state, and reader size from those settings.
 
 The browser stores a complete validated raw configuration as JSON in
 `site-ui-settings` in per-origin `localStorage`. Invalid saved data produces a
-warning and falls back to configured defaults. Legacy `site-image-treatment`,
+warning and falls back to configured defaults. The browser-only compatibility
+validator accepts older complete configurations missing `imageBackedTiles`,
+`tileOverlayOpacity`, `tileCornerRadius`, and/or the entire `layout` group, inheriting those values
+from current defaults without losing existing choices. A present but incomplete
+layout group is invalid, except that older complete groups may omit the later
+`centeredCarousel` flag and inherit its configured default.
+Build-time settings remain strict. Legacy `site-image-treatment`,
 `site-header-actions`, and `site-top-subscribe` values of `on` or `off` override the
 corresponding presentation fields; absent or other values inherit the configuration.
 Apply and Reset clear their precedence with `default`. Legacy-only changes do not
@@ -105,6 +111,54 @@ applies image/autoplay/interval/fade settings, and follows cross-document storag
 events. Production supports all browser-local UI overrides without exposing a
 developer page or enabling placeholder catalogs. These preferences are not runtime
 environment variables, secrets, or an authorization mechanism.
+
+### Optional layout comparisons
+
+Eight independent booleans in `settings/ui_elements.json`'s `layout` group
+normalize to `layoutSettings`; all default to false. The root preference
+subscriber sets corresponding `data-*` attributes after hydration. Experiment CSS
+is loaded after the baseline stylesheet and affects only explicitly marked
+components. Existing layouts and homepage shortcut order remain the default.
+
+- `adaptiveHero`: viewport-sensitive, clamped hero height, including the generated
+  standalone hero. Its title stays over the image without a background panel.
+- `featuredTiles`: a larger first configured item in the featured homepage grid,
+  without changing content order or collection grids.
+- `sectionHeaders`: consistent homepage headings and introductions. Mixed
+  navigation groups do not invent a "view all" destination.
+- `layoutProfiles`: wide visual, contained collection, and narrow reading wrappers
+  with consistent gutters and section spacing; dialog and full-screen sizing stay independent.
+- `compactCollections`: thumbnail rows for ordinary seva and library results,
+  retaining details, booking, filters, and pagination. Compact rows take precedence
+  over image-backed presentation; featured rails keep their photographic layout.
+- `tileInformation`: stable category/title/summary/metadata placement in eligible
+  cards, without removing independent actions or styling event posters.
+- `carouselNavigation`: accessible previous/next buttons at the left/right
+  edges, vertically centered alongside each rail, and a mobile next-card
+  preview on opted-in rails. Scroll position and overflow determine disabled
+  controls; manual navigation works independently of autoplay and honors reduced motion.
+  Where a rail also has a pause control, it sits below Next with an 8px gap.
+  Rails without the optional navigation retain their existing pause placement.
+- `centeredCarousel`: emphasize the tile nearest a scrolling rail's center,
+  changing emphasis as automatic or manual movement brings another tile into
+  focus. Mobile layouts include neighboring previews. Static, non-scrolling
+  desktop grids remain unchanged. This comparison is independent of the navigation
+  controls and autoplay, respects reduced motion, and retains actual first/last
+  boundaries rather than duplicating content for an infinite loop.
+
+Control and navigation copy comes from language JSON. These switches share the
+existing validated Apply/reset, denied-storage, and production browser-local
+override behavior; none enables the production Developer page.
+
+The final homepage guidance group omits the temporary-content footer and its
+separator in every layout mode; other homepage grids retain configured footnotes.
+`presentation.tileCornerRadius` independently controls shared collection-card and
+homepage photographic-card corners through `--tile-corner-radius`. Its default
+20px preserves the existing shape; integers from 0 to 48 are accepted, with 0
+making square corners. The `collection-tile` marker also covers event cards without
+changing their image/text treatment. Hero banners share the value only on their
+bottom corners, including the generated standalone hero; top corners stay square.
+Shortcut icons, dialogs, and full-screen playback do not opt in.
 
 Structured page copy uses multilingual frontmatter, for example:
 
@@ -216,15 +270,38 @@ Content photographs, posters, portraits, and thumbnails use
 their frames and the decorative layer is hidden. Enabling the browser-local image
 option contains the sharp foreground over a statically blurred and darkened copy
 of the same source; foreground padding preserves image edges inside rounded frames.
-In both modes, captions, badges, and navigation controls
+By default, captions, badges, and navigation controls
 sit outside the artwork; foreground images do not zoom. Natural-size annotated
 illustrations retain their image-relative annotation coordinates. Logos, QR codes,
 functional icons (including failed-image placeholders), and full-screen album playback
 retain their own presentation.
-The standalone generated hero uses the same preference-gated two-layer treatment.
+The hero title is always overlaid on its image, independently of the tile option,
+using warm-white text with a subtle text shadow and no background panel. The standalone
+generated hero mirrors that overlay and the preference-gated two-layer image treatment.
 Shared featured/collection presentation variants preserve their distinct layouts
 while keeping spacing, controls, focus, and result states consistent. Policy text
 uses a readable shared size; utility controls have touch-friendly targets.
+
+The independent, default-off `presentation.imageBackedTiles` flag sets
+`data-image-backed-tiles` on the root after hydration. Eligible cards explicitly
+opt in with `visual-tile`, `visual-tile-art`, and `visual-tile-body` hooks. Their
+images fill the tile behind a lightly darkened text panel with a
+fade above the text. The shared CSS honors either cover or contain/blur image
+treatment without changing its renderer. In image-backed tile mode, eligible
+foregrounds align top-centre with either image-fit setting. The ordinary
+image-above-text layout and blurred backdrops retain their centred alignment.
+Text shadows aid readability, but contrast remains image-dependent with this
+deliberately translucent treatment.
+`presentation.tileOverlayOpacity` controls panel opacity from 0 to 100 percent
+(default 40), through the root `--tile-overlay-opacity` custom property. It never
+changes hero text or image opacity. Titles wrap without line clamping,
+and cards grow for translated text. Stretched detail links and separate actions
+retain their original positioning and keyboard behavior.
+Home photo tiles, section hubs, library previews, seva and learning cards,
+album covers/items, and illustrated lineage entries participate. Event poster
+surfaces, detail views, full-screen album playback, and icon-only tiles do not.
+The hero's overlay is always enabled rather than controlled by this flag.
+Forced-color mode uses system text/panel colors.
 
 Media albums are built from language catalog data. Use stable explicit IDs
 and valid image/video metadata; do not infer publication rights from remote availability.

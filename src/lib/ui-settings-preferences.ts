@@ -1,14 +1,14 @@
 import { developerOptions } from "@/gen/content";
 import { uiElementDefaults } from "@/gen/settings/ui-elements";
 import { createPreferenceStore } from "@/lib/browser-preferences";
-import { UiSettingsError, validateUiElements } from "../../build/ui-settings-schema.mjs";
+import { UiSettingsError, validateUiElements, validateUiPreferences } from "../../build/ui-settings-schema.mjs";
 import type { UiElements } from "@/lib/ui-settings-types";
 
 let lastInvalid: string | null = null;
 function validSettings(value: string | null): value is string {
   if (value === null) return false;
   try {
-    validateUiElements(JSON.parse(value));
+    validateUiPreferences(JSON.parse(value), uiElementDefaults);
     return true;
   } catch (error) {
     if (!(error instanceof SyntaxError) && !(error instanceof UiSettingsError)) throw error;

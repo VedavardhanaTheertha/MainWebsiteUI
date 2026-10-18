@@ -8,6 +8,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import { useDialog } from "@/hooks/useDialog";
 import RailMotionControl from "@/components/RailMotionControl";
+import RailNavigation from "@/components/RailNavigation";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
 import {
@@ -107,7 +108,7 @@ function ArticleTile({
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName(featured ? "featured" : "collection")} ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} layout-info-tile ${featured ? "" : "layout-compact-card"} ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
@@ -120,15 +121,15 @@ function ArticleTile({
         />
       </div>
       <div className={collectionCardBodyClassName}>
-        <span className="mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
-        {projectStatus && <p className="mb-1 text-xs font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
-        <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
+        <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
+        {projectStatus && <p className="layout-tile-category mb-1 text-xs font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
+        <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {article.title}
         </h3>
-        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
+        <p className="layout-tile-summary mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
           {article.summary}
         </p>
-        {readingTime && <p className="mt-2 text-sm text-[var(--color-text-secondary)]">{(readingTime.estimated ? copy.estimated_read_minutes : copy.read_minutes).replace("{count}", String(readingTime.minutes))}</p>}
+        {readingTime && <p className="layout-tile-footer layout-tile-reading-time mt-2 text-sm text-[var(--color-text-secondary)]">{(readingTime.estimated ? copy.estimated_read_minutes : copy.read_minutes).replace("{count}", String(readingTime.minutes))}</p>}
       </div>
     </button>
   );
@@ -206,13 +207,13 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
         </p>
       </header>
 
-      {sectionId === "jnana" && <section className="mx-auto max-w-7xl px-5 py-8" aria-labelledby="knowledge-glossary-heading">
+      {sectionId === "jnana" && <section className="layout-reading layout-section mx-auto max-w-7xl px-5 py-8" aria-labelledby="knowledge-glossary-heading">
         <h2 id="knowledge-glossary-heading" className="font-display text-2xl font-bold">{copy.detail_labels.glossary}</h2>
         {glossary.length ? <dl className="mt-5 grid gap-5 sm:grid-cols-2">{glossary.map((entry, index) => <div key={`${entry.articleId}-${index}`}><dt className="font-semibold"><Link href={articleHref(section, entry.articleId)} className="inline-flex min-h-11 items-center text-[var(--color-text-brand)] underline underline-offset-4">{entry.term}</Link></dt><dd className="text-base leading-8">{entry.definition}</dd></div>)}</dl> : <p role="status" className="mt-4 text-base leading-8">{copy.unavailable}</p>}
       </section>}
 
-      <section className="bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-library-title">
-        <div className="mx-auto max-w-7xl">
+      <section className="layout-section bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-library-title">
+        <div className="layout-wide mx-auto max-w-7xl">
           <div className="flex items-center justify-between gap-4">
           <h2 id="featured-library-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.featured_title}
@@ -220,9 +221,10 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
           </div>
           <div className="relative mt-5">
           {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((current) => !current)} />}
+          {featured.length > 1 && <RailNavigation scrollRef={featuredScrollRef} />}
           <div
             ref={featuredScrollRef}
-            className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+            className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
             style={{
               WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
@@ -243,7 +245,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
         <section aria-labelledby="library-collection-heading">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <h2 id="library-collection-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
@@ -280,7 +282,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
           </p>
 
           {visible.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="layout-compact-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((article) => (
                 <ArticleTile
                   key={article.id}

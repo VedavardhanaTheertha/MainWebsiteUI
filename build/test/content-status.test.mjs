@@ -29,6 +29,7 @@ function render(file, props, tr) {
     "@/hooks/useMiniSearch": { useMiniSearch: (items) => items },
     "@/lib/search": { getSearchProfile: () => ({}) },
     "@/components/RailMotionControl": { default: "motion-control" },
+    "@/components/RailNavigation": { default: () => null },
     "@/gen/library/data": { placeholderLibrarySections: [section], realLibrarySections: [section] },
     "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({ collectionPagination: { initialVisible: 10 } }) }) },
     "@/gen/settings/ui-elements": { collectionPagination: { initialVisible: 10 } },
@@ -82,7 +83,7 @@ test("article details and related links display their own authored statuses", ()
   assert.ok(output.includes(second.status));
 });
 
-test("homepage remedy cards expose the real authored editorial status", () => {
+test("generic homepage grids can still display authored editorial footnotes", () => {
   const items = loadRemedyCarouselCandidates(root, language, language);
   const output = text(render("components/home/HomePageGrid.tsx", { items }, {}));
   for (const item of items) {

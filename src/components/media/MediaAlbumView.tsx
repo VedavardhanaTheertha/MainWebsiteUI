@@ -13,7 +13,7 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
   const viewer = useMediaViewer();
 
   if (!album) return (
-    <div className="mx-auto max-w-7xl p-8">
+    <div className="layout-wide layout-section mx-auto max-w-7xl p-8">
       <p role="status">{copy.album_not_found}</p>
       <Link href="/albums" className="inline-flex min-h-11 items-center underline">{copy.back_to_albums}</Link>
     </div>
@@ -31,7 +31,7 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
         </p>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="layout-wide layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
         <Link href="/albums" className="mb-4 inline-flex min-h-11 items-center font-semibold text-[var(--color-text-brand)] underline">{copy.back_to_albums}</Link>
         <h2 className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
           {copy.album_items}
@@ -40,9 +40,9 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
           {items.map((item) => (
             <article
               key={item.viewerId}
-              className="relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm"
+              className="layout-info-tile visual-tile relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm"
             >
-              <div className="relative h-48 overflow-hidden bg-[var(--color-cream-soft)]">
+              <div className="visual-tile-art relative h-48 overflow-hidden bg-[var(--color-cream-soft)]">
                 <ContentImage
                   src={item.image}
                   alt=""
@@ -50,13 +50,13 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
-              <div className="p-4">
-                <span className="mb-2 inline-block rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{item.type === "video" ? copy.video_label : copy.photo_label}</span>
-                <h3 className="font-display text-lg font-bold text-[var(--color-text-primary)]">
+              <div className="visual-tile-body p-4">
+                <span className="layout-tile-category visual-tile-badge mb-2 inline-block rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{item.type === "video" ? copy.video_label : copy.photo_label}</span>
+                <h3 className="layout-tile-title font-display text-lg font-bold text-[var(--color-text-primary)]">
                   {item.title}
                 </h3>
-                <MediaMetadata item={item} />
-                <MediaTileAction item={item} onOpen={() => viewer.open(item.viewerId)} />
+                <div className="layout-tile-footer"><MediaMetadata item={item} /></div>
+                <div className="layout-tile-actions"><MediaTileAction item={item} onOpen={() => viewer.open(item.viewerId)} /></div>
               </div>
             </article>
           ))}

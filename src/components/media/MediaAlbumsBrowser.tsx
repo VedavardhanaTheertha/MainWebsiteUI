@@ -9,6 +9,7 @@ import { topAlbumIds, recentAlbumIds } from "@/gen/media/albums";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import RailMotionControl from "@/components/RailMotionControl";
+import RailNavigation from "@/components/RailNavigation";
 import AdvancedFilters from "@/components/AdvancedFilters";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
@@ -34,7 +35,7 @@ function AlbumTile({
   return (
     <Link
       href={`/albums/${album.id}`}
-      className={`${collectionCardClassName(featured ? "featured" : "collection")} ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} layout-info-tile ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
@@ -49,14 +50,14 @@ function AlbumTile({
         />
       </div>
       <div className={collectionCardBodyClassName}>
-        <span className="mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{counts.photos} {photoLabel} · {counts.videos} {videoLabel}</span>
-        <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
+        <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{counts.photos} {photoLabel} · {counts.videos} {videoLabel}</span>
+        <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {album.title}
         </h3>
-        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
+        <p className="layout-tile-summary mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
           {album.description}
         </p>
-        <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+        <p className="layout-tile-footer layout-tile-date mt-2 text-xs text-[var(--color-text-muted)]">
           {album.date ? <time dateTime={album.date}>{album.date}</time> : unknownDate}
           {album.event && <span> · {album.event}</span>}
         </p>
@@ -128,16 +129,17 @@ export default function MediaAlbumsBrowser() {
         </p>
       </header>
 
-      <section className="bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="top-albums-heading">
-        <div className="mx-auto max-w-7xl">
+      <section className="layout-section bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="top-albums-heading">
+        <div className="layout-wide mx-auto max-w-7xl">
           <h2 id="top-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.top_title}
           </h2>
           <div className="relative mt-5">
           {topAlbums.length > 1 && <RailMotionControl paused={topPaused} onToggle={() => setTopPaused((paused) => !paused)} />}
+          {topAlbums.length > 1 && <RailNavigation scrollRef={topScrollRef} />}
           <div
             ref={topScrollRef}
-            className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+            className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
             style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {topAlbums.map((album) => (
@@ -155,16 +157,17 @@ export default function MediaAlbumsBrowser() {
         </div>
       </section>
 
-      <section className="bg-[var(--color-paper)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="recent-albums-heading">
-        <div className="mx-auto max-w-7xl">
+      <section className="layout-section bg-[var(--color-paper)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="recent-albums-heading">
+        <div className="layout-wide mx-auto max-w-7xl">
           <h2 id="recent-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.recent_title}
           </h2>
           <div className="relative mt-5">
           {recentAlbums.length > 1 && <RailMotionControl paused={recentPaused} onToggle={() => setRecentPaused((paused) => !paused)} />}
+          {recentAlbums.length > 1 && <RailNavigation scrollRef={recentScrollRef} />}
           <div
             ref={recentScrollRef}
-            className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+            className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
             style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {recentAlbums.map((album) => (
@@ -182,7 +185,7 @@ export default function MediaAlbumsBrowser() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
         <section aria-labelledby="all-albums-heading">
           <AdvancedFilters
             active={Boolean(filters.from || filters.to || filters.event || filters.type || filters.sort !== defaultFilters.sort)}

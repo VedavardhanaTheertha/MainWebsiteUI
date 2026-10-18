@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import vm from "node:vm";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import ts from "typescript";
 import { testUiSettings } from "./helpers/ui-settings.mjs";
+import { loadAuthoredLanguage } from "../authored-content.mjs";
 
 const require = createRequire(import.meta.url);
 function load(relativePath, dependencies = {}) {
@@ -74,6 +76,57 @@ test("card chrome preserves focus feedback and leaves rail widths to callers", (
   assert.match(cards.collectionCardImageClassName, /h-40/);
   assert.match(cards.collectionCardImageClassName, /shrink-0/);
   assert.match(cards.collectionCardBodyClassName, /min-h-0/);
+});
+
+test("image-backed tiles are explicitly eligible without changing default or poster card sizing", () => {
+  for (const variant of ["featured", "collection"]) {
+    assert.doesNotMatch(cards.collectionCardClassName(variant), /visual-tile/);
+    assert.match(cards.collectionCardClassName(variant, true), /visual-tile/);
+  }
+  assert.match(cards.collectionCardBodyClassName, /visual-tile-body/);
+  assert.match(cards.collectionCardImageClassName, /visual-tile-art/);
+  for (const file of ["EventsExact", "EventsAccordion", "UpcomingEventRail", "EventDetailModal", "MantraYajnaPageContent", "media/MediaViewer"]) {
+    const source = readFileSync(new URL(`../../src/components/${file}.tsx`, import.meta.url), "utf8");
+    assert.doesNotMatch(source, /visual-tile|collectionCardClassName\([^)]*,\s*true\)/, file);
+  }
+});
+
+test("overlay text has a light translucent base, room to grow, and no hover-only disclosure", () => {
+  const css = readFileSync(new URL("../../src/app/globals.css", import.meta.url), "utf8");
+  const root = css.match(/:root\[data-image-backed-tiles="on"\] \.visual-tile\s*\{([^}]+)\}/)[1];
+  const body = css.match(/:root\[data-image-backed-tiles="on"\] \.visual-tile > \.visual-tile-body\s*\{([^}]+)\}/)[1];
+  assert.match(root, /height:\s*auto/);
+  assert.match(body, /position:\s*static/);
+  assert.match(body, /padding:\s*3rem 1rem 1rem/);
+  assert.match(body, /linear-gradient\(to bottom, transparent, rgb\(20 12 4 \/ var\(--tile-overlay-opacity, 0\.4\)\) 2rem\)/);
+  assert.match(body, /color:\s*#fff8ed/);
+  assert.match(body, /text-shadow:/);
+  assert.match(css, /-webkit-line-clamp:\s*unset/);
+  assert.doesNotMatch(css, /visual-tile[^{]*:hover/);
+  const hero = css.match(/\.hero-text-overlay\s*\{([^}]+)\}/)[1];
+  assert.doesNotMatch(hero, /background/);
+  assert.match(css, /:root\[data-image-backed-tiles="on"\] \.visual-tile > \.visual-tile-art \.content-image-foreground\s*\{\s*object-position: center top;/);
+  for (const rule of css.matchAll(/:root\[data-image-backed-tiles="on"\]([^{}]+)\{/g)) {
+    assert.match(rule[1], /\.visual-tile(?:\s|$)/, "tile styling must not leak to event poster layers");
+  }
+});
+
+test("learning overlay tiles preserve separate detail and enrollment destinations", () => {
+  const tr = loadAuthoredLanguage(fileURLToPath(new URL("../../", import.meta.url)), "en");
+  const fixture = { ...tr.learn[0], id: "provided", title: "Provided learning title", img: "/provided.png", enrollmentUrl: "https://enrollment.example.org/" };
+  const Learning = load("components/ImageListCards.tsx", {
+    "@/context/LanguageContext": { useLang: () => ({ tr: { ...tr, learn: [fixture] } }) },
+    "@/components/presentation/ContentImage": { default: ({ src, alt }) => createElement("img", { src, alt }) },
+    "@/lib/learn": { learningDestination: () => "/learn/provided", approvedLearningUrl: (value) => value },
+    "next/link": { default: ({ href, ...props }) => createElement("a", { href, ...props }) },
+  }).default;
+  const html = renderToStaticMarkup(createElement(Learning, { contentKey: "learn" }));
+  assert.ok(html.includes("visual-tile"));
+  assert.ok(html.includes("visual-tile-art"));
+  assert.ok(html.includes("visual-tile-body"));
+  assert.ok(html.includes('href="/learn/provided"'));
+  assert.ok(html.includes('href="https://enrollment.example.org/"'));
+  assert.equal(html.split("<a ").length - 1, 2);
 });
 
 test("category badge renders provided content and the shared category tone", () => {
@@ -269,12 +322,13 @@ test("natural illustrations preserve annotation coordinates relative to the shar
   assert.doesNotMatch(css.match(/\.content-image-natural\s*\{([^}]+)\}/)?.[1] ?? "", /overflow:\s*hidden/);
 });
 
-test("standalone hero keeps complete foreground images and captions outside the artwork", () => {
+test("standalone hero keeps complete foreground images with readable text over the artwork", () => {
   const source = readFileSync(new URL("../../scripts/generate-content.mjs", import.meta.url), "utf8");
   assert.match(source, /class="hero-backdrop"[^>]*alt="" aria-hidden="true" loading="lazy"/);
   assert.match(source, /class="hero-foreground"/);
   assert.match(source, /\.hero-foreground \{ object-fit: cover; padding: 0; \}/);
   assert.match(source, /:root\[data-image-treatment="on"\] \.hero-foreground \{ object-fit: contain; padding: 8px; \}/);
-  assert.match(source, /\.hero-content \{ position: relative;/);
+  assert.match(source, /\.hero-content \{ position: absolute; inset: auto 0 0;/);
+  assert.match(source, /\.hero-title \{[^}]*color: #fff8ed/);
   assert.doesNotMatch(source, /class="hero-overlay"|\.hero-image\.is-active img/);
 });

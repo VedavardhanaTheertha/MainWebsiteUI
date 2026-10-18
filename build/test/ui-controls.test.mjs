@@ -47,6 +47,7 @@ async function mount(name, enabled = true, additional = {}) {
       if (dependency === "lucide-react") return { Pause: "pause", Play: "play", SlidersHorizontal: "filters", GitBranch: "timeline", List: "list" };
       if (dependency === "next/link" || dependency === "next/image") return { default: dependency === "next/link" ? "link" : "image" };
       if (dependency === "@/components/presentation/ContentImage") return { default: "image" };
+      if (dependency === "@/components/RailNavigation") return { default: () => null };
       if (dependency === "@/hooks/useReducedMotion") return { useReducedMotion: () => false };
       if (dependency === "@/hooks/useDialog") return { useDialogsOpen: () => false };
       if (dependency === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({
@@ -90,6 +91,9 @@ test("homepage hero and feature tiles are single links with no separate CTA butt
     assert.equal(banner.props.href, "/about");
     assert.equal(nodes(banner, (node) => node.type === "link").length, 1);
     assert.equal(nodes(banner, (node) => node.type === "h1").length, 1);
+    const overlay = nodes(banner, (node) => node.props?.className?.includes("hero-text-overlay"))[0];
+    assert.match(overlay.props.className, /absolute inset-x-0 bottom-0/);
+    assert.equal(nodes(overlay, (node) => node.type === "h1").length, 1);
   });
 
   test("learning tiles stretch their title link without trapping independent enrollment links", async () => {
@@ -116,7 +120,7 @@ test("homepage hero and feature tiles are single links with no separate CTA butt
     assert.match(enroll.props.className, /relative z-10/);
     assert.equal(nodes(enroll, (node) => node.type === "link").length, 0);
   });
-test("homepage top rail shares Upcoming Events motion and separates complete images from captions", async () => {
+test("homepage top rail preserves motion and provides separate image and optional-overlay layers", async () => {
   const tr = loadAuthoredLanguage(rootDir, "en");
   const calls = [];
   const ref = { current: null };
@@ -129,7 +133,7 @@ test("homepage top rail shares Upcoming Events motion and separates complete ima
   const cards = nodes(tree, (node) => node.type === "link");
   assert.ok(cards.every((card) => card.props.className.includes("min-h-80 w-[82vw] max-w-[320px]")));
   assert.ok(cards.every((card) => card.props.className.includes("lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none")));
-  assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className === "relative h-44 w-full shrink-0").length === 1));
+  assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className === "visual-tile-art relative h-44 w-full shrink-0").length === 1));
   assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className?.includes("absolute inset-x-0 bottom-0")).length === 0), "captions do not cover artwork");
   const track = nodes(tree, (node) => node.props?.ref === ref)[0];
   assert.equal(track.props.style.scrollSnapType, undefined, "continuous scrolling must not fight snap points");

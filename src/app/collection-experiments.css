@@ -1,0 +1,146 @@
+/* Semantic profiles never resize dialog or full-screen presentation surfaces. */
+:root[data-layout-profiles="on"] :is(.layout-wide, .layout-collection, .layout-reading):not(:where([role="dialog"] *, [aria-modal="true"] *)) {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+
+:root[data-layout-profiles="on"] .layout-wide:not(:where([role="dialog"] *, [aria-modal="true"] *)) {
+  max-width: 80rem;
+}
+
+:root[data-layout-profiles="on"] .layout-collection:not(:where([role="dialog"] *, [aria-modal="true"] *)) {
+  max-width: 72rem;
+}
+
+:root[data-layout-profiles="on"] .layout-reading:not(:where([role="dialog"] *, [aria-modal="true"] *)) {
+  max-width: 48rem;
+}
+
+:root[data-layout-profiles="on"] .layout-section:not(:where([role="dialog"] *, [aria-modal="true"] *)) {
+  padding-block: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Only ordinary seva/library results opt in; rails and galleries do not. */
+:root[data-compact-collections="on"] .layout-compact-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.875rem;
+  align-items: start;
+}
+
+:root[data-compact-collections="on"] .layout-compact-grid > .layout-compact-card {
+  display: grid;
+  grid-template-columns: clamp(4.5rem, 20vw, 7rem) minmax(0, 1fr);
+  align-items: stretch;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+:root[data-compact-collections="on"] .layout-compact-grid > .layout-compact-card > .visual-tile-art {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  width: 100%;
+  height: auto;
+  min-height: 7rem;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+:root[data-compact-collections="on"] .layout-compact-grid > .layout-compact-card > .visual-tile-body {
+  min-width: 0;
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-radius: inherit;
+  overflow-wrap: anywhere;
+}
+
+:root[data-compact-collections="on"] .layout-compact-card > .visual-tile-body :is(h3, p, span) {
+  display: block;
+  max-width: 100%;
+  white-space: normal;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+
+/* Compact rows take precedence over the full-card image-backed geometry.
+   Keep the contain/blur thumbnail and configurable overlay. */
+:root[data-compact-collections="on"][data-image-backed-tiles="on"] .layout-compact-grid > .layout-compact-card {
+  background: var(--color-ink-900);
+}
+
+:root[data-compact-collections="on"][data-image-backed-tiles="on"] .layout-compact-grid > .layout-compact-card > .visual-tile-art .content-image-foreground {
+  object-position: center;
+}
+
+:root[data-compact-collections="on"][data-image-backed-tiles="on"] .layout-compact-grid > .layout-compact-card > .visual-tile-body {
+  background: rgb(20 12 4 / var(--tile-overlay-opacity, 0.4));
+}
+
+/* No generic body selector: event posters share visual-tile-body, not this opt-in. */
+:root[data-tile-information="on"] .layout-info-tile {
+  height: auto;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body > .layout-tile-category {
+  order: 0;
+  margin-block: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body > .layout-tile-title {
+  order: 1;
+  margin-block: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body > .layout-tile-summary {
+  order: 2;
+  margin-block: 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body > .layout-tile-footer {
+  order: 3;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid currentColor;
+  font-size: 0.8125rem;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body > .layout-tile-availability {
+  order: 4;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body > .layout-tile-actions {
+  order: 5;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body :is(.layout-tile-title, .layout-tile-summary, .layout-tile-category, .layout-tile-footer) {
+  display: block;
+  overflow: visible;
+  white-space: normal;
+  -webkit-line-clamp: unset;
+  overflow-wrap: anywhere;
+}
+
+:root[data-tile-information="on"] .layout-info-tile > .visual-tile-body > dl.layout-tile-footer {
+  display: grid;
+}
+
+@media (forced-colors: active) {
+  :root[data-compact-collections="on"][data-image-backed-tiles="on"] .layout-compact-grid > .layout-compact-card > .visual-tile-body {
+    background: Canvas;
+  }
+}
