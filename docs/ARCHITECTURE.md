@@ -222,13 +222,18 @@ not generate synthetic copies.
 
 ## 7. Build and deployment
 
+`package.json` declares dependencies and `package-lock.json` records their resolved
+versions for `npm ci`. Next.js and its ESLint configuration use matching stable
+versions.
+
 The deployment entry point is `build/build.mjs`. It cleans generated output, builds
 theme/settings, media, Bhakti, Sevas, Events, and knowledge sections, generates the
 remaining website content, runs Next's static export, normalizes canonical URLs, and
 verifies the result. Shared preparation includes theme generation for local
 development as well as builds. Test entry points prepare required generated content;
 CI can reuse preparation across lint, type checking, and tests while full environment
-builds remain independent. `next.config.ts` enables static export.
+builds remain independent. `next.config.ts` enables static export. The deployment
+entry point selects Webpack with `next build --webpack` for every export environment.
 
 The exported site is written to `out/`. Only one environment's export occupies that
 directory at a time. `npm start -- dev|local|prod` (choose one environment) serves the

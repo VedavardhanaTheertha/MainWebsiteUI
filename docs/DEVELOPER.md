@@ -26,6 +26,17 @@ Before changing framework code, read the relevant installed Next.js guide under
 `node_modules/next/dist/docs/`. This project's installed version is authoritative;
 older Next.js conventions may not apply.
 
+### Dependency maintenance
+
+Keep `next` and `eslint-config-next` on matching stable versions. Update dependencies
+with npm and include the resulting `package-lock.json`; do not edit resolved package
+metadata manually. Prefer compatible patched versions and targeted transitive updates.
+Do not force framework downgrades or suppress advisories to obtain a clean audit.
+
+Run `npm audit` and `npm run ci` after dependency changes, and verify a clean checkout
+with `npm ci`. Report unresolved advisories explicitly, including packages without a
+published fix.
+
 ## Preview and build
 
 | Command | Purpose |
@@ -47,6 +58,10 @@ older Next.js conventions may not apply.
 Full builds write the static site to `out/`; each build replaces the previous export.
 Use the matching environment when previewing an export. The development base path is
 `/MainWebsiteUI`; local and production are mounted at the root.
+
+All full-export commands select the Webpack bundler through `next build --webpack`.
+Use these wrappers locally and in CI so generation, bundling, and verification stay
+consistent across environments.
 
 The environment is selected by the script argument, then `SITE_ENV`, then `dev`.
 For generation with an explicit environment in PowerShell:
