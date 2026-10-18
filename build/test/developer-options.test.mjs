@@ -396,6 +396,22 @@ test("production copy ignores a browser placeholder preference and refuses copy 
   assert.equal(writes, 0);
 });
 
+function inlineHeroScript(html) {
+  const script = html.match(/<script>([\s\S]*?)<\/script>/i);
+  assert.ok(script, "The generated hero must include an inline script.");
+  return script[1];
+}
+
+test("hero script extraction accepts HTML tag casing without altering JavaScript", () => {
+  const code = 'const label = "Preserve This Case";';
+  for (const opening of ["script", "SCRIPT", "ScRiPt"]) {
+    for (const closing of ["script", "SCRIPT", "sCrIpT"]) {
+      assert.equal(inlineHeroScript(`<${opening}>${code}</${closing}>`), code);
+    }
+  }
+  assert.throws(() => inlineHeroScript("<html></html>"), /must include an inline script/);
+});
+
 function standaloneHero(storedValue, denied = false, uiValue = null, reduced = true) {
   const generator = source("scripts/generate-content.mjs");
   const start = generator.indexOf("function writeHeroImages(");
@@ -420,7 +436,7 @@ function standaloneHero(storedValue, denied = false, uiValue = null, reduced = t
   let stored = storedValue;
   let storedUi = uiValue;
   let interval;
-  vm.runInNewContext(html.match(/<script>([\s\S]*?)<\/script>/)[1], {
+  vm.runInNewContext(inlineHeroScript(html), {
     document: {
       documentElement: { dataset, style: { setProperty: (key, value) => styles.set(key, value) } },
       querySelector: (selector) => elements.get(selector),
