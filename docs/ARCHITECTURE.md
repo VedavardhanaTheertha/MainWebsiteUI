@@ -232,7 +232,8 @@ remaining website content, runs Next's static export, normalizes canonical URLs,
 verifies the result. Shared preparation includes theme generation for local
 development as well as builds. Test entry points prepare required generated content;
 CI can reuse preparation across lint, type checking, and tests while full environment
-builds remain independent. `next.config.ts` enables static export.
+builds remain independent. `next.config.ts` enables static export. The deployment
+entry point selects Webpack with `next build --webpack` for every export environment.
 
 The exported site is written to `out/`. Only one environment's export occupies that
 directory at a time. `npm start -- dev|local|prod` (choose one environment) serves the

@@ -59,6 +59,10 @@ Full builds write the static site to `out/`; each build replaces the previous ex
 Use the matching environment when previewing an export. The development base path is
 `/MainWebsiteUI`; local and production are mounted at the root.
 
+All full-export commands select the Webpack bundler through `next build --webpack`.
+Use these wrappers locally and in CI so generation, bundling, and verification stay
+consistent across environments.
+
 The environment is selected by the script argument, then `SITE_ENV`, then `dev`.
 For generation with an explicit environment in PowerShell:
 

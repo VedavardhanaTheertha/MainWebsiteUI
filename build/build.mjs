@@ -84,7 +84,7 @@ console.log("─".repeat(70));
 
 run("cleaning stale output", path.join(rootDir, "build", "clean.mjs"));
 generateContent((script) => run(script, path.join(rootDir, script)));
-run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build"]);
+run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build", "--webpack"]);
 run("normalizing canonical URLs", path.join(rootDir, "build", "write-canonicals.mjs"));
 run("verifying output", path.join(rootDir, "build", "verify.mjs"));
 
