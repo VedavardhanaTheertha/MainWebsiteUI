@@ -82,13 +82,16 @@ test("category badge renders provided content and the shared category tone", () 
 });
 
 test("empty shell renders supplied rich content without adding display copy", () => {
-  const html = renderToStaticMarkup(createElement(EmptyState, null,
-    createElement("h3", null, "Provided title"),
-    createElement("button", { type: "button" }, "Provided action")));
+  const children = [
+    createElement("h3", { key: "title" }, "Provided title"),
+    createElement("button", { key: "action", type: "button" }, "Provided action"),
+  ];
+  const shell = EmptyState({ children });
+  assert.equal(shell.props.children, children);
+  const html = renderToStaticMarkup(shell);
   assert.match(html, /role="status"/);
   assert.match(html, /<h3>Provided title<\/h3>/);
   assert.match(html, /<button type="button">Provided action<\/button>/);
-  assert.equal(html.replace(/<[^>]*>/g, ""), "Provided titleProvided action");
 });
 
 test("homepage icons use five shrinkable columns with complete wrapping labels", () => {
