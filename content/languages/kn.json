@@ -1,4 +1,22 @@
 {
+  "ui": {
+    "close": "ಮುಚ್ಚಿ",
+    "back": "ಹಿಂದೆ",
+    "primary_navigation": "ಮುಖ್ಯ ಸಂಚರಣೆ",
+    "mobile_navigation": "ಮೊಬೈಲ್ ಸಂಚರಣೆ",
+    "language_selector": "ಭಾಷಾ ಆಯ್ಕೆ",
+    "switch_language": "{language} ಭಾಷೆಗೆ ಬದಲಿಸಿ",
+    "open_menu": "ಮೆನು ತೆರೆಯಿರಿ",
+    "close_menu": "ಮೆನು ಮುಚ್ಚಿ",
+    "panchanga": "ಪಂಚಾಂಗ",
+    "donate_material": "ಬದಲಾಗಿ ಸಾಮಗ್ರಿಗಳನ್ನು ದಾನ ಮಾಡಿ",
+    "your_name": "ನಿಮ್ಮ ಹೆಸರು",
+    "full_name_placeholder": "ಪೂರ್ಣ ಹೆಸರು",
+    "phone_whatsapp": "ದೂರವಾಣಿ / WhatsApp",
+    "phone_placeholder": "+91 XXXXX XXXXX",
+    "additional_note": "ಹೆಚ್ಚುವರಿ ಟಿಪ್ಪಣಿ (ಐಚ್ಛಿಕ)",
+    "note_placeholder": "ಪ್ರಮಾಣ, ತಲುಪಿಸುವ ದಿನಾಂಕ, ಇತರ ವಿವರಗಳು..."
+  },
   "bhakti_controls": {
     "composer": "ರಚನಾಕಾರರು",
     "ankita": "ಅಂಕಿತ",
@@ -34,6 +52,7 @@
     "placeholder": "ಮಾದರಿ ಪಠ್ಯ"
   },
   "nav_home": "ಮನೆ",
+  "logo_alt": "ಶ್ರೀ ಶಿರೂರು ಮಠ",
   "public_actions": {
     "whatsapp_label": "WhatsApp",
     "subscribe_label": "ಚಂದಾದಾರರಾಗಿ",
@@ -611,6 +630,7 @@
     ]
   },
   "pages": {
+    "media_subtitle": "ಪರ್ಯಾಯ 2026–2028ರ ಸಮಾರಂಭಗಳು, ಸೇವಾ ಚಟುವಟಿಕೆಗಳು ಮತ್ತು ಪವಿತ್ರ ಕ್ಷಣಗಳ ಛಾಯಾಚಿತ್ರಗಳು ಹಾಗೂ ವೀಡಿಯೊಗಳು.",
     "volunteer_question": "ಪ್ರಶ್ನೆಗಳಿವೆಯೇ? volunteer@shiroor.matha.in ಗೆ ಇಮೇಲ್ ಮಾಡಿ",
     "detected": {},
     "local_copy": {

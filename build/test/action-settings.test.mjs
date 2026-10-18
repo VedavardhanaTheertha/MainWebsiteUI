@@ -9,7 +9,6 @@ import { parseMarkdownFrontmatter } from "../content-utils.mjs";
 const defaults = {
   headerWhatsApp: { connectId: "whatsapp" },
   subscribe: { connectId: "youtube" },
-  donationWhatsApp: { connectId: "whatsapp" },
   donationEmail: { url: "mailto:seva@example.org" },
   payment: { url: "https://pay.example.org/?entity_id=3&event_id=4&seva_id=3" },
   volunteer: { url: "https://volunteer.example.org/" },
@@ -25,8 +24,7 @@ test("public actions resolve canonical connection records and explicit donation 
   const result = resolveActionSettings(defaults, connections);
   assert.equal(result.headerWhatsApp, connections[0].url);
   assert.equal(result.subscribe, connections[1].url);
-  assert.equal(result.donationWhatsApp, connections[0].url);
-  assert.equal(new URL(result.donationWhatsApp).search, "");
+  assert.deepEqual(Object.keys(result), Object.keys(defaults));
   const changed = resolveActionSettings({
     ...defaults, headerWhatsApp: { url: "https://chat.whatsapp.com/example" },
     donationEmail: { connectId: "email" },
@@ -44,9 +42,6 @@ test("public actions reject missing, ambiguous, malformed, and unsafe destinatio
   assert.throws(() => parseActionSettings({ ...defaults, extra: {} }), /unknown action/);
   for (const url of ["javascript:alert(1)", "http://example.org", "https://user:pass@example.org", "https://example.org/%0d%0a"]) {
     assert.throws(() => parseActionSettings({ ...defaults, subscribe: { url } }), /subscribe/);
-  }
-  for (const url of ["https://example.org/1234567", "https://wa.me/123456789", "https://whatsapp.com/channel/example?text=old", "https://whatsapp.com:4430/channel/example"]) {
-    assert.throws(() => parseActionSettings({ ...defaults, donationWhatsApp: { url } }), /donationWhatsApp/);
   }
   for (const url of ["mailto:not-an-address", "mailto:first@example.org,second@example.org", "mailto:a@example.org?bcc=b@example.org", "mailto:a%0abcc@example.org"]) {
     assert.throws(() => parseActionSettings({ ...defaults, donationEmail: { url } }), /donationEmail/);

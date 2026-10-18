@@ -34,3 +34,12 @@ test("Yajna progress uses the explicitly authored shared date and rejects invali
     assert.throws(() => validateProgressSnapshot(bad, "announcement"), /valid quoted/);
   }
 });
+
+test("announcement invitation uses the mantra in the authored participation instructions", () => {
+  const source = readFileSync(new URL("../../library/announcement/krishna-mantra-lekhana-yajna.md", import.meta.url), "utf8");
+  const { metadata } = parseMarkdownFrontmatter(source, "announcement");
+  for (const [code, invitation] of Object.entries(metadata.fields["announcement.body"])) {
+    assert.ok(metadata.fields["pages.local_copy.yajna_step_2_description"][code].includes(invitation));
+    assert.doesNotMatch(invitation, /\.\.\.|…/u);
+  }
+});

@@ -12,7 +12,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Content never goes in code
 
-**Never hardcode a display string in `src/`.** Short UI labels and the explicitly
+**Never hardcode a display string in `src/`.** Short UI labels and
 media catalogs live in `content/languages/*.json`. Editorial content lives in
 topic Markdown under `library/`: About/policies/legal in `general/`, announcements in
 `announcement/`, all Learn content and configuration in `learn/`, and multilingual
@@ -38,8 +38,8 @@ Document only existing behavior, source ownership, contributor procedures, and e
 restrictions. Exclude implementation history, removed or unimplemented features, and
 absence-only statements unless they express a restriction. Link to authoritative
 configuration instead of copying external-action URLs, contact details, or dated
-content snapshots into documentation. Preserve institutional history and required
-attribution/provenance.
+content snapshots into documentation. Preserve institutional history, licenses,
+required attribution, and article citations.
 
 ## Never revert or discard verified changes
 

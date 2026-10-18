@@ -93,7 +93,7 @@ imply an unsubmitted form succeeded.
 
 1. Follow [GUIDELINE_CONTENT.md](GUIDELINE_CONTENT.md).
 2. Have devotional, historical, and scholarly claims checked by an appropriate reviewer.
-3. Record new text/media rights and attribution in `ASSET_PROVENANCE.md`.
+3. Preserve applicable licenses, required attribution, and article citations.
 4. Check links, spelling, heading hierarchy, and mobile readability.
 5. Run `npm run content:validate` for generation/schema feedback and `npm run ci`
    before requesting integration review. Read the build verification reports.
