@@ -10,13 +10,13 @@ export default function HomePageGrid({ items }: { items: HomePageCard[] }) {
         <Link
           key={item.id}
           href={item.url}
-          className={collectionCardClassName("collection")}
+          className={collectionCardClassName("collection", true)}
         >
           <div className={collectionCardImageClassName}>
             <ContentImage src={item.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
           </div>
           <div className={collectionCardBodyClassName}>
-            <span className="mb-2 block w-fit max-w-full truncate rounded-full bg-[var(--color-cream-soft)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-brand)]">{item.page_type}</span>
+            <span className="visual-tile-badge mb-2 block w-fit max-w-full truncate rounded-full bg-[var(--color-cream-soft)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-brand)]">{item.page_type}</span>
             <h3 className="mb-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">{item.title}</h3>
             <p className="line-clamp-2 font-body text-sm leading-relaxed text-[var(--color-text-secondary)]">{item.description}</p>
             {item.footnote && (

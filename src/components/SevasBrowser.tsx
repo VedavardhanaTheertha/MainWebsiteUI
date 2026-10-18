@@ -42,7 +42,7 @@ function SevaImage({ title, image, featured = false }: { title: string; image: s
   const showPlaceholder = !source || source === placeholderSrc || failedSource === source;
   const sizes = featured ? "(max-width: 768px) 85vw, 33vw" : "80px";
   return (
-    <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
+    <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "visual-tile-art h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
       {showPlaceholder ? (
         <Image src={placeholderSrc} alt="" fill sizes={sizes} className="object-contain" />
       ) : (
@@ -71,7 +71,7 @@ function SevaCard({
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName("collection")} w-full`}
+      className={`${collectionCardClassName("collection", true)} w-full`}
     >
       <SevaImage title={title} image={seva.image} featured />
       <div className={collectionCardBodyClassName}>
@@ -275,7 +275,7 @@ export default function SevasBrowser() {
                   type="button"
                   key={seva.id}
                   onClick={() => setSelectedSeva(seva)}
-                  className={`${collectionCardClassName("featured")} w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none`}
+                  className={`${collectionCardClassName("featured", true)} w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none`}
                 >
                   <SevaImage title={title} image={seva.image} featured />
                   <div className={collectionCardBodyClassName}>

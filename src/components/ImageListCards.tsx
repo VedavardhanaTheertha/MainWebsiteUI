@@ -17,11 +17,11 @@ export default function ImageListCards({ contentKey }: { contentKey: "learn" | "
           const href = learningDestination(item);
           const enrollmentUrl = approvedLearningUrl(item.enrollmentUrl);
           return (
-            <article key={item.id ?? item.title} className="relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)]">
-              <div className="relative h-44">
+            <article key={item.id ?? item.title} className="visual-tile relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)]">
+              <div className="visual-tile-art relative h-44">
                 <ContentImage src={item.img} alt="" fill sizes="(max-width: 640px) 100vw, 50vw" />
               </div>
-              <div className="p-5">
+              <div className="visual-tile-body p-5">
                 <h2 className="font-display text-xl font-bold">
                   {href ? <Link href={href} className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-[var(--color-saffron-600)]">{item.title}</Link> : item.title}
                 </h2>

@@ -40,9 +40,9 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
           {items.map((item) => (
             <article
               key={item.viewerId}
-              className="relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm"
+              className="visual-tile relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm"
             >
-              <div className="relative h-48 overflow-hidden bg-[var(--color-cream-soft)]">
+              <div className="visual-tile-art relative h-48 overflow-hidden bg-[var(--color-cream-soft)]">
                 <ContentImage
                   src={item.image}
                   alt=""
@@ -50,8 +50,8 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
-              <div className="p-4">
-                <span className="mb-2 inline-block rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{item.type === "video" ? copy.video_label : copy.photo_label}</span>
+              <div className="visual-tile-body p-4">
+                <span className="visual-tile-badge mb-2 inline-block rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{item.type === "video" ? copy.video_label : copy.photo_label}</span>
                 <h3 className="font-display text-lg font-bold text-[var(--color-text-primary)]">
                   {item.title}
                 </h3>

@@ -23,5 +23,5 @@ export interface UiSettings {
     albumsSort: "newest" | "oldest";
   };
   interactionSettings: { dropdownCloseDelayMs: number; modalResetDelayMs: number; searchPreloadDelayMs: number };
-  presentationSettings: { imageTreatment: boolean; headerActions: boolean; topSubscribe: boolean };
+  presentationSettings: { imageTreatment: boolean; imageBackedTiles: boolean; tileOverlayOpacity: number; headerActions: boolean; topSubscribe: boolean };
 }

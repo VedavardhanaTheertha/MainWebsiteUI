@@ -74,7 +74,7 @@ apply settings in memory and show a warning instead of reloading away those chan
 
 `build/developer-options.mjs` owns the technical route and storage keys;
 `settings/ui_elements.json` owns all UI defaults, including the image treatment,
-desktop header shortcuts, and top Subscribe visibility (all initially false).
+image-backed tiles, desktop header shortcuts, and top Subscribe visibility (all initially false).
 Copy-preview defaults remain environment-owned.
 The page uses `page.preview.tsx`; Next configuration recognizes the `preview.tsx`
 extension only in local/dev while retaining all standard page extensions.
@@ -95,7 +95,10 @@ pagination, sort/view/filter state, and reader size from those settings.
 
 The browser stores a complete validated raw configuration as JSON in
 `site-ui-settings` in per-origin `localStorage`. Invalid saved data produces a
-warning and falls back to configured defaults. Legacy `site-image-treatment`,
+warning and falls back to configured defaults. The browser-only compatibility
+validator accepts older complete configurations missing only `imageBackedTiles`
+and/or `tileOverlayOpacity`, inheriting those fields from the current defaults without losing existing choices.
+Build-time settings remain strict. Legacy `site-image-treatment`,
 `site-header-actions`, and `site-top-subscribe` values of `on` or `off` override the
 corresponding presentation fields; absent or other values inherit the configuration.
 Apply and Reset clear their precedence with `default`. Legacy-only changes do not
@@ -216,15 +219,38 @@ Content photographs, posters, portraits, and thumbnails use
 their frames and the decorative layer is hidden. Enabling the browser-local image
 option contains the sharp foreground over a statically blurred and darkened copy
 of the same source; foreground padding preserves image edges inside rounded frames.
-In both modes, captions, badges, and navigation controls
+By default, captions, badges, and navigation controls
 sit outside the artwork; foreground images do not zoom. Natural-size annotated
 illustrations retain their image-relative annotation coordinates. Logos, QR codes,
 functional icons (including failed-image placeholders), and full-screen album playback
 retain their own presentation.
-The standalone generated hero uses the same preference-gated two-layer treatment.
+The hero title is always overlaid on its image, independently of the tile option,
+using warm-white text with a subtle text shadow and no background panel. The standalone
+generated hero mirrors that overlay and the preference-gated two-layer image treatment.
 Shared featured/collection presentation variants preserve their distinct layouts
 while keeping spacing, controls, focus, and result states consistent. Policy text
 uses a readable shared size; utility controls have touch-friendly targets.
+
+The independent, default-off `presentation.imageBackedTiles` flag sets
+`data-image-backed-tiles` on the root after hydration. Eligible cards explicitly
+opt in with `visual-tile`, `visual-tile-art`, and `visual-tile-body` hooks. Their
+images fill the tile behind a lightly darkened text panel with a
+fade above the text. The shared CSS honors either cover or contain/blur image
+treatment without changing its renderer. In image-backed tile mode, eligible
+foregrounds align top-centre with either image-fit setting. The ordinary
+image-above-text layout and blurred backdrops retain their centred alignment.
+Text shadows aid readability, but contrast remains image-dependent with this
+deliberately translucent treatment.
+`presentation.tileOverlayOpacity` controls panel opacity from 0 to 100 percent
+(default 40), through the root `--tile-overlay-opacity` custom property. It never
+changes hero text or image opacity. Titles wrap without line clamping,
+and cards grow for translated text. Stretched detail links and separate actions
+retain their original positioning and keyboard behavior.
+Home photo tiles, section hubs, library previews, seva and learning cards,
+album covers/items, and illustrated lineage entries participate. Event poster
+surfaces, detail views, full-screen album playback, and icon-only tiles do not.
+The hero's overlay is always enabled rather than controlled by this flag.
+Forced-color mode uses system text/panel colors.
 
 Media albums are built from language catalog data. Use stable explicit IDs
 and valid image/video metadata; do not infer publication rights from remote availability.

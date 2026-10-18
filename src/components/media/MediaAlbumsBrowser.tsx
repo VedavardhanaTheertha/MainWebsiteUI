@@ -34,7 +34,7 @@ function AlbumTile({
   return (
     <Link
       href={`/albums/${album.id}`}
-      className={`${collectionCardClassName(featured ? "featured" : "collection")} ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
@@ -49,7 +49,7 @@ function AlbumTile({
         />
       </div>
       <div className={collectionCardBodyClassName}>
-        <span className="mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{counts.photos} {photoLabel} · {counts.videos} {videoLabel}</span>
+        <span className="visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{counts.photos} {photoLabel} · {counts.videos} {videoLabel}</span>
         <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {album.title}
         </h3>

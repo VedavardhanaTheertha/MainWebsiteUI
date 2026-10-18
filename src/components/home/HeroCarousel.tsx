@@ -59,9 +59,9 @@ export default function HeroCarousel() {
 
       </div>
 
-      <div className={`px-6 py-6 text-center ${heroSettings.autoplay && images.length > 1 && !reducedMotion ? "pr-20" : ""}`}>
+      <div className={`hero-text-overlay absolute inset-x-0 bottom-0 px-6 pb-6 pt-12 text-center ${heroSettings.autoplay && images.length > 1 && !reducedMotion ? "pr-20" : ""}`}>
         <h1
-          className="font-display text-[26px] lg:text-4xl leading-tight text-[var(--color-text-primary)] whitespace-pre-line"
+          className="font-display text-[26px] lg:text-4xl leading-tight whitespace-pre-line"
         >
           {title}
         </h1>

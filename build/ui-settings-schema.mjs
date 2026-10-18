@@ -21,7 +21,8 @@ export const uiFieldDefinitions = [
   choice("browserDefaults", "eventsPastSort", ["earliest", "latest"]),
   choice("browserDefaults", "albumsSort", ["newest", "oldest"]),
   ...["dropdownCloseDelayMs", "modalResetDelayMs", "searchPreloadDelayMs"].map((key) => number("interaction", key, 0, timerMaximum)),
-  ...["imageTreatment", "headerActions", "topSubscribe"].map((key) => flag("presentation", key)),
+  ...["imageTreatment", "imageBackedTiles", "headerActions", "topSubscribe"].map((key) => flag("presentation", key)),
+  number("presentation", "tileOverlayOpacity", 0, 100),
 ];
 
 export class UiSettingsError extends Error {}
@@ -96,4 +97,21 @@ export function parseUiSettings(value) {
     interactionSettings: raw.interaction,
     presentationSettings: raw.presentation,
   };
+}
+
+/** @returns {import("../src/lib/ui-settings-types").UiElements} */
+export function validateUiPreferences(value, defaults) {
+  const presentation = value?.presentation;
+  if (presentation && typeof presentation === "object" && !Array.isArray(presentation) &&
+      (!Object.hasOwn(presentation, "imageBackedTiles") || !Object.hasOwn(presentation, "tileOverlayOpacity"))) {
+    const migrated = { ...presentation };
+    for (const key of ["imageBackedTiles", "tileOverlayOpacity"]) {
+      if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.presentation[key];
+    }
+    return validateUiElements({
+      ...value,
+      presentation: migrated,
+    });
+  }
+  return validateUiElements(value);
 }

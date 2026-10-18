@@ -107,7 +107,7 @@ function ArticleTile({
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName(featured ? "featured" : "collection")} ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
@@ -120,7 +120,7 @@ function ArticleTile({
         />
       </div>
       <div className={collectionCardBodyClassName}>
-        <span className="mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
+        <span className="visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
         {projectStatus && <p className="mb-1 text-xs font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
         <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {article.title}

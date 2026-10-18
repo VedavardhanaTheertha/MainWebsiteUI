@@ -166,7 +166,7 @@ function preferencesFixture({ denied = false } = {}) {
 test("every UI setting has a typed editor definition and localized labels", () => {
   const actual = Object.entries(uiDefaults).flatMap(([group, fields]) => Object.keys(fields).map((key) => `${group}.${key}`));
   const defined = schema.uiFieldDefinitions.map(({ group, key }) => `${group}.${key}`);
-  assert.equal(defined.length, 30);
+  assert.equal(defined.length, 32);
   assert.deepEqual(defined.toSorted(), actual.toSorted());
   assert.equal(new Set(defined).size, defined.length);
   for (const language of ["en", "kn"]) {
@@ -187,7 +187,7 @@ test("runtime UI settings persist all field types, remount initial-state consume
   custom.hero = { autoplay: false, intervalMs: 12000, fadeDurationMs: 0 };
   custom.bhaktiReader = { minSize: 90, initialSize: 110, maxSize: 170, step: 10 };
   custom.browserDefaults.lineageView = "timeline";
-  custom.presentation = { imageTreatment: true, headerActions: true, topSubscribe: true };
+  custom.presentation = { imageTreatment: true, imageBackedTiles: true, tileOverlayOpacity: 40, headerActions: true, topSubscribe: true };
   assert.equal(fixture.preferences.applyUiSettings(custom), true);
   assert.equal(fixture.stored.get(uiSettingsStorageKey), JSON.stringify(schema.validateUiElements(custom)));
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 3);
@@ -236,6 +236,39 @@ test("invalid saved settings are rejected explicitly without enabling copy overr
   assert.throws(() => fixture.preferences.applyUiSettings({ ...uiDefaults, contentMode: "placeholder" }), schema.UiSettingsError);
 });
 
+test("existing complete saved preferences inherit the new tile default without losing overrides", () => {
+  const fixture = preferencesFixture();
+  const previous = structuredClone(uiDefaults);
+  delete previous.presentation.imageBackedTiles;
+  delete previous.presentation.tileOverlayOpacity;
+  previous.collections.initialVisible = 3;
+  previous.presentation.imageTreatment = true;
+  fixture.stored.set(uiSettingsStorageKey, JSON.stringify(previous));
+  assert.equal(fixture.render().settings.collectionPagination.initialVisible, 3);
+  assert.equal(fixture.render().settings.presentationSettings.imageTreatment, true);
+  assert.equal(fixture.render().settings.presentationSettings.imageBackedTiles, false);
+  assert.equal(fixture.render().settings.presentationSettings.tileOverlayOpacity, 40);
+  assert.equal(fixture.warnings.length, 0);
+  assert.throws(() => schema.validateUiElements(previous), schema.UiSettingsError);
+  previous.presentation.imageBackedTiles = true;
+  assert.equal(schema.validateUiPreferences(previous, uiDefaults).presentation.tileOverlayOpacity, 40);
+  assert.equal(schema.validateUiPreferences(previous, uiDefaults).presentation.imageBackedTiles, true);
+  delete previous.collections.loadIncrement;
+  assert.throws(() => schema.validateUiPreferences(previous, uiDefaults), schema.UiSettingsError);
+});
+
+test("tile panel opacity accepts the full percentage range and rejects invalid values", () => {
+  const values = structuredClone(uiDefaults);
+  for (const opacity of [0, 40, 100]) {
+    values.presentation.tileOverlayOpacity = opacity;
+    assert.equal(schema.parseUiSettings(values).presentationSettings.tileOverlayOpacity, opacity);
+  }
+  for (const opacity of [-1, 101, 1.5, "40", null]) {
+    values.presentation.tileOverlayOpacity = opacity;
+    assert.throws(() => schema.validateUiElements(values), schema.UiSettingsError);
+  }
+});
+
 test("denied browser storage retains UI choices in memory and reports non-persistence", () => {
   const fixture = preferencesFixture({ denied: true });
   fixture.render();
@@ -249,12 +282,27 @@ test("denied browser storage retains UI choices in memory and reports non-persis
 
 test("the root preference applier gates images without mounting a global copy toolbar", () => {
   let enabled = false;
-  const document = { documentElement: { dataset: {} } };
+  let tiles = false;
+  let opacity = 40;
+  const styles = new Map();
+  const document = { documentElement: { dataset: {}, style: { setProperty: (name, value) => styles.set(name, value) } } };
   const Preferences = load("components/DeveloperPreferences.tsx", {
     react: { useEffect: (effect) => effect() },
     "@/hooks/useImageTreatment": { useImageTreatment: () => ({ imageTreatmentEnabled: enabled }) },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ presentationSettings: { imageBackedTiles: tiles, tileOverlayOpacity: opacity } }) },
   }, { document }).default;
   assert.equal(Preferences(), null);
+  assert.equal(document.documentElement.dataset.imageTreatment, "off");
+  assert.equal(document.documentElement.dataset.imageBackedTiles, "off");
+  assert.equal(styles.get("--tile-overlay-opacity"), "0.4");
+  for (const [percent, alpha] of [[0, "0"], [100, "1"]]) {
+    opacity = percent;
+    Preferences();
+    assert.equal(styles.get("--tile-overlay-opacity"), alpha);
+  }
+  tiles = true;
+  Preferences();
+  assert.equal(document.documentElement.dataset.imageBackedTiles, "on");
   assert.equal(document.documentElement.dataset.imageTreatment, "off");
   enabled = true;
   Preferences();
@@ -307,16 +355,20 @@ function pageFixture(defaultMode = "real", persistent = true) {
 
 test("the editor covers every setting, keeps edits as drafts and applies typed values only on submit", () => {
   const page = pageFixture();
-  assert.equal(page.controls().filter((node) => node.props.name).length, 30);
+  assert.equal(page.controls().filter((node) => node.props.name).length, 32);
   page.field("collections.initialVisible").props.onChange({ target: { value: "3", valueAsNumber: 3 } });
   page.field("browserDefaults.lineageView").props.onChange({ target: { value: "timeline" } });
   page.field("presentation.headerActions").props.onChange({ target: { checked: true } });
+  page.field("presentation.imageBackedTiles").props.onChange({ target: { checked: true } });
+  page.field("presentation.tileOverlayOpacity").props.onChange({ target: { value: "75", valueAsNumber: 75 } });
   assert.equal(page.applied, undefined);
   assert.equal(page.reloads, 0);
   page.submit();
   assert.equal(page.applied.collections.initialVisible, 3);
   assert.equal(page.applied.browserDefaults.lineageView, "timeline");
   assert.equal(page.applied.presentation.headerActions, true);
+  assert.equal(page.applied.presentation.imageBackedTiles, true);
+  assert.equal(page.applied.presentation.tileOverlayOpacity, 75);
   assert.equal(page.reloads, 1);
 });
 

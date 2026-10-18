@@ -17,7 +17,7 @@ import { useMiniSearch } from "@/hooks/useMiniSearch";
 
 export default function ParamparaBrowser() {
   const { lang, tr, contentMode } = useLang();
-  const { browserDefaults } = useUiSettings();
+  const { browserDefaults, presentationSettings } = useUiSettings();
   const parampara = contentMode !== defaultContentMode && alternateParamparaByLanguage
     ? alternateParamparaByLanguage
     : paramparaByLanguage;
@@ -141,15 +141,17 @@ export default function ParamparaBrowser() {
               type="button"
               onClick={() => openGuru(guru)}
               aria-pressed={selected?.id === guru.id}
-              className="group grid min-h-36 w-full grid-cols-[80px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] shadow-[var(--shadow-xs)] hover:border-[var(--color-saffron-400)] hover:shadow-[var(--shadow-md)] aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-[border-color,box-shadow,background-color]"
+              className={`${guru.thumbnailImage ? "visual-tile " : ""}group grid min-h-36 w-full grid-cols-[80px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] shadow-[var(--shadow-xs)] hover:border-[var(--color-saffron-400)] hover:shadow-[var(--shadow-md)] aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-[border-color,box-shadow,background-color]`}
             >
-              <span className="relative block h-full min-h-36 w-20 overflow-hidden bg-[var(--color-saffron-50)]">
+              <span className="visual-tile-art relative block h-full min-h-36 w-20 overflow-hidden bg-[var(--color-saffron-50)]">
                 {guru.thumbnailImage ? (
                   <ContentImage
                     src={guru.thumbnailImage}
                     alt={guru.name}
                     fill
-                    sizes="80px"
+                    sizes={presentationSettings.imageBackedTiles
+                      ? view === "timeline" ? "(max-width: 1280px) 100vw, 1152px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      : "80px"}
                   />
                 ) : (
                   <span className="grid h-full place-items-center text-[var(--color-saffron-400)]">
@@ -157,7 +159,7 @@ export default function ParamparaBrowser() {
                   </span>
                 )}
               </span>
-              <span className="flex min-w-0 flex-col p-3.5">
+              <span className="visual-tile-body flex min-w-0 flex-col p-3.5">
                 <span className="font-body text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)] mb-2">
                   {positionLabel(guru)}
                 </span>

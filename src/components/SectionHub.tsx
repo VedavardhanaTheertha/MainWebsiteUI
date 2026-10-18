@@ -33,9 +33,9 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
             <Link
               key={item.href}
               href={item.href}
-              className="group flex h-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+              className="visual-tile group flex h-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
             >
-              <div className="relative h-44 overflow-hidden bg-[var(--color-cream-soft)]">
+              <div className="visual-tile-art relative h-44 overflow-hidden bg-[var(--color-cream-soft)]">
                 <ContentImage
                   src={item.image}
                   alt=""
@@ -43,7 +43,7 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
-              <div className="flex flex-1 flex-col p-5">
+              <div className="visual-tile-body flex flex-1 flex-col p-5">
                 <h2 className="font-display text-xl font-bold text-[var(--color-text-primary)]">
                   {item.title}
                 </h2>

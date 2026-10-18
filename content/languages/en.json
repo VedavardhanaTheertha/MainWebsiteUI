@@ -103,6 +103,14 @@
         "label": "Complete images with blurred backgrounds",
         "description": "Show the complete image over a blurred copy. Turn off to fill image frames with cropping. Captions stay outside the images."
       },
+      "presentation.imageBackedTiles": {
+        "label": "Image-backed tiles with readable text panels",
+        "description": "Fill photographic tiles with their image and place text on a lightly darkened, semi-transparent bottom panel. Works with complete-image treatment. Event posters and full-screen album items are unchanged."
+      },
+      "presentation.tileOverlayOpacity": {
+        "label": "Tile text panel opacity (%)",
+        "description": "Applies when image-backed tiles are enabled. Use 0 for transparent or 100 for fully opaque. Lower opacity shows more of the image but can reduce text contrast. The hero is unaffected."
+      },
       "presentation.headerActions": {
         "label": "Show header shortcuts",
         "description": "Show Panchanga, Scan QR, and Join WhatsApp together in the desktop header."

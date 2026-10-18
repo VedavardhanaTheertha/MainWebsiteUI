@@ -3,7 +3,7 @@
 import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { uiElementDefaults } from "@/gen/settings/ui-elements";
 import { applyUiSettings, uiPreferences, imagePreference, headerPreference, subscribePreference } from "@/lib/ui-settings-preferences";
-import { parseUiSettings, validateUiElements } from "../../build/ui-settings-schema.mjs";
+import { parseUiSettings, validateUiPreferences } from "../../build/ui-settings-schema.mjs";
 import type { UiElements, UiSettings } from "@/lib/ui-settings-types";
 
 interface UiSettingsState {
@@ -22,13 +22,14 @@ export function UiSettingsProvider({ children }: { children: ReactNode }) {
   const header = useSyncExternalStore(headerPreference.subscribe, headerPreference.getSnapshot, headerPreference.getServerSnapshot);
   const subscribe = useSyncExternalStore(subscribePreference.subscribe, subscribePreference.getSnapshot, subscribePreference.getServerSnapshot);
   const base = useMemo(() => {
-    const values = validateUiElements(JSON.parse(snapshot));
+    const values = validateUiPreferences(JSON.parse(snapshot), uiElementDefaults);
     return { values, settings: parseUiSettings(values) };
   }, [snapshot]);
   const state = useMemo(() => {
     const settings = { ...base.settings };
     const resolved = (override: string, fallback: boolean) => override === "default" ? fallback : override === "on";
     settings.presentationSettings = {
+      ...settings.presentationSettings,
       imageTreatment: resolved(image, settings.presentationSettings.imageTreatment),
       headerActions: resolved(header, settings.presentationSettings.headerActions),
       topSubscribe: resolved(subscribe, settings.presentationSettings.topSubscribe),
