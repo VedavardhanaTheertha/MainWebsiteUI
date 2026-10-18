@@ -4,14 +4,17 @@ import { useId, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
 import { knowledgeReadingTime, knowledgeText, type DisplayArticle } from "@/lib/knowledge";
 import type { KnowledgeText } from "@/lib/knowledge-types";
+import { ImageBackdrop } from "@/components/presentation/ContentImage";
+import { useUiSettings } from "@/context/UiSettingsContext";
 
 const prose = "mt-6 max-w-none space-y-5 text-base leading-8 text-[var(--color-text-secondary)] [&_a]:underline [&_a]:underline-offset-4 [&_a]:break-words [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_h1]:hidden [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_img]:max-w-full [&_table]:block [&_table]:overflow-x-auto";
 
 export default function KnowledgeBody({ article, sectionId }: { article: DisplayArticle; sectionId: string }) {
   const { lang, tr } = useLang();
+  const { readingTimeSettings } = useUiSettings();
   const copy = tr.library_browser;
   const details = article.knowledge;
-  const readingTime = sectionId === "stories" || details?.readMinutes ? knowledgeReadingTime(article) : undefined;
+  const readingTime = sectionId === "stories" || details?.readMinutes ? knowledgeReadingTime(article, readingTimeSettings) : undefined;
   const [active, setActive] = useState<number | null>(null);
   const annotationId = useId();
   const text = (value: KnowledgeText) => knowledgeText(value, lang);
@@ -46,10 +49,15 @@ export default function KnowledgeBody({ article, sectionId }: { article: Display
       {readingTime && <p className="mt-4">{(readingTime.estimated ? copy.estimated_read_minutes : copy.read_minutes).replace("{count}", String(readingTime.minutes))}</p>}
       {details?.glossary && heading("glossary", <dl className="space-y-4">{[...details.glossary].sort((a, b) => text(a.term).localeCompare(text(b.term), lang)).map((entry, index) => <div key={index}><dt className="font-bold">{text(entry.term)}</dt><dd>{text(entry.definition)}</dd></div>)}</dl>)}
       {image && heading("illustration", <>
-        <div className="relative">
-          {/* Approved illustrations may use hosts outside the site's decorative-image configuration. */}
-          <img src={image.src} alt={text(image.alt)} className="h-auto w-full rounded-xl" />
-          {image.annotations.map((entry, index) => <button type="button" key={index} style={{ left: `${entry.x}%`, top: `${entry.y}%` }} className="absolute flex min-h-11 min-w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-[var(--color-ink-900)] font-bold text-white shadow focus-visible:outline-2 focus-visible:outline-offset-2" aria-label={`${index + 1}: ${text(entry.label)}`} aria-expanded={active === index} aria-controls={`${annotationId}-${index}`} onClick={() => setActive(active === index ? null : index)}>{index + 1}</button>)}
+        <div className="content-image-natural rounded-xl" data-content-image="natural">
+          <span className="content-image-frame rounded-[inherit]">
+            <ImageBackdrop src={image.src} unoptimized sizes="(max-width: 768px) 100vw, 768px" />
+          </span>
+          <div className="content-image-artwork">
+            {/* Approved illustrations may use hosts outside the site's decorative-image configuration. */}
+            <img src={image.src} alt={text(image.alt)} className="content-image-foreground" />
+            {image.annotations.map((entry, index) => <button type="button" key={index} style={{ left: `${entry.x}%`, top: `${entry.y}%` }} className="absolute flex min-h-11 min-w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-[var(--color-ink-900)] font-bold text-white shadow focus-visible:outline-2 focus-visible:outline-offset-2" aria-label={`${index + 1}: ${text(entry.label)}`} aria-expanded={active === index} aria-controls={`${annotationId}-${index}`} onClick={() => setActive(active === index ? null : index)}>{index + 1}</button>)}
+          </div>
         </div>
         <ol className="mt-4 space-y-2">{image.annotations.map((entry, index) => <li key={index}><button type="button" onClick={() => setActive(active === index ? null : index)} aria-expanded={active === index} aria-controls={`${annotationId}-${index}`} className="min-h-11 text-left font-semibold underline underline-offset-4">{index + 1}. {text(entry.label)}</button><p id={`${annotationId}-${index}`} hidden={active !== index}>{text(entry.explanation)}</p></li>)}</ol>
       </>)}

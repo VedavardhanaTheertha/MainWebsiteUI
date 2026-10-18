@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { useLang } from "@/context/LanguageContext";
 import { imagePaths } from "@/lib/images";
@@ -12,17 +12,15 @@ export default function MantraYajnaPageContent() {
   const copy = tr.pages.local_copy;
   return (
     <div>
-      {/* Hero — matches the design reference's .m-dhero */}
       <div className="relative h-[180px] lg:h-[280px]">
-        <Image src={imagePaths.krishna} alt="" fill sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(26,17,8,.1), rgba(26,17,8,.5))" }} />
-        <div className="absolute left-4 lg:left-8 bottom-4 right-4">
-          <p className="text-[10px] font-bold tracking-[.16em] uppercase text-[var(--color-saffron-200)]">
-            <LocalizedCopy path={["pages", "detected", "yajna_eyebrow"]} />
-          </p>
-          <h1 className="font-display text-[30px] lg:text-5xl text-[var(--color-cream-hi)] leading-tight mt-1">{copy.yajna_title}</h1>
-        </div>
+        <ContentImage src={imagePaths.krishna} alt="" fill sizes="100vw" />
       </div>
+      <header className="bg-[var(--color-parchment)] px-4 py-5 lg:px-8">
+        <p className="text-[10px] font-bold tracking-[.16em] uppercase text-[var(--color-text-brand)]">
+          <LocalizedCopy path={["pages", "detected", "yajna_eyebrow"]} />
+        </p>
+        <h1 className="font-display text-[30px] lg:text-5xl text-[var(--color-text-primary)] leading-tight mt-1">{copy.yajna_title}</h1>
+      </header>
 
       <div className="max-w-3xl mx-auto px-4 lg:px-8 py-8">
 

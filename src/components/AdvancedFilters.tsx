@@ -3,7 +3,7 @@
 import { useId, useState, type ReactNode } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import { browserDefaults } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 
 export default function AdvancedFilters({ children, search, heading, active = false }: {
   children: ReactNode;
@@ -12,6 +12,7 @@ export default function AdvancedFilters({ children, search, heading, active = fa
   active?: boolean;
 }) {
   const { tr } = useLang();
+  const { browserDefaults } = useUiSettings();
   const [open, setOpen] = useState<boolean>(browserDefaults.advancedFiltersOpen);
   const id = useId();
   const label = open ? tr.page_controls.close_filters : tr.page_controls.open_filters;

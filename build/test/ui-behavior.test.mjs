@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -11,7 +12,7 @@ const authoredCopy = loadAuthoredLanguage(fileURLToPath(new URL("../../", import
 const announcementDefaults = {
   enabled: true, delayMs: 1800, pages: [], startsOn: null, endsOn: null, dismissal: "session",
 };
-const heroDefaults = { autoplay: true, intervalMs: 4500, fadeDurationMs: 900, zoomDurationMs: 7000 };
+const heroDefaults = { autoplay: true, intervalMs: 4500, fadeDurationMs: 900 };
 
 async function mountComponent(file, options = {}) {
   let now = options.now ?? Date.parse("2026-10-17T12:00:00Z");
@@ -81,18 +82,22 @@ async function mountComponent(file, options = {}) {
         useEffect: (effect) => effects.push(effect),
       };
       if (name === "next/link" || name === "next/image") return { default: name, __esModule: true };
+      if (name === "@/components/presentation/ContentImage") return { default: "content-image", __esModule: true };
       if (name === "next/navigation") return { usePathname: () => options.pathname ?? "/events" };
-      if (name === "@/hooks/useQRModal") return { useQRModal: () => ({ openQR: () => {} }) };
+      if (name === "@/hooks/useQRModal") return { useQRModal: () => ({ openQR: () => options.onOpenQR?.() }) };
+      if (name === "@/hooks/useDonateModal") return { openDonateModal: () => options.onDonate?.() };
       if (name === "@/hooks/useReducedMotion") return { useReducedMotion: () => options.reducedMotion ?? false };
       if (name === "@/hooks/useDialog") return { useDialogsOpen: () => options.dialogsOpen ?? false };
       if (name === "@/lib/browser-preferences") return preferences;
       if (name === "lucide-react") return { Pause: "pause", Play: "play" };
       if (name === "@/context/LanguageContext") return { useLang: () => ({
         lang: "test", contentMode: "real",
+        setLang() {},
+        languages: [{ code: "test", native_name: "Provided language", label: "PL" }],
         tr: {
           ...authoredCopy,
           nav: [{ key: "resources", label: "Resources", children: [{ key: "events", label: "Events", href: "/events" }] }],
-          public_actions: { whatsapp_label: "WhatsApp" },
+          public_actions: { ...authoredCopy.public_actions, whatsapp_label: "WhatsApp" },
           announcement: { label: "notice", dismiss: "close", eyebrow: "open", title: "title", body: "body", cta: "go", href: "/events" },
           home: { hero_intro: { cta_label: "go" } },
         },
@@ -103,11 +108,19 @@ async function mountComponent(file, options = {}) {
         navigationRoutes: { home: "/", panchanga: "/panchanga" },
         homeHero: { titles: { test: "title" }, href: "/events", images: ["/one.jpg", "/two.jpg"] },
       };
+      if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({
+        heroSettings: options.hero ?? heroDefaults,
+        interactionSettings: options.interaction ?? { dropdownCloseDelayMs: 120 },
+      }), presentationSettings: { imageTreatment: false, headerActions: options.headerActionsEnabled ?? false, topSubscribe: options.topSubscribeEnabled ?? false } }) };
       if (name === "@/gen/settings/ui-elements") return {
         heroSettings: options.hero ?? heroDefaults,
         interactionSettings: options.interaction ?? { dropdownCloseDelayMs: 120 },
       };
-      if (name === "@/gen/settings/actions") return { actionDestinations: { headerWhatsApp: "https://whatsapp.com/channel/example" } };
+      if (name === "@/gen/settings/actions") return { actionDestinations: {
+        headerWhatsApp: "https://whatsapp.com/channel/example",
+        subscribe: "https://youtube.example.org/channel",
+        volunteer: "https://volunteer.example.org/",
+      } };
       if (name === "@/gen/settings/announcements") return { announcementSettings: options.announcement ?? announcementDefaults };
       if (name === "@/lib/ui-settings") return helpers;
       throw new Error(`Unexpected import: ${name}`);
@@ -153,12 +166,13 @@ function findNode(node, predicate) {
 
 test("hero uses configured interval/fade and respects autoplay and reduced motion", async () => {
   const hero = await mountComponent("../../src/components/home/HeroCarousel.tsx", {
-    hero: { autoplay: true, intervalMs: 100, fadeDurationMs: 42, zoomDurationMs: 123 },
+    hero: { autoplay: true, intervalMs: 100, fadeDurationMs: 42 },
   });
 
   assert.equal(hero.state[0], 0);
   assert.ok(findNode(hero.render(), (node) => node.props?.style?.transitionDuration === "42ms"));
-  assert.ok(findNode(hero.render(), (node) => node.props?.style?.transition === "transform 123ms ease-out"));
+  assert.equal(findNode(hero.render(), (node) => node.type === "content-image").props.style, undefined);
+  assert.equal(findNode(hero.render(), (node) => node.props?.style?.transform), undefined);
   hero.advance(99);
   assert.equal(hero.state[0], 0);
   hero.advance(1);
@@ -214,6 +228,26 @@ test("desktop dropdown uses the configured close delay and cleans up pending tim
   assert.equal(header.timers.size, 0);
 });
 
+test("desktop shortcuts are hidden by default and appear together without changing their actions", async () => {
+  const options = { headerActionsEnabled: false, onOpenQR: () => opened++ };
+  let opened = 0;
+  const header = await mountComponent("../../src/components/SiteHeader.tsx", options);
+  const shortcuts = () => findNode(header.render(), (node) => node.props?.["data-header-actions"]);
+  assert.equal(shortcuts(), undefined);
+  options.headerActionsEnabled = true;
+  const group = shortcuts();
+  assert.equal(group.props.children.length, 3);
+  assert.equal(findNode(group, (node) => node.props?.href === "/panchanga").type, "next/link");
+  const whatsapp = findNode(group, (node) => node.type === "a");
+  assert.equal(whatsapp.props.href, "https://whatsapp.com/channel/example");
+  assert.equal(whatsapp.props.rel, "noopener noreferrer");
+  findNode(group, (node) => node.type === "button").props.onClick();
+  assert.equal(opened, 1);
+  options.headerActionsEnabled = false;
+  assert.equal(shortcuts(), undefined);
+  header.cleanup();
+});
+
 test("announcement honors delay, page eligibility, and disabled state", async () => {
   const popup = await mountComponent("../../src/components/YajnaAnnouncement.tsx", {
     announcement: { ...announcementDefaults, delayMs: 100, pages: ["/events/"] },
@@ -232,6 +266,24 @@ test("announcement honors delay, page eligibility, and disabled state", async ()
     hidden.advance(10000);
     assert.equal(hidden.render(), null);
   }
+});
+
+test("top Subscribe is independently hidden by default while Donate and Volunteer remain available", async () => {
+  let donations = 0;
+  const options = { topSubscribeEnabled: false, onDonate: () => donations++ };
+  const bar = await mountComponent("../../src/components/TopBar.tsx", options);
+  const subscribe = () => findNode(bar.render(), (node) => node.props?.["data-top-subscribe"]);
+  assert.equal(subscribe(), undefined);
+  assert.ok(findNode(bar.render(), (node) => node.props?.href === "https://volunteer.example.org/"));
+  findNode(bar.render(), (node) => node.type === "button" && node.props?.["aria-label"] === authoredCopy.public_actions.donate_label).props.onClick();
+  assert.equal(donations, 1);
+  options.topSubscribeEnabled = true;
+  assert.equal(subscribe().props.href, "https://youtube.example.org/channel");
+  assert.equal(subscribe().props.rel, "noopener noreferrer");
+  options.topSubscribeEnabled = false;
+  assert.equal(subscribe(), undefined);
+  assert.ok(findNode(bar.render(), (node) => node.props?.href === "https://volunteer.example.org/"));
+  bar.cleanup();
 });
 
 test("announcement starts and expires on already-open pages at UTC boundaries", async () => {

@@ -5,6 +5,7 @@ import { useLang } from "@/context/LanguageContext";
 import type { Lang } from "@/gen/content";
 import { openDonateModal } from "@/hooks/useDonateModal";
 import { actionDestinations } from "@/gen/settings/actions";
+import { useUiSettings } from "@/context/UiSettingsContext";
 
 const actions = [
   {
@@ -39,6 +40,7 @@ const actions = [
 
 export default function TopBar() {
   const { lang, setLang, languages, tr } = useLang();
+  const { presentationSettings } = useUiSettings();
   const copy = tr.public_actions;
 
   return (
@@ -75,8 +77,8 @@ export default function TopBar() {
         {/* Right — action icons with tooltips */}
         <div className="flex items-center gap-4 justify-end">
           {/* YouTube — Subscribe */}
-          {actions.filter(a => a.id === "subscribe").map(({ id, svg }) => (
-            <a key={id} href={actionDestinations.subscribe} target="_blank" rel="noopener noreferrer" aria-label={copy.subscribe_label}
+          {presentationSettings.topSubscribe && actions.filter(a => a.id === "subscribe").map(({ id, svg }) => (
+            <a key={id} data-top-subscribe href={actionDestinations.subscribe} target="_blank" rel="noopener noreferrer" aria-label={copy.subscribe_label}
               className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
               {svg}
               <span className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap bg-[#1a1108] text-[var(--color-text-brand)] text-[10px] font-body px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[9999] border border-[var(--color-saffron-600)]/20">{copy.subscribe_label}</span>

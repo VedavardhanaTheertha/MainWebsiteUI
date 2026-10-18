@@ -1,3 +1,4 @@
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
@@ -113,6 +114,7 @@ async function component(file, additional = {}) {
   const dependencies = {
     "react/jsx-runtime": { jsx, jsxs: jsx }, react,
     "next/image": "image", "next/link": "link", "lucide-react": {},
+    "@/components/presentation/ContentImage": "image",
     "@/context/LanguageContext": { useLang: () => ({ tr: copy }) },
     "@/hooks/useDialog": { useDialog: (open, close) => { dependencies.dialog = { open, close }; return { current: null }; } },
     "@/lib/media-utils": utils,
@@ -120,6 +122,11 @@ async function component(file, additional = {}) {
     "@/components/presentation/CollectionEmptyState": "collection-empty-state",
     "@/hooks/useMiniSearch": { useMiniSearch: (items, query) => items.filter((item) => item.title.includes(query)) },
     "@/lib/search": { getSearchProfile: () => ({}) },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({
+      collectionPagination: { initialVisible: 2, loadIncrement: 2 },
+      browserDefaults: { albumsSort: "newest" },
+      mediaViewerSettings: { swipeThresholdPx: 50, videoControlExclusionPx: 56, wrap: true },
+    }) }) },
     "@/gen/settings/ui-elements": {
       collectionPagination: { initialVisible: 2, loadIncrement: 2 },
       browserDefaults: { albumsSort: "newest" },
@@ -203,6 +210,9 @@ test("viewer delegates dialog lifecycle and supports arrow, swipe, captions, pos
 
 test("configured viewer boundaries apply equally to arrows, keyboard and swipe", async () => {
   const mounted = await component("src/components/media/MediaViewer.tsx", {
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({
+      mediaViewerSettings: { swipeThresholdPx: 80, videoControlExclusionPx: 100, wrap: false },
+    }) }) },
     "@/gen/settings/ui-elements": {
       mediaViewerSettings: { swipeThresholdPx: 80, videoControlExclusionPx: 100, wrap: false },
     },
@@ -335,6 +345,10 @@ test("photo tiles use a full-tile iconless action without a visible view-photo b
 
 test("album configured sort is used initially, in active-filter detection, and after clearing", async () => {
   const mounted = await component("src/components/media/MediaAlbumsBrowser.tsx", {
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({
+      collectionPagination: { initialVisible: 2, loadIncrement: 2 },
+      browserDefaults: { albumsSort: "oldest" },
+    }) }) },
     "@/gen/settings/ui-elements": {
       collectionPagination: { initialVisible: 2, loadIncrement: 2 },
       browserDefaults: { albumsSort: "oldest" },

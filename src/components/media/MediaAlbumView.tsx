@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 import MediaViewer, { albumViewerItems, MediaMetadata, MediaTileAction } from "./MediaViewer";
@@ -43,18 +43,15 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
               className="relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm"
             >
               <div className="relative h-48 overflow-hidden bg-[var(--color-cream-soft)]">
-                <Image
+                <ContentImage
                   src={item.image}
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover"
                 />
-                <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">
-                  {item.type === "video" ? copy.video_label : copy.photo_label}
-                </span>
               </div>
               <div className="p-4">
+                <span className="mb-2 inline-block rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{item.type === "video" ? copy.video_label : copy.photo_label}</span>
                 <h3 className="font-display text-lg font-bold text-[var(--color-text-primary)]">
                   {item.title}
                 </h3>

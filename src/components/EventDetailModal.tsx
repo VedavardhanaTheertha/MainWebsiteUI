@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import { X, Calendar, Clock, MapPin, User, Tag } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { localized, localizedText } from "@/lib/localization";
@@ -76,29 +76,24 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
         className="relative w-full max-w-2xl max-h-[calc(100dvh-2rem)] bg-white rounded-2xl shadow-2xl border border-[var(--color-line)] flex flex-col overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header / Hero */}
+        <header className="flex shrink-0 items-start gap-4 border-b border-[var(--color-line)] p-4 sm:px-6">
+          <h2 className="min-w-0 flex-1 font-display font-bold text-xl sm:text-2xl text-[var(--color-text-primary)] leading-tight">{title}</h2>
+          <button type="button" onClick={onClose} aria-label={copy.close_modal} className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full bg-[var(--color-cream-soft)] text-[var(--color-text-primary)]">
+            <X size={20} />
+          </button>
+        </header>
         <div className="relative w-full h-[min(12rem,30dvh)] sm:h-[min(16rem,30dvh)] shrink-0 bg-[var(--color-cream-soft)] overflow-hidden">
-          <Image
+          <ContentImage
             src={imgUrl}
             alt=""
             fill
             sizes="(max-width: 672px) 100vw, 672px"
-            className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/85 via-[var(--color-ink-900)]/40 to-transparent" />
+        </div>
 
-          {/* Close button */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-3 right-3 z-10 min-h-11 min-w-11 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-xs transition-colors"
-            aria-label={copy.close_modal}
-          >
-            <X size={20} />
-          </button>
-
-          {/* Badges on hero */}
-          <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-center gap-1.5">
+        {/* Content body */}
+        <div className="min-h-0 p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
+          <div className="flex flex-wrap items-center gap-1.5">
             {event.categories?.map((cat: EventCategory) => (
               <span
                 key={cat.code}
@@ -113,13 +108,6 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
               </span>
             )}
           </div>
-        </div>
-
-        {/* Content body */}
-        <div className="min-h-0 p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
-          <h2 className="font-display font-bold text-xl sm:text-2xl text-[var(--color-text-primary)] leading-tight">
-            {title}
-          </h2>
 
           {/* Metadata badges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm leading-relaxed text-[var(--color-text-secondary)] bg-[var(--color-cream-soft)]/60 p-3 rounded-xl border border-[var(--color-line)]">
@@ -190,7 +178,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
                     key={gIdx}
                     className="relative h-24 rounded-lg overflow-hidden border border-[var(--color-line)]"
                   >
-                    <Image src={gImg} alt="" fill sizes="160px" className="object-cover" />
+                    <ContentImage src={gImg} alt="" fill sizes="160px" />
                   </div>
                 ))}
               </div>

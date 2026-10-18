@@ -37,6 +37,64 @@ h1, h2, h3, h4, h5, h6 {
   min-block-size: 2.75rem;
 }
 
+.content-image-frame,
+.content-image-natural {
+  display: block;
+  isolation: isolate;
+  background: var(--color-cream-soft);
+}
+
+.content-image-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.content-image-backdrop {
+  display: none;
+  z-index: 0;
+  object-fit: cover;
+  filter: blur(14px) brightness(0.65);
+  transform: scale(1.12);
+  pointer-events: none;
+  user-select: none;
+}
+
+.content-image-foreground {
+  z-index: 1;
+  object-fit: cover;
+  padding: 0;
+}
+
+:root[data-image-treatment="on"] .content-image-backdrop {
+  display: block;
+}
+
+:root[data-image-treatment="on"] .content-image-foreground {
+  object-fit: contain;
+}
+
+:root[data-image-treatment="on"] .content-image-frame > .content-image-foreground {
+  padding: 8px;
+}
+
+.content-image-natural {
+  position: relative;
+  padding: 6px;
+}
+
+.content-image-artwork {
+  position: relative;
+  z-index: 1;
+}
+
+.content-image-artwork > .content-image-foreground {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 0;
+}
+
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--color-text-brand);
   outline-offset: 3px;

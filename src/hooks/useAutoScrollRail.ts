@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { railAutoScroll } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useDialogsOpen } from "@/hooks/useDialog";
 
@@ -12,6 +12,7 @@ function easeInOutCubic(progress: number) {
 }
 
 export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
+  const { railAutoScroll } = useUiSettings();
   const scrollRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const dialogsOpen = useDialogsOpen();
@@ -148,7 +149,7 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
       window.removeEventListener("resize", refresh);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [itemCount, manuallyPaused, reducedMotion, dialogsOpen]);
+  }, [itemCount, manuallyPaused, reducedMotion, dialogsOpen, railAutoScroll]);
 
   return scrollRef;
 }

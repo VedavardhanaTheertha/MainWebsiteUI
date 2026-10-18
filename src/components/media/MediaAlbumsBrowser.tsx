@@ -1,12 +1,12 @@
 "use client";
 
 import { useDeferredValue, useMemo, useState } from "react";
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { topAlbumIds, recentAlbumIds } from "@/gen/media/albums";
-import { browserDefaults, collectionPagination } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import RailMotionControl from "@/components/RailMotionControl";
 import AdvancedFilters from "@/components/AdvancedFilters";
@@ -16,8 +16,6 @@ import type { MediaAlbum } from "@/lib/content-types";
 import { filterMediaAlbums, mediaCounts, type MediaFilters } from "@/lib/media-utils";
 import CollectionEmptyState from "@/components/presentation/CollectionEmptyState";
 import { collectionCardBodyClassName, collectionCardClassName, collectionCardImageClassName } from "@/lib/collection-presentation";
-
-const defaultFilters: MediaFilters = { from: "", to: "", event: "", type: "", sort: browserDefaults.albumsSort };
 
 function AlbumTile({
   album,
@@ -41,21 +39,17 @@ function AlbumTile({
       }`}
     >
       <div className={collectionCardImageClassName}>
-        <Image
+        <ContentImage
           src={album.cover}
           alt=""
           fill
           sizes={featured
             ? "(max-width: 768px) 82vw, 320px"
             : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-          className="object-cover transition duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/65 to-transparent" />
-        <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">
-          {counts.photos} {photoLabel} · {counts.videos} {videoLabel}
-        </span>
       </div>
       <div className={collectionCardBodyClassName}>
+        <span className="mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{counts.photos} {photoLabel} · {counts.videos} {videoLabel}</span>
         <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {album.title}
         </h3>
@@ -73,6 +67,11 @@ function AlbumTile({
 
 export default function MediaAlbumsBrowser() {
   const { tr } = useLang();
+  const { browserDefaults, collectionPagination } = useUiSettings();
+  const defaultFilters = useMemo<MediaFilters>(
+    () => ({ from: "", to: "", event: "", type: "", sort: browserDefaults.albumsSort }),
+    [browserDefaults.albumsSort],
+  );
   const copy = tr.media;
   const albums = copy.albums;
   const [query, setQuery] = useState("");

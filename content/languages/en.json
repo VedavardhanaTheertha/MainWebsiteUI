@@ -50,6 +50,82 @@
     "real": "Real copy",
     "placeholder": "Placeholder copy"
   },
+  "developer_options": {
+    "menu_label": "Developer options",
+    "title": "Developer options",
+    "description": "Browser-local controls for testing this site. Apply UI changes to save and reload this page. Copy preview updates immediately. Changes affect only this browser and origin, not the settings file.",
+    "groups": {
+      "collections": "Collection pagination",
+      "autoScroll": "Rail auto-scroll",
+      "hero": "Homepage hero",
+      "upcomingEvents": "Upcoming events",
+      "readingTime": "Estimated reading time",
+      "bhaktiReader": "Bhakti reader",
+      "mediaViewer": "Full-screen album controls",
+      "browserDefaults": "Collection browser defaults",
+      "interaction": "Interaction timing",
+      "presentation": "Image and header presentation"
+    },
+    "group_descriptions": {
+      "autoScroll": "Reduced motion and interaction pauses remain in effect.",
+      "bhaktiReader": "Sizes are percentages. Initial and maximum sizes must align with exact steps from the minimum.",
+      "presentation": "These defaults are configured in the UI settings file. Turning options on here saves browser-local overrides."
+    },
+    "fields": {
+      "collections.initialVisible": { "label": "Initially visible items" },
+      "collections.loadIncrement": { "label": "Items per load" },
+      "autoScroll.enabled": { "label": "Enable automatic rail scrolling" },
+      "autoScroll.pixelsPerSecond": { "label": "Scroll speed (pixels per second)" },
+      "autoScroll.returnDurationMs": { "label": "Return animation duration (ms)" },
+      "autoScroll.resumeDelayMs": { "label": "Resume delay after interaction (ms)" },
+      "hero.autoplay": { "label": "Enable hero autoplay" },
+      "hero.intervalMs": { "label": "Slide interval (ms)" },
+      "hero.fadeDurationMs": { "label": "Fade duration (ms)" },
+      "upcomingEvents.lookAheadDays": { "label": "Look ahead (days)" },
+      "upcomingEvents.maxCards": { "label": "Maximum upcoming cards" },
+      "readingTime.wordsPerMinute": { "label": "Estimated words per minute" },
+      "bhaktiReader.initialSize": { "label": "Initial reading size (%)" },
+      "bhaktiReader.minSize": { "label": "Minimum reading size (%)" },
+      "bhaktiReader.maxSize": { "label": "Maximum reading size (%)" },
+      "bhaktiReader.step": { "label": "Reading size step (%)" },
+      "mediaViewer.swipeThresholdPx": { "label": "Swipe threshold (pixels)" },
+      "mediaViewer.videoControlExclusionPx": { "label": "Native video-control exclusion (pixels)" },
+      "mediaViewer.wrap": { "label": "Wrap album navigation" },
+      "browserDefaults.advancedFiltersOpen": { "label": "Open advanced filters by default" },
+      "browserDefaults.lineageView": { "label": "Default lineage view" },
+      "browserDefaults.eventsUpcomingSort": { "label": "Default upcoming-event order" },
+      "browserDefaults.eventsPastSort": { "label": "Default past-event order" },
+      "browserDefaults.albumsSort": { "label": "Default album order" },
+      "interaction.dropdownCloseDelayMs": { "label": "Dropdown close delay (ms)" },
+      "interaction.modalResetDelayMs": { "label": "Modal reset delay (ms)" },
+      "interaction.searchPreloadDelayMs": { "label": "Search preload delay (ms)" },
+      "presentation.imageTreatment": {
+        "label": "Complete images with blurred backgrounds",
+        "description": "Show the complete image over a blurred copy. Turn off to fill image frames with cropping. Captions stay outside the images."
+      },
+      "presentation.headerActions": {
+        "label": "Show header shortcuts",
+        "description": "Show Panchanga, Scan QR, and Join WhatsApp together in the desktop header."
+      },
+      "presentation.topSubscribe": {
+        "label": "Show YouTube Subscribe button",
+        "description": "Show the Subscribe button linking to YouTube in the top bar. Donate, Volunteer, and other YouTube links are unchanged."
+      }
+    },
+    "choices": {
+      "list": "List",
+      "timeline": "Timeline",
+      "earliest": "Earliest first",
+      "latest": "Latest first",
+      "newest": "Newest first",
+      "oldest": "Oldest first"
+    },
+    "apply": "Apply and reload",
+    "invalid_settings": "Settings were not applied. Check the numbers and the reading-size minimum, maximum, initial value, and step.",
+    "storage_warning": "Browser storage is unavailable. Changes apply only to this page session; reloading restores the configured defaults.",
+    "copy_description": "Enable placeholder copy for this preview. Leave unchecked to use real copy. Production always uses real copy.",
+    "reset": "Reset and reload"
+  },
   "public_actions": {
     "whatsapp_label": "Join WhatsApp",
     "subscribe_label": "Subscribe",

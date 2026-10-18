@@ -6,17 +6,19 @@ import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
 import { parseUiSettings, parseAnnouncementSettings } from "../ui-settings.mjs";
+import { testUiSettings } from "./helpers/ui-settings.mjs";
 
 const defaults = {
   collections: { initialVisible: 6, loadIncrement: 9 },
   autoScroll: { enabled: true, pixelsPerSecond: 36, returnDurationMs: 2200, resumeDelayMs: 1500 },
-  hero: { autoplay: true, intervalMs: 4500, fadeDurationMs: 900, zoomDurationMs: 7000 },
+  hero: { autoplay: true, intervalMs: 4500, fadeDurationMs: 900 },
   upcomingEvents: { lookAheadDays: 30, maxCards: 6 },
   interaction: { dropdownCloseDelayMs: 120, modalResetDelayMs: 400, searchPreloadDelayMs: 300 },
   readingTime: { wordsPerMinute: 200 },
   bhaktiReader: { initialSize: 100, minSize: 85, maxSize: 150, step: 5 },
   mediaViewer: { swipeThresholdPx: 50, videoControlExclusionPx: 56, wrap: true },
   browserDefaults: { advancedFiltersOpen: false, lineageView: "list", eventsUpcomingSort: "earliest", eventsPastSort: "latest", albumsSort: "newest" },
+  presentation: { imageTreatment: false, headerActions: false, topSubscribe: false },
 };
 
 test("reader, viewer and browser defaults validate explicit configurable contracts", () => {
@@ -59,6 +61,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   await copyFile(new URL("../build-ui-settings.mjs", import.meta.url), script);
   await copyFile(new URL("../workspace-lock.mjs", import.meta.url), path.join(root, "build", "workspace-lock.mjs"));
   await copyFile(new URL("../ui-settings.mjs", import.meta.url), path.join(root, "build", "ui-settings.mjs"));
+  await copyFile(new URL("../ui-settings-schema.mjs", import.meta.url), path.join(root, "build", "ui-settings-schema.mjs"));
   await copyFile(new URL("../action-settings.mjs", import.meta.url), path.join(root, "build", "action-settings.mjs"));
   await copyFile(new URL("../../settings/public_actions.json", import.meta.url), path.join(root, "settings", "public_actions.json"));
   await copyFile(new URL("../search-config.mjs", import.meta.url), path.join(root, "build", "search-config.mjs"));
@@ -77,7 +80,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   const generated = await readFile(path.join(root, "src", "gen", "settings", "ui-elements.ts"), "utf8");
   assert.match(generated, /collectionPagination = \{"initialVisible":6,"loadIncrement":9\} as const/);
   assert.match(generated, /railAutoScroll = \{"enabled":true,"pixelsPerSecond":12.5,"returnDurationMs":900,"resumeDelayMs":1500\} as const/);
-  assert.match(generated, /heroSettings = \{"autoplay":true,"intervalMs":4500,"fadeDurationMs":900,"zoomDurationMs":7000\}/);
+  assert.match(generated, /heroSettings = \{"autoplay":true,"intervalMs":4500,"fadeDurationMs":900\}/);
   assert.match(generated, /interactionSettings = \{"dropdownCloseDelayMs":120,"modalResetDelayMs":400,"searchPreloadDelayMs":300\}/);
   assert.match(generated, /upcomingEventSettings = \{"lookAheadDays":30,"maxCards":6\}/);
   for (const name of ["readingTimeSettings", "bhaktiReaderSettings", "mediaViewerSettings", "browserDefaults"]) {
@@ -140,8 +143,8 @@ async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyP
       }
       if (name === "@/hooks/useReducedMotion") return { useReducedMotion: () => motion.matches };
       if (name === "@/hooks/useDialog") return { useDialogsOpen: () => false };
-      assert.equal(name, "@/gen/settings/ui-elements");
-      return { railAutoScroll: config };
+      assert.equal(name, "@/context/UiSettingsContext");
+      return { useUiSettings: () => ({ ...testUiSettings, railAutoScroll: config }) };
     },
     requestAnimationFrame: (callback) => { frame = callback; return 1; },
     cancelAnimationFrame: () => { frame = undefined; },
@@ -262,7 +265,7 @@ test("every rail respects reduced motion with explicit pause state", async () =>
 
 test("UI settings validate configurable behavior and allow zero delays", () => {
   const custom = structuredClone(defaults);
-  custom.hero = { autoplay: false, intervalMs: 7000, fadeDurationMs: 0, zoomDurationMs: 0 };
+  custom.hero = { autoplay: false, intervalMs: 7000, fadeDurationMs: 0 };
   custom.autoScroll.enabled = false;
   custom.autoScroll.resumeDelayMs = 0;
   custom.upcomingEvents = { lookAheadDays: 0, maxCards: 2 };

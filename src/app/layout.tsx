@@ -11,8 +11,9 @@ import SiteFooter from "@/components/SiteFooter";
 import QRModal from "@/components/QRModal";
 import DonateModal from "@/components/DonateModal";
 import YajnaAnnouncement from "@/components/YajnaAnnouncement";
-import LocalContentToggle from "@/components/LocalContentToggle";
+import DeveloperPreferences from "@/components/DeveloperPreferences";
 import HorizontalScrollSupport from "@/components/HorizontalScrollSupport";
+import { UiSettingsProvider } from "@/context/UiSettingsContext";
 
 const marcellus = Marcellus({
   subsets: ["latin"],
@@ -77,25 +78,27 @@ export default function RootLayout({
       className={`${marcellus.variable} ${montserrat.variable} ${notoKannada.variable} ${notoDevanagari.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">
-        <LanguageProvider>
-          <HorizontalScrollSupport />
-          <LocalContentToggle />
-          {/* Top utility bar — language switcher, centre sloka, social icons */}
-          <TopBar />
-          {/* Desktop sticky header */}
-          <SiteHeader />
-          {/* Mobile hamburger header */}
-          <MobileHeader />
+        <UiSettingsProvider>
+          <LanguageProvider>
+            <HorizontalScrollSupport />
+            <DeveloperPreferences />
+            {/* Top utility bar — language switcher, centre sloka, social icons */}
+            <TopBar />
+            {/* Desktop sticky header */}
+            <SiteHeader />
+            {/* Mobile hamburger header */}
+            <MobileHeader />
 
-          <main className="flex-1">{children}</main>
+            <main className="flex-1">{children}</main>
 
-          <SiteFooter />
+            <SiteFooter />
 
-          {/* Modals */}
-          <QRModal />
-          <DonateModal />
-          <YajnaAnnouncement />
-        </LanguageProvider>
+            {/* Modals */}
+            <QRModal />
+            <DonateModal />
+            <YajnaAnnouncement />
+          </LanguageProvider>
+        </UiSettingsProvider>
       </body>
     </html>
   );

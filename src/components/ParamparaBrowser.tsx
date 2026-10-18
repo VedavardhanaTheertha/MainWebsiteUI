@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { browserDefaults } from "@/gen/settings/ui-elements";
-import Image from "next/image";
+import { useUiSettings } from "@/context/UiSettingsContext";
+import ContentImage from "@/components/presentation/ContentImage";
 import { BookOpen, GitBranch, List, UserRound, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import {
@@ -17,6 +17,7 @@ import { useMiniSearch } from "@/hooks/useMiniSearch";
 
 export default function ParamparaBrowser() {
   const { lang, tr, contentMode } = useLang();
+  const { browserDefaults } = useUiSettings();
   const parampara = contentMode !== defaultContentMode && alternateParamparaByLanguage
     ? alternateParamparaByLanguage
     : paramparaByLanguage;
@@ -79,13 +80,12 @@ export default function ParamparaBrowser() {
           <section className="mb-10 border-y border-[var(--color-line-strong)] py-7 lg:mb-14 lg:py-9">
             <div className="grid items-center gap-6 sm:grid-cols-[160px_1fr] lg:grid-cols-[210px_1fr] lg:gap-10">
               {founder.fullImage && (
-                <div className="relative aspect-square w-36 overflow-hidden rounded-full bg-[var(--color-saffron-50)] sm:w-40 lg:w-[210px]">
-                  <Image
+                <div className="relative aspect-[4/5] w-36 overflow-hidden rounded-2xl bg-[var(--color-saffron-50)] sm:w-40 lg:w-[210px]">
+                  <ContentImage
                     src={founder.fullImage}
                     alt={founder.name}
                     fill
                     sizes="(max-width: 640px) 144px, (max-width: 1024px) 160px, 210px"
-                    className="object-cover"
                   />
                 </div>
               )}
@@ -145,12 +145,11 @@ export default function ParamparaBrowser() {
             >
               <span className="relative block h-full min-h-36 w-20 overflow-hidden bg-[var(--color-saffron-50)]">
                 {guru.thumbnailImage ? (
-                  <Image
+                  <ContentImage
                     src={guru.thumbnailImage}
                     alt={guru.name}
                     fill
                     sizes="80px"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                 ) : (
                   <span className="grid h-full place-items-center text-[var(--color-saffron-400)]">
@@ -222,12 +221,11 @@ export default function ParamparaBrowser() {
               <div className={selected.fullImage ? "mx-auto grid max-w-4xl items-start gap-6 md:grid-cols-[minmax(220px,300px)_1fr] lg:gap-10" : "mx-auto max-w-3xl"}>
                 {selected.fullImage && (
                   <div className="relative mx-auto aspect-[4/5] w-full max-w-[300px] overflow-hidden bg-[var(--color-saffron-50)]">
-                    <Image
+                    <ContentImage
                       src={selected.fullImage}
                       alt={selected.name}
                       fill
                       sizes="(max-width: 767px) min(76vw, 300px), 300px"
-                      className="object-contain"
                     />
                   </div>
                 )}

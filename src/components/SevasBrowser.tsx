@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { defaultLang, siteConfig } from "@/gen/content";
@@ -16,7 +17,7 @@ import { loadSevasSearchIndex } from "@/gen/sevas/loaders";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
-import { collectionPagination } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { useDialog } from "@/hooks/useDialog";
 import { filterAndSortSevas } from "@/lib/seva-filtering";
 import RailMotionControl from "./RailMotionControl";
@@ -38,16 +39,15 @@ function SevaImage({ title, image, featured = false }: { title: string; image: s
   const placeholderSrc = `${siteConfig.basePath}/icons/seva-placeholder.svg`;
   const source = image.startsWith("/") ? `${siteConfig.basePath}${image}` : image;
   const [failedSource, setFailedSource] = useState("");
+  const showPlaceholder = !source || source === placeholderSrc || failedSource === source;
+  const sizes = featured ? "(max-width: 768px) 85vw, 33vw" : "80px";
   return (
     <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
-      <Image
-        src={source && failedSource !== source ? source : placeholderSrc}
-        onError={() => setFailedSource(source)}
-        alt=""
-        fill
-        sizes={featured ? "(max-width: 768px) 85vw, 33vw" : "80px"}
-        className="object-cover"
-      />
+      {showPlaceholder ? (
+        <Image src={placeholderSrc} alt="" fill sizes={sizes} className="object-contain" />
+      ) : (
+        <ContentImage src={source} onError={() => setFailedSource(source)} alt="" fill sizes={sizes} />
+      )}
       <span className="sr-only">{title}</span>
     </div>
   );
@@ -192,6 +192,7 @@ function SevaModal({
 
 export default function SevasBrowser() {
   const { lang, contentMode, tr } = useLang();
+  const { collectionPagination } = useUiSettings();
   const [categoryFilter, setCategoryFilter] = useState("");
   const [deityFilter, setDeityFilter] = useState("");
   const [minimum, setMinimum] = useState("");

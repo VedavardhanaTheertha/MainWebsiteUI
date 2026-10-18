@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { interactionSettings } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import {
   createSearchIndex,
   loadCompressedIndex,
@@ -47,6 +47,7 @@ export function useLazyMiniSearch<T extends object>(
   isLoaded: boolean;
   ensureLoaded: () => void;
 } {
+  const { interactionSettings } = useUiSettings();
   const [loaded, setLoaded] = useState<{
     items: T[];
     config: MiniSearchConfig<T>;
@@ -98,7 +99,7 @@ export function useLazyMiniSearch<T extends object>(
     return () => {
       clearTimeout(timer);
     };
-  }, [ensureLoaded]);
+  }, [ensureLoaded, interactionSettings.searchPreloadDelayMs]);
 
   // If user starts typing before idle fired, immediately trigger load
   useEffect(() => {

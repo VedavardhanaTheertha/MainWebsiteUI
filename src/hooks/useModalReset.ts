@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { interactionSettings } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 
 export function useModalReset(isOpen: boolean, reset: () => void) {
+  const { interactionSettings } = useUiSettings();
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (isOpen && timer.current !== null) {

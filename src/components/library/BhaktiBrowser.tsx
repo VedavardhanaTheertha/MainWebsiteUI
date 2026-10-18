@@ -5,7 +5,7 @@ import { ChevronDown, Search } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
-import { bhaktiReaderSettings, collectionPagination } from "@/gen/settings/ui-elements";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { bhaktiContentLoaders, bhaktiPresentation, loadBhaktiSearchIndex } from "@/gen/bhakti/loaders";
 import { localized, localizedText } from "@/lib/localization";
 import { copyReaderLink, matchesBhaktiFilter } from "@/lib/reader-utils";
@@ -33,6 +33,7 @@ interface SongContent {
 
 export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const { lang, tr } = useLang();
+  const { bhaktiReaderSettings, collectionPagination } = useUiSettings();
   const reducedMotion = useReducedMotion();
   const returnToId = useRef<string | null>(null);
   const focusFrame = useRef<number | null>(null);

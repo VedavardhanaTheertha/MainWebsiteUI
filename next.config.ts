@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import type { NextConfig } from "next";
+import { pageExtensionsForEnvironment } from "./build/developer-options.mjs";
 
 interface SiteEnvironment {
   base_path?: string;
@@ -100,6 +101,7 @@ function loadImagePolicy(): NonNullable<NextConfig["images"]> {
 
 const nextConfig: NextConfig = {
   output: "export",
+  pageExtensions: pageExtensionsForEnvironment(process.env.SITE_ENV || "dev"),
   env: {
     SITE_ENV: process.env.SITE_ENV || "dev",
   },
