@@ -24,8 +24,7 @@ branches and open pull requests back to `main`.
    This runs lint, type checking, unit tests, and verified development and production
    builds. Read the verification output rather than relying only on the exit code.
 7. Open a pull request into `main`. Explain the problem, approach, user impact,
-   validation, documentation, accessibility, security, and asset provenance as
-   applicable.
+   validation, documentation, accessibility, and security as applicable.
 8. Obtain maintainer review and all required checks. Address feedback without rewriting
    shared protected history, then merge using the repository's allowed merge method.
 

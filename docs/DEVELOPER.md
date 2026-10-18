@@ -160,7 +160,7 @@ Do not use broadcast channels for private enquiries or imply message delivery.
 Image targets pass through `build/image-resolution.mjs`. Absolute HTTPS targets
 bypass the configured base; relative paths, including leading-slash paths, are
 appended to the media-directory base. Keep both environment aliases valid and align
-remote hosts with the image policy. Record rights/provenance before adding assets.
+remote hosts with the image policy. Preserve applicable licenses and required attribution.
 
 Horizontal rails must retain touch scrolling, desktop dragging, interaction pause,
 and reduced-motion behavior when settings or layouts change. Use the shared

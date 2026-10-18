@@ -26,8 +26,7 @@ Contributions are welcome across several areas:
 - Test changes locally and provide details. When that is not possible, state which
   validations were and were not completed.
 - Use a short-lived branch from `main`; avoid long-running integration branches.
-- Record source, rights holder, license/permission, and modifications for new content
-  or media in `ASSET_PROVENANCE.md`.
+- Preserve applicable licenses, required attribution, and article citations.
 
 ## Review and Follow-Up
 

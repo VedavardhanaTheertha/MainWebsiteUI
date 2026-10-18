@@ -41,8 +41,8 @@ copy and composition belong in settings. Do not invent translations, dates,
 contact details, enrollment links, or institutional claims.
 
 The legal and policy documents retain their reviewed wording; changing a layout or
-content source is not authorization to rewrite those policies. Source/media rights
-are tracked separately in [ASSET_PROVENANCE.md](../ASSET_PROVENANCE.md).
+content source is not authorization to rewrite those policies. Preserve applicable
+licenses, required attribution, and article citations.
 
 ## 3. Languages and editorial content
 

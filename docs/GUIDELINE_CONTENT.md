@@ -48,9 +48,7 @@ integrity, clarity, and consistency.
 
 - Verify factual accuracy in dates, names, and traditions.
 - Check that links point to valid resources.
-- Confirm that media files are licensed or free to use if referenced.
-- Add or update the exact `ASSET_PROVENANCE.md` entry; public availability is not
-  evidence of permission.
+- Preserve applicable licenses, required attribution, and article citations.
 
 ## 7. Preserve Cultural Sensitivity
 

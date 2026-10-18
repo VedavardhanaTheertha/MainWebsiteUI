@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-const actionNames = ["headerWhatsApp", "subscribe", "donationWhatsApp", "donationEmail", "payment", "volunteer", "yajna"];
+const actionNames = ["headerWhatsApp", "subscribe", "donationEmail", "payment", "volunteer", "yajna"];
 const source = "settings/public_actions.json";
 
 function requireDestination(value, action) {
@@ -22,10 +22,6 @@ function requireDestination(value, action) {
     }
   } else if (url.protocol !== "https:") {
     throw new Error(`${source} ${action} requires HTTPS.`);
-  } else if (action === "donationWhatsApp" &&
-    (url.hostname !== "whatsapp.com" || !/^\/channel\/[a-zA-Z0-9]+\/?$/.test(url.pathname) ||
-      url.port || url.search || url.hash)) {
-    throw new Error(`${source} ${action} requires a WhatsApp broadcast-channel URL without query parameters.`);
   }
   return value;
 }

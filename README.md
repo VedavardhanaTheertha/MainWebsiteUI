@@ -4,10 +4,9 @@ Welcome to the official open-source repository for the website of [**Shri Shiroo
 
 This project aims to connect devotees globally with the spiritual heritage, daily rituals,
 scholarly traditions, and cultural initiatives of the Matha. The code and documentation
-contributed under Apache-2.0 are open source. That does not establish community ownership
-or publication rights for pre-existing devotional works, institutional names and logos,
-photographs, or media; those materials remain subject to the provenance and rights review
-described in [ASSET_PROVENANCE.md](ASSET_PROVENANCE.md).
+contributed under Apache-2.0 are open source. Devotional works, institutional names
+and logos, photographs, and media remain subject to their applicable licenses and
+attribution requirements.
 
 ---
 
@@ -19,9 +18,9 @@ described in [ASSET_PROVENANCE.md](ASSET_PROVENANCE.md).
 
 - **Universal Accessibility:** Delivering a seamless, multilingual, and mobile-first experience so that every devotee—regardless of location, device, or background—can connect with the Matha’s daily rituals, teachings, and heritage.
 
-- **Living Digital Library:** Cultivating an accessible repository of stotras, dasa padas, articles, historical archives, and traditional knowledge that grows through reviewed contributions with documented rights.
+- **Living Digital Library:** Cultivating an accessible repository of stotras, dasa padas, articles, historical archives, and traditional knowledge that grows through community contributions.
 
-- **Community-Driven & Enduring:** Grounding the code and documentation in open-source principles while recording the separate ownership and permissions of cultural and media assets.
+- **Community-Driven & Enduring:** Grounding the code and documentation in open-source principles while preserving applicable licenses and required attribution for cultural and media assets.
 
 - **Harmonious Blend of Tradition & Technology:** Utilizing modern, high-performance static web technologies while honoring the sacred ethos and cultural integrity of Madhwa philosophy.
 
@@ -116,7 +115,5 @@ Choose the path that best aligns with your background and interests:
 ## 📜 License
 
 Code and documentation intentionally contributed here are available under
-[Apache-2.0](LICENSE). That license does not establish rights to every pre-existing
-devotional work, institutional name/logo, photograph, or media file. See
-[ASSET_PROVENANCE.md](ASSET_PROVENANCE.md); existing content/media remains pending a
-rights audit, and new assets require recorded provenance.
+[Apache-2.0](LICENSE). Preserve applicable licenses and required attribution for
+devotional works, institutional names/logos, photographs, and media.
