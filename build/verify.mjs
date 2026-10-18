@@ -27,6 +27,7 @@ import { discoverParampara } from "./parampara-content.mjs";
 import { collectRealProse } from "./content-values.mjs";
 import { loadRemedyCarouselCandidates } from "./home-carousels.mjs";
 import { validateSitemapLocations } from "./sitemap-utils.mjs";
+import { developerOptionsRoute, validateDeveloperOptionsOutput } from "./developer-options.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outDir = path.join(rootDir, "out");
@@ -129,7 +130,8 @@ if (!existsSync(sitemapFile)) {
   const sitemap = readFileSync(sitemapFile, "utf8");
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => decodeEntities(match[1]));
   if (!locations.length) problems.push("sitemap.xml contains no URLs.");
-  problems.push(...validateSitemapLocations(locations, exportedRoutes, config.site.production_url));
+  const publicRoutes = [...exportedRoutes].filter((route) => route !== developerOptionsRoute);
+  problems.push(...validateSitemapLocations(locations, publicRoutes, config.site.production_url));
 }
 
 // ── Check 4: each HTML file has the route-specific production canonical ──────
@@ -183,17 +185,16 @@ if (!environment.indexable) {
   }
 }
 
-// ── Check 7: copy selector is emitted only for switchable builds ────────────
+// ── Check 7: developer page and copy selector respect the environment ───────
 
 const localToggleFiles = htmlFiles.filter((file) =>
   readFileSync(file, "utf8").includes("data-local-content-toggle")
 );
-if (mode.switchable && localToggleFiles.length !== htmlFiles.length) {
-  problems.push("the local content selector must appear on every page in a switchable build.");
-}
-if (!mode.switchable && localToggleFiles.length) {
-  problems.push(`the local content selector must not appear in the ${envName} build.`);
-}
+problems.push(...validateDeveloperOptionsOutput(
+  envName, exportedRoutes,
+  localToggleFiles.map((file) => routeForHtml(outDir, file)),
+  mode.switchable,
+));
 
 const generatedContentFile = path.join(rootDir, "src", "gen", "content.ts");
 if (mode.switchable && existsSync(generatedContentFile)) {

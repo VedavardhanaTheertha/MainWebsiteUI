@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 import { knowledgeCollectionCounts, knowledgeSections } from "@/gen/library/presentation";
@@ -36,14 +36,12 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
               className="group flex h-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
             >
               <div className="relative h-44 overflow-hidden bg-[var(--color-cream-soft)]">
-                <Image
+                <ContentImage
                   src={item.image}
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/55 to-transparent" />
               </div>
               <div className="flex flex-1 flex-col p-5">
                 <h2 className="font-display text-xl font-bold text-[var(--color-text-primary)]">

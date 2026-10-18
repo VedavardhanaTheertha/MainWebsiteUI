@@ -175,6 +175,7 @@ async function mountEvents(options = {}) {
         browserDefaults: { eventsUpcomingSort: "earliest", eventsPastSort: "latest", ...options.defaults },
       };
       if (name === "next/image" || name === "./EventDetailModal" || name === "./AdvancedFilters") return { default: name, __esModule: true };
+      if (name === "@/components/presentation/ContentImage") return { default: "image", __esModule: true };
       if (name === "lucide-react") return {};
       throw new Error(`Unexpected import: ${name}`);
     },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useDeferredValue, useMemo, useState } from "react";
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
@@ -51,36 +51,25 @@ function ArticleModal({
         className="relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={closeLabel}
-          className="absolute right-4 top-4 z-10 min-h-11 min-w-11 rounded-full bg-white/90 p-2 text-[var(--color-text-primary)] shadow"
-        >
-          <X size={20} />
-        </button>
+        <header className="flex shrink-0 items-start gap-4 border-b border-[var(--color-line)] p-5 sm:px-7">
+          <h2 id="library-article-dialog-title" className="min-w-0 flex-1 font-display text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">{article.title}</h2>
+          <button type="button" onClick={onClose} aria-label={closeLabel} className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full bg-[var(--color-cream-soft)] text-[var(--color-text-primary)]">
+            <X size={20} />
+          </button>
+        </header>
 
         <div className="overflow-y-auto">
           <div className="relative h-48 overflow-hidden sm:h-64">
-            <Image
+            <ContentImage
               src={article.image}
               alt=""
               fill
               sizes="(max-width: 768px) 100vw, 768px"
-              className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/80 via-[var(--color-ink-900)]/15 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-7">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-saffron-100)]">
-                {article.status}
-              </p>
-              <h2 id="library-article-dialog-title" className="mt-1 font-display text-2xl font-bold sm:text-3xl">
-                {article.title}
-              </h2>
-            </div>
           </div>
 
           <div className="p-5 sm:p-7">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-brand)]">{article.status}</p>
             <p className="text-sm leading-6 text-[var(--color-text-secondary)]">{article.summary}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {article.tags.map((tag) => (
@@ -122,19 +111,15 @@ function ArticleTile({
       }`}
     >
       <div className={collectionCardImageClassName}>
-        <Image
+        <ContentImage
           src={article.image}
           alt=""
           fill
           sizes={featured ? "(max-width: 768px) 82vw, 320px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-          className="object-cover transition duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/65 to-transparent" />
-        <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">
-          {projectStatus ? copy.detail_labels[projectStatus] : article.status}
-        </span>
       </div>
       <div className={collectionCardBodyClassName}>
+        <span className="mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
         {projectStatus && <p className="mb-1 text-xs font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
         <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {article.title}

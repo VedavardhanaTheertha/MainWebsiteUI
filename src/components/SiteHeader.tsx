@@ -52,7 +52,7 @@ export default function SiteHeader() {
 
   return (
     <header ref={headerRef} className="hidden xl:block sticky top-0 z-50 bg-[var(--color-parchment)]/95 backdrop-blur-sm border-b border-[var(--color-saffron-600)]">
-      <div className="max-w-7xl mx-auto px-4 xl:px-6 h-14 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-4 xl:px-6 min-h-14 py-1 flex items-center justify-between gap-3">
 
         {/* Logo */}
         <Link href={navigationRoutes.home} className="flex items-center gap-2.5 shrink-0 focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2 rounded">
@@ -60,8 +60,8 @@ export default function SiteHeader() {
         </Link>
 
         {/* Nav */}
-        <nav aria-label={tr.ui.primary_navigation} className="flex-1 flex justify-center">
-          <ul className="flex items-center gap-0">
+        <nav aria-label={tr.ui.primary_navigation} className="min-w-0 flex-1 flex justify-center">
+          <ul className="flex flex-wrap items-center justify-center gap-0">
             {NAV.map((item) => {
               const hasDropdown = !!(item.children && item.children.length > 0);
               const active = item.href ? isActive(item.href) : item.children?.some(i => isActive(i.href));

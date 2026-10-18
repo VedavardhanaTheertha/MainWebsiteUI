@@ -89,6 +89,43 @@ Development exports start with placeholders. Production contains real copy only.
 Switchable assets include real copy even when placeholders are shown, so do not
 treat the preview or `noindex` as access control.
 
+### Developer options
+
+Open the final navigation entry, **Developer options**, in local or development
+builds (`/developer-options`, under the configured base path). Copy-preview controls
+live on this page rather than in a global toolbar. The image checkbox is off by
+default: images cover their frames, potentially cropping edges. Turning it on shows
+the complete image over a blurred copy. Captions remain outside images and portrait
+frames remain rectangular in either mode. The full-screen album viewer, logos,
+QR codes, functional icons, and fallback icons are unaffected.
+
+Changes are saved per browser and origin, including the port, not per deployment
+path. **Reset developer options** disables the image effect and restores real copy
+for local or placeholder copy for development, without resetting language.
+Control labels stay readable in placeholder mode. Denied storage produces a warning
+and leaves preferences usable in memory for the current page session.
+
+Production exports no Developer options page or menu entry, and saved copy-preview
+values cannot enable placeholder copy. To enable only the image effect in production,
+run this in that site's browser developer console:
+
+```js
+localStorage.setItem("site-image-treatment", "on");
+location.reload();
+```
+
+To disable it, use `localStorage.setItem("site-image-treatment", "off"); location.reload();`.
+To restore the default, use `localStorage.removeItem("site-image-treatment"); location.reload();`.
+Invalid or absent values default to off. These are public browser preferences,
+not mutable build environment variables or a security boundary. Same-tab manual
+storage edits require a reload; page controls update immediately and other open
+documents follow storage events. The standalone generated hero honors the same flag.
+
+Preview-only utility pages use `page.preview.tsx`. The shared developer-options
+build helper enables that extension in local/dev only; keep standard pages on
+`page.tsx`. Utility routes stay out of the generated public route inventory and sitemap,
+and export verification checks Developer options availability and copy-control placement.
+
 Static preview serves the existing export. Run the
 matching `npm run build:dev`, `npm run build:local`, or `npm run build:prod` first,
 then select that environment with `npm start -- dev|local|prod` (choose one value).
@@ -176,6 +213,17 @@ Image targets pass through `build/image-resolution.mjs`. Absolute HTTPS targets
 bypass the configured base; relative paths, including leading-slash paths, are
 appended to the media-directory base. Keep both environment aliases valid and align
 remote hosts with the image policy. Preserve applicable licenses and required attribution.
+
+Use `ContentImage` from `src/components/presentation/ContentImage.tsx` inside a
+positioned, explicitly sized frame for content imagery. It defaults to cover with
+the decorative layer hidden; the shared image preference enables contain and its
+blurred copy using matching image request options. Do not add per-image preference
+subscribers: the root data attribute gates the shared styles. Keep captions, badges,
+navigation controls, gradients, and zoom transforms off the
+foreground artwork. Natural-size annotated illustrations use `ImageBackdrop` behind
+their image-relative artwork wrapper. Do not apply this treatment to logos, payment
+QR codes, functional icons and fallback icons, or the full-screen album viewer. Preserve loading,
+priority, alternative text, and image-error handling when adding a consumer.
 
 Horizontal rails must retain touch scrolling, desktop dragging, interaction pause,
 and reduced-motion behavior when settings or layouts change. Use the shared

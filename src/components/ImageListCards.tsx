@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
@@ -19,7 +19,7 @@ export default function ImageListCards({ contentKey }: { contentKey: "learn" | "
           return (
             <article key={item.id ?? item.title} className="relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)]">
               <div className="relative h-44">
-                <Image src={item.img} alt="" fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover" />
+                <ContentImage src={item.img} alt="" fill sizes="(max-width: 640px) 100vw, 50vw" />
               </div>
               <div className="p-5">
                 <h2 className="font-display text-xl font-bold">
@@ -48,7 +48,7 @@ export default function ImageListCards({ contentKey }: { contentKey: "learn" | "
       {items.map((it) => (
         <div key={it.title} className="flex items-center gap-3.5 bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] p-2.5 shadow-[var(--shadow-xs)]">
           <div className="relative w-[62px] h-[62px] shrink-0 rounded-[4px] overflow-hidden">
-            <Image src={it.img} alt="" fill sizes="62px" className="object-cover" />
+            <ContentImage src={it.img} alt="" fill sizes="62px" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-body font-semibold text-[15px] text-[var(--color-text-primary)] leading-tight">{it.title}</p>

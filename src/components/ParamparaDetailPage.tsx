@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
@@ -57,12 +57,11 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
         <div className={guru.fullImage ? "grid items-start gap-8 md:grid-cols-[minmax(220px,320px)_1fr] lg:gap-12" : "mx-auto max-w-3xl"}>
           {guru.fullImage && (
             <div className="relative mx-auto aspect-[4/5] w-full max-w-[320px] overflow-hidden bg-[var(--color-saffron-50)]">
-              <Image
+              <ContentImage
                 src={guru.fullImage}
                 alt={guru.name}
                 fill
                 sizes="(max-width: 767px) min(82vw, 320px), 320px"
-                className="object-contain"
               />
             </div>
           )}

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { defaultLang, siteConfig } from "@/gen/content";
@@ -38,16 +39,15 @@ function SevaImage({ title, image, featured = false }: { title: string; image: s
   const placeholderSrc = `${siteConfig.basePath}/icons/seva-placeholder.svg`;
   const source = image.startsWith("/") ? `${siteConfig.basePath}${image}` : image;
   const [failedSource, setFailedSource] = useState("");
+  const showPlaceholder = !source || source === placeholderSrc || failedSource === source;
+  const sizes = featured ? "(max-width: 768px) 85vw, 33vw" : "80px";
   return (
     <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
-      <Image
-        src={source && failedSource !== source ? source : placeholderSrc}
-        onError={() => setFailedSource(source)}
-        alt=""
-        fill
-        sizes={featured ? "(max-width: 768px) 85vw, 33vw" : "80px"}
-        className="object-cover"
-      />
+      {showPlaceholder ? (
+        <Image src={placeholderSrc} alt="" fill sizes={sizes} className="object-contain" />
+      ) : (
+        <ContentImage src={source} onError={() => setFailedSource(source)} alt="" fill sizes={sizes} />
+      )}
       <span className="sr-only">{title}</span>
     </div>
   );

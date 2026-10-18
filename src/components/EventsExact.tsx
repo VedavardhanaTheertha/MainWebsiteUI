@@ -1,7 +1,7 @@
 "use client";
 
 import { useDeferredValue, useMemo, useState, useCallback, useEffect, useRef } from "react";
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import { MapPin, Calendar, Clock, User, Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { localized, localizedText } from "@/lib/localization";
@@ -360,22 +360,21 @@ export default function EventsExact() {
                 >
                   {/* Event Thumbnail */}
                   <div className="relative h-40 w-full shrink-0 overflow-hidden bg-[var(--color-cream-soft)]">
-                    <Image
+                    <ContentImage
                       src={imgUrl}
                       alt=""
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover"
                     />
-                    {item.categories?.[0] && (
-                      <span className={`absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryToneClassName(item.categories[0].code)}`}>
-                        {localizedText(item.categories[0], lang)}
-                      </span>
-                    )}
                   </div>
 
                   {/* Main Event Info */}
                   <div className="flex min-h-0 min-w-0 flex-1 flex-col p-4">
+                    {item.categories?.[0] && (
+                      <span className={`mb-1.5 w-fit max-w-full truncate text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryToneClassName(item.categories[0].code)}`}>
+                        {localizedText(item.categories[0], lang)}
+                      </span>
+                    )}
                     <div>
                       {/* Meta badges */}
                       <div className="mb-1.5 flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-[var(--color-text-secondary)]">

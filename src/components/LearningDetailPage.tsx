@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import { useLang } from "@/context/LanguageContext";
 import { approvedLearningUrl } from "@/lib/learn";
 
@@ -17,7 +17,7 @@ export default function LearningDetailPage({ id }: { id: string }) {
         <h1 className="font-display text-3xl font-bold lg:text-5xl">{item.title}</h1>
         <p className="mt-4 text-lg text-[var(--color-text-secondary)]">{item.description || item.sub}</p>
         <div className="relative mt-7 aspect-[16/7] overflow-hidden rounded-xl">
-          <Image src={item.img} alt="" fill sizes="(max-width: 896px) 100vw, 896px" className="object-cover" />
+          <ContentImage src={item.img} alt="" fill sizes="(max-width: 896px) 100vw, 896px" />
         </div>
         <dl className="mt-8 grid grid-cols-2 gap-5 rounded-xl border border-[var(--color-line)] p-5 sm:grid-cols-4">
           {(["level", "language", "format", "duration"] as const).map((field) => <div key={field}><dt className="font-semibold">{labels[field]}</dt><dd className="mt-1 text-sm text-[var(--color-text-muted)]">{item[field] || labels.unspecified}</dd></div>)}

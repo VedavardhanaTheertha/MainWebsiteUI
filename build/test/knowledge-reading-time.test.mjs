@@ -95,6 +95,7 @@ test("shared story renderer displays localized estimates without requiring metad
     "react/jsx-runtime": jsxRuntime,
     "@/context/LanguageContext": { useLang: () => context },
     "@/lib/knowledge": knowledge,
+    "@/components/presentation/ContentImage": { ImageBackdrop: "image" },
   });
   for (const lang of ["en", "kn"]) {
     const copy = loadAuthoredLanguage(fileURLToPath(new URL("../../", import.meta.url)), lang);

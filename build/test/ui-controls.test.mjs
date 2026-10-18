@@ -45,6 +45,7 @@ async function mount(name, enabled = true, additional = {}) {
       };
       if (dependency === "lucide-react") return { Pause: "pause", Play: "play", SlidersHorizontal: "filters", GitBranch: "timeline", List: "list" };
       if (dependency === "next/link" || dependency === "next/image") return { default: dependency === "next/link" ? "link" : "image" };
+      if (dependency === "@/components/presentation/ContentImage") return { default: "image" };
       if (dependency === "@/hooks/useReducedMotion") return { useReducedMotion: () => false };
       if (dependency === "@/hooks/useDialog") return { useDialogsOpen: () => false };
       if (dependency === "@/gen/settings/ui-elements") return {
@@ -110,7 +111,7 @@ test("homepage hero and feature tiles are single links with no separate CTA butt
     assert.match(enroll.props.className, /relative z-10/);
     assert.equal(nodes(enroll, (node) => node.type === "link").length, 0);
   });
-test("homepage top rail shares Upcoming Events motion, has a pause toggle and preserves image/text overlays", async () => {
+test("homepage top rail shares Upcoming Events motion and separates complete images from captions", async () => {
   const tr = loadAuthoredLanguage(rootDir, "en");
   const calls = [];
   const ref = { current: null };
@@ -121,10 +122,10 @@ test("homepage top rail shares Upcoming Events motion, has a pause toggle and pr
   let tree = render({ items: tr.home.top_carousel });
   assert.deepEqual(calls, [{ count: 6, paused: false }]);
   const cards = nodes(tree, (node) => node.type === "link");
-  assert.ok(cards.every((card) => card.props.className.includes("h-80 w-[82vw] max-w-[320px]")));
+  assert.ok(cards.every((card) => card.props.className.includes("min-h-80 w-[82vw] max-w-[320px]")));
   assert.ok(cards.every((card) => card.props.className.includes("lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none")));
-  assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className === "absolute inset-0").length === 1), "top images remain full-card backgrounds");
-  assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className?.includes("absolute inset-x-0 bottom-0")).length === 1), "top text remains a bottom overlay");
+  assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className === "relative h-44 w-full shrink-0").length === 1));
+  assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className?.includes("absolute inset-x-0 bottom-0")).length === 0), "captions do not cover artwork");
   const track = nodes(tree, (node) => node.props?.ref === ref)[0];
   assert.equal(track.props.style.scrollSnapType, undefined, "continuous scrolling must not fight snap points");
   let control = nodes(tree, (node) => node.type === "motion-control")[0];

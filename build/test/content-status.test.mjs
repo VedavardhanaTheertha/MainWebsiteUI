@@ -20,6 +20,7 @@ function render(file, props, tr) {
     "react/jsx-runtime": { jsx, jsxs: jsx, Fragment: "fragment" },
     react: { useDeferredValue: (value) => value, useMemo: (fn) => fn(), useState: (initial) => [initial, () => {}] },
     "next/link": { default: "link" }, "next/image": { default: "image" },
+    "@/components/presentation/ContentImage": { default: "image" },
     "lucide-react": { Search: "search", X: "close" },
     "@/context/LanguageContext": { useLang: () => ({ lang: language, contentMode: "real", tr }) },
     "@/hooks/useAutoScrollRail": { useAutoScrollRail: () => ({ current: null }) },

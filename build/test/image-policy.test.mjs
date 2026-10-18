@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import test from "node:test";
 import ts from "typescript";
+import * as developerOptions from "../developer-options.mjs";
 
 const require = createRequire(import.meta.url);
 const configSource = readFileSync(new URL("../../next.config.ts", import.meta.url), "utf8");
@@ -11,17 +12,24 @@ const compiled = ts.transpileModule(configSource, {
 }).outputText;
 const policy = JSON.parse(readFileSync(new URL("../../settings/image_policy.json", import.meta.url), "utf8"));
 
-function loadConfig(value = policy, { raw = false } = {}) {
+function loadConfig(value = policy, { raw = false, environment = "dev" } = {}) {
   const exports = {};
   const localRequire = (id) => id === "node:fs" ? {
     readFileSync: (file, encoding) => String(file).endsWith("image_policy.json") ?
       (raw ? value : JSON.stringify(value)) : readFileSync(file, encoding),
-  } : require(id);
+  } : id === "./build/developer-options.mjs" ? developerOptions : require(id);
   new Function("require", "exports", "process", compiled)(localRequire, exports, {
-    ...process, env: { ...process.env, SITE_ENV: "dev" },
+    ...process, env: { ...process.env, SITE_ENV: environment },
   });
   return exports.default;
 }
+
+test("Next configuration enables preview-only pages only for local and dev", () => {
+  for (const environment of ["local", "dev", "prod"]) {
+    const config = loadConfig(policy, { environment });
+    assert.deepEqual(config.pageExtensions, developerOptions.pageExtensionsForEnvironment(environment));
+  }
+});
 
 test("root Next loader preserves existing and live-homepage image hosts and YAML environment", () => {
   const config = loadConfig();

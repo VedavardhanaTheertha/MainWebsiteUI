@@ -13,22 +13,22 @@ export default function LocalContentToggle() {
   ];
 
   return (
-    <aside
+    <fieldset
       data-local-content-toggle
-      className="sticky top-0 z-[70] flex items-center justify-center gap-2 bg-[var(--color-paper)] px-3 py-2 border-b border-[var(--color-line)]"
-      aria-label={tr.local_preview.label}
+      className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper)] p-5"
     >
-      <span className="font-body text-xs font-semibold text-[var(--color-text-secondary)]">
+      <legend className="px-2 font-semibold text-[var(--color-text-primary)]">
         {tr.local_preview.label}
-      </span>
-      <div className="inline-flex rounded-full border border-[var(--color-line-strong)] p-0.5" role="group">
+      </legend>
+      <p className="mb-4 text-sm leading-6 text-[var(--color-text-secondary)]">{tr.developer_options.copy_description}</p>
+      <div className="flex flex-wrap gap-2" role="group" aria-label={tr.local_preview.label}>
         {options.map((option) => (
           <button
             key={option.mode}
             type="button"
             onClick={() => setContentMode(option.mode)}
             aria-pressed={contentMode === option.mode}
-            className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+            className={`min-h-11 rounded-full border border-[var(--color-line-strong)] px-4 py-2 font-body text-sm font-semibold transition-colors ${
               contentMode === option.mode
                 ? "bg-[var(--color-saffron-600)] text-white"
                 : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
@@ -38,6 +38,6 @@ export default function LocalContentToggle() {
           </button>
         ))}
       </div>
-    </aside>
+    </fieldset>
   );
 }

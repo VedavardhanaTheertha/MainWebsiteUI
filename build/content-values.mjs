@@ -3,7 +3,7 @@ const preservedKeys = new Set([
   "href", "img", "bg", "icon", "symbol", "upi", "images", "gallery",
   "videoUrl", "externalUrl", "fullImage", "albumId", "recordedAt", "enrollmentUrl",
   "launch_date", "end_date", "pinned_date", "date", "img_position", "imgPosition",
-  "textColor", "accent", "labelKey", "numberLocale", "yajna_progress_percent", "local_preview",
+  "textColor", "accent", "labelKey", "numberLocale", "yajna_progress_percent", "local_preview", "developer_options",
 ]);
 
 export function isPreservedContentField(key, prefix = "") {

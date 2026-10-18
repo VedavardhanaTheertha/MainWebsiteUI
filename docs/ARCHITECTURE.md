@@ -57,8 +57,33 @@ Missing translated object keys inherit default-language values. Arrays are compl
 replacement values, not item-by-item merges. The default language must be complete.
 Library translation discovery and fallback follow the same configured language set;
 missing translations are not a reason to fabricate a body.
-Language and preview preferences are persisted when browser storage is available;
+Language, image-treatment, and preview preferences are persisted when browser storage is available;
 otherwise they remain usable in memory for the current page session.
+
+The Developer options page is exported only for `local` and `dev`. Its localized
+entry is appended after the configured menu entries in both real and placeholder
+catalogs; it is the last entry in desktop and compact navigation. The page contains
+the copy-preview selector and an image-treatment checkbox. Local copy defaults to
+real; development copy defaults to placeholders. Reset restores these build defaults
+and disables the image treatment without changing the selected language.
+
+`build/developer-options.mjs` owns the technical route and preference configuration.
+The page uses `page.preview.tsx`; Next configuration recognizes the `preview.tsx`
+extension only in local/dev while retaining all standard page extensions.
+Production never registers the route. The page also has a defensive not-found guard.
+The utility page is noindex and excluded from the public route inventory and sitemap.
+Export verification checks its environment-specific presence separately.
+Developer control copy is preserved in placeholder catalogs so controls remain readable.
+Production exports neither this page nor its menu entry and always uses real copy,
+regardless of the saved copy preference.
+
+The image preference uses `site-image-treatment` in per-origin `localStorage`
+(`on` or `off`, default `off`). The root preference subscriber updates
+`data-image-treatment` after hydration; the server snapshot is always off.
+The standalone hero reads the same key and follows cross-document storage events.
+Production supports this browser-local image override without exposing a developer
+page or enabling placeholder catalogs. These preferences are not runtime environment
+variables, secrets, or an authorization mechanism.
 
 Structured page copy uses multilingual frontmatter, for example:
 
@@ -165,6 +190,17 @@ Environment image maps in `settings/{dev,prod}/images.json` resolve stable alias
 allowed remote hosts. `settings/theme.json` owns theme tokens; the generator emits
 `src/gen/settings/theme.css`. Layout and responsive behavior remain source code.
 Category tones share semantic mappings across event rails, lists, and badges.
+Content photographs, posters, portraits, and thumbnails use
+`src/components/presentation/ContentImage.tsx`. By default, foreground images cover
+their frames and the decorative layer is hidden. Enabling the browser-local image
+option contains the sharp foreground over a statically blurred and darkened copy
+of the same source; foreground padding preserves image edges inside rounded frames.
+In both modes, captions, badges, and navigation controls
+sit outside the artwork; foreground images do not zoom. Natural-size annotated
+illustrations retain their image-relative annotation coordinates. Logos, QR codes,
+functional icons (including failed-image placeholders), and full-screen album playback
+retain their own presentation.
+The standalone generated hero uses the same preference-gated two-layer treatment.
 Shared featured/collection presentation variants preserve their distinct layouts
 while keeping spacing, controls, focus, and result states consistent. Policy text
 uses a readable shared size; utility controls have touch-friendly targets.

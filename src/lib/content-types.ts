@@ -533,6 +533,15 @@ export interface ContentShape extends FlatCopyKeys {
     real: string;
     placeholder: string;
   };
+  developer_options: {
+    menu_label: string;
+    title: string;
+    description: string;
+    image_title: string;
+    image_description: string;
+    copy_description: string;
+    reset: string;
+  };
   nav: NavItem[];
   footer: FooterShape;
   home: HomeShape;

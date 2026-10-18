@@ -81,6 +81,7 @@ async function mountComponent(file, options = {}) {
         useEffect: (effect) => effects.push(effect),
       };
       if (name === "next/link" || name === "next/image") return { default: name, __esModule: true };
+      if (name === "@/components/presentation/ContentImage") return { default: "content-image", __esModule: true };
       if (name === "next/navigation") return { usePathname: () => options.pathname ?? "/events" };
       if (name === "@/hooks/useQRModal") return { useQRModal: () => ({ openQR: () => {} }) };
       if (name === "@/hooks/useReducedMotion") return { useReducedMotion: () => options.reducedMotion ?? false };
@@ -158,7 +159,8 @@ test("hero uses configured interval/fade and respects autoplay and reduced motio
 
   assert.equal(hero.state[0], 0);
   assert.ok(findNode(hero.render(), (node) => node.props?.style?.transitionDuration === "42ms"));
-  assert.ok(findNode(hero.render(), (node) => node.props?.style?.transition === "transform 123ms ease-out"));
+  assert.equal(findNode(hero.render(), (node) => node.type === "content-image").props.style, undefined);
+  assert.equal(findNode(hero.render(), (node) => node.props?.style?.transform), undefined);
   hero.advance(99);
   assert.equal(hero.state[0], 0);
   hero.advance(1);

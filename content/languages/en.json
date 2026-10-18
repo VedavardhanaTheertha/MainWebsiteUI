@@ -50,6 +50,15 @@
     "real": "Real copy",
     "placeholder": "Placeholder copy"
   },
+  "developer_options": {
+    "menu_label": "Developer options",
+    "title": "Developer options",
+    "description": "Browser-local controls for testing this site. Changes apply only to this browser and origin.",
+    "image_title": "Complete images with blurred backgrounds",
+    "image_description": "Show the complete image over a blurred copy. Turn off to fill image frames with cropping. Captions stay outside the images.",
+    "copy_description": "Choose real or placeholder copy for this preview. Production always uses real copy.",
+    "reset": "Reset developer options"
+  },
   "public_actions": {
     "whatsapp_label": "Join WhatsApp",
     "subscribe_label": "Subscribe",

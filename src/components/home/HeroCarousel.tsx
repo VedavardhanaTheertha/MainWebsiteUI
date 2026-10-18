@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 import { alternateHomeHero, defaultContentMode, homeHero } from "@/gen/content";
@@ -38,37 +38,29 @@ export default function HeroCarousel() {
       onFocus={() => setFocused(true)}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
     >
-    <Link href={href} className="relative block w-full h-[462px] lg:h-[600px] overflow-hidden rounded-b-[22px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
+    <Link href={href} className="relative block w-full overflow-hidden rounded-b-[22px] bg-[var(--color-paper)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
+      <div className="relative h-[462px] lg:h-[600px]">
       {images.map((src, k) => (
         <div
           key={src}
           className="absolute inset-0 transition-opacity"
           style={{ opacity: k === current ? 1 : 0, transitionDuration: `${reducedMotion || paused ? 0 : heroSettings.fadeDurationMs}ms` }}
         >
-          <Image
+          <ContentImage
             src={src}
             alt=""
             fill
             priority={k === 0}
             sizes="100vw"
-            className="object-cover"
-            style={{ transform: reducedMotion || paused || k === current ? "scale(1)" : "scale(1.04)", transition: `transform ${reducedMotion || paused ? 0 : heroSettings.zoomDurationMs}ms ease-out` }}
           />
         </div>
       ))}
 
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(20,12,4,.42) 0%, rgba(20,12,4,.05) 22%, rgba(20,12,4,0) 40%, rgba(20,12,4,.55) 70%, rgba(16,9,3,.86) 100%)",
-        }}
-      />
+      </div>
 
-      <div className="absolute left-0 right-0 bottom-0 px-6 pb-8 text-center">
+      <div className={`px-6 py-6 text-center ${heroSettings.autoplay && images.length > 1 && !reducedMotion ? "pr-20" : ""}`}>
         <h1
-          className="font-display text-[26px] lg:text-4xl leading-tight text-[var(--color-cream-hi)] whitespace-pre-line mb-5"
-          style={{ textShadow: "0 1px 20px rgba(0,0,0,.4)" }}
+          className="font-display text-[26px] lg:text-4xl leading-tight text-[var(--color-text-primary)] whitespace-pre-line"
         >
           {title}
         </h1>
@@ -78,7 +70,7 @@ export default function HeroCarousel() {
       <button type="button" onClick={() => setPaused((value) => !value)}
         aria-pressed={paused}
         aria-label={paused ? tr.page_controls.resume_motion : tr.page_controls.pause_motion}
-        className="absolute right-4 top-4 grid size-11 place-items-center rounded-full border border-[var(--color-line-strong)] bg-[var(--color-paper)] text-[var(--color-text-brand)] shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+        className="absolute right-4 bottom-4 grid size-11 place-items-center rounded-full border border-[var(--color-line-strong)] bg-[var(--color-paper)] text-[var(--color-text-brand)] shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
       >
         {paused ? <Play aria-hidden="true" size={20} /> : <Pause aria-hidden="true" size={20} />}
       </button>

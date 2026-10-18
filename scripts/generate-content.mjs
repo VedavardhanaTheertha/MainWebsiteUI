@@ -29,6 +29,7 @@ import { isMachineContentValue as isMachineValue, isPreservedContentField } from
 import { resolveHeroTitles } from "../build/hero-content.mjs";
 import { holdWorkspaceLock } from "../build/workspace-lock.mjs";
 import { createLanguageDescriptor } from "../build/language-content.mjs";
+import { appendDeveloperNavigation, developerOptionsForEnvironment, imageTreatmentStorageKey } from "../build/developer-options.mjs";
 
 holdWorkspaceLock("website content generation");
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -627,7 +628,8 @@ function writeHeroImages(hero, content, lang, basePath) {
   const activeCta = lang === "kn" ? ctaKn : ctaEn;
   const slides = hero.images.map((src, index) => `
       <div class="hero-image${index === 0 ? " is-active" : ""}" aria-hidden="${index === 0 ? "false" : "true"}">
-        <img src="${escapeHtml(src)}" alt=""${index === 0 ? ' fetchpriority="high"' : ' loading="lazy"'}>
+        <img class="hero-backdrop" src="${escapeHtml(src)}" alt="" aria-hidden="true" loading="lazy">
+        <img class="hero-foreground" src="${escapeHtml(src)}" alt=""${index === 0 ? ' fetchpriority="high"' : ' loading="lazy"'}>
       </div>`).join("");
 
   const html = `<!doctype html>
@@ -639,19 +641,22 @@ function writeHeroImages(hero, content, lang, basePath) {
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; }
-    .hero { position: relative; width: 100%; height: 462px; overflow: hidden; border-radius: 0 0 22px 22px; background: #140c04; }
+    .hero { position: relative; width: 100%; overflow: hidden; border-radius: 0 0 22px 22px; background: #fffaf0; }
+    .hero-images { position: relative; height: 462px; overflow: hidden; background: #140c04; }
     .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity ${heroSettings.fadeDurationMs}ms ease; }
-    .hero-image img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform ${heroSettings.zoomDurationMs}ms ease-out; }
+    .hero-image img { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hero-backdrop { display: none; object-fit: cover; filter: blur(14px) brightness(.65); transform: scale(1.12); pointer-events: none; }
+    .hero-foreground { object-fit: cover; padding: 0; }
+    :root[data-image-treatment="on"] .hero-backdrop { display: block; }
+    :root[data-image-treatment="on"] .hero-foreground { object-fit: contain; padding: 8px; }
     .hero-image.is-active { opacity: 1; }
-    .hero-image.is-active img { transform: scale(1); }
-    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,12,4,.42) 0%, rgba(20,12,4,.05) 22%, rgba(20,12,4,0) 40%, rgba(20,12,4,.55) 70%, rgba(16,9,3,.86) 100%); }
-    .hero-content { position: absolute; right: 0; bottom: 0; left: 0; padding: 0 24px 32px; text-align: center; }
-    .hero-title { margin: 0 0 20px; color: #fffaf0; font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.25; white-space: pre-line; text-shadow: 0 1px 20px rgba(0,0,0,.4); }
+    .hero-content { position: relative; padding: 24px; text-align: center; }
+    .hero-title { margin: 0 0 20px; color: #261b12; font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.25; white-space: pre-line; }
     .hero-cta { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #c86d1d; color: #fff; font-family: sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 8px 22px -8px rgba(0,0,0,.55); transition: background-color 150ms ease; }
     .hero-cta:hover { background: #a95315; }
     .hero-cta:active { background: #85400f; }
     @media (min-width: 1024px) {
-      .hero { height: 600px; }
+      .hero-images { height: 600px; }
       .hero-title { font-size: 36px; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -663,7 +668,6 @@ function writeHeroImages(hero, content, lang, basePath) {
   <section class="hero" data-title-en="${titleEn}" data-title-kn="${titleKn}" data-cta-en="${ctaEn}" data-cta-kn="${ctaKn}">
     <div class="hero-images">${slides}
     </div>
-    <div class="hero-overlay" aria-hidden="true"></div>
     <div class="hero-content">
       <h1 class="hero-title">${activeTitle}</h1>
       <a class="hero-cta" href="${escapeHtml(resolveHeroHref(hero.href, basePath))}">${activeCta}</a>
@@ -672,6 +676,21 @@ function writeHeroImages(hero, content, lang, basePath) {
   <script>
     (() => {
       const hero = document.querySelector(".hero");
+      let warnedAboutStorage = false;
+      const readPreference = (key) => {
+        try { return localStorage.getItem(key); }
+        catch (error) {
+          if (!warnedAboutStorage) {
+            warnedAboutStorage = true;
+            console.warn("[preferences] localStorage unavailable; using default preferences.", error);
+          }
+          return null;
+        }
+      };
+      const applyImageTreatment = () => {
+        document.documentElement.dataset.imageTreatment = readPreference(${JSON.stringify(imageTreatmentStorageKey)}) === "on" ? "on" : "off";
+      };
+      applyImageTreatment();
       const applyLanguage = (lang) => {
         if (lang !== "en" && lang !== "kn") return;
         document.documentElement.lang = lang;
@@ -679,11 +698,12 @@ function writeHeroImages(hero, content, lang, basePath) {
         document.querySelector(".hero-title").textContent = document.title;
         document.querySelector(".hero-cta").textContent = hero.dataset[lang === "kn" ? "ctaKn" : "ctaEn"];
       };
-      applyLanguage(new URLSearchParams(location.search).get("lang") || localStorage.getItem("shiroor-lang") || "${escapeHtml(lang)}");
+      applyLanguage(new URLSearchParams(location.search).get("lang") || readPreference("shiroor-lang") || "${escapeHtml(lang)}");
       window.addEventListener("storage", (event) => {
+        if (event.key === null || event.key === ${JSON.stringify(imageTreatmentStorageKey)}) applyImageTreatment();
         if (event.key === "shiroor-lang") applyLanguage(event.newValue);
       });
-      window.addEventListener("site-language-change", () => applyLanguage(localStorage.getItem("shiroor-lang")));
+      window.addEventListener("site-language-change", () => applyLanguage(readPreference("shiroor-lang")));
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
       const slides = [...document.querySelectorAll(".hero-image")];
       if (!${heroSettings.autoplay} || slides.length <= 1) return;
@@ -711,6 +731,7 @@ function writeHeroImages(hero, content, lang, basePath) {
 const config = loadConfig();
 const navigation = loadNavigation(rootDir);
 const env = resolveEnvironment(config);
+const developerOptions = developerOptionsForEnvironment(env.name);
 const imageLookup = loadImageConfig(env.name);
 const mode = describeContentMode(env.content_mode, env.default_variant);
 const languageCodes = discoverLanguages(config);
@@ -742,8 +763,8 @@ for (const code of languageCodes) {
     code, raw._language, merged._language, defaultLang, `${config.content.languages_dir}/${code}.json`,
   ));
 
-  if (mode.includesReal) realContent[code] = merged;
-  if (mode.includesPlaceholder) placeholderContent[code] = toPlaceholders(merged, code);
+  if (mode.includesReal) realContent[code] = appendDeveloperNavigation(merged, developerOptions);
+  if (mode.includesPlaceholder) placeholderContent[code] = appendDeveloperNavigation(toPlaceholders(merged, code), developerOptions);
 }
 
 const content = mode.defaultVariant === "real" ? realContent : placeholderContent;
@@ -845,6 +866,9 @@ export const defaultContentMode = "${mode.defaultVariant}" as const;
 
 /** Whether this build enables the local runtime content selector. */
 export const isContentSwitchable = ${mode.switchable};
+
+/** Developer page availability and browser-local image preference defaults. */
+export const developerOptions = ${JSON.stringify(developerOptions, null, 2)} as const;
 
 /**
  * Environment settings resolved from config/site.yml at build time, so pages can

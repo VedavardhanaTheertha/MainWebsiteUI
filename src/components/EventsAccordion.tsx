@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import ContentImage from "@/components/presentation/ContentImage";
 import { useLang } from "@/context/LanguageContext";
 import { localizedText } from "@/lib/localization";
 import {
@@ -78,21 +78,15 @@ export default function EventsAccordion() {
               className={`${collectionCardClassName("featured")} event-card w-[82vw] max-w-[320px] shrink-0 cursor-pointer`}
             >
               <div className="relative h-40 w-full shrink-0">
-                <Image
+                <ContentImage
                   src={imgUrl}
                   alt=""
                   fill
-                  className="object-cover"
                   sizes="(max-width: 768px) 82vw, 320px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/70 to-transparent" />
-                {catLabel && (
-                  <span className="absolute bottom-2 left-2">
-                    <CategoryBadge category={catLabel} code={primaryCat?.code} />
-                  </span>
-                )}
               </div>
               <div className={collectionCardBodyClassName}>
+                {catLabel && <span className="mb-2 block"><CategoryBadge category={catLabel} code={primaryCat?.code} /></span>}
                 <p className="font-body text-sm text-[var(--color-text-secondary)]/80 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>
@@ -135,21 +129,15 @@ export default function EventsAccordion() {
               className={`${collectionCardClassName("featured")} event-card cursor-pointer`}
             >
               <div className="relative h-40 w-full shrink-0">
-                <Image
+                <ContentImage
                   src={imgUrl}
                   alt=""
                   fill
-                  className="object-cover"
                   sizes="(max-width: 1280px) 33vw, 400px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/60 to-transparent" />
-                {catLabel && (
-                  <span className="absolute bottom-2 left-2">
-                    <CategoryBadge category={catLabel} code={primaryCat?.code} />
-                  </span>
-                )}
               </div>
               <div className={collectionCardBodyClassName}>
+                {catLabel && <span className="mb-2 block"><CategoryBadge category={catLabel} code={primaryCat?.code} /></span>}
                 <p className="font-body text-sm text-[var(--color-text-secondary)]/80 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>

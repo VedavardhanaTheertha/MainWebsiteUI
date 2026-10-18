@@ -11,7 +11,7 @@ import SiteFooter from "@/components/SiteFooter";
 import QRModal from "@/components/QRModal";
 import DonateModal from "@/components/DonateModal";
 import YajnaAnnouncement from "@/components/YajnaAnnouncement";
-import LocalContentToggle from "@/components/LocalContentToggle";
+import DeveloperPreferences from "@/components/DeveloperPreferences";
 import HorizontalScrollSupport from "@/components/HorizontalScrollSupport";
 
 const marcellus = Marcellus({
@@ -79,7 +79,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">
         <LanguageProvider>
           <HorizontalScrollSupport />
-          <LocalContentToggle />
+          <DeveloperPreferences />
           {/* Top utility bar — language switcher, centre sloka, social icons */}
           <TopBar />
           {/* Desktop sticky header */}
