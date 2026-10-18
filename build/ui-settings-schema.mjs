@@ -24,7 +24,7 @@ export const uiFieldDefinitions = [
   ...["imageTreatment", "imageBackedTiles", "headerActions", "topSubscribe"].map((key) => flag("presentation", key)),
   number("presentation", "tileOverlayOpacity", 0, 100),
   number("presentation", "tileCornerRadius", 0, 48),
-  ...["adaptiveHero", "featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation"].map((key) => flag("layout", key)),
+  ...["adaptiveHero", "featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation", "centeredCarousel"].map((key) => flag("layout", key)),
 ];
 
 export class UiSettingsError extends Error {}
@@ -106,6 +106,10 @@ export function parseUiSettings(value) {
 export function validateUiPreferences(value, defaults) {
   if (value && typeof value === "object" && !Array.isArray(value) && !Object.hasOwn(value, "layout")) {
     value = { ...value, layout: defaults.layout };
+  }
+  const layout = value?.layout;
+  if (layout && typeof layout === "object" && !Array.isArray(layout) && !Object.hasOwn(layout, "centeredCarousel")) {
+    value = { ...value, layout: { ...layout, centeredCarousel: defaults.layout.centeredCarousel } };
   }
   const presentation = value?.presentation;
   if (presentation && typeof presentation === "object" && !Array.isArray(presentation) &&

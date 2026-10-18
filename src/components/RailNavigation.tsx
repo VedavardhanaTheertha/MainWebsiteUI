@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useCenteredRail } from "@/hooks/useCenteredRail";
 
 export default function RailNavigation({
   scrollRef, className = "",
@@ -15,6 +16,7 @@ export default function RailNavigation({
   const { tr } = useLang();
   const { layoutSettings } = useUiSettings();
   const reducedMotion = useReducedMotion();
+  useCenteredRail(scrollRef);
   const focused = useRef(false);
   const [bounds, setBounds] = useState({ previous: false, next: false });
 

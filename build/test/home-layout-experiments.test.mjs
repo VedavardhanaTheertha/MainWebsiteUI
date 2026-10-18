@@ -81,6 +81,7 @@ function navigation({ enabled = true, reducedMotion = false } = {}) {
   const effects = [];
   const frames = new Map();
   const observers = [];
+  const centeredRefs = [];
   let cursor = 0;
   let refCursor = 0;
   let mounted = false;
@@ -119,6 +120,7 @@ function navigation({ enabled = true, reducedMotion = false } = {}) {
       if (name === "@/context/LanguageContext") return { useLang: () => ({ tr: { layout_experiments: copy } }) };
       if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ layoutSettings: { carouselNavigation: enabled } }) };
       if (name === "@/hooks/useReducedMotion") return { useReducedMotion: () => reducedMotion };
+      if (name === "@/hooks/useCenteredRail") return { useCenteredRail: (ref) => centeredRefs.push(ref) };
       if (name === "lucide-react") return { ChevronLeft: "previous-icon", ChevronRight: "next-icon" };
       throw new Error(`Unexpected import: ${name}`);
     },
@@ -132,13 +134,15 @@ function navigation({ enabled = true, reducedMotion = false } = {}) {
   mounted = true;
   for (const callback of frames.values()) callback();
   frames.clear();
-  return { initial, render, track, view, observers, cleanup: () => cleanups.forEach((cleanup) => cleanup()) };
+  return { initial, render, track, view, observers, centeredRefs, cleanup: () => cleanups.forEach((cleanup) => cleanup()) };
 }
 
 test("rail navigation is default-off and independent of autoplay and reduced motion", () => {
   const off = navigation({ enabled: false });
   assert.equal(off.initial, null);
   assert.equal(off.observers.length, 0);
+  assert.equal(off.centeredRefs.length, 1, "center emphasis initializes even when navigation is disabled");
+  assert.equal(off.centeredRefs[0].current, off.track);
   for (const reducedMotion of [false, true]) {
     const fixture = navigation({ reducedMotion });
     const buttons = fixture.render().props.children;
@@ -218,6 +222,8 @@ test("homepage experiments preserve hero defaults and scope featured composition
   assert.match(css, /\.layout-rail-navigation\s*\{\s*position: absolute;\s*inset: 0;[\s\S]*?align-items: center;\s*justify-content: space-between;/);
   assert.match(css, /\.layout-rail-navigation\s*\{[^}]*pointer-events: none;/);
   assert.match(css, /\.layout-rail-navigation button\s*\{[^}]*pointer-events: auto;/);
+  assert.match(css, /:has\(> \.layout-rail-navigation\) > \.layout-rail-motion-control\s*\{\s*right: 0\.5rem;\s*top: calc\(50% \+ 3\.25rem\);/);
+  assert.match(read("src/components/RailMotionControl.tsx"), /className=\{`layout-rail-motion-control absolute /);
   assert.doesNotMatch(css, /\border\s*:|grid-auto-flow:\s*dense/);
   const page = read("src/components/home/PageCarousel.tsx");
   assert.match(page, /RailMotionControl/);

@@ -32,5 +32,6 @@ export interface UiSettings {
     compactCollections: boolean;
     tileInformation: boolean;
     carouselNavigation: boolean;
+    centeredCarousel: boolean;
   };
 }

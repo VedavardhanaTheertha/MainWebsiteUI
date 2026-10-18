@@ -84,6 +84,11 @@
   outline-offset: 2px;
 }
 
+:root[data-carousel-navigation="on"] :has(> .layout-rail-navigation) > .layout-rail-motion-control {
+  right: 0.5rem;
+  top: calc(50% + 3.25rem);
+}
+
 @media (min-width: 40rem) {
   :root[data-featured-tiles="on"] .home-featured-layout .layout-tile-grid {
     display: flex;

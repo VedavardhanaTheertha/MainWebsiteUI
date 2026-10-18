@@ -99,7 +99,8 @@ warning and falls back to configured defaults. The browser-only compatibility
 validator accepts older complete configurations missing `imageBackedTiles`,
 `tileOverlayOpacity`, `tileCornerRadius`, and/or the entire `layout` group, inheriting those values
 from current defaults without losing existing choices. A present but incomplete
-layout group is invalid.
+layout group is invalid, except that older complete groups may omit the later
+`centeredCarousel` flag and inherit its configured default.
 Build-time settings remain strict. Legacy `site-image-treatment`,
 `site-header-actions`, and `site-top-subscribe` values of `on` or `off` override the
 corresponding presentation fields; absent or other values inherit the configuration.
@@ -113,7 +114,7 @@ environment variables, secrets, or an authorization mechanism.
 
 ### Optional layout comparisons
 
-Seven independent booleans in `settings/ui_elements.json`'s `layout` group
+Eight independent booleans in `settings/ui_elements.json`'s `layout` group
 normalize to `layoutSettings`; all default to false. The root preference
 subscriber sets corresponding `data-*` attributes after hydration. Experiment CSS
 is loaded after the baseline stylesheet and affects only explicitly marked
@@ -136,6 +137,14 @@ components. Existing layouts and homepage shortcut order remain the default.
   edges, vertically centered alongside each rail, and a mobile next-card
   preview on opted-in rails. Scroll position and overflow determine disabled
   controls; manual navigation works independently of autoplay and honors reduced motion.
+  Where a rail also has a pause control, it sits below Next with an 8px gap.
+  Rails without the optional navigation retain their existing pause placement.
+- `centeredCarousel`: emphasize the tile nearest a scrolling rail's center,
+  changing emphasis as automatic or manual movement brings another tile into
+  focus. Mobile layouts include neighboring previews. Static, non-scrolling
+  desktop grids remain unchanged. This comparison is independent of the navigation
+  controls and autoplay, respects reduced motion, and retains actual first/last
+  boundaries rather than duplicating content for an infinite loop.
 
 Control and navigation copy comes from language JSON. These switches share the
 existing validated Apply/reset, denied-storage, and production browser-local
