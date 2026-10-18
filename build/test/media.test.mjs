@@ -115,6 +115,7 @@ async function component(file, additional = {}) {
     "react/jsx-runtime": { jsx, jsxs: jsx }, react,
     "next/image": "image", "next/link": "link", "lucide-react": {},
     "@/components/presentation/ContentImage": "image",
+    "@/components/RailNavigation": { default: () => null },
     "@/context/LanguageContext": { useLang: () => ({ tr: copy }) },
     "@/hooks/useDialog": { useDialog: (open, close) => { dependencies.dialog = { open, close }; return { current: null }; } },
     "@/lib/media-utils": utils,

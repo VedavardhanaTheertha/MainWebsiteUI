@@ -50,6 +50,17 @@
     "real": "Real copy",
     "placeholder": "Placeholder copy"
   },
+  "layout_experiments": {
+    "spotlight_title": "In focus",
+    "spotlight_description": "Explore selected pages and activities.",
+    "features_title": "Explore the Matha",
+    "features_description": "Find services, resources, and ways to connect.",
+    "explore_description": "Browse more ways to learn and participate.",
+    "guidance_description": "Explore spiritual guidance and available services.",
+    "view_all": "View all",
+    "previous": "Previous items",
+    "next": "Next items"
+  },
   "developer_options": {
     "menu_label": "Developer options",
     "title": "Developer options",
@@ -64,14 +75,23 @@
       "mediaViewer": "Full-screen album controls",
       "browserDefaults": "Collection browser defaults",
       "interaction": "Interaction timing",
-      "presentation": "Image and header presentation"
+      "presentation": "Image and header presentation",
+      "layout": "Layout experiments"
     },
     "group_descriptions": {
       "autoScroll": "Reduced motion and interaction pauses remain in effect.",
       "bhaktiReader": "Sizes are percentages. Initial and maximum sizes must align with exact steps from the minimum.",
-      "presentation": "These defaults are configured in the UI settings file. Turning options on here saves browser-local overrides."
+      "presentation": "These defaults are configured in the UI settings file. Turning options on here saves browser-local overrides.",
+      "layout": "Independent comparisons, disabled by default. Apply and reload to compare layouts; the homepage shortcut order stays unchanged."
     },
     "fields": {
+      "layout.adaptiveHero": { "label": "Adaptive hero height", "description": "Fit the hero height to the viewport within readable minimum and maximum sizes. The title remains over the image without a background panel." },
+      "layout.featuredTiles": { "label": "Featured homepage tile layout", "description": "Compare a larger lead tile with smaller supporting tiles in the featured homepage grid." },
+      "layout.sectionHeaders": { "label": "Consistent homepage section headers", "description": "Show aligned section headings and short introductions. Links are shown only for genuine collection destinations." },
+      "layout.layoutProfiles": { "label": "Standardized page widths and spacing", "description": "Compare wide visual, contained collection, and narrow reading layouts." },
+      "layout.compactCollections": { "label": "Compact seva and library collections", "description": "Show ordinary collection items as thumbnail rows instead of large cards. Featured rails retain their visual presentation." },
+      "layout.tileInformation": { "label": "Consistent tile information placement", "description": "Group category, title, description, and footer metadata while preserving detail and booking actions." },
+      "layout.carouselNavigation": { "label": "Clearer carousel navigation", "description": "Show previous/next controls and a next-card preview on mobile. Manual navigation also works when automatic scrolling is disabled." },
       "collections.initialVisible": { "label": "Initially visible items" },
       "collections.loadIncrement": { "label": "Items per load" },
       "autoScroll.enabled": { "label": "Enable automatic rail scrolling" },
@@ -110,6 +130,10 @@
       "presentation.tileOverlayOpacity": {
         "label": "Tile text panel opacity (%)",
         "description": "Applies when image-backed tiles are enabled. Use 0 for transparent or 100 for fully opaque. Lower opacity shows more of the image but can reduce text contrast. The hero is unaffected."
+      },
+      "presentation.tileCornerRadius": {
+        "label": "Tile and hero corner radius (px)",
+        "description": "Adjust card corners and the hero's bottom corners from 0 to 48 pixels. Use 0 for square corners; the default is 20. The hero's top corners stay square. Shortcut icons, dialogs, and full-screen images are unchanged."
       },
       "presentation.headerActions": {
         "label": "Show header shortcuts",

@@ -1,6 +1,6 @@
 export type CollectionCardVariant = "featured" | "collection";
 
-const cardBase = "group flex min-w-0 flex-col overflow-hidden rounded-xl border bg-[var(--color-paper)] text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]";
+const cardBase = "collection-tile group flex min-w-0 flex-col overflow-hidden rounded-xl border bg-[var(--color-paper)] text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]";
 
 export function collectionCardClassName(variant: CollectionCardVariant, imageBacked = false): string {
   return `${cardBase}${imageBacked ? " visual-tile" : ""} ${variant === "featured"

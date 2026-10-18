@@ -47,6 +47,7 @@ async function mount(name, enabled = true, additional = {}) {
       if (dependency === "lucide-react") return { Pause: "pause", Play: "play", SlidersHorizontal: "filters", GitBranch: "timeline", List: "list" };
       if (dependency === "next/link" || dependency === "next/image") return { default: dependency === "next/link" ? "link" : "image" };
       if (dependency === "@/components/presentation/ContentImage") return { default: "image" };
+      if (dependency === "@/components/RailNavigation") return { default: () => null };
       if (dependency === "@/hooks/useReducedMotion") return { useReducedMotion: () => false };
       if (dependency === "@/hooks/useDialog") return { useDialogsOpen: () => false };
       if (dependency === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({

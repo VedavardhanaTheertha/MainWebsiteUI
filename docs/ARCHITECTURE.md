@@ -96,8 +96,10 @@ pagination, sort/view/filter state, and reader size from those settings.
 The browser stores a complete validated raw configuration as JSON in
 `site-ui-settings` in per-origin `localStorage`. Invalid saved data produces a
 warning and falls back to configured defaults. The browser-only compatibility
-validator accepts older complete configurations missing only `imageBackedTiles`
-and/or `tileOverlayOpacity`, inheriting those fields from the current defaults without losing existing choices.
+validator accepts older complete configurations missing `imageBackedTiles`,
+`tileOverlayOpacity`, `tileCornerRadius`, and/or the entire `layout` group, inheriting those values
+from current defaults without losing existing choices. A present but incomplete
+layout group is invalid.
 Build-time settings remain strict. Legacy `site-image-treatment`,
 `site-header-actions`, and `site-top-subscribe` values of `on` or `off` override the
 corresponding presentation fields; absent or other values inherit the configuration.
@@ -108,6 +110,46 @@ applies image/autoplay/interval/fade settings, and follows cross-document storag
 events. Production supports all browser-local UI overrides without exposing a
 developer page or enabling placeholder catalogs. These preferences are not runtime
 environment variables, secrets, or an authorization mechanism.
+
+### Optional layout comparisons
+
+Seven independent booleans in `settings/ui_elements.json`'s `layout` group
+normalize to `layoutSettings`; all default to false. The root preference
+subscriber sets corresponding `data-*` attributes after hydration. Experiment CSS
+is loaded after the baseline stylesheet and affects only explicitly marked
+components. Existing layouts and homepage shortcut order remain the default.
+
+- `adaptiveHero`: viewport-sensitive, clamped hero height, including the generated
+  standalone hero. Its title stays over the image without a background panel.
+- `featuredTiles`: a larger first configured item in the featured homepage grid,
+  without changing content order or collection grids.
+- `sectionHeaders`: consistent homepage headings and introductions. Mixed
+  navigation groups do not invent a "view all" destination.
+- `layoutProfiles`: wide visual, contained collection, and narrow reading wrappers
+  with consistent gutters and section spacing; dialog and full-screen sizing stay independent.
+- `compactCollections`: thumbnail rows for ordinary seva and library results,
+  retaining details, booking, filters, and pagination. Compact rows take precedence
+  over image-backed presentation; featured rails keep their photographic layout.
+- `tileInformation`: stable category/title/summary/metadata placement in eligible
+  cards, without removing independent actions or styling event posters.
+- `carouselNavigation`: accessible previous/next buttons at the left/right
+  edges, vertically centered alongside each rail, and a mobile next-card
+  preview on opted-in rails. Scroll position and overflow determine disabled
+  controls; manual navigation works independently of autoplay and honors reduced motion.
+
+Control and navigation copy comes from language JSON. These switches share the
+existing validated Apply/reset, denied-storage, and production browser-local
+override behavior; none enables the production Developer page.
+
+The final homepage guidance group omits the temporary-content footer and its
+separator in every layout mode; other homepage grids retain configured footnotes.
+`presentation.tileCornerRadius` independently controls shared collection-card and
+homepage photographic-card corners through `--tile-corner-radius`. Its default
+20px preserves the existing shape; integers from 0 to 48 are accepted, with 0
+making square corners. The `collection-tile` marker also covers event cards without
+changing their image/text treatment. Hero banners share the value only on their
+bottom corners, including the generated standalone hero; top corners stay square.
+Shortcut icons, dialogs, and full-screen playback do not opt in.
 
 Structured page copy uses multilingual frontmatter, for example:
 

@@ -33,14 +33,14 @@ export default function HeroCarousel() {
   }, [images.length, reducedMotion, paused, hovered, focused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
 
   return (
-    <div className="relative"
+    <div className="layout-wide home-hero relative"
       onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true); }}
       onPointerLeave={() => setHovered(false)}
       onFocus={() => setFocused(true)}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
     >
-    <Link href={href} className="relative block w-full overflow-hidden rounded-b-[22px] bg-[var(--color-paper)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
-      <div className="relative h-[462px] lg:h-[600px]">
+    <Link href={href} className="hero-rounded-frame relative block w-full overflow-hidden rounded-b-[22px] bg-[var(--color-paper)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
+      <div className="home-hero-viewport relative h-[462px] lg:h-[600px]">
       {images.map((src, k) => (
         <div
           key={src}

@@ -21,6 +21,7 @@ import { useUiSettings } from "@/context/UiSettingsContext";
 import { useDialog } from "@/hooks/useDialog";
 import { filterAndSortSevas } from "@/lib/seva-filtering";
 import RailMotionControl from "./RailMotionControl";
+import RailNavigation from "./RailNavigation";
 import AdvancedFilters from "./AdvancedFilters";
 import CollectionEmptyState from "./presentation/CollectionEmptyState";
 import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/collection-presentation";
@@ -71,22 +72,22 @@ function SevaCard({
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName("collection", true)} w-full`}
+      className={`${collectionCardClassName("collection", true)} layout-info-tile layout-compact-card w-full`}
     >
       <SevaImage title={title} image={seva.image} featured />
       <div className={collectionCardBodyClassName}>
-        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-brand)]">
+        <p className="layout-tile-category text-xs font-semibold uppercase tracking-wide text-[var(--color-text-brand)]">
           {localized(seva.deity, lang)}
         </p>
-        <h3 className="mt-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">
+        <h3 className="layout-tile-title mt-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">
           {title}
         </h3>
-        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
+        <p className="layout-tile-summary mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
           {localized(seva.description, lang)}
         </p>
-        <div className="mt-auto flex items-end justify-between gap-3 pt-3">
+        <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-3">
           {amount && (
-            <p className="font-body font-bold text-[var(--color-text-brand)]">
+            <p className="layout-tile-price font-body font-bold text-[var(--color-text-brand)]">
               {amount}
             </p>
           )}
@@ -251,16 +252,17 @@ export default function SevasBrowser() {
 
   return (
     <>
-      <section className="bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-sevas-title">
-        <div className="mx-auto max-w-7xl">
+      <section className="layout-section bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-sevas-title">
+        <div className="layout-wide mx-auto max-w-7xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="featured-sevas-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{tr.sevas_featured_title}</h2>
           </div>
           <div className="relative mt-5">
           {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((value) => !value)} />}
+          {featured.length > 1 && <RailNavigation scrollRef={featuredScrollRef} />}
           <div
             ref={featuredScrollRef}
-            className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+            className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
             style={{
               WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
@@ -275,14 +277,14 @@ export default function SevasBrowser() {
                   type="button"
                   key={seva.id}
                   onClick={() => setSelectedSeva(seva)}
-                  className={`${collectionCardClassName("featured", true)} w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none`}
+                  className={`${collectionCardClassName("featured", true)} layout-info-tile w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none`}
                 >
                   <SevaImage title={title} image={seva.image} featured />
                   <div className={collectionCardBodyClassName}>
-                    <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
-                    <p className="mt-1 line-clamp-2 text-sm text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
-                    <div className="mt-auto flex items-end justify-between gap-3 pt-3">
-                      {amount && <p className="font-bold text-[var(--color-text-brand)]">{amount}</p>}
+                    <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
+                    <p className="layout-tile-summary mt-1 line-clamp-2 text-sm text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
+                    <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-3">
+                      {amount && <p className="layout-tile-price font-bold text-[var(--color-text-brand)]">{amount}</p>}
                     </div>
                   </div>
                 </button>
@@ -293,7 +295,7 @@ export default function SevasBrowser() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12" aria-labelledby="all-sevas-title">
+      <section className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12" aria-labelledby="all-sevas-title">
         <AdvancedFilters
           active={Boolean(categoryFilter || deityFilter || minimum || maximum || amountOrder)}
           heading={
@@ -374,7 +376,7 @@ export default function SevasBrowser() {
         </p>
         {visibleSevas.length > 0 ? (
           <>
-            <div className="mt-3 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="layout-compact-grid mt-3 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {displayedSevas.map((seva) => (
                 <SevaCard
                   key={seva.id}

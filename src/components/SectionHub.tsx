@@ -27,13 +27,13 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
         </p>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="visual-tile group flex h-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+              className="layout-info-tile visual-tile group flex h-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
             >
               <div className="visual-tile-art relative h-44 overflow-hidden bg-[var(--color-cream-soft)]">
                 <ContentImage
@@ -44,11 +44,11 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
                 />
               </div>
               <div className="visual-tile-body flex flex-1 flex-col p-5">
-                <h2 className="font-display text-xl font-bold text-[var(--color-text-primary)]">
+                <h2 className="layout-tile-title font-display text-xl font-bold text-[var(--color-text-primary)]">
                   {item.title}
                 </h2>
-                <p className="mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{knowledgeCollectionCounts[item.href] === undefined ? tr.library_browser.unavailable : tr.library_browser.collection_count.replace("{count}", String(knowledgeCollectionCounts[item.href]))}</p>
-                <p className="mt-2 line-clamp-3 text-sm leading-6 text-[var(--color-text-secondary)]">
+                <p className="layout-tile-footer mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{knowledgeCollectionCounts[item.href] === undefined ? tr.library_browser.unavailable : tr.library_browser.collection_count.replace("{count}", String(knowledgeCollectionCounts[item.href]))}</p>
+                <p className="layout-tile-summary mt-2 line-clamp-3 text-sm leading-6 text-[var(--color-text-secondary)]">
                   {item.description}
                 </p>
               </div>

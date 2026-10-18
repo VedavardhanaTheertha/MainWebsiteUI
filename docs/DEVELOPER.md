@@ -95,7 +95,7 @@ Open the final navigation entry, **Developer options**, in local or development
 builds (`/developer-options`, under the configured base path). Copy-preview controls
 live on this page rather than in a global toolbar. The copy checkbox is checked for
 placeholder copy and unchecked for real copy (local defaults to unchecked; development
-defaults to checked) and changes immediately. All 32 supported settings from
+defaults to checked) and changes immediately. All 40 supported settings from
 `settings/ui_elements.json` also appear as grouped checkboxes, numeric inputs, and
 selectors. Edit these as drafts, then use **Apply and reload** to validate and use
 them throughout the site, including initial pagination, reader size, sorting, and
@@ -121,13 +121,38 @@ off restores the ordinary image-above-text layout and its existing alignment.
 Titles can wrap and cards grow rather than clip translated text. Text/actions
 remain visible without hovering; test keyboard focus, separate action links,
 narrow screens, both languages, and forced-color mode when changing this treatment.
-Older complete saved UI configurations inherit the new tile default while
-preserving their existing preferences; other missing fields remain invalid.
+Older complete saved UI configurations inherit new tile fields and a missing
+layout group while preserving their existing preferences; other missing fields,
+including partial layout groups, remain invalid.
 The hero title stays over its image in both tile modes, without a background
 panel; the standalone generated hero follows the same layout. **Tile text panel
 opacity (%)** controls the tile background from transparent (0) to opaque (100),
 defaulting to 40 in `presentation.tileOverlayOpacity`. Apply and reload to save
 it. Text shadows aid readability, but contrast depends on the photograph and opacity.
+
+The **Layout experiments** group contains seven independent, default-off checkboxes:
+adaptive hero height, featured homepage tiles, consistent section headers,
+standardized widths/spacing, compact seva/library results, tile information
+placement, and carousel navigation. Apply and reload after changing a comparison;
+turn it off to compare with the existing layout. The homepage shortcut order does
+not change. Try each option separately before testing combinations.
+
+Check compact results with both photographic tile modes: thumbnail rows override
+full-tile images only in ordinary seva/library results, not featured rails.
+Check narrow reading widths separately from dialogs and full-screen playback.
+For carousel navigation, test first/last positions, no-overflow tracks, keyboard
+buttons, resized windows, reduced motion, and automatic scrolling disabled.
+Previous/next controls sit at the left/right edges, vertically centered alongside
+the rail, without adding a control row above or below it.
+The adaptive-height setting also applies to the generated standalone hero.
+**Tile and hero corner radius (px)** accepts 0–48, defaults to 20px, and uses 0
+for square corners. It applies to photographic and collection cards, including
+event card frames, plus the hero's bottom corners (including the standalone hero).
+The hero's top corners remain square. Shortcut icons, dialogs, and full-screen
+images are unchanged. Older saved settings inherit the radius default without losing layout choices.
+Event posters, album playback, and the background-free hero title remain exceptions
+to photographic tile styling. Section links must use real collection destinations,
+not arbitrary routes for mixed navigation groups.
 
 Changes are saved per browser and origin, including the port, not per deployment
 path. **Reset and reload** restores the JSON UI defaults and real copy for local

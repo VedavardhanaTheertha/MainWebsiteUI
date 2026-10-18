@@ -23,5 +23,14 @@ export interface UiSettings {
     albumsSort: "newest" | "oldest";
   };
   interactionSettings: { dropdownCloseDelayMs: number; modalResetDelayMs: number; searchPreloadDelayMs: number };
-  presentationSettings: { imageTreatment: boolean; imageBackedTiles: boolean; tileOverlayOpacity: number; headerActions: boolean; topSubscribe: boolean };
+  presentationSettings: { imageTreatment: boolean; imageBackedTiles: boolean; tileOverlayOpacity: number; tileCornerRadius: number; headerActions: boolean; topSubscribe: boolean };
+  layoutSettings: {
+    adaptiveHero: boolean;
+    featuredTiles: boolean;
+    sectionHeaders: boolean;
+    layoutProfiles: boolean;
+    compactCollections: boolean;
+    tileInformation: boolean;
+    carouselNavigation: boolean;
+  };
 }

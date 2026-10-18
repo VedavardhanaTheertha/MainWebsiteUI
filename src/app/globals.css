@@ -44,6 +44,15 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-cream-soft);
 }
 
+.collection-tile {
+  border-radius: var(--tile-corner-radius, var(--radius-xl));
+}
+
+.hero-rounded-frame {
+  border-bottom-left-radius: var(--tile-corner-radius, 22px);
+  border-bottom-right-radius: var(--tile-corner-radius, 22px);
+}
+
 .content-image-frame {
   position: absolute;
   inset: 0;

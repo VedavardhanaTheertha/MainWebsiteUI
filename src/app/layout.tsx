@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { Marcellus, Montserrat, Noto_Sans_Kannada, Noto_Serif_Devanagari } from "next/font/google";
 import "./globals.css";
+import "./collection-experiments.css";
+import "./home-experiments.css";
 import { siteConfig, defaultLang, content, languages } from "@/gen/content";
 import { LanguageProvider } from "@/context/LanguageContext";
 import TopBar from "@/components/TopBar";

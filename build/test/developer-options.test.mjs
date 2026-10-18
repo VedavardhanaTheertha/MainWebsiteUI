@@ -166,7 +166,7 @@ function preferencesFixture({ denied = false } = {}) {
 test("every UI setting has a typed editor definition and localized labels", () => {
   const actual = Object.entries(uiDefaults).flatMap(([group, fields]) => Object.keys(fields).map((key) => `${group}.${key}`));
   const defined = schema.uiFieldDefinitions.map(({ group, key }) => `${group}.${key}`);
-  assert.equal(defined.length, 32);
+  assert.equal(defined.length, 40);
   assert.deepEqual(defined.toSorted(), actual.toSorted());
   assert.equal(new Set(defined).size, defined.length);
   for (const language of ["en", "kn"]) {
@@ -187,7 +187,7 @@ test("runtime UI settings persist all field types, remount initial-state consume
   custom.hero = { autoplay: false, intervalMs: 12000, fadeDurationMs: 0 };
   custom.bhaktiReader = { minSize: 90, initialSize: 110, maxSize: 170, step: 10 };
   custom.browserDefaults.lineageView = "timeline";
-  custom.presentation = { imageTreatment: true, imageBackedTiles: true, tileOverlayOpacity: 40, headerActions: true, topSubscribe: true };
+  custom.presentation = { ...custom.presentation, imageTreatment: true, imageBackedTiles: true, tileOverlayOpacity: 40, headerActions: true, topSubscribe: true };
   assert.equal(fixture.preferences.applyUiSettings(custom), true);
   assert.equal(fixture.stored.get(uiSettingsStorageKey), JSON.stringify(schema.validateUiElements(custom)));
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 3);
@@ -241,6 +241,8 @@ test("existing complete saved preferences inherit the new tile default without l
   const previous = structuredClone(uiDefaults);
   delete previous.presentation.imageBackedTiles;
   delete previous.presentation.tileOverlayOpacity;
+  delete previous.presentation.tileCornerRadius;
+  delete previous.layout;
   previous.collections.initialVisible = 3;
   previous.presentation.imageTreatment = true;
   fixture.stored.set(uiSettingsStorageKey, JSON.stringify(previous));
@@ -248,6 +250,8 @@ test("existing complete saved preferences inherit the new tile default without l
   assert.equal(fixture.render().settings.presentationSettings.imageTreatment, true);
   assert.equal(fixture.render().settings.presentationSettings.imageBackedTiles, false);
   assert.equal(fixture.render().settings.presentationSettings.tileOverlayOpacity, 40);
+  assert.equal(fixture.render().settings.presentationSettings.tileCornerRadius, 20);
+  assert.equal(Object.values(fixture.render().settings.layoutSettings).every((value) => value === false), true);
   assert.equal(fixture.warnings.length, 0);
   assert.throws(() => schema.validateUiElements(previous), schema.UiSettingsError);
   previous.presentation.imageBackedTiles = true;
@@ -269,6 +273,50 @@ test("tile panel opacity accepts the full percentage range and rejects invalid v
   }
 });
 
+test("tile corner radius preserves the default, supports square corners, and validates pixel limits", () => {
+  assert.equal(uiDefaults.presentation.tileCornerRadius, 20);
+  const values = structuredClone(uiDefaults);
+  for (const radius of [0, 20, 48]) {
+    values.presentation.tileCornerRadius = radius;
+    assert.equal(schema.parseUiSettings(values).presentationSettings.tileCornerRadius, radius);
+  }
+  for (const radius of [-1, 49, 1.5, "20", null]) {
+    values.presentation.tileCornerRadius = radius;
+    assert.throws(() => schema.validateUiElements(values), schema.UiSettingsError);
+  }
+  delete values.presentation.tileCornerRadius;
+  values.layout.compactCollections = true;
+  assert.equal(schema.validateUiPreferences(values, uiDefaults).presentation.tileCornerRadius, 20);
+  assert.equal(schema.validateUiPreferences(values, uiDefaults).layout.compactCollections, true);
+});
+
+test("layout comparisons are independent default-off flags with strict validation and persistence", () => {
+  const keys = Object.keys(uiDefaults.layout);
+  assert.equal(keys.length, 7);
+  assert.equal(Object.values(uiDefaults.layout).every((value) => value === false), true);
+  for (const key of keys) {
+    const fixture = preferencesFixture();
+    const custom = structuredClone(uiDefaults);
+    custom.layout[key] = true;
+    fixture.preferences.applyUiSettings(custom);
+    assert.deepEqual(JSON.parse(JSON.stringify(fixture.render().settings.layoutSettings)), custom.layout);
+    assert.equal(fixture.render(true).settings.layoutSettings[key], false);
+    for (const invalid of [null, 1, "true", undefined]) {
+      custom.layout[key] = invalid;
+      assert.throws(() => schema.validateUiPreferences(custom, uiDefaults), schema.UiSettingsError);
+    }
+  }
+  const previous = structuredClone(uiDefaults);
+  delete previous.layout;
+  previous.presentation.imageBackedTiles = true;
+  const migrated = schema.validateUiPreferences(previous, uiDefaults);
+  assert.deepEqual(migrated.layout, uiDefaults.layout);
+  assert.equal(migrated.presentation.imageBackedTiles, true);
+  assert.equal(Object.hasOwn(previous, "layout"), false);
+  assert.throws(() => schema.validateUiPreferences({ ...uiDefaults, layout: {} }, uiDefaults), schema.UiSettingsError);
+  assert.throws(() => schema.validateUiPreferences({ ...uiDefaults, layout: { ...uiDefaults.layout, unknown: true } }, uiDefaults), schema.UiSettingsError);
+});
+
 test("denied browser storage retains UI choices in memory and reports non-persistence", () => {
   const fixture = preferencesFixture({ denied: true });
   fixture.render();
@@ -284,17 +332,25 @@ test("the root preference applier gates images without mounting a global copy to
   let enabled = false;
   let tiles = false;
   let opacity = 40;
+  let radius = 20;
+  const layoutSettings = structuredClone(uiDefaults.layout);
   const styles = new Map();
   const document = { documentElement: { dataset: {}, style: { setProperty: (name, value) => styles.set(name, value) } } };
   const Preferences = load("components/DeveloperPreferences.tsx", {
     react: { useEffect: (effect) => effect() },
     "@/hooks/useImageTreatment": { useImageTreatment: () => ({ imageTreatmentEnabled: enabled }) },
-    "@/context/UiSettingsContext": { useUiSettings: () => ({ presentationSettings: { imageBackedTiles: tiles, tileOverlayOpacity: opacity } }) },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ presentationSettings: { imageBackedTiles: tiles, tileOverlayOpacity: opacity, tileCornerRadius: radius }, layoutSettings }) },
   }, { document }).default;
   assert.equal(Preferences(), null);
   assert.equal(document.documentElement.dataset.imageTreatment, "off");
   assert.equal(document.documentElement.dataset.imageBackedTiles, "off");
   assert.equal(styles.get("--tile-overlay-opacity"), "0.4");
+  assert.equal(styles.get("--tile-corner-radius"), "20px");
+  for (const value of [0, 48]) {
+    radius = value;
+    Preferences();
+    assert.equal(styles.get("--tile-corner-radius"), `${value}px`);
+  }
   for (const [percent, alpha] of [[0, "0"], [100, "1"]]) {
     opacity = percent;
     Preferences();
@@ -307,6 +363,15 @@ test("the root preference applier gates images without mounting a global copy to
   enabled = true;
   Preferences();
   assert.equal(document.documentElement.dataset.imageTreatment, "on");
+  for (const name of Object.keys(layoutSettings)) {
+    assert.equal(document.documentElement.dataset[name], "off");
+    layoutSettings[name] = true;
+    Preferences();
+    assert.equal(document.documentElement.dataset[name], "on");
+    layoutSettings[name] = false;
+    Preferences();
+    assert.equal(document.documentElement.dataset[name], "off");
+  }
   const layout = source("src/app/layout.tsx");
   assert.match(layout, /<DeveloperPreferences \/>/);
   assert.doesNotMatch(layout, /LocalContentToggle/);
@@ -355,12 +420,14 @@ function pageFixture(defaultMode = "real", persistent = true) {
 
 test("the editor covers every setting, keeps edits as drafts and applies typed values only on submit", () => {
   const page = pageFixture();
-  assert.equal(page.controls().filter((node) => node.props.name).length, 32);
+  assert.equal(page.controls().filter((node) => node.props.name).length, 40);
   page.field("collections.initialVisible").props.onChange({ target: { value: "3", valueAsNumber: 3 } });
   page.field("browserDefaults.lineageView").props.onChange({ target: { value: "timeline" } });
   page.field("presentation.headerActions").props.onChange({ target: { checked: true } });
   page.field("presentation.imageBackedTiles").props.onChange({ target: { checked: true } });
   page.field("presentation.tileOverlayOpacity").props.onChange({ target: { value: "75", valueAsNumber: 75 } });
+  page.field("layout.adaptiveHero").props.onChange({ target: { checked: true } });
+  page.field("presentation.tileCornerRadius").props.onChange({ target: { value: "0", valueAsNumber: 0 } });
   assert.equal(page.applied, undefined);
   assert.equal(page.reloads, 0);
   page.submit();
@@ -369,6 +436,8 @@ test("the editor covers every setting, keeps edits as drafts and applies typed v
   assert.equal(page.applied.presentation.headerActions, true);
   assert.equal(page.applied.presentation.imageBackedTiles, true);
   assert.equal(page.applied.presentation.tileOverlayOpacity, 75);
+  assert.equal(page.applied.layout.adaptiveHero, true);
+  assert.equal(page.applied.presentation.tileCornerRadius, 0);
   assert.equal(page.reloads, 1);
 });
 
@@ -532,15 +601,22 @@ test("the standalone hero applies validated UI overrides for fitting, fades, int
   const custom = structuredClone(uiDefaults);
   custom.presentation.imageTreatment = true;
   custom.hero = { autoplay: true, intervalMs: 1234, fadeDurationMs: 42 };
+  custom.layout.adaptiveHero = true;
+  custom.presentation.tileCornerRadius = 0;
   const hero = standaloneHero(null, false, JSON.stringify(custom), false);
   assert.equal(hero.dataset.imageTreatment, "on");
   assert.equal(hero.styles.get("--hero-fade-duration"), "42ms");
   assert.equal(hero.interval, 1234);
+  assert.equal(hero.dataset.adaptiveHero, "on");
+  assert.equal(hero.styles.get("--tile-corner-radius"), "0px");
+  custom.presentation.tileCornerRadius = 48;
   custom.hero.autoplay = false;
   hero.changeSettings(JSON.stringify(custom));
   assert.equal(hero.interval, undefined);
+  assert.equal(hero.styles.get("--tile-corner-radius"), "48px");
   hero.changeSettings("{");
   assert.equal(hero.dataset.imageTreatment, uiDefaults.presentation.imageTreatment ? "on" : "off");
+  assert.equal(hero.styles.get("--tile-corner-radius"), "20px");
   assert.equal(hero.warnings.length, 1);
 });
 

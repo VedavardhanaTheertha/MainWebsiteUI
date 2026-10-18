@@ -23,6 +23,8 @@ export const uiFieldDefinitions = [
   ...["dropdownCloseDelayMs", "modalResetDelayMs", "searchPreloadDelayMs"].map((key) => number("interaction", key, 0, timerMaximum)),
   ...["imageTreatment", "imageBackedTiles", "headerActions", "topSubscribe"].map((key) => flag("presentation", key)),
   number("presentation", "tileOverlayOpacity", 0, 100),
+  number("presentation", "tileCornerRadius", 0, 48),
+  ...["adaptiveHero", "featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation"].map((key) => flag("layout", key)),
 ];
 
 export class UiSettingsError extends Error {}
@@ -96,16 +98,20 @@ export function parseUiSettings(value) {
     browserDefaults: raw.browserDefaults,
     interactionSettings: raw.interaction,
     presentationSettings: raw.presentation,
+    layoutSettings: raw.layout,
   };
 }
 
 /** @returns {import("../src/lib/ui-settings-types").UiElements} */
 export function validateUiPreferences(value, defaults) {
+  if (value && typeof value === "object" && !Array.isArray(value) && !Object.hasOwn(value, "layout")) {
+    value = { ...value, layout: defaults.layout };
+  }
   const presentation = value?.presentation;
   if (presentation && typeof presentation === "object" && !Array.isArray(presentation) &&
-      (!Object.hasOwn(presentation, "imageBackedTiles") || !Object.hasOwn(presentation, "tileOverlayOpacity"))) {
+      (!Object.hasOwn(presentation, "imageBackedTiles") || !Object.hasOwn(presentation, "tileOverlayOpacity") || !Object.hasOwn(presentation, "tileCornerRadius"))) {
     const migrated = { ...presentation };
-    for (const key of ["imageBackedTiles", "tileOverlayOpacity"]) {
+    for (const key of ["imageBackedTiles", "tileOverlayOpacity", "tileCornerRadius"]) {
       if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.presentation[key];
     }
     return validateUiElements({

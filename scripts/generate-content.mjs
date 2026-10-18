@@ -644,8 +644,9 @@ function writeHeroImages(hero, content, lang, basePath) {
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; }
-    .hero { position: relative; width: 100%; overflow: hidden; border-radius: 0 0 22px 22px; background: #fffaf0; }
+    .hero { position: relative; width: 100%; overflow: hidden; border-radius: 0 0 var(--tile-corner-radius, 22px) var(--tile-corner-radius, 22px); background: #fffaf0; }
     .hero-images { position: relative; height: 462px; overflow: hidden; background: #140c04; }
+    :root[data-adaptive-hero="on"] .hero-images { height: clamp(20rem, 65svh, 28.875rem); }
     .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity var(--hero-fade-duration, ${heroSettings.fadeDurationMs}ms) ease; }
     .hero-image img { position: absolute; inset: 0; width: 100%; height: 100%; }
     .hero-backdrop { display: none; object-fit: cover; filter: blur(14px) brightness(.65); transform: scale(1.12); pointer-events: none; }
@@ -660,6 +661,7 @@ function writeHeroImages(hero, content, lang, basePath) {
     .hero-cta:active { background: #62290c; }
     @media (min-width: 1024px) {
       .hero-images { height: 600px; }
+      :root[data-adaptive-hero="on"] .hero-images { height: clamp(22.5rem, 70svh, 37.5rem); }
       .hero-title { font-size: 36px; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -707,6 +709,8 @@ function writeHeroImages(hero, content, lang, basePath) {
         const legacy = readPreference(${JSON.stringify(imageTreatmentStorageKey)});
         const enabled = legacy === "on" || legacy !== "off" && settings.presentationSettings.imageTreatment;
         document.documentElement.dataset.imageTreatment = enabled ? "on" : "off";
+        document.documentElement.dataset.adaptiveHero = settings.layoutSettings.adaptiveHero ? "on" : "off";
+        document.documentElement.style.setProperty("--tile-corner-radius", settings.presentationSettings.tileCornerRadius + "px");
         document.documentElement.style.setProperty("--hero-fade-duration", settings.heroSettings.fadeDurationMs + "ms");
       };
       applyImageTreatment();
