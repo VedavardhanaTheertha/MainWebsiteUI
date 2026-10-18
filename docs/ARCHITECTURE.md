@@ -222,6 +222,10 @@ not generate synthetic copies.
 
 ## 7. Build and deployment
 
+`package.json` declares dependencies and `package-lock.json` records their resolved
+versions for `npm ci`. Next.js and its ESLint configuration use matching stable
+versions.
+
 The deployment entry point is `build/build.mjs`. It cleans generated output, builds
 theme/settings, media, Bhakti, Sevas, Events, and knowledge sections, generates the
 remaining website content, runs Next's static export, normalizes canonical URLs, and

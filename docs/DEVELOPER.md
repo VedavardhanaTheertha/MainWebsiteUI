@@ -26,6 +26,17 @@ Before changing framework code, read the relevant installed Next.js guide under
 `node_modules/next/dist/docs/`. This project's installed version is authoritative;
 older Next.js conventions may not apply.
 
+### Dependency maintenance
+
+Keep `next` and `eslint-config-next` on matching stable versions. Update dependencies
+with npm and include the resulting `package-lock.json`; do not edit resolved package
+metadata manually. Prefer compatible patched versions and targeted transitive updates.
+Do not force framework downgrades or suppress advisories to obtain a clean audit.
+
+Run `npm audit` and `npm run ci` after dependency changes, and verify a clean checkout
+with `npm ci`. Report unresolved advisories explicitly, including packages without a
+published fix.
+
 ## Preview and build
 
 | Command | Purpose |
