@@ -4,23 +4,21 @@ import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.refund;
 
-// TODO: Have legal counsel review and finalise before launch
 export default function RefundPage() {
   return (
     <>
       <div className="max-w-3xl mx-auto px-5 lg:px-8 py-14 lg:py-20">
         <h1 className="font-display font-bold text-[var(--color-text-primary)] text-3xl sm:text-4xl mb-2">
-          Refund Policy
+          <LocalizedCopy path={["pages", "local_copy", "refund_title"]} />
         </h1>
         <p className="font-body text-sm text-[var(--color-text-secondary)]/60 mb-10">
-          Last updated: June 2026 {/* TODO: Update date before launch */}
+          <LocalizedCopy path={["pages", "local_copy", "legal_updated"]} />
         </p>
 
         <div className="font-body text-[var(--color-text-secondary)] leading-relaxed space-y-6">
-          {/* TODO: Replace with legally reviewed refund policy */}
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
-              1. Donations (General)
+              <LocalizedCopy path={["pages", "local_copy", "refund_heading_1"]} />
             </h2>
             <p>
               <LocalizedCopy path={["pages", "detected", "refund_donations"]} />
@@ -28,39 +26,34 @@ export default function RefundPage() {
           </section>
 
           <section>
-            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">2. Seva Offerings</h2>
+            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "refund_heading_2"]} /></h2>
             <p>
-              If a booked seva cannot be performed due to circumstances at the Matha (e.g., unavailability
-              on the requested date), the amount will be refunded in full or the seva will be rescheduled
-              at the devotee&apos;s preference.
+              <LocalizedCopy path={["pages", "local_copy", "refund_seva"]} />
             </p>
             <p className="mt-3">
-              Refund requests for seva bookings must be submitted at least 48 hours before the scheduled
-              date. Requests received after this window will not be eligible for a refund.
+              <LocalizedCopy path={["pages", "local_copy", "refund_window"]} />
             </p>
           </section>
 
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
-              3. How to Request a Refund
+              <LocalizedCopy path={["pages", "local_copy", "refund_heading_3"]} />
             </h2>
             <p>
-              Email us at{" "}
+              <LocalizedCopy path={["pages", "local_copy", "refund_contact_before"]} />{" "}
               <a href="mailto:refund@shiroormatha.org" className="text-[var(--color-text-brand)] hover:underline">
-                refund@shiroormatha.org
+                <LocalizedCopy path={["pages", "local_copy", "refund_email"]} />
               </a>{" "}
-              with your name, transaction ID, and reason for the request. {/* TODO: Set up real email */}
-              We aim to respond within 2 business days.
+              <LocalizedCopy path={["pages", "local_copy", "refund_contact_after"]} />
             </p>
           </section>
 
           <section>
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
-              4. Processing Time
+              <LocalizedCopy path={["pages", "local_copy", "refund_heading_4"]} />
             </h2>
             <p>
-              Approved refunds will be credited to the original payment method within 7–10 business days.
-              Bank processing times may vary.
+              <LocalizedCopy path={["pages", "local_copy", "refund_processing"]} />
             </p>
           </section>
         </div>

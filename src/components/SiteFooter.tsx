@@ -31,7 +31,7 @@ export default function SiteFooter() {
         <Image src={`${siteConfig.basePath}/main-logo.png`} alt="" width={50} height={50} className="object-contain mx-auto mb-2 opacity-95" />
         <p className="font-display text-[19px] text-[var(--color-text-primary)]">{tr.site_name}</p>
         <p className="text-xs text-[var(--color-text-brand)] mt-1.5" style={{ fontFamily: "var(--font-kannada)" }}>
-          ॥ ಶ್ರೀ ವಿಠ್ಠಲೋ ವಿಜಯತೇ ॥
+          {tr.editorial.site_chrome.chant}
         </p>
         <div className="flex justify-center gap-3 mt-[18px] mb-4">
           {footer.social.map((s) => (

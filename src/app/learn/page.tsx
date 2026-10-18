@@ -1,20 +1,43 @@
+"use client";
+
+import Link from "next/link";
 import ImageListCards from "@/components/ImageListCards";
+import { useLang } from "@/context/LanguageContext";
+import { learningDestination } from "@/lib/learn";
 
 export default function LearnPage() {
+  const { tr } = useLang();
+  const labels = tr.pages.learn;
   return (
-    <>
-      {/* Hero */}
-      <div className="relative w-full flex items-center justify-center" style={{ background: "var(--color-parchment)", minHeight: "200px" }}>
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, var(--color-saffron-600) 0%, transparent 60%), radial-gradient(circle at 80% 50%, var(--color-saffron-600) 0%, transparent 60%)" }} />
-        <div className="relative text-center px-4 py-10">
-          <p className="font-body text-[10px] tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-3">KNOWLEDGE CENTER</p>
-          <h1 className="font-display font-bold text-[var(--color-text-primary)] text-2xl lg:text-4xl mb-3">Learn with Us</h1>
-          <p className="font-body text-[var(--color-text-brand)] text-base max-w-xl mx-auto">Study the scriptures, language and music of the tradition — guided by the scholars of the Matha.</p>
-        </div>
-      </div>
-      <div className="max-w-7xl mx-auto px-4 lg:px-10 py-12">
+    <div>
+      <header className="bg-[var(--color-parchment)] px-4 py-10 text-center">
+        <p className="font-body text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">{labels.eyebrow}</p>
+        <h1 className="mt-3 font-display text-3xl font-bold lg:text-5xl">{labels.title}</h1>
+        <p className="mx-auto mt-4 max-w-2xl text-[var(--color-text-secondary)]">{labels.intro}</p>
+      </header>
+      <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-12">
         <ImageListCards contentKey="learn" />
+        {!!labels.suggested_paths.length && (
+          <section className="mt-12" aria-labelledby="learning-paths">
+            <h2 id="learning-paths" className="font-display text-2xl font-bold">{labels.paths_title}</h2>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              {labels.suggested_paths.map((path) => (
+                <article key={path.title} className="rounded-xl border border-[var(--color-line)] p-5">
+                  <h3 className="font-display text-xl font-semibold">{path.title}</h3>
+                  <p className="mt-2 text-sm text-[var(--color-text-secondary)]">{path.description}</p>
+                  <ul className="mt-3">
+                    {path.itemIds.map((id) => {
+                      const item = tr.learn.find((entry) => entry.id === id);
+                      const href = item && learningDestination(item);
+                      return item && href ? <li key={id}><Link className="inline-flex min-h-11 items-center text-[var(--color-text-brand)] underline underline-offset-4" href={href}>{item.title}</Link></li> : null;
+                    })}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
-    </>
+    </div>
   );
 }

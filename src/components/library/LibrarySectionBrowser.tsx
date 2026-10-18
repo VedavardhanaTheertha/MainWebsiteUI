@@ -1,49 +1,44 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
+import { useDialog } from "@/hooks/useDialog";
+import RailMotionControl from "@/components/RailMotionControl";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
+import { getSearchProfile } from "@/lib/search";
 import {
   placeholderLibrarySections,
   realLibrarySections,
-  type LibraryArticle,
 } from "@/gen/library/data";
 import { collectionPagination } from "@/gen/settings/ui-elements";
-
-type DisplayArticle = Omit<LibraryArticle, "title" | "summary" | "status" | "tags" | "html"> & {
-  title: string;
-  summary: string;
-  status: string;
-  tags: string[];
-  html: string;
-};
+import { articleHref, knowledgeReadingTime, knowledgeText, localizeArticle, type DisplayArticle } from "@/lib/knowledge";
+import KnowledgeBody from "./KnowledgeBody";
 
 function ArticleModal({
   article,
   closeLabel,
   onClose,
+  sectionId,
+  href,
+  openLabel,
 }: {
   article: DisplayArticle;
   closeLabel: string;
   onClose: () => void;
+  sectionId: string;
+  href: string;
+  openLabel: string;
 }) {
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose]);
+  const dialogRef = useDialog(true, onClose);
 
   return (
     <div
+      ref={dialogRef}
+      tabIndex={-1}
       className="fixed inset-0 z-[200] flex items-end justify-center bg-[var(--color-ink-900)]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
       role="dialog"
       aria-modal="true"
@@ -58,7 +53,7 @@ function ArticleModal({
           type="button"
           onClick={onClose}
           aria-label={closeLabel}
-          className="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2 text-[var(--color-text-primary)] shadow"
+          className="absolute right-4 top-4 z-10 min-h-11 min-w-11 rounded-full bg-white/90 p-2 text-[var(--color-text-primary)] shadow"
         >
           <X size={20} />
         </button>
@@ -92,10 +87,8 @@ function ArticleModal({
                 </span>
               ))}
             </div>
-            <div
-              className="mt-6 max-w-none border-t border-[var(--color-line)] pt-6 font-body text-[var(--color-text-secondary)] [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--color-saffron-400)] [&_blockquote]:pl-4 [&_h1]:hidden [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-[var(--color-text-primary)] [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-[var(--color-text-primary)] [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-5 [&_p]:text-sm [&_p]:leading-7 [&_strong]:text-[var(--color-text-primary)] [&_ul]:list-disc [&_ul]:pl-6"
-              dangerouslySetInnerHTML={{ __html: article.html }}
-            />
+            <Link href={href} className="mt-5 inline-flex min-h-11 items-center rounded-full border border-[var(--color-line)] px-5 font-semibold text-[var(--color-text-brand)]">{openLabel}</Link>
+            <KnowledgeBody article={article} sectionId={sectionId} />
           </div>
         </div>
       </div>
@@ -105,15 +98,19 @@ function ArticleModal({
 
 function ArticleTile({
   article,
-  viewDetails,
+  sectionId,
   featured = false,
   onOpen,
 }: {
   article: DisplayArticle;
-  viewDetails: string;
+  sectionId: string;
   featured?: boolean;
   onOpen: () => void;
 }) {
+  const { tr } = useLang();
+  const copy = tr.library_browser;
+  const projectStatus = article.knowledge?.project?.status;
+  const readingTime = sectionId === "stories" || article.knowledge?.readMinutes ? knowledgeReadingTime(article) : undefined;
   return (
     <button
       type="button"
@@ -134,19 +131,18 @@ function ArticleTile({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink-900)]/65 to-transparent" />
         <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">
-          {article.status}
+          {projectStatus ? copy.detail_labels[projectStatus] : article.status}
         </span>
       </div>
       <div className="flex flex-1 flex-col p-4">
+        {projectStatus && <p className="mb-1 text-xs font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
         <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {article.title}
         </h3>
         <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
           {article.summary}
         </p>
-        <span className="mt-auto inline-block pt-3 text-xs font-semibold text-[var(--color-text-brand)]">
-          {viewDetails}
-        </span>
+        {readingTime && <p className="mt-2 text-sm text-[var(--color-text-secondary)]">{(readingTime.estimated ? copy.estimated_read_minutes : copy.read_minutes).replace("{count}", String(readingTime.minutes))}</p>}
       </div>
     </button>
   );
@@ -160,12 +156,12 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
     : realLibrarySections;
   const section = sections.find((entry) => entry.id === sectionId);
   const sectionCopy = tr.library_sections[sectionId];
-  const articleLanguage = lang === "kn" ? "kn" : "en";
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
   const [previousQuery, setPreviousQuery] = useState(deferredQuery);
-  const [selectedArticle, setSelectedArticle] = useState<DisplayArticle | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [paused, setPaused] = useState(false);
 
   if (previousQuery !== deferredQuery) {
     setPreviousQuery(deferredQuery);
@@ -173,20 +169,15 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
   }
 
   const localizedItems = useMemo(
-    () => section?.items.map((item) => ({
-      ...item,
-      title: item.title[articleLanguage],
-      summary: item.summary[articleLanguage],
-      status: item.status[articleLanguage],
-      tags: item.tags.map((tag) => tag[articleLanguage]),
-      html: item.html[articleLanguage],
-    })) ?? [],
-    [articleLanguage, section],
+    () => {
+      const items = section?.items.map((item) => localizeArticle(item, lang)) ?? [];
+      return sectionId === "jnana" ? items.sort((a, b) => a.title.localeCompare(b.title, lang)) : items;
+    },
+    [lang, section, sectionId],
   );
   const searchConfig = useMemo(
     () => ({
-      fields: ["title", "summary", "status", "tags", "searchText"],
-      boost: { title: 3, tags: 2, summary: 1.5, status: 1, searchText: 1 },
+      ...getSearchProfile("knowledge"),
       extractField: (item: DisplayArticle, field: string) => {
         const value = item[field as keyof DisplayArticle];
         return Array.isArray(value) ? value.join(" ") : String(value ?? "");
@@ -195,6 +186,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
     [],
   );
   const filtered = useMiniSearch(localizedItems, deferredQuery, searchConfig);
+  const selectedArticle = localizedItems.find((item) => item.id === selectedArticleId);
   const visible = filtered.slice(0, visibleCount);
   const featured = useMemo(
     () => section?.featuredItemIds
@@ -202,9 +194,16 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
       .filter((item): item is DisplayArticle => Boolean(item)) ?? [],
     [localizedItems, section],
   );
-  const featuredScrollRef = useAutoScrollRail(featured.length);
+  const featuredScrollRef = useAutoScrollRail(featured.length, paused || Boolean(selectedArticle));
+  const glossary = useMemo(() => localizedItems.flatMap((article) =>
+    article.knowledge?.glossary?.map((entry) => ({
+      term: knowledgeText(entry.term, lang),
+      definition: knowledgeText(entry.definition, lang),
+      articleId: article.id,
+    })) ?? [],
+  ).sort((a, b) => a.term.localeCompare(b.term, lang)), [localizedItems, lang]);
 
-  if (!section || !sectionCopy) return null;
+  if (!section || !sectionCopy) return <p role="status" className="mx-auto max-w-3xl p-8 text-base leading-7">{copy.unavailable}</p>;
 
   return (
     <>
@@ -220,14 +219,23 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
         </p>
       </header>
 
+      {sectionId === "jnana" && <section className="mx-auto max-w-7xl px-5 py-8" aria-labelledby="knowledge-glossary-heading">
+        <h2 id="knowledge-glossary-heading" className="font-display text-2xl font-bold">{copy.detail_labels.glossary}</h2>
+        {glossary.length ? <dl className="mt-5 grid gap-5 sm:grid-cols-2">{glossary.map((entry, index) => <div key={`${entry.articleId}-${index}`}><dt className="font-semibold"><Link href={articleHref(section, entry.articleId)} className="inline-flex min-h-11 items-center text-[var(--color-text-brand)] underline underline-offset-4">{entry.term}</Link></dt><dd className="text-base leading-8">{entry.definition}</dd></div>)}</dl> : <p role="status" className="mt-4 text-base leading-8">{copy.unavailable}</p>}
+      </section>}
+
       <section className="bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-library-title">
         <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-between gap-4">
           <h2 id="featured-library-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.featured_title}
           </h2>
+          </div>
+          <div className="relative mt-5">
+          {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((current) => !current)} />}
           <div
             ref={featuredScrollRef}
-            className="-mx-5 mt-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+            className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
             style={{
               WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
@@ -238,16 +246,17 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
               <ArticleTile
                 key={article.id}
                 article={article}
-                viewDetails={copy.view_details}
+                sectionId={sectionId}
                 featured
-                onOpen={() => setSelectedArticle(article)}
+                onOpen={() => setSelectedArticleId(article.id)}
               />
             ))}
+          </div>
           </div>
         </div>
       </section>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
         <section aria-labelledby="library-collection-heading">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <h2 id="library-collection-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
@@ -262,14 +271,14 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={copy.search_placeholder}
-                className="w-full rounded-xl border border-[var(--color-line-strong)] bg-white py-2.5 pl-10 pr-10 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)]"
+                className="min-h-11 w-full rounded-xl border border-[var(--color-line-strong)] bg-white py-2.5 pl-10 pr-12 text-base text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)]"
               />
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-                  aria-label={copy.search_label}
+                  className="absolute right-1 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                  aria-label={copy.clear_search}
                 >
                   <X className="size-4" />
                 </button>
@@ -277,7 +286,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
             </label>
           </div>
 
-          <p className="my-4 text-xs text-[var(--color-text-secondary)]">
+          <p role="status" aria-live="polite" className="my-4 text-sm text-[var(--color-text-secondary)]">
             {copy.showing_template
               .replace("{shown}", String(visible.length))
               .replace("{total}", String(filtered.length))}
@@ -289,8 +298,8 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                 <ArticleTile
                   key={article.id}
                   article={article}
-                  viewDetails={copy.view_details}
-                  onOpen={() => setSelectedArticle(article)}
+                  sectionId={sectionId}
+                  onOpen={() => setSelectedArticleId(article.id)}
                 />
               ))}
             </div>
@@ -304,19 +313,22 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
             <button
               type="button"
               onClick={() => setVisibleCount((current) => current + collectionPagination.loadIncrement)}
-              className="mx-auto mt-7 block rounded-full border border-[var(--color-line-strong)] bg-white px-5 py-2.5 text-xs font-semibold text-[var(--color-text-brand)] hover:border-[var(--color-saffron-600)]"
+              className="mx-auto mt-7 block min-h-11 rounded-full border border-[var(--color-line-strong)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--color-text-brand)] hover:border-[var(--color-saffron-600)]"
             >
               {copy.show_more}
             </button>
           )}
         </section>
-      </main>
+      </div>
 
       {selectedArticle && (
         <ArticleModal
           article={selectedArticle}
+          sectionId={sectionId}
+          href={articleHref(section, selectedArticle.id)}
+          openLabel={copy.open_article}
           closeLabel={copy.close_article}
-          onClose={() => setSelectedArticle(null)}
+          onClose={() => setSelectedArticleId(null)}
         />
       )}
     </>

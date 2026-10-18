@@ -2,14 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { knowledgeCollectionCounts, knowledgeSections } from "@/gen/library/presentation";
+import { applySectionPresentation } from "@/lib/ui-settings";
 
 type HubKey = "library" | "story";
 
 export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
   const { tr } = useLang();
   const hub = tr.section_hubs[hubKey];
+  const items = applySectionPresentation(hub.items, knowledgeSections);
 
   return (
     <>
@@ -25,9 +27,9 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
         </p>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {hub.items.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -47,18 +49,16 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
                 <h2 className="font-display text-xl font-bold text-[var(--color-text-primary)]">
                   {item.title}
                 </h2>
+                <p className="mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{knowledgeCollectionCounts[item.href] === undefined ? tr.library_browser.unavailable : tr.library_browser.collection_count.replace("{count}", String(knowledgeCollectionCounts[item.href]))}</p>
                 <p className="mt-2 line-clamp-3 text-sm leading-6 text-[var(--color-text-secondary)]">
                   {item.description}
                 </p>
-                <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-xs font-bold text-[var(--color-text-brand)]">
-                  {hub.open_label}
-                  <ArrowRight size={14} aria-hidden="true" />
-                </span>
               </div>
             </Link>
           ))}
         </div>
-      </main>
+        {items.length === 0 && <p role="status" className="py-8 text-center text-base leading-8">{tr.library_browser.unavailable}</p>}
+      </div>
     </>
   );
 }

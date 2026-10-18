@@ -29,7 +29,10 @@ This document explains how to add and update graphic assets for the website.
 
 ## 5. Update References in the Site
 
-- Link the new asset from the correct page or component.
+- Reference the new asset from the owning content record or image settings; do not
+  hardcode editorial image URLs or labels in a component.
+- Image-map relative paths are appended to the configured media-directory base,
+  including paths beginning with `/`; absolute HTTPS targets bypass that base.
 - Confirm the asset loads correctly in both development and production builds.
 
 ## 6. Document the Change

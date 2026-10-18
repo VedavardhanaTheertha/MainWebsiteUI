@@ -15,11 +15,29 @@ import yaml from "js-yaml";
 import MiniSearch from "minisearch";
 import { normalizeSearchText } from "./content-utils.mjs";
 import { describeContentMode } from "./environment-utils.mjs";
-import { withSearchDefaults } from "./search-config.mjs";
+import { generateSyntheticEventDates } from "./synthetic-events.mjs";
+import { getSearchProfile, withSearchDefaults } from "./search-config.mjs";
+import { discoverLanguageContent, resolveLocalizedValues } from "./language-content.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const eventsSourceDir = path.join(rootDir, "library", "events");
 const outputDir = path.join(rootDir, "src", "gen", "events");
+const { codes: languageCodes, defaultLanguage } = discoverLanguageContent(rootDir);
+
+function localizeEventField(metadata, field, legacy, fallback = "") {
+  const authored = metadata[field];
+  const values = { ...legacy };
+  for (const code of languageCodes) {
+    if (code in values) continue;
+    const value = metadata[`${field}_${code}`] ??
+      (authored && typeof authored === "object" && !Array.isArray(authored) ? authored[code] : undefined);
+    if (value !== undefined) values[code] = value;
+  }
+  if (typeof authored === "string" || Array.isArray(authored)) {
+    values[defaultLanguage] ??= authored;
+  }
+  return resolveLocalizedValues(values, languageCodes, defaultLanguage, fallback);
+}
 
 // 1. Resolve environment configuration
 const envName = process.env.SITE_ENV || "dev";
@@ -180,71 +198,43 @@ for (const file of eventFiles) {
 
   const searchText = normalizeSearchText(searchHaystack);
 
+  const localizedCategories = categories.map((category, index) => {
+    const authored = Array.isArray(fm.categories) ? fm.categories[index] : fm.category;
+    return {
+      code: category.code,
+      ...resolveLocalizedValues(typeof authored === "object" ? { ...category, ...authored } : category,
+        languageCodes, defaultLanguage, category.code),
+    };
+  });
+  const localizedTitle = localizeEventField(fm, "title", { en: titleEn, kn: titleKn }, slug);
+  const localizedLocation = localizeEventField(fm, "location", { en: locationEn, kn: locationKn });
+  const localizedPerformers = localizeEventField(fm, "performers", { en: performersEn, kn: performersKn }, []);
+  const localizedDescription = localizeEventField(fm, "description", { en: descriptionEn, kn: descriptionKn });
   realCatalog.push({
     slug,
-    title: { en: titleEn, kn: titleKn },
+    title: localizedTitle,
     startDate: fm.start_date || "",
     endDate: fm.end_date || fm.start_date || "",
     startTime: fm.start_time || "",
     endTime: fm.end_time || "",
-    time: { en: timeEn, kn: timeKn },
-    displayDate: { en: displayDateEn, kn: displayDateKn },
-    location: { en: locationEn, kn: locationKn },
-    performers: { en: performersEn, kn: performersKn },
+    time: localizeEventField(fm, "time", { en: timeEn, kn: timeKn }),
+    displayDate: localizeEventField(fm, "display_date", { en: displayDateEn, kn: displayDateKn }, fm.start_date || ""),
+    location: localizedLocation,
+    performers: localizedPerformers,
     image: mainImage,
     images,
     recurrence,
     isRecurring,
     tags,
-    description: { en: descriptionEn, kn: descriptionKn },
-    details: { en: detailsEn, kn: detailsKn },
-    categories,
-    searchText,
+    description: localizedDescription,
+    details: localizeEventField(fm, "details", { en: detailsEn, kn: detailsKn }),
+    categories: localizedCategories,
+    searchText: normalizeSearchText([
+      searchText, ...Object.values(localizedTitle), ...Object.values(localizedLocation),
+      ...Object.values(localizedPerformers).flat(), ...Object.values(localizedDescription),
+      ...localizedCategories.flatMap((category) => Object.values(category)),
+    ].join(" ")),
   });
-}
-
-// Date helpers for test event generation
-const EN_MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-const KN_MONTHS = [
-  "ಜನವರಿ", "ಫೆಬ್ರವರಿ", "ಮಾರ್ಚ್", "ಏಪ್ರಿಲ್", "ಮೇ", "ಜೂನ್",
-  "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂಬರ್", "ಅಕ್ಟೋಬರ್", "ನವೆಂಬರ್", "ಡಿಸೆಂಬರ್",
-];
-
-function parseISODate(dStr) {
-  const [y, m, d] = dStr.split("-").map(Number);
-  return Date.UTC(y, m - 1, d);
-}
-
-function formatISODate(utcMs) {
-  const d = new Date(utcMs);
-  const year = d.getUTCFullYear();
-  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function addDaysToISODate(dStr, days) {
-  if (!dStr) return "";
-  const utcMs = parseISODate(dStr);
-  return formatISODate(utcMs + days * 86400000);
-}
-
-function formatDisplayDateSingle(isoDateStr, lang = "en") {
-  if (!isoDateStr) return "";
-  const [y, m, d] = isoDateStr.split("-").map(Number);
-  const monthName = lang === "kn" ? KN_MONTHS[m - 1] : EN_MONTHS[m - 1];
-  return `${d} ${monthName} ${y}`;
-}
-
-function formatDisplayDateRange(startStr, endStr, lang = "en") {
-  if (!startStr) return "";
-  if (!endStr || startStr === endStr) {
-    return formatDisplayDateSingle(startStr, lang);
-  }
-  return `${formatDisplayDateSingle(startStr, lang)} - ${formatDisplayDateSingle(endStr, lang)}`;
 }
 
 const today = new Date().toISOString().slice(0, 10);
@@ -254,68 +244,55 @@ const isPastEvent = (ev) => {
   return Boolean(end && end < today);
 };
 
-// 3. For dev and local environments: create duplicate events for testing from all past events
-const isDevOrLocal = envName === "dev" || envName === "local";
+// 3. Dev/local-only synthetic events; production never reads their settings.
+const syntheticEvents = await generateSyntheticEventDates(realCatalog, { envName, rootDir, today });
+for (const { event: ev, startDate: newStartDate, endDate: newEndDate, displayDate } of syntheticEvents) {
+  const duplicateTitleEn = `Duplicate event for testing: ${ev.title.en}`;
+  const duplicateTitleKn = `Duplicate event for testing: ${ev.title.kn}`;
+  const duplicateDescEn = `Duplicate event for testing: ${ev.description.en || ""}`.trim();
+  const duplicateDescKn = `Duplicate event for testing: ${ev.description.kn || ""}`.trim();
 
-if (isDevOrLocal) {
-  const pastEvents = realCatalog.filter((ev) => isPastEvent(ev) && ev.startDate);
-  if (pastEvents.length > 0) {
-    const sortedPastDates = pastEvents.map((ev) => ev.startDate).sort();
-    const earliestPastDate = sortedPastDates[0];
-    const diffDays = Math.round((parseISODate(today) - parseISODate(earliestPastDate)) / 86400000);
+  const categoriesEn = (ev.categories || []).map((c) => c.en).join(", ");
+  const categoriesKn = (ev.categories || []).map((c) => c.kn).join(", ");
 
-    if (diffDays >= 0) {
-      for (const ev of pastEvents) {
-        const newStartDate = addDaysToISODate(ev.startDate, diffDays);
-        const newEndDate = addDaysToISODate(ev.endDate || ev.startDate, diffDays);
-        const newDisplayDateEn = formatDisplayDateRange(newStartDate, newEndDate, "en");
-        const newDisplayDateKn = formatDisplayDateRange(newStartDate, newEndDate, "kn");
+  const searchHaystack = [
+    duplicateTitleEn,
+    duplicateTitleKn,
+    categoriesEn,
+    categoriesKn,
+    ev.location.en,
+    ev.location.kn,
+    (ev.performers?.en || []).join(" "),
+    (ev.performers?.kn || []).join(" "),
+    duplicateDescEn,
+    duplicateDescKn,
+    (ev.tags || []).join(" "),
+    ev.recurrence,
+  ].filter(Boolean).join(" ");
 
-        const duplicateTitleEn = `Duplicate event for testing: ${ev.title.en}`;
-        const duplicateTitleKn = `Duplicate event for testing: ${ev.title.kn}`;
-        const duplicateDescEn = `Duplicate event for testing: ${ev.description.en || ""}`.trim();
-        const duplicateDescKn = `Duplicate event for testing: ${ev.description.kn || ""}`.trim();
+  const searchText = normalizeSearchText(searchHaystack);
 
-        const categoriesEn = (ev.categories || []).map((c) => c.en).join(", ");
-        const categoriesKn = (ev.categories || []).map((c) => c.kn).join(", ");
-
-        const searchHaystack = [
-          duplicateTitleEn,
-          duplicateTitleKn,
-          categoriesEn,
-          categoriesKn,
-          ev.location.en,
-          ev.location.kn,
-          (ev.performers?.en || []).join(" "),
-          (ev.performers?.kn || []).join(" "),
-          duplicateDescEn,
-          duplicateDescKn,
-          (ev.tags || []).join(" "),
-          ev.recurrence,
-        ].filter(Boolean).join(" ");
-
-        const searchText = normalizeSearchText(searchHaystack);
-
-        realCatalog.push({
-          ...ev,
-          slug: `duplicate-${ev.slug}`,
-          title: { en: duplicateTitleEn, kn: duplicateTitleKn },
-          startDate: newStartDate,
-          endDate: newEndDate,
-          displayDate: { en: newDisplayDateEn, kn: newDisplayDateKn },
-          description: { en: duplicateDescEn, kn: duplicateDescKn },
-          searchText,
-        });
-      }
-    }
-  }
+  realCatalog.push({
+    ...ev,
+    slug: `duplicate-${ev.slug}`,
+    title: Object.fromEntries(languageCodes.map((code) => [
+      code, `Duplicate event for testing: ${ev.title[code] || ""}`,
+    ])),
+    startDate: newStartDate,
+    endDate: newEndDate,
+    displayDate: resolveLocalizedValues(displayDate, languageCodes, defaultLanguage),
+    description: Object.fromEntries(languageCodes.map((code) => [
+      code, `Duplicate event for testing: ${ev.description[code] || ""}`.trim(),
+    ])),
+    searchText,
+  });
 }
 
 // 4. Generate placeholder catalog for development/placeholder verification
 const placeholderCatalog = realCatalog.map((ev, idx) => {
   const isDuplicate = ev.slug.startsWith("duplicate-");
   const prefix = isDuplicate ? "Duplicate event for testing: " : "";
-  return {
+  const placeholder = {
     ...ev,
     image: ev.image,
     images: ev.images,
@@ -347,6 +324,16 @@ const placeholderCatalog = realCatalog.map((ev, idx) => {
       kn: `kn·${c.code}`,
     })),
   };
+  for (const code of languageCodes) {
+    if (code === "en" || code === "kn") continue;
+    placeholder.title[code] = `${prefix}${code}·event title ${idx + 1} — content goes here`;
+    placeholder.location[code] = `${code}·event location ${idx + 1}`;
+    placeholder.performers[code] = (ev.performers[code] || []).map((_, index) => `${code}·performer ${index + 1}`);
+    placeholder.description[code] = `${prefix}${code}·event description ${idx + 1} — sample placeholder text for layout preview only text`;
+    placeholder.details[code] = `${code}·event details ${idx + 1} — sample placeholder copy for layout preview only text`;
+    for (const category of placeholder.categories) category[code] = `${code}·${category.code}`;
+  }
+  return placeholder;
 });
 
 // 5. Partition catalogs into Upcoming, Past, and Recurring
@@ -365,10 +352,10 @@ function buildSearchIndexPayload(catalog) {
     __search_id: idx,
     titleEn: item.title.en,
     titleKn: item.title.kn,
-    categoriesText: item.categories.map((c) => `${c.code} ${c.en} ${c.kn}`).join(" "),
+    categoriesText: item.categories.flatMap((category) => Object.values(category)).join(" "),
     locationEn: item.location.en,
     locationKn: item.location.kn,
-    performersText: [...item.performers.en, ...item.performers.kn].join(" "),
+    performersText: Object.values(item.performers).flat().join(" "),
     tagsText: item.tags.join(" "),
   }));
 
@@ -385,16 +372,7 @@ function buildSearchIndexPayload(catalog) {
       "searchText",
     ],
     searchOptions: {
-      boost: {
-        titleEn: 3,
-        titleKn: 3,
-        categoriesText: 2,
-        performersText: 1.8,
-        locationEn: 1.5,
-        locationKn: 1.5,
-        tagsText: 1.2,
-        searchText: 1,
-      },
+      boost: getSearchProfile("events").boost,
     },
   }));
 
@@ -434,28 +412,27 @@ await writeFile(path.join(outputDir, "loaders.ts"), loadersCode, "utf8");
 const dataTsCode = `// Generated by build/build-events-content.mjs — do not edit
 export interface EventCategory {
   code: string;
-  en: string;
-  kn: string;
+  [language: string]: string;
 }
 
 export interface EventItem {
   slug: string;
-  title: { en: string; kn: string };
+  title: Record<string, string>;
   startDate: string;
   endDate: string;
   startTime?: string;
   endTime?: string;
-  time: { en: string; kn: string };
-  displayDate: { en: string; kn: string };
-  location: { en: string; kn: string };
-  performers: { en: string[]; kn: string[] };
+  time: Record<string, string>;
+  displayDate: Record<string, string>;
+  location: Record<string, string>;
+  performers: Record<string, string[]>;
   image: string;
   images: string[];
   recurrence: string;
   isRecurring: boolean;
   tags: string[];
-  description: { en: string; kn: string };
-  details: { en: string; kn: string };
+  description: Record<string, string>;
+  details: Record<string, string>;
   categories: EventCategory[];
   searchText?: string;
 }

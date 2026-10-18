@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Content build step.
 //
-// Scans content/languages/, content/blog/, and the active library/hero environment,
+// Scans UI labels, library Markdown and environment-specific settings,
 // merges every language over the default language, optionally replaces all real
 // text with placeholders, and emits generated website content under src/gen/.
 //
@@ -10,7 +10,7 @@
 // an article by adding a single file.
 //
 // Runs automatically via the "predev"/"prebuild" npm scripts.
-// Never edit src/gen/content.ts directly — edit content/ instead.
+// Never edit src/gen/content.ts directly — edit the canonical authored sources.
 //
 // See docs/ARCHITECTURE.md §5 (content system) and §6 (environments).
 // ─────────────────────────────────────────────────────────────────────────────
@@ -20,27 +20,21 @@ import path from "node:path";
 import yaml from "js-yaml";
 import { renderMarkdown } from "../build/markdown.mjs";
 import { describeContentMode } from "../build/environment-utils.mjs";
+import { loadUiSettings } from "../build/ui-settings.mjs";
+import { loadActionSettings, resolveActionSettings, validateActionCopy } from "../build/action-settings.mjs";
+import { resolveFooterLinks } from "../build/footer-links.mjs";
+import { resolveImageUrl } from "../build/image-resolution.mjs";
+import { discoverParampara as discoverMarkdownParampara } from "../build/parampara-content.mjs";
+import { loadAuthoredLanguage } from "../build/authored-content.mjs";
+import { applyNavigation, loadNavigation } from "../build/navigation-content.mjs";
+import { isMachineContentValue as isMachineValue, isPreservedContentField } from "../build/content-values.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-
-// Keys whose values are machine-readable (paths, ids, dates, style tokens) and
-// must survive the placeholder transform untouched. Replacing an `href` would
-// break navigation; replacing an `id` would break item matching.
-const PRESERVED_KEYS = new Set([
-  "id", "key", "code", "kind", "tone", "cat", "slug", "phone", "email",
-  "href", "img", "bg", "icon", "symbol", "upi", "images", "gallery",
-  "launch_date", "end_date", "pinned_date", "date",
-  "img_position",
-  // This preview control must remain understandable while it selects which
-  // transform to preview. Its translated labels still come from content files.
-  "local_preview",
-]);
+const { heroSettings } = loadUiSettings();
 
 // Words appended to a placeholder so it roughly matches the length of the real
 // text it stands in for — short placeholders would hide genuine layout bugs.
 const FILLER = ["sample", "placeholder", "copy", "for", "layout", "preview", "only", "text"];
-
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Reads and parses config/site.yml, the single source of environment settings. */
 function loadConfig() {
@@ -94,14 +88,9 @@ function discoverLanguages(config) {
   return [fallback, ...codes.filter((c) => c !== fallback)];
 }
 
-/** Loads one language file, failing with a readable message on malformed JSON. */
+/** Loads one language's canonical labels, editorial copy and settings overlays. */
 function loadLanguage(config, code) {
-  const file = path.join(rootDir, config.content.languages_dir, `${code}.json`);
-  try {
-    return JSON.parse(readFileSync(file, "utf8"));
-  } catch (err) {
-    throw new Error(`${config.content.languages_dir}/${code}.json is not valid JSON — ${err.message}`);
-  }
+  return loadAuthoredLanguage(rootDir, code, config.content.languages_dir, { navigation: false });
 }
 
 /** Loads the single source of truth for all public image paths. */
@@ -114,7 +103,7 @@ function loadImageConfig(environmentName) {
   const config = JSON.parse(readFileSync(file, "utf8"));
   const baseUrl = config.baseUrl ?? "";
   const paths = config.paths ?? {};
-  const resolve = (imagePath) => `${baseUrl}${imagePath}`;
+  const resolve = (imagePath) => resolveImageUrl(imagePath, baseUrl);
   const lookup = new Map(Object.entries(paths).map(([key, imagePath]) => [`@image.${key}`, resolve(imagePath)]));
   for (const imagePath of Object.values(paths)) lookup.set(imagePath, resolve(imagePath));
   for (const [alias, key] of Object.entries(config.aliases ?? {})) {
@@ -232,19 +221,6 @@ function makePlaceholder(keyPath, original, langCode) {
   return text;
 }
 
-/** True when a string carries machine meaning (path, URL, date) rather than prose. */
-function isMachineValue(value) {
-  return (
-    value.startsWith("/") ||
-    value.startsWith("#") ||
-    value.startsWith("http://") ||
-    value.startsWith("https://") ||
-    value.startsWith("mailto:") ||
-    value.startsWith("tel:") ||
-    ISO_DATE.test(value)
-  );
-}
-
 /**
  * Recursively replaces prose with placeholders while leaving structure, paths,
  * ids and dates intact. Keys beginning with "_" (such as the `_language`
@@ -263,7 +239,7 @@ function toPlaceholders(node, langCode, prefix = "") {
     const out = {};
     for (const [key, value] of Object.entries(node)) {
       const keyPath = prefix ? `${prefix}.${key}` : key;
-      out[key] = key.startsWith("_") || PRESERVED_KEYS.has(key)
+      out[key] = isPreservedContentField(key, prefix)
         ? value
         : toPlaceholders(value, langCode, keyPath);
     }
@@ -272,176 +248,8 @@ function toPlaceholders(node, langCode, prefix = "") {
   return node;
 }
 
-/**
- * Reads one `<lang>.md` article: the first level-1 heading becomes the title and
- * everything after it becomes the body.
- */
-function parseArticle(file) {
-  const raw = readFileSync(file, "utf8");
-  const match = raw.match(/^\s*#\s+(.+)$/m);
-  if (!match) {
-    throw new Error(`${path.relative(rootDir, file)} has no "# Title" heading on its first line.`);
-  }
-  const title = match[1].trim();
-  const body = raw.slice(match.index + match[0].length);
-  return { title, bodyMarkdown: body.trim() };
-}
-
-/**
- * Discovers blog posts by scanning one folder per post. Each folder supplies a
- * meta.json of shared settings plus one Markdown file per language. Unlike a
- * missing translation — which falls back to the default language — a post with
- * no date or title fails the build, because there is no sensible default.
- */
-function discoverBlogPosts(config, languageCodes) {
-  const dir = path.join(rootDir, config.content.blog_dir);
-  if (!existsSync(dir)) return [];
-
-  const fallback = config.site.default_language;
-  const posts = [];
-
-  for (const slug of readdirSync(dir).sort()) {
-    const postDir = path.join(dir, slug);
-    if (!statSync(postDir).isDirectory()) continue;
-
-    const metaFile = path.join(postDir, "meta.json");
-    if (!existsSync(metaFile)) {
-      throw new Error(`content/blog/${slug}/ is missing meta.json`);
-    }
-    let meta;
-    try {
-      meta = JSON.parse(readFileSync(metaFile, "utf8"));
-    } catch (err) {
-      throw new Error(`content/blog/${slug}/meta.json is not valid JSON — ${err.message}`);
-    }
-    if (!meta.date || !ISO_DATE.test(meta.date)) {
-      throw new Error(`content/blog/${slug}/meta.json needs a "date" in YYYY-MM-DD form.`);
-    }
-
-    const defaultArticle = path.join(postDir, `${fallback}.md`);
-    if (!existsSync(defaultArticle)) {
-      throw new Error(`content/blog/${slug}/ must contain ${fallback}.md (the default language).`);
-    }
-
-    // Every language resolves to something: its own article when present,
-    // otherwise the default language's.
-    const articles = {};
-    const base = parseArticle(defaultArticle);
-    for (const code of languageCodes) {
-      const file = path.join(postDir, `${code}.md`);
-      articles[code] = existsSync(file) ? parseArticle(file) : base;
-    }
-
-    posts.push({
-      slug,
-      date: meta.date,
-      hero: meta.hero ?? null,
-      tags: meta.tags ?? [],
-      articles,
-    });
-  }
-  // Newest first — the order the blog index displays.
-  return posts.sort((a, b) => b.date.localeCompare(a.date));
-}
-
-/** Applies the placeholder transform to article titles and bodies. */
-function placeholderArticles(posts) {
-  return posts.map((post) => ({
-    ...post,
-    articles: Object.fromEntries(
-      Object.entries(post.articles).map(([code, article]) => [
-        code,
-        {
-          title: makePlaceholder(`blog.${post.slug}.title`, article.title, code),
-          bodyMarkdown: makePlaceholder(`blog.${post.slug}.body`, article.bodyMarkdown, code),
-        },
-      ])
-    ),
-  }));
-}
-
-function parseParamparaMarkdown(file) {
-  const raw = readFileSync(file, "utf8");
-  const heading = raw.match(/^#\s+(.+)$/m)?.[1]?.trim();
-  const detailsMatch = raw.match(/^##\s+Details\s*$/m);
-  if (!heading || !detailsMatch) {
-    throw new Error(`${path.relative(rootDir, file)} needs a title and a "## Details" heading.`);
-  }
-
-  const summary = raw
-    .slice(raw.indexOf("\n") + 1, detailsMatch.index)
-    .split(/\r?\n/)
-    .filter((line) => !/^\s*-\s+\*\*[^*]+:\*\*/.test(line) && line.trim())
-    .join("\n\n")
-    .trim();
-  const detailsMarkdown = raw.slice(detailsMatch.index + detailsMatch[0].length).trim();
-  return { heading, summary, detailsMarkdown };
-}
-
-/** Loads the indexed Guru Parampara, falling back to English until translations exist. */
 function discoverParampara(languageCodes, defaultLang) {
-  const dir = path.join(rootDir, "library", "parampara");
-  const indexFile = path.join(dir, "index.json");
-  if (!existsSync(indexFile)) {
-    throw new Error("library/parampara/index.json is missing — initialize the library submodule.");
-  }
-
-  const loadIndex = (file) => {
-    try {
-      return JSON.parse(readFileSync(file, "utf8"));
-    } catch (err) {
-      throw new Error(`${path.relative(rootDir, file)} is not valid JSON — ${err.message}`);
-    }
-  };
-  const baseIndex = loadIndex(indexFile);
-  if (!Array.isArray(baseIndex.items) || !baseIndex.items.length) {
-    throw new Error("library/parampara/index.json needs a non-empty items array.");
-  }
-
-  const result = {};
-  for (const code of languageCodes) {
-    const translatedIndexFile = path.join(dir, `index.${code}.json`);
-    const hasTranslatedIndex = code !== defaultLang && existsSync(translatedIndexFile);
-    const index = hasTranslatedIndex ? loadIndex(translatedIndexFile) : baseIndex;
-    if (!Array.isArray(index.items) || index.items.length !== baseIndex.items.length) {
-      throw new Error(`${path.relative(rootDir, translatedIndexFile)} must contain the same ${baseIndex.items.length} entries as index.json.`);
-    }
-
-    result[code] = index.items.map((item, itemIndex) => {
-      const baseItem = baseIndex.items[itemIndex];
-      if (!item.id || item.id !== baseItem.id || !item.contentFile) {
-        throw new Error(`library/parampara index entry ${itemIndex + 1} needs a stable id and contentFile.`);
-      }
-
-      const parsedPath = path.parse(item.contentFile);
-      const translatedMarkdown = path.join(dir, `${parsedPath.name}.${code}${parsedPath.ext}`);
-      const markdownFile = hasTranslatedIndex
-        ? path.join(dir, item.contentFile)
-        : code !== defaultLang && existsSync(translatedMarkdown)
-          ? translatedMarkdown
-          : path.join(dir, baseItem.contentFile);
-      if (!existsSync(markdownFile)) {
-        throw new Error(`${path.relative(rootDir, markdownFile)} is referenced by the parampara index but is missing.`);
-      }
-
-      const parsed = parseParamparaMarkdown(markdownFile);
-      if (code === defaultLang && (parsed.heading !== item.name || parsed.summary !== item.summary)) {
-        throw new Error(`${path.relative(rootDir, markdownFile)} title or summary does not match library/parampara/index.json.`);
-      }
-      return {
-        id: item.id,
-        name: parsed.heading,
-        position: item.position,
-        officialPosition: item.officialPosition ?? null,
-        timePeriod: item.timePeriod ?? "",
-        summary: parsed.summary,
-        thumbnailImage: item.thumbnailImage ?? "",
-        fullImage: item.fullImage ?? item.thumbnailImage ?? "",
-        detailsMarkdown: parsed.detailsMarkdown,
-      };
-    });
-  }
-  return result;
+  return discoverMarkdownParampara(rootDir, languageCodes, defaultLang);
 }
 
 function placeholderParampara(parampara) {
@@ -459,6 +267,12 @@ function placeholderParampara(parampara) {
         : "",
       thumbnailImage: "",
       fullImage: "",
+      ...Object.fromEntries(["references", "relatedPlaces", "relatedWorks"]
+        .filter((field) => item[field])
+        .map((field) => [field, item[field].map((link, linkIndex) => ({
+          ...link,
+          label: makePlaceholder(`parampara.items.${index}.${field}.${linkIndex}.label`, link.label, code),
+        }))])),
     })),
   ]));
 }
@@ -480,6 +294,9 @@ function writeParamparaArtifacts(parampara, alternateParampara, content, default
     `export interface ParamparaGuru {\n` +
     `  id: string; name: string; position: number; officialPosition: number | null;\n` +
     `  timePeriod: string; summary: string; thumbnailImage: string; fullImage: string; detailsHtml: string;\n` +
+    `  references?: Array<{ label: string; href: string }>;\n` +
+    `  relatedPlaces?: Array<{ label: string; href: string }>;\n` +
+    `  relatedWorks?: Array<{ label: string; href: string }>;\n` +
     `}\n\n` +
     `export const paramparaByLanguage = ${JSON.stringify(rendered, null, 2)} as unknown as Record<string, ParamparaGuru[]>;\n` +
     `export const alternateParamparaByLanguage = ${JSON.stringify(renderedAlternate, null, 2)} as unknown as Record<string, ParamparaGuru[]> | null;\n`;
@@ -816,8 +633,8 @@ function writeHeroImages(hero, content, lang, basePath) {
     * { box-sizing: border-box; }
     html, body { margin: 0; }
     .hero { position: relative; width: 100%; height: 462px; overflow: hidden; border-radius: 0 0 22px 22px; background: #140c04; }
-    .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity 900ms ease; }
-    .hero-image img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 7s ease-out; }
+    .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity ${heroSettings.fadeDurationMs}ms ease; }
+    .hero-image img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform ${heroSettings.zoomDurationMs}ms ease-out; }
     .hero-image.is-active { opacity: 1; }
     .hero-image.is-active img { transform: scale(1); }
     .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,12,4,.42) 0%, rgba(20,12,4,.05) 22%, rgba(20,12,4,0) 40%, rgba(20,12,4,.55) 70%, rgba(16,9,3,.86) 100%); }
@@ -862,6 +679,7 @@ function writeHeroImages(hero, content, lang, basePath) {
       window.addEventListener("site-language-change", () => applyLanguage(localStorage.getItem("shiroor-lang")));
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
       const slides = [...document.querySelectorAll(".hero-image")];
+      if (!${heroSettings.autoplay} || slides.length <= 1) return;
       let active = 0;
       window.setInterval(() => {
         slides[active].classList.remove("is-active");
@@ -869,7 +687,7 @@ function writeHeroImages(hero, content, lang, basePath) {
         active = (active + 1) % slides.length;
         slides[active].classList.add("is-active");
         slides[active].setAttribute("aria-hidden", "false");
-      }, 4500);
+      }, ${heroSettings.intervalMs});
     })();
   </script>
 </body>
@@ -884,6 +702,7 @@ function writeHeroImages(hero, content, lang, basePath) {
 // ── Build ────────────────────────────────────────────────────────────────────
 
 const config = loadConfig();
+const navigation = loadNavigation(rootDir);
 const env = resolveEnvironment(config);
 const imageLookup = loadImageConfig(env.name);
 const mode = describeContentMode(env.content_mode, env.default_variant);
@@ -893,6 +712,7 @@ const defaultHero = loadDefaultHero(imageLookup, env.name);
 
 const defaultContent = resolveImagePaths(loadLanguage(config, defaultLang), imageLookup);
 
+const discoveredConnectContent = discoverConnectContent(env.base_path ?? "");
 const realContent = {};
 const placeholderContent = {};
 const descriptors = [];
@@ -903,9 +723,11 @@ for (const code of languageCodes) {
     ? defaultContent
     : resolveImagePaths(loadLanguage(config, code), imageLookup);
   const fallbacks = [];
-  const merged = code === defaultLang
+  const translated = code === defaultLang
     ? raw
     : mergeOverDefault(defaultContent, raw, fallbacks);
+  const merged = resolveFooterLinks(applyNavigation(translated, navigation), discoveredConnectContent.connectLinks, `${code}.json`);
+  validateActionCopy(merged.public_actions, `${config.content.languages_dir}/${code}.json`);
 
   if (fallbacks.length) fallbackReport[code] = fallbacks;
 
@@ -923,20 +745,9 @@ for (const code of languageCodes) {
   if (mode.includesPlaceholder) placeholderContent[code] = toPlaceholders(merged, code);
 }
 
-const discoveredBlogPosts = resolveImagePaths(
-  discoverBlogPosts(config, languageCodes),
-  imageLookup
-);
-const realBlogPosts = mode.includesReal ? discoveredBlogPosts : [];
-const placeholderBlogPosts = mode.includesPlaceholder ? placeholderArticles(discoveredBlogPosts) : [];
-
 const content = mode.defaultVariant === "real" ? realContent : placeholderContent;
 const alternateContent = mode.switchable
   ? mode.defaultVariant === "real" ? placeholderContent : realContent
-  : null;
-const blogPosts = mode.defaultVariant === "real" ? realBlogPosts : placeholderBlogPosts;
-const alternateBlogPosts = mode.switchable
-  ? mode.defaultVariant === "real" ? placeholderBlogPosts : realBlogPosts
   : null;
 const discoveredParampara = discoverParampara(languageCodes, defaultLang);
 const placeholderParamparaContent = placeholderParampara(discoveredParampara);
@@ -944,7 +755,9 @@ const parampara = mode.defaultVariant === "real" ? discoveredParampara : placeho
 const alternateParampara = mode.switchable
   ? mode.defaultVariant === "real" ? placeholderParamparaContent : discoveredParampara
   : null;
-const discoveredConnectContent = discoverConnectContent(env.base_path ?? "");
+const actionDestinations = resolveActionSettings(loadActionSettings(), discoveredConnectContent.connectLinks);
+const { generatePaymentQr } = await import("../build/payment-qr.mjs");
+const paymentQrDataUrl = await generatePaymentQr(actionDestinations.payment);
 const placeholderConnect = placeholderConnectContent(discoveredConnectContent);
 const connectContent = mode.defaultVariant === "real" ? discoveredConnectContent : placeholderConnect;
 const alternateConnectContent = mode.switchable
@@ -967,22 +780,18 @@ const toHomeHero = (heroData) => ({
 const homeHero = toHomeHero(hero);
 const alternateHomeHero = alternateHero ? toHomeHero(alternateHero) : null;
 
-// Markdown is converted after the placeholder pass so placeholder bodies render
-// as ordinary paragraphs too.
-const renderedPosts = blogPosts.map((post) => ({
-  ...post,
-  articles: Object.fromEntries(
-    Object.entries(post.articles).map(([code, article]) => [
-      code,
-      { title: article.title, html: renderMarkdown(article.bodyMarkdown) },
-    ])
-  ),
-}));
-
 writeRobots(env, config);
 
 const outDir = path.join(rootDir, "src", "gen");
 mkdirSync(outDir, { recursive: true });
+mkdirSync(path.join(outDir, "settings"), { recursive: true });
+writeFileSync(
+  path.join(outDir, "settings", "actions.ts"),
+  `// Generated by scripts/generate-content.mjs — do not edit\n` +
+    `export const actionDestinations = ${JSON.stringify(actionDestinations)} as const;\n` +
+    `export const paymentQrDataUrl = ${JSON.stringify(paymentQrDataUrl)};\n`,
+  "utf8",
+);
 writeHeroImages(hero, content, defaultLang, env.base_path ?? "");
 writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang);
 writeConnectArtifacts(connectContent, alternateConnectContent);
@@ -1004,16 +813,16 @@ function discoverStaticRoutes(dir, prefix = "") {
 
 const routes = [
   ...discoverStaticRoutes(path.join(rootDir, "src", "app")),
-  ...blogPosts.map((post) => `/blog/${post.slug}`),
+  ...content[defaultLang].learn.flatMap((item) => item.id ? [`/learn/${item.id}`] : []),
   ...discoveredParampara[defaultLang].map((guru) => `/history/parampara/${guru.id}`),
 ].filter((route, index, all) => all.indexOf(route) === index).sort();
 
 const langUnion = languageCodes.map((c) => `"${c}"`).join(" | ");
 const generated = `// AUTO-GENERATED by scripts/generate-content.mjs — do not edit directly.
-// Edit the files in content/ instead, then rerun \`npm run content:build\`.
+// Edit canonical files in content/, library/ and settings/, then rerun \`npm run content:build\`.
 //
 // Built for SITE_ENV="${env.name}" (content_mode: ${env.content_mode}).
-import type { ContentShape, LanguageDescriptor, BlogPost } from "@/lib/content-types";
+import type { ContentShape, LanguageDescriptor } from "@/lib/content-types";
 
 export type Lang = ${langUnion};
 
@@ -1047,8 +856,11 @@ export const siteConfig = ${JSON.stringify(
   2
 )} as const;
 
-/** Static routes discovered from app pages and content-driven blog entries. */
+/** Public app routes, including active learning and lineage detail pages. */
 export const routes = ${JSON.stringify(routes, null, 2)} as const;
+
+/** Utility destinations owned by settings/navigation.json. */
+export const navigationRoutes = ${JSON.stringify(navigation.routes, null, 2)} as const;
 
 /** Discovered languages, in switcher order. Add a file to content/languages/ to extend. */
 export const languages: LanguageDescriptor[] = ${JSON.stringify(descriptors, null, 2)};
@@ -1067,26 +879,6 @@ export const content = ${JSON.stringify(content, null, 2)} as unknown as Record<
 /** Alternate copy variant for switchable environments; null otherwise. */
 export const alternateContent = ${JSON.stringify(alternateContent, null, 2)} as unknown as Record<Lang, ContentShape> | null;
 
-/** Discovered blog posts, newest first. Add a folder to content/blog/ to extend. */
-export const blogPosts: BlogPost[] = ${JSON.stringify(renderedPosts, null, 2)} as unknown as BlogPost[];
-
-/** Alternate article variant for switchable environments; null otherwise. */
-export const alternateBlogPosts: BlogPost[] | null = ${JSON.stringify(
-  alternateBlogPosts
-    ? alternateBlogPosts.map((post) => ({
-        ...post,
-        articles: Object.fromEntries(
-          Object.entries(post.articles).map(([code, article]) => [
-            code,
-            { title: article.title, html: renderMarkdown(article.bodyMarkdown) },
-          ])
-        ),
-      }))
-    : null,
-  null,
-  2
-)} as unknown as BlogPost[] | null;
-
 export type { ContentShape } from "@/lib/content-types";
 `;
 
@@ -1096,7 +888,7 @@ writeFileSync(path.join(outDir, "content.ts"), generated, "utf8");
 
 console.log(
   `[content] env=${env.name} mode=${env.content_mode} ` +
-    `languages=[${languageCodes.join(", ")}] posts=${renderedPosts.length}`
+    `languages=[${languageCodes.join(", ")}]`
 );
 
 for (const [code, fallbacks] of Object.entries(fallbackReport)) {

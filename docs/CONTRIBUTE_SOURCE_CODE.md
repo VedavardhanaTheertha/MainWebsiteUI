@@ -10,8 +10,9 @@ branches and open pull requests back to `main`.
    submodules.
 3. Create a descriptive short-lived branch from current `main`. Fork contributors use
    the same branch model in their fork.
-4. Make the smallest coherent change. Keep visitor-facing text in `content/`, preserve
-   accessibility, and add tests for new logic.
+4. Make the smallest coherent change. Keep UI labels in `content/languages/`,
+   editorial content in canonical `library/` Markdown, and configurable behavior in
+   `settings/`. Preserve accessibility and add tests for new logic.
 5. Update architecture documentation for structure, content-system, environment, or
    pipeline changes; update developer documentation when contributor steps change.
 6. Run the mandatory local gate:

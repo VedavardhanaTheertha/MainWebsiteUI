@@ -9,6 +9,7 @@ import {
   alternateParamparaByLanguage,
   paramparaByLanguage,
 } from "@/gen/parampara/data";
+import ParamparaRelatedLinks, { type ParamparaRelatedContent } from "@/components/ParamparaRelatedLinks";
 
 export default function ParamparaDetailPage({ id }: { id: string }) {
   const { lang, tr, contentMode } = useLang();
@@ -20,7 +21,7 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
   const index = gurus.findIndex((guru) => guru.id === id);
   const guru = index >= 0 ? gurus[index] : null;
 
-  if (!guru) return null;
+  if (!guru) return <div className="mx-auto max-w-4xl px-4 py-12"><h1 className="font-display text-2xl">{labels.not_found}</h1><Link href="/history/parampara" className="mt-4 inline-flex min-h-11 items-center text-[var(--color-text-brand)]">{labels.back_to_lineage}</Link></div>;
 
   const positionLabel = guru.officialPosition === null
     ? labels.founder
@@ -29,10 +30,10 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
   const nextGuru = gurus[index + 1];
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-7 lg:px-8 lg:py-12">
+    <div className="mx-auto max-w-6xl px-4 py-7 lg:px-8 lg:py-12">
       <Link
         href="/history/parampara#parampara-lineage"
-        className="mb-8 inline-flex min-h-10 items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-brand)] hover:text-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-saffron-600)]"
+        className="mb-8 inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-brand)] hover:text-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-saffron-600)]"
       >
         <ArrowLeft size={17} aria-hidden="true" />
         {labels.back_to_lineage}
@@ -82,13 +83,14 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
                 </p>
               )}
             </section>
+            <ParamparaRelatedLinks guru={guru as typeof guru & ParamparaRelatedContent} labels={labels} />
           </div>
         </div>
 
         {(previousGuru || nextGuru) && (
           <nav
             aria-label={labels.guru_navigation}
-            className="mt-12 grid grid-cols-2 gap-3 border-t border-[var(--color-line)] pt-5"
+            className="mt-12 grid gap-3 border-t border-[var(--color-line)] pt-5 sm:grid-cols-2"
           >
             {previousGuru ? (
               <Link
@@ -96,7 +98,7 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
                 className="flex min-h-14 items-center gap-2 rounded-[8px] border border-[var(--color-line)] px-4 font-body text-sm font-semibold text-[var(--color-text-secondary)] hover:border-[var(--color-saffron-400)] hover:text-[var(--color-text-brand)]"
               >
                 <ChevronLeft size={18} aria-hidden="true" />
-                <span>{labels.previous}</span>
+                <span><span className="block text-xs text-[var(--color-text-muted)]">{labels.previous}</span>{previousGuru.name}</span>
               </Link>
             ) : <span />}
             {nextGuru && (
@@ -104,13 +106,13 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
                 href={`/history/parampara/${encodeURIComponent(nextGuru.id)}`}
                 className="flex min-h-14 items-center justify-end gap-2 rounded-[8px] border border-[var(--color-line)] px-4 text-right font-body text-sm font-semibold text-[var(--color-text-secondary)] hover:border-[var(--color-saffron-400)] hover:text-[var(--color-text-brand)]"
               >
-                <span>{labels.next}</span>
+                <span><span className="block text-xs text-[var(--color-text-muted)]">{labels.next}</span>{nextGuru.name}</span>
                 <ChevronRight size={18} aria-hidden="true" />
               </Link>
             )}
           </nav>
         )}
       </article>
-    </main>
+    </div>
   );
 }

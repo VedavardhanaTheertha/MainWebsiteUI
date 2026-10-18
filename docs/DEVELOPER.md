@@ -1,698 +1,234 @@
 # Developer Guide
 
-This is the setup, workflow, and practical how-to reference. For *what the project is,
-why it's built this way, and its known gaps*, see
-[ARCHITECTURE.md](./ARCHITECTURE.md).
+## Setup
 
----
-
-## 1. Who this is for
-
-| You are… | Use this path |
-|---|---|
-| An outside contributor fixing wording, adding a translation, or adding a blog post | **Quick-fix path** — you can do this without running the project locally at all |
-| An outside contributor or internal team member changing layout, components, or build behaviour | **Full-setup path** — clone, install, run locally |
-| Internal team, deploying or configuring environments | Full-setup path, plus §11 |
-
-### Quick-fix path
-
-All user-facing wording lives in `content/languages/en.json`, and blog posts live in
-`content/blog/<slug>/`. Both are plain files. You can edit them directly in GitHub's web
-UI and open a pull request — no Node install, no local build required. See
-[§8.1–§8.3](#81-changing-site-text) for exactly how.
-
-If you want to *see* your change rendered before opening the PR, follow the full-setup
-path below — §4 gets you a running preview in a few commands.
-
-### Full-setup path
-
-Anything under `src/`, `build/`, `scripts/`, or `config/` needs a local environment.
-Continue with §2.
-
----
-
-## 2. Prerequisites
-
-| Requirement | Version | Verified from |
-|---|---|---|
-| Node.js | **20.9 through 24.x** (CI uses 22) | `package.json` engines and workflow setup |
-| npm | **10 or newer** | `package.json` engines/packageManager |
-| Git | any recent version | — |
-
-The package manager declaration is npm 10.9.2; `npm ci` is the reproducible install.
-
----
-
-## 3. Getting the code; branch model
-
-```bash
-git clone --recurse-submodules https://github.com/VedavardhanaTheertha/MainWebsiteUI.git
-cd MainWebsiteUI
-```
-
-(The address above is `origin` in this checkout — verified with `git remote -v`. If
-you've forked the repo, clone your fork instead.)
-
-Existing checkouts must run `git submodule update --init --recursive`. The Bhakti
-generator requires the library submodule and fails with this instruction when absent.
-
-### Branch model
-
-`main` is the single canonical branch. Use a short-lived branch for each change, open a
-pull request into `main`, and delete the branch after merge. Both the permanent GitHub
-Pages preview and the future production deployment build reviewed `main` revisions with
-different environment settings.
-
-Branch and PR conventions live in [`CONTRIBUTING.md`](../CONTRIBUTING.md) and
-[`GUIDELINE_SOURCE_CODE.md`](./GUIDELINE_SOURCE_CODE.md). §9 below adds the
-build-specific checks this project needs on top of them.
-
----
-
-## 4. Previewing the site
-
-### Hosted development preview
-
-**You do not need to install anything to review the site.**
-
-| | Link |
-|---|---|
-| **Development preview** | https://vedavardhanatheertha.github.io/MainWebsiteUI/ |
-| **Build status** | [GitHub Actions](https://github.com/VedavardhanaTheertha/MainWebsiteUI/actions) |
-
-Every push to `main` rebuilds and republishes the permanent preview automatically. Open
-the preview to review the latest merged revision without a local setup.
-
-The hosted preview initially shows placeholder text such as
-`en·hero title — content goes here` instead of real wording. The **Local copy preview**
-control can switch between placeholder and real copy. This is intentional:
-
-- It keeps the preview out of search results so it cannot compete with the live site.
-- It makes accidental hardcoded content visible and allows the build to detect it.
-
-Review layout, spacing, images, colours, and navigation in the preview. Read the actual
-wording in [`content/languages/en.json`](../content/languages/en.json). Images remain
-real in the preview; only text is substituted.
-
-### First local run
-
-```bash
-npm ci
-npm run dev:local
-```
-
-Open:
-
-```
-http://localhost:3000/
-```
-
-`dev:local` is cross-platform and selects the root-based, non-indexable `local`
-environment. A bar at the top switches between real and placeholder copy while retaining
-the active language; the choice is remembered in that browser. Real copy is the initial
-mode. Use `npm run dev` only when reproducing the hosted GitHub Pages preview; that URL is
-`http://localhost:3000/MainWebsiteUI/` and contains placeholders only.
-
----
-
-## 5. Repository map
-
-| | |
-|---|---|
-| **Scope** | The website's frontend source code, build, and contributor documentation |
-| **Content** | Devotional and library content comes from [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) |
-| **Languages** | Languages are discovered by adding one correctly structured language file |
-| **Pages** | Filesystem routes plus article routes discovered from content at build time |
-| **Stack** | Next.js 16, React 19, and Tailwind CSS 4, exported as static files |
-| **Hosting** | GitHub Pages preview; Cloudflare Pages production is not yet connected |
-
-```
-content/       all user-facing text and blog posts — the only folder most
-               contributors touch (content/languages/*.json, content/blog/<slug>/)
-config/        site.yml — environments, build flags, brand terms
-docs/          this guide, ARCHITECTURE.md, and the
-               CONTRIBUTE_*/GUIDELINE_* contributor guides
-build/         build.mjs (runs the full build) and verify.mjs (checks the output)
-scripts/       generate-content.mjs — turns content/ and library sources into src/gen/
-src/app/       Next.js routes — structure only, never content
-src/components/  reusable UI — structure only, never content
-src/lib/       shared logic: content-types.ts, nav-types.ts, scheduler.ts
-src/context/   LanguageContext.tsx — the useLang() provider (see §8)
-src/gen/       generated website data — gitignored, recreated by each dev/build command
-public/        images and static files served as-is
-library/       required submodule → WebsiteLibrary (Bhakti, hero, Parampara, and knowledge content)
-  branches/    branch summaries, contacts, coordinates, maps, and detailed Markdown
-  connect/     official social and connection-channel Markdown records
-  hero/dev/    development and local hero groups; default.hero.json is selected
-  hero/prod/   production hero groups; default.hero.json is selected
-  parampara/   index.json plus one Markdown file per guru
-  <section-id>/  one direct folder per searchable knowledge page; bilingual articles only
-test_media/    recursively initialized submodule → WebsiteTestMedia
-.github/workflows/deploy-dev.yml  thin CI wrapper around build/build.mjs
-```
-
-Full rationale for this layout: [ARCHITECTURE.md §4](./ARCHITECTURE.md#4-repository-layout).
-
----
-
-## 6. Build
-
-CI runs the scripts under `build/`; developers can run the same pipeline locally.
-
-| File | Purpose |
-|---|---|
-| `build.mjs` | Runs the whole build: clean → generate → export → normalize canonicals → verify |
-| `clean.mjs` | Removes stale outputs before generation |
-| `markdown.mjs` | Parses and sanitizes blog, Bhakti, and knowledge-section Markdown |
-| `write-canonicals.mjs` | Derives each page's production canonical from its exported HTML path |
-| `verify.mjs` | Checks the built output before it is published |
-
-Search features must use the shared MiniSearch implementation. Client components use
-`useMiniSearch` or `useLazyMiniSearch` from `src/hooks/useMiniSearch.ts`; build-time indexes
-use `withSearchDefaults` from `build/search-config.mjs`. Do not add direct `MiniSearch`
-instances or ad hoc text filters. These shared defaults provide prefix, anywhere-in-word,
-and adaptive fuzzy matching consistently.
-
-### Why build logic lives outside CI
-
-`.github/workflows/deploy-dev.yml` and `.github/workflows/verify.yml` are thin wrappers
-around `build.mjs`. This keeps the build portable and provides two practical benefits:
-
-- Build problems can be reproduced locally with the same script CI invokes, without
-  pushing commits merely to test the pipeline.
-- Changing CI providers requires replacing a small workflow wrapper rather than
-  reimplementing the build pipeline.
-
-### Commands
-
-| Command | Runs | Produces |
-|---|---|---|
-| `npm run content:build` | Settings, Media album, Bhakti, Seva, Event, knowledge-section, and website generators | `src/gen/`, `public/robots.txt` |
-| `npm run clean` | Delete stale generated output | clean working build outputs |
-| `npm run typecheck` | Generate content, then `tsc --noEmit` | pass/fail |
-| `npm run test:unit` | Content utility and Markdown security tests | pass/fail |
-| `npm run dev` | content:build, then `next dev` | dev server with placeholder-default copy selector |
-| `npm run dev:local` | Generate both copy variants with `SITE_ENV=local`, then `next dev` | root-based local server with copy selector |
-| `npm run build:local` | Full verified, non-indexable local build with both copy variants | `out/` (local/switchable build) |
-| `npm run build:dev` | `node build/build.mjs dev` — full pipeline: generate content → `next build` → verify | `out/` (dev/placeholder-default build) |
-| `npm run build:prod` | same pipeline with `SITE_ENV=prod` | `out/` (production/real-content build) |
-| `npm run verify` | `build/verify.mjs` against an existing `out/` | pass/fail report, no rebuild |
-| `npm run lint` | ESLint | lint errors/warnings |
-| `npm run ci` | Lint, typecheck, tests, and both builds | all local gates |
-
-`npm run build:dev` / `build:prod` are exactly what CI runs — see
-[`build/build.mjs`](../build/build.mjs). Run one locally before pushing rather than
-using a push to test the pipeline.
-
-### Environment variable
-
-`SITE_ENV` selects the environment (`local`, `dev`, or `prod`, defined in `config/site.yml`).
-It defaults to `dev` when unset — showing real content is an explicit opt-in, never
-the default. `npm run build:dev` / `build:prod` set it for you via their `node
-build/build.mjs <env>` argument; set it yourself only when running `next dev` or
-`next build` directly.
-
-Seva generation reads `sections.sevas` from `settings/<env>/toplibrary.json`; the `local`
-environment uses the development setting. Set it to an ordered array of IDs from
-`library/sevas/*.md`. Missing or empty configuration falls back to Kanike, Donations,
-and Volunteer Sign-up.
-
-Knowledge-section generation similarly reads `settings/<env>/toplibrary.json`. Its
-`sections` object maps each section ID to an ordered array of article IDs. Those records
-form the auto-scrolling mobile featured rail and fixed three-column desktop grid at the
-top of that independent page. Configure three IDs to preserve the shared Sevas/Events
-desktop layout. Every ID must exist in the matching direct `library/<section-id>/`
-folder; unknown, duplicate, or empty featured lists fail generation.
-
-Media album generation reads `sections.album` from `settings/<env>/toplibrary.json` and
-`album_ids` from `settings/<env>/recentalbums.json`; the `local` environment uses the
-development files. Both reference records under `media.albums` in the English base
-language file. Unknown or duplicate IDs fail generation. These lists
-control the two curated rails on `/albums`; the complete searchable catalog is independent
-of either list.
-
-All searchable tile collections read pagination counts from the single
-`settings/ui_elements.json` file. `collections.initialVisible` controls the first batch,
-and `collections.loadIncrement` controls each "Show more" batch. Both must be positive
-integers. The settings generator validates the file and creates the typed module consumed
-by Events, Sevas, Bhakti, Media, and every Markdown knowledge collection.
-
-In that same file, `autoScroll.pixelsPerSecond` sets the shared forward speed of every
-auto-scrolling row (a positive finite number, default 36). `autoScroll.returnDurationMs`
-sets the eased return duration in milliseconds (a positive integer, default 2200).
-Higher forward speeds move faster; lower return durations return faster. This covers
-upcoming/recurring events, featured Sevas and knowledge, and top/recent albums; static
-desktop grids and manually controlled carousels are unchanged.
-After editing, run `npm run settings:build` to regenerate the typed settings for an
-already running server, or restart `npm run dev:local`. Build commands regenerate the
-settings automatically. The settings folder is a submodule: publish its changes first,
-then commit the updated submodule pointer with the corresponding UI changes.
-
-The equivalent direct invocation is:
-
-```bash
-SITE_ENV=dev node build/build.mjs
-```
-
-On Windows PowerShell:
+Use Node.js 22 LTS and npm 10 (the supported engine range is recorded in
+`package.json`). Git access to both submodules is required. Their configured remotes
+use SSH; configure your GitHub SSH access or an appropriate local Git URL rewrite.
 
 ```powershell
-$env:SITE_ENV = "dev"; node build/build.mjs
+git clone --recurse-submodules <repository-url>
+Set-Location MainWebsiteUI
+npm ci
 ```
 
-Valid values come from `config/site.yml`. Passing the environment as an argument, as
-in `node build/build.mjs prod`, takes precedence over `SITE_ENV`.
+For an existing checkout:
 
-### Output verification
-
-`build/verify.mjs` checks that:
-
-1. The generated web manifest uses environment-correct paths.
-2. `robots.txt` matches the selected environment's indexing policy.
-3. Non-production pages carry a `noindex` directive.
-4. Every non-error HTML file has exactly one production canonical matching its route;
-  generated error documents have none.
-5. Non-production HTML and the manifest contain no exact default-language JSON prose
-  of at least 30 characters.
-6. Institution brand terms do not leak into placeholder HTML or the manifest.
-7. `sitemap.xml` contains one canonical production URL per non-error exported page.
-
-The content comparison is an important backstop, not a complete source lint. It catches
-exact default-language JSON prose at least 30 characters long and configured brand terms
-in rendered HTML and the manifest. Short, changed, non-default-language, client-only,
-or unrendered literals may evade it. Those matches fail when
-`build.fail_on_hardcoded_content` is enabled; source review remains required.
-
-Every full build removes `.next/`, `out/`, `dist/`, `src/gen/`, and the generated
-`public/robots.txt` before regeneration. The library submodule is required; initialize
-all submodules with `git submodule update --init --recursive`.
-
-### Common failures
-
-| Symptom | Cause |
-|---|---|
-| `SITE_ENV="…" is not defined in config/site.yml` | Typo in `$env:SITE_ENV`, or a new environment referenced before it's added to `config/site.yml` |
-| `config/site.yml is missing` | Running the build from the wrong working directory, or the file was deleted |
-| Build succeeds locally, fails in CI | You built against uncommitted files — see the CI-reproduction note in `AGENTS.md` and run the clean-clone check below |
-| `[verify]` reports real content in a dev build | Text is hardcoded in a `.tsx` file instead of `content/languages/en.json` — see §8 |
-| `[verify]` reports brand terms in a dev build | Same cause — a brand term from `config/site.yml`'s `brand_terms` list leaked into a non-production page |
-| A blog post silently fails the build | Missing/invalid `date` in `meta.json`, or no `# Title` heading in `en.md` — this one fails rather than warns, deliberately (see [ARCHITECTURE.md §5.2](./ARCHITECTURE.md#52-blog-and-article-content)) |
-
-Both content-leak cases fail the build because `build.fail_on_hardcoded_content` is
-enabled in `config/site.yml` — see §7.
-
-To reproduce exactly what CI checks out (catches the class of bug where a working
-directory has files git doesn't track):
-
-```bash
-git clone . /tmp/ci-check && cd /tmp/ci-check && npm ci && node build/build.mjs dev
+```powershell
+git submodule update --init --recursive
+npm ci
 ```
 
-When local cloning is intentionally disallowed, use tracked-file and ignore checks plus
-`npm ci`, `npm run clean`, and all gates; this is close but cannot perfectly model a
-fresh checkout.
+Work on a focused, short-lived branch from `main` and open a pull request into `main`.
+Do not rewrite shared protected history or discard another contributor's changes.
 
----
+Before changing framework code, read the relevant installed Next.js guide under
+`node_modules/next/dist/docs/`. This project's installed version is authoritative;
+older Next.js conventions may not apply.
 
-## 7. Configuration and environments
+## Preview and build
 
-Everything environment-specific is in [`config/site.yml`](../config/site.yml) — nothing
-in `src/` should ever branch on environment name directly. Full design rationale:
-[ARCHITECTURE.md §6](./ARCHITECTURE.md#6-environments).
-
-| Setting | `local` | `dev` | `prod` |
-|---|---|---|---|
-| `base_path` | `""` | `/MainWebsiteUI` | `""` |
-| `content_mode` | `switchable` | `switchable` | `real` |
-| `default_variant` | `real` (implicit) | `placeholder` | `real` (implicit) |
-| `indexable` | `false` | `false` | `true` |
-| Hosted on | Not hosted | GitHub Pages | Cloudflare Pages (not yet connected — see §11) |
-
-Build-wide flags also live there:
-
-- `build.fail_on_hardcoded_content` — enabled; real prose and brand-term leaks in a
-  placeholder-default rendered output are fatal.
-- `build.brand_terms` — words that must never appear on a non-production page, checked
-  at any length (unlike general prose, which needs 30+ characters to count — see
-  `build/verify.mjs`).
-To add another environment, add an entry under `environments:` in `config/site.yml` —
-no code change needed (`build/build.mjs`, `next.config.ts`, and
-`scripts/generate-content.mjs` all read the file at build time).
-
----
-
-## 8. Content and i18n rules for developers
-
-**Content is data; code is structure.** Pages and components do not contain display
-wording or registries of languages and articles. The build discovers content from the
-filesystem, allowing contributors to add a language or article without changing code.
-
-**No user-facing wording may be written into a page or component file.** Interface copy
-comes from `content/languages/en.json` (and its per-language overrides); long-form
-knowledge content comes from the validated Markdown collections under `library/`.
-Neither belongs as a literal in `src/`. This is stated in `AGENTS.md` and is not optional.
-
-- Read content through `useLang()` (`src/context/LanguageContext.tsx:69`), which
-  returns `{ lang, tr, languages, setLang }`. `tr` is the merged, typed content object
-  for the active language — pull strings from `tr`, not from a local constant.
-- In server-rendered route files, render localized text with `LocalizedCopy` and a path
-  into `tr` (for example `path={["pages", "about", "title"]}`). Use `LocalizedImage`
-  when image alt text comes from content. Do not render `content[defaultLang]` directly;
-  that is build-time default data and will not follow the active copy selection.
-- No file in `src/` may name a specific language code or a specific blog post slug.
-  Both are discovered from the filesystem by `scripts/generate-content.mjs` — see
-  [ARCHITECTURE.md §3](./ARCHITECTURE.md#3-core-principle--content-is-data-structure-is-code).
-- This is **enforced by the build**, not just a convention: `build/verify.mjs` scans
-  placeholder-build pages and generated content for real prose and for the brand terms in
-  `config/site.yml`, and fails the build on any hit (§7).
-- Before claiming a change is content-clean, run `npm run build:dev` and read the
-  `[verify]` output — a passing type-check does not catch a hardcoded string.
-
-If you find existing hardcoded text while working nearby, migrating it into
-`content/languages/en.json` is welcome — see the tracked count in
-[ARCHITECTURE.md §11](./ARCHITECTURE.md#11-known-gaps-and-planned-work) for what's
-still outstanding.
-
-### 8.1 Changing site text
-
-All display text lives in `content/languages/`, with one JSON file per language:
-
-1. Open `content/languages/en.json`.
-2. Find the key whose value you want to change.
-3. Edit only the value and save the file.
-4. Restart the development server if the generated content does not refresh.
-5. Update translated values where appropriate so languages do not drift apart.
-
-Never edit display text inside `src/`. If text is hardcoded in a component, move it to
-the default language file and consume it through the generated content API.
-
-### 8.2 Adding a language
-
-1. Copy `content/languages/en.json` to `content/languages/<code>.json`, using the
-  standard language code for the file name.
-2. Translate values without changing their keys or structure.
-3. Set the language's own display name near the top of the new file.
-4. Run `npm run dev` and select the language in the language switcher.
-5. Submit the language file as a focused pull request.
-
-No switcher, registry, component, or type file needs to be edited. The generator scans
-the directory and discovers language files automatically.
-
-Partial translations are valid. Missing keys fall back to the default language and are
-listed during generation. Delete untranslated keys instead of copying default-language
-values when you want the fallback report to accurately show remaining work.
-
-### 8.3 Adding a blog post or news item
-
-1. Create `content/blog/<url-slug>/`. Use lowercase words separated by hyphens; the
-  directory name becomes the URL segment.
-2. Add `meta.json` with at least a valid ISO date. Optional shared fields include the
-  hero image and tags:
-
-  ```json
-  {
-    "date": "2026-07-14",
-    "hero": "/articles/<descriptive-file>.webp",
-    "tags": ["news", "projects"]
-  }
-  ```
-
-3. Add `en.md` with a level-one title and article body:
-
-  ```markdown
-  # Article title
-
-  The first paragraph goes here.
-  ```
-
-4. Put new optimized article media under `public/articles/` and reference it as
-  `/articles/<descriptive-file>.webp`. Older assets remain directly under `public/` or
-  existing subdirectories such as `public/slide/`; `public/media/` does not exist.
-5. Optionally add a Markdown file for each translation using its language code.
-6. Add every new content or media asset to `ASSET_PROVENANCE.md`.
-7. Run `npm run build:dev` and `npm run build:prod`.
-
-The listing and article route are generated automatically; no page or menu registration
-is needed. A valid date and level-one title are mandatory. Raw HTML is escaped, generated
-HTML is sanitized, and links are limited to safe relative URLs plus `http`, `https`, and
-`mailto`. Script, data, and protocol-relative URLs are rejected.
-
-### 8.4 Adding a knowledge-section article
-
-Knowledge pages come from the WebsiteLibrary submodule under
-`library/<section-id>/`. To add an article:
-
-1. Choose the existing section directory for the destination page.
-2. Add `<article-id>.md`, using lowercase kebab-case for both the filename and `id`.
-3. Supply the required front matter and a Markdown body:
-
-  ```markdown
-  ---
-  id: article-id
-  title:
-    en: Article title
-    kn: ಲೇಖನದ ಶೀರ್ಷಿಕೆ
-  summary:
-    en: A short tile and metadata description.
-    kn: ಟೈಲ್ ಮತ್ತು ಮೆಟಾಡೇಟಾಕ್ಕಾಗಿ ಕಿರು ವಿವರಣೆ.
-  status:
-    en: Draft
-    kn: ಕರಡು
-  image: "@image.krishna"
-  tags:
-    - code: topic
-      en: Topic
-      kn: ವಿಷಯ
-  ---
-
-  ## English
-
-  Complete English article content begins here.
-
-  ## ಕನ್ನಡ
-
-  ಸಂಪೂರ್ಣ ಕನ್ನಡ ಲೇಖನದ ವಿಷಯ ಇಲ್ಲಿ ಆರಂಭವಾಗುತ್ತದೆ.
-  ```
-
-4. Run `npm run content:build`. The generator rejects missing fields, filename/ID
-   mismatches, unknown image aliases, missing English or Kannada content, empty bodies,
-   duplicate IDs, and sections with fewer than four articles.
-5. If the item belongs in the featured rail, add its ID at the intended position in both
-   environment files under `settings/<env>/toplibrary.json`.
-6. Run `npm run build:dev`, open the section landing page, and confirm the item opens in
-   the details modal without navigating away.
-
-To add a section, create its direct directory with at least four bilingual article files,
-add its non-display ID, order, route, and image to `build/library-sections.config.mjs`,
-and add its localized eyebrow, title, and description to every
-`content/languages/*.json` file under `library_sections`. Add the section's featured ID
-list to both environment settings files. Do not create `_section.md`; knowledge folders
-follow the same article-only source layout as Bhakti.
-
-Library and Know the Story destinations are not navigation dropdowns. Their landing-page
-tiles come from `section_hubs.library.items` and `section_hubs.story.items` in each
-language file. When adding or renaming a destination, update the matching hub item in
-every language while keeping its `href` and image alias consistent.
-
-### 8.5 Adding or curating a Media album
-
-1. Add an album with a unique kebab-case `id` under `media.albums` in
-   `content/languages/en.json`. Supply its title, description, cover image alias, search
-   tags, and at least one photo or video item.
-2. Add the matching ID and translated display fields to `media.albums` in every language
-   file. Keep IDs, item types, image aliases, and optional video durations consistent.
-3. To feature it, add the ID in the intended order to `sections.album` in
-   `toplibrary.json`, `album_ids` in `recentalbums.json`, or both under each
-   `settings/<env>/` directory.
-4. Run `npm run media:build` for settings validation, then `npm run build:dev`. Check
-   both language variants, the responsive rails, All Albums search and pagination, and
-   the generated `/albums/<album-id>` page.
-
-### 8.6 Placeholder and real-content previews
-
-The hosted development environment uses generated placeholders so search engines cannot
-index a duplicate of production and so hardcoded content remains detectable. Placeholders
-are padded to approximately the real text length, making them suitable for layout review.
-
-Use the copy selector in either preview to compare actual and placeholder wording. It
-preserves the current language and persists the selected copy mode. `local` starts with
-real copy; hosted `dev` starts with placeholders. The dev bundle includes real copy in
-downloadable client assets to support switching, so the public preview is not a place for
-confidential content. Both environments remain `noindex` with a disallowing robots file.
-Because this is a static export, metadata and legacy Server Component markup that reads
-generated content directly remain at the configured default; client components consuming
-`useLang()` switch immediately. See
-[ARCHITECTURE.md §6.4](./ARCHITECTURE.md#64-switchable-local-content).
-
----
-
-## 9. Branches, commits, PR checklist
-
-Read [`CONTRIBUTING.md`](../CONTRIBUTING.md) and
-[`GUIDELINE_SOURCE_CODE.md`](./GUIDELINE_SOURCE_CODE.md) first — they cover the general
-rules. What follows is the build-specific part, from `AGENTS.md` and the maintenance
-rules in `ARCHITECTURE.md` §12.
-
-- Branch from `main`, with a descriptive name like `feature/add-events` or
-  `fix/content-links` (see §3).
-- Keep content changes (`content/`) and code changes (`src/`, `build/`, `scripts/`) in
-  separate PRs where practical — a translator's PR should not need a code review.
-- **If your change alters structure, the content system, environments, or the build
-  pipeline, update `docs/ARCHITECTURE.md` in the same PR.**
-- **If your change alters how a contributor does something day-to-day, update
-  `docs/DEVELOPER.md` in the same PR.**
-- Before opening the PR, run `npm run ci` and read both `[verify]` reports, not just the
-  exit code. For anything you're not certain built from committed files, also run the
-  clean-clone check in §6.
-- No file under `src/` should name a language code or a blog post slug (§8) — grep for
-  the language codes in `content/languages/` and the slugs in `content/blog/` if
-  you're unsure whether you've introduced one.
-
-`CONTRIBUTING.md` is at the repository root and is the canonical general checklist.
-The repository's pull-request template records validation, documentation, security,
-accessibility, and provenance considerations for reviewers.
-
----
-
-## 10. Tests and the automatic build check
-
-Automated checks are blocking in CI:
-
-- `npm run lint` — ESLint (`eslint.config.mjs`).
-- `npm run typecheck` checks TypeScript after generating content.
-- `npm run test:unit` covers metadata validation and Markdown sanitization payloads.
-- Playwright is intentionally not installed: there is no reliable e2e suite yet, and
-  the project does not expose a fake `test:e2e` script.
-- `build/verify.mjs` (run via `npm run verify`, or automatically inside `build:dev` /
-  `build:prod`) is the closest thing to an automated check today. It inspects the
-  exported `out/` directory and confirms:
-  1. `robots.txt` matches the environment's indexing policy
-  2. non-production pages carry `noindex`
-  3. non-production pages contain no real prose from `content/languages/en.json`
-  4. non-production pages contain none of `config/site.yml`'s `brand_terms`
-
-  Checks 3 and 4 fail the build (`build.fail_on_hardcoded_content: true` — see §7).
-  A `prod` build with `content_mode: real` skips those placeholder-specific checks by
-  design.
-
-Run `npm run ci` before a PR. CI performs the same lint, typecheck, unit-test, and
-verified-build gates.
-
----
-
-## 11. Deployment
-
-| Branch | Target | How | Status |
-|---|---|---|---|
-| `main` | GitHub Pages preview | `.github/workflows/deploy-dev.yml`, placeholder-default build on merge and daily | ✅ working |
-| `main` | Cloudflare Pages | — | ⏳ designed for, not yet connected |
-
-The permanent preview always represents `main`; feature branches are validated by the
-pull-request workflow but do not replace the shared preview. The Pages workflow runs:
-
-- After every push to `main`, publishing the newly reviewed revision.
-- Daily at 21:00 UTC from the default branch (`main`). Today this is a build canary.
-  Once `src/lib/scheduler.ts` is used by rendered content, it will also refresh
-  date-sensitive static output.
-- Manually from the Actions tab. Checkout is explicitly pinned to `main`, so a manual
-  run cannot accidentally publish an unreviewed feature branch.
-
-The cron expression in `.github/workflows/deploy-dev.yml` is the sole schedule source;
-environment configuration does not duplicate workflow timing.
-
-There is no workflow file in this repo for a production/Cloudflare deploy — only
-`deploy-dev.yml` exists under `.github/workflows/`. Cloudflare Pages connects directly
-to a GitHub repo through its own dashboard rather than a committed workflow file, so
-there's nothing to inspect here until that connection is made.
-
-TODO(bawse): once Cloudflare Pages is connected, document the actual trigger (push to
-`main`? manual promote?) and whether it runs `build:prod` or something Cloudflare
-configures itself.
-
-Development is trunk-based: create a short-lived branch from `main`, open a pull
-request, obtain maintainer review, and merge only after lint, typecheck, unit tests, and
-both builds pass. Roll back with a reviewed revert or a known-good artifact
-redeployment; never rewrite shared history.
-
-The GitHub Pages deploy job deliberately has no `actions/configure-pages` step — see
-the explanation in `deploy-dev.yml` — because it fails when Pages is not enabled on the
-repository, which would make a correct build look broken.
-
----
-
-## 12. Troubleshooting
-
-**`npm run build:dev` passes locally but fails in CI.**
-Local builds see every file in your working directory, including anything
-`.gitignore`d. CI only sees what's committed. Run the clean-clone check from §6 before
-trusting a local pass. This exact failure mode happened once before — a stray
-`.gitignore` rule excluded all of `build/`, so CI had no build script at all (see the
-note at the top of `.gitignore` and `AGENTS.md`).
-
-**`SITE_ENV="…" is not defined in config/site.yml`.**
-Check for a typo, and check `config/site.yml`'s `environments:` block for the exact
-key spelling.
-
-**Dev server shows real Shiroor Matha text instead of placeholders.**
-Either `SITE_ENV=prod` is set in your shell from a previous session (check `$env:SITE_ENV`
-/ `echo $SITE_ENV`), or something is hardcoded outside `content/` — see §8.
-
-**Assets/links 404 locally but the page itself loads.**
-You're probably hitting `localhost:3000` without the `/MainWebsiteUI` base path — see
-§4.
-
-For content images, confirm the file is under `public/`, reference it without the
-`public` prefix (new article media uses `/articles/<file>`), and match filename
-capitalization and extension exactly. Windows may hide a capitalization error that
-fails on Linux.
-
-**The build reports missing language keys.**
-This is informational. Missing keys fall back to the default language; the report shows
-which translations remain.
-
-**A new blog post does not appear.**
-Confirm that it is directly under `content/blog/`, has `meta.json`, contains at least
-`en.md`, uses a valid `YYYY-MM-DD` date, and begins with a level-one title. Restart the
-development server because new content directories are discovered at startup.
-
-**Content changes do not appear.**
-Content is generated at startup. Stop the development server and run `npm run dev`
-again.
-
----
-
-## 13. Project boundary
-
-This repository contains the frontend and static site only. It renders forms and static
-lists up to the submit action, but does not implement:
-
-- Volunteer-form processing.
-- Payment or donation processing.
-- Storage or email delivery of feedback submissions.
-- Live or user-specific data.
-- Authentication.
-
-Those capabilities belong to backend services. A change to behavior after form
-submission is therefore a backend request rather than a frontend implementation here.
-
----
-
-## 14. Keeping documentation current
-
-Update documentation in the same pull request as behavior. Structural, content-system,
-environment, and build changes update [ARCHITECTURE.md](./ARCHITECTURE.md); practical
-setup and contributor workflow changes update this guide. Documentation that disagrees
-with the implementation is a defect.
-
----
-
-## 15. Related docs
-
-| Doc | For |
+| Command | Purpose |
 |---|---|
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | System design and the reasoning behind it |
-| [README.md](../README.md) | Project landing page |
-| [AGENTS.md](../AGENTS.md) | Rules that apply to any agent (human or AI) working in this repo |
-| [CONTRIBUTING.md](../CONTRIBUTING.md) | General contribution rules, for every kind of change |
-| [GUIDELINE_SOURCE_CODE.md](./GUIDELINE_SOURCE_CODE.md) | Code standards and the PR checklist |
-| [CONTRIBUTE_SOURCE_CODE.md](./CONTRIBUTE_SOURCE_CODE.md) | Step-by-step workflow for a code PR |
+| `npm run dev:local` | Generate local content and start the interactive development server |
+| `npm run dev` | Generate content and start Next development mode for the selected environment |
+| `npm run content:build` | Regenerate content, settings, indexes, and theme without exporting pages |
+| `npm run build:local` | Full verified local export |
+| `npm run build:dev` | Full verified development export |
+| `npm run build:prod` | Full verified production export |
+| `npm start -- dev` | Serve the existing development export under `/MainWebsiteUI` |
+| `npm start -- local` | Serve the existing local export at the root |
+| `npm start -- prod` | Serve the existing production export at the root |
+| `npm run verify` | Verify an existing export without rebuilding |
+| `npm run clean` | Remove disposable build output |
+
+Full builds write the static site to `out/`; each build replaces the previous export.
+Use the matching environment when previewing an export. The development base path is
+`/MainWebsiteUI`; local and production are mounted at the root.
+
+The environment is selected by the script argument, then `SITE_ENV`, then `dev`.
+For generation with an explicit environment in PowerShell:
+
+```powershell
+$env:SITE_ENV = "local"
+npm run content:build
+```
+
+Local and development previews can switch between real and placeholder text.
+Development exports start with placeholders. Production contains real copy only.
+Switchable assets include real copy even when placeholders are shown, so do not
+treat the preview or `noindex` as access control.
+
+Static preview does not run a Next application server or rebuild the export. Run the
+matching `npm run build:dev`, `npm run build:local`, or `npm run build:prod` first,
+then select that environment with `npm start -- dev|local|prod` (choose one value).
+Without an argument, preview uses `SITE_ENV`, then `dev`. It binds to localhost on
+port 3000; `PORT` overrides the port.
+
+The preview server validates that exported asset URLs match the selected environment's
+base path. It serves exported `.html` routes and assets, with real 404 responses for
+missing pages rather than a single-page-app fallback. It also serves Next's flattened
+segment-prefetch URLs from the matching nested export files.
+
+## Where to make changes
+
+| Change | Edit |
+|---|---|
+| Short UI labels or a language descriptor | `content/languages/<code>.json` |
+| Topic prose, page metadata, learning content, or an article | Canonical `library/<topic>/` Markdown |
+| Homepage copy and card selection | `settings/home.json` and referenced `library/pages/*.md` |
+| Original hero slides | `library/hero/{dev,prod}/*.hero.json` |
+| Menus/footer destinations | `settings/navigation.json` |
+| Official channels and verified contact data | `library/connect/` and `library/branches/` |
+| Public action routing | `settings/public_actions.json` and the owning topic source |
+| Images and allowed image hosts | `settings/{dev,prod}/images.json`, `settings/image_policy.json` |
+| Theme and interaction defaults | `settings/theme.json`, `settings/ui_elements.json` |
+| Announcement visibility/schedule | `settings/announcements.json` |
+| Announcement wording and dated progress | Its canonical `library/announcement/` Markdown |
+| Search behavior | `settings/search.json` |
+| Knowledge order/default images | `settings/knowledge_sections.json` |
+| Environment behavior | `config/site.yml` |
+| Rendering/interactions | `src/` |
+| Validation/generation/export | `build/`, `scripts/` |
+
+Do not edit `src/gen/`, `.next/`, or exported output. Do not put display strings or
+language registries in `src/`. Use `useLang()` and the generated data contracts.
+Keep one owner per fact; do not copy editorial prose back into language JSON.
+
+### Languages
+
+Language JSON filenames are discovered automatically. Add a descriptor and translate
+values using the default language's shape. Missing object keys inherit the configured
+default; arrays are replaced as a whole. Do not rename keys, translate identifiers,
+or copy source-language text just to hide incomplete translations.
+
+Topic translations remain with their canonical Markdown. Follow existing schemas and
+the [language contribution guide](CONTRIBUTE_LANGUAGE.md); do not register a language
+in a component or invent untranslated content.
+
+### Content and homepage
+
+Follow [CONTRIBUTE_CONTENT.md](CONTRIBUTE_CONTENT.md) and the existing topic record
+schema. Required metadata, default-language content, identifiers, and paths are
+validated during generation. Preserve attribution, citations, review status, and
+source IDs. Raw HTML is disabled and rendered Markdown is sanitized.
+
+Homepage lists resolve `library/pages/` filenames: top six, icons five, bottom six,
+and explore three. Card prose and images belong in page-reference Markdown. The
+generated `remidies_carousel` selects three distinct remedies once per generation;
+keep at least four eligible articles and do not add that generated list to settings.
+Original hero groups remain unchanged by card curation.
+
+For Yajna figures, update the count and required `pages.local_copy.yajna_as_of_date`
+together in the announcement Markdown (initial snapshot: **2026-07-01**). All
+translations must use the same valid ISO date. Never substitute the build date.
+Panchanga's localized `panchanga_notice`
+lives in its topic Markdown. Keep that test-data note and knowledge review status
+visible until the underlying content is genuinely verified. Projects show both the
+article's editorial `status` and its operational project badge; related cards retain
+authored status, and homepage remedy cards use that status as their footnote.
+
+### Actions and media
+
+Use verified external volunteer, Mantra Lekhana, and monetary-offering destinations.
+The monetary URL is exactly
+`https://pay.shiroormatha.org/?entity_id=3&event_id=4&seva_id=3`; its QR is built from
+the same source. The preserved Sevas material catalog now lives in
+`library/donations/pages/donation.md`, the single source for active material enquiries.
+The verified support address is `support@shiroormatha.org`.
+WhatsApp's official broadcast channel cannot accept a private enquiry.
+
+Image targets pass through `build/image-resolution.mjs`. Absolute HTTPS targets
+bypass the configured base; relative paths, including leading-slash paths, are
+appended to the media-directory base. Keep both environment aliases valid and align
+remote hosts with the image policy. Record rights/provenance before adding assets.
+
+Horizontal rails must retain touch scrolling, desktop dragging, interaction pause,
+and reduced-motion behavior when settings or layouts change. Use the current shared
+scroll API; do not reintroduce compatibility-only call signatures.
+
+## Submodule workflow
+
+`library/` and `settings/` have their own histories and staged changes. Review changes
+inside each repository independently. Publish the reviewed submodule commits first,
+then stage their updated references in the website repository. A parent commit cannot
+publish uncommitted submodule files.
+
+Do not advance a submodule to an unpublished commit. When reviewing a pull request,
+check both the reference change and the referenced repository's actual diff.
+
+## Validation
+
+Use the smallest relevant tests while developing, then run the full gate before
+requesting review:
+
+```powershell
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run build:dev
+npm run build:prod
+# Equivalent full gate:
+npm run ci
+```
+
+Build-tool and regression tests live in `build/test/`; production build scripts
+remain directly in `build/`. The unit runner supports focused files, for example:
+
+```powershell
+node --test build/test/image-resolution.test.mjs
+```
+
+Read the build-verification output, not just its exit code. Placeholder-default
+HTML and manifest checks detect exact default-language prose of at least 30
+characters and configured brand terms. They do not prove the absence of every
+short, altered, or non-default-language literal. Review source for display strings.
+
+### Reproduce a committed checkout
+
+A local build can accidentally use ignored or uncommitted files. Confirm required
+build scripts are tracked, and check a clean clone of the candidate commit:
+
+```powershell
+git ls-files build scripts config
+git clone --recurse-submodules . .ci-check
+Set-Location .ci-check
+npm ci
+node build/build.mjs dev
+```
+
+Use an unused project-local scratch path, do not commit it, and remove it when done.
+A clone only includes committed work; it does not validate staged or unstaged edits.
+Ensure submodule references are published and available to CI before relying on this
+check.
+
+## Deployment
+
+GitHub Actions verifies pull requests and `main` with lint, type checking, unit tests,
+and development/production builds. The development deployment workflow publishes
+reviewed `main` to GitHub Pages under the configured base path.
+
+Deploy the verified static export, not `.next/` or a development server. Production
+uses the root base path and the canonical URL in `config/site.yml`; maintainers must
+confirm domain ownership, DNS, HTTPS, and the hosting binding. Never place hosting
+credentials or service secrets in public settings.
+
+## Troubleshooting
+
+- **Missing library/settings files:** initialize submodules and confirm the expected
+  commits are checked out.
+- **Missing package or tool:** install from the lockfile with `npm ci`; do not patch
+  generated files to bypass a missing dependency.
+- **Assets or links fail only in dev:** check the `/MainWebsiteUI` mount path and
+  preview/build environment match.
+- **Content edits are absent:** regenerate content or restart `npm run dev:local`.
+  Search, hero, and knowledge changes require their generated data too.
+- **Invalid metadata or duplicate authority:** fix the canonical source identified
+  by the generator; do not suppress validation or duplicate the same fact elsewhere.
+- **Placeholder verification fails:** inspect rendered output and the owning source;
+  look for hardcoded prose, metadata, labels, or an incorrect content variant.
+- **Works locally but fails CI:** inspect tracked files and published submodule
+  commits, then reproduce the committed checkout.
+
+Update [ARCHITECTURE.md](ARCHITECTURE.md) for structural changes and this guide for
+changed contributor steps. State explicitly which checks were and were not run.

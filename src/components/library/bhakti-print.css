@@ -1,0 +1,40 @@
+@media print {
+  body:has(.bhakti-reader-page #bhakti-reading) *:not(:has(#bhakti-reading)):not(#bhakti-reading):not(#bhakti-reading *) {
+    display: none !important;
+  }
+
+  body:has(.bhakti-reader-page #bhakti-reading),
+  body:has(.bhakti-reader-page #bhakti-reading) *:has(#bhakti-reading),
+  .bhakti-reader-page #bhakti-reading {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  .bhakti-reader-page #bhakti-reading .bhakti-reading-controls {
+    display: none !important;
+  }
+
+  .bhakti-reader-page #bhakti-reading article {
+    max-width: none;
+    margin: 0;
+    color: black;
+  }
+
+  .bhakti-reader-page #bhakti-reading h1,
+  .bhakti-reader-page #bhakti-reading h2 {
+    break-after: avoid;
+    color: black;
+  }
+
+  .bhakti-reader-page #bhakti-reading p {
+    orphans: 3;
+    widows: 3;
+  }
+}

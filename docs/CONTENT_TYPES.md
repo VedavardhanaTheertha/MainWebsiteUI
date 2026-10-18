@@ -7,14 +7,16 @@ type is intended to be structured. **All content should be of Madhwa Siddantha.*
 >
 > | You are changing | Repository | Path |
 > |---|---|---|
-> | Words shown on a page of the website | **this one** | `content/languages/<code>.json` |
-> | A blog article | **this one** | `content/blog/<slug>/` |
+> | Short UI labels and retained media catalogs | **this one** | `content/languages/<code>.json` |
+> | Editorial pages and Learn | **WebsiteLibrary** | `library/<topic>/` Markdown |
+> | Articles and essays | **WebsiteLibrary** | Canonical knowledge-topic Markdown, such as `library/articles/` |
+> | Homepage copy and configuration | **Settings submodule** | `settings/` JSON |
 > | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |
 >
-> Website UI text and blog articles come from `content/` in this repository. The Bhakti
-> collection is generated from the WebsiteLibrary submodule during the build; other
-> library categories currently render tiles from `content/languages/*.json`. See
-> [ARCHITECTURE.md](ARCHITECTURE.md) for the current integration and known gaps.
+> Short UI text comes from `content/` in this repository. Editorial, Learn,
+> Bhakti and knowledge collections come from WebsiteLibrary; homepage copy is settings
+> JSON. Canonical sources are assembled at build time. See
+> [ARCHITECTURE.md](ARCHITECTURE.md) for current ownership and integration.
 
 ## 1. Sacred Texts & Scriptures
 
@@ -27,7 +29,7 @@ Includes stotras, dasa padas, mantras, slokas, and other devotional compositions
   - original text
   - transliteration in English
   - source or reference
-  - common search tags
+  - collection-supported metadata (Bhakti indexes the complete text, not manual tags)
 
 ## 2. Articles & Essays
 

@@ -40,6 +40,64 @@ const environment = loadEnvironment();
 // assets and links need that prefix. Production sits at a domain root and uses "".
 const basePath = environment.base_path ?? "";
 
+function loadImagePolicy(): NonNullable<NextConfig["images"]> {
+  const source = "settings/image_policy.json";
+  const parsed: unknown = JSON.parse(
+    readFileSync(path.join(process.cwd(), "settings", "image_policy.json"), "utf8")
+  );
+  function record(value: unknown, field: string): Record<string, unknown> {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      throw new Error(`${source} ${field} must be an object.`);
+    }
+    return value as Record<string, unknown>;
+  }
+  function fields(value: Record<string, unknown>, allowed: string[], field: string) {
+    if (Object.keys(value).some((key) => !allowed.includes(key))) {
+      throw new Error(`${source} ${field} contains unknown fields.`);
+    }
+  }
+  const policy = record(parsed, "root");
+  fields(policy, ["unoptimized", "remotePatterns"], "root");
+  if (typeof policy.unoptimized !== "boolean") {
+    throw new Error(`${source} unoptimized must be a boolean.`);
+  }
+  if (!Array.isArray(policy.remotePatterns)) {
+    throw new Error(`${source} remotePatterns must be an array.`);
+  }
+  const remotePatterns = policy.remotePatterns.map((value: unknown, index: number) => {
+    const field = `remotePatterns[${index}]`;
+    const pattern = record(value, field);
+    fields(pattern, ["protocol", "hostname", "pathname"], field);
+    if (pattern.protocol !== "https" && pattern.protocol !== "http") {
+      throw new Error(`${source} ${field}.protocol must be http or https.`);
+    }
+    const hostnameForValidation = typeof pattern.hostname === "string"
+      ? pattern.hostname.replace(/^([a-z0-9][a-z0-9-]{0,61})\*\./i, "$1x.")
+      : "";
+    if (typeof pattern.hostname !== "string" || pattern.hostname.length > 253 ||
+        !/^(?:\*\*?\.)?[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/i.test(hostnameForValidation)) {
+      throw new Error(`${source} ${field}.hostname must be a hostname, optionally prefixed with *., **., or a literal prefix followed by *.`);
+    }
+    if (typeof pattern.pathname !== "string" ||
+        !/^\/(?:[a-z0-9._~!$&'()+,=@%-]|\*|\/)*$/i.test(pattern.pathname) ||
+        /%(?![\da-f]{2})/i.test(pattern.pathname) || pattern.pathname.includes("//") ||
+        pattern.pathname.split("/").some((segment, index, segments) =>
+          segment === "." || segment === ".." ||
+          (segment.includes("*") && segment !== "*" && !(segment === "**" && index === segments.length - 1)))) {
+      throw new Error(`${source} ${field}.pathname must be an absolute URL path with * segments or a final **.`);
+    }
+    return {
+      protocol: pattern.protocol,
+      hostname: pattern.hostname,
+      pathname: pattern.pathname,
+    } as const;
+  });
+  if (new Set(remotePatterns.map((pattern) => JSON.stringify(pattern))).size !== remotePatterns.length) {
+    throw new Error(`${source} remotePatterns must not contain duplicates.`);
+  }
+  return { unoptimized: policy.unoptimized, remotePatterns };
+}
+
 const nextConfig: NextConfig = {
   output: "export",
   env: {
@@ -51,21 +109,7 @@ const nextConfig: NextConfig = {
   // Static export has no server, so next/image's optimization API route isn't
   // available — serve pre-optimized WebP/AVIF assets as-is instead (see
   // content decision: images are pre-optimized at authoring time).
-  images: {
-    unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "vedavardhanatheertha.github.io",
-        pathname: "/WebsiteTestMedia/**",
-      },
-      {
-        protocol: "https",
-        hostname: "shiroormatha.org",
-        pathname: "/**",
-      },
-    ],
-  },
+  images: loadImagePolicy(),
   ...(basePath ? { basePath, assetPrefix: basePath } : {}),
 };
 

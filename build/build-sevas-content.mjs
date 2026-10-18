@@ -7,12 +7,15 @@ import yaml from "js-yaml";
 import MiniSearch from "minisearch";
 import { parseMarkdownFrontmatter } from "./content-utils.mjs";
 import { renderMarkdown } from "./markdown.mjs";
-import { withSearchDefaults } from "./search-config.mjs";
+import { getSearchProfile, withSearchDefaults } from "./search-config.mjs";
 import { describeContentMode } from "./environment-utils.mjs";
+import { parseSevaImage } from "./seva-image.mjs";
+import { discoverLanguageContent, resolveLocalizedValues } from "./language-content.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = path.join(projectRoot, "library", "sevas");
 const outputDir = path.join(projectRoot, "src", "gen", "sevas");
+const { codes: languageCodes, defaultLanguage } = discoverLanguageContent(projectRoot);
 
 // Resolve environment configuration
 const envName = process.env.SITE_ENV || "dev";
@@ -40,10 +43,9 @@ function requireLocalizedText(value, field, sourceName) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`${sourceName} must define ${field} as an object.`);
   }
-  return {
-    en: requireString(value.en, `${field}.en`, sourceName),
-    kn: requireString(value.kn, `${field}.kn`, sourceName),
-  };
+  requireString(value[defaultLanguage], `${field}.${defaultLanguage}`, sourceName);
+  return Object.fromEntries(Object.entries(resolveLocalizedValues(value, languageCodes, defaultLanguage))
+    .map(([code, text]) => [code, requireString(text, `${field}.${code}`, sourceName)]));
 }
 
 function requireUrl(value, field, sourceName) {
@@ -73,10 +75,10 @@ function extractLocalizedDetails(body, sourceName) {
       `${sourceName} must contain separate English and Kannada Seva Guidelines sections.`,
     );
   }
-  return {
+  return resolveLocalizedValues({
     en: renderMarkdown(english.replace(" (English)", "")),
     kn: renderMarkdown(kannada.replace(" (ಕನ್ನಡ)", "")),
-  };
+  }, languageCodes, defaultLanguage);
 }
 
 function parseSeva(metadata, body, sourceName) {
@@ -97,17 +99,17 @@ function parseSeva(metadata, body, sourceName) {
     title: requireLocalizedText(metadata.title ?? metadata.name, "title", sourceName),
     category: {
       code: requireString(category.code, "category.code", sourceName),
-      en: requireString(category.en, "category.en", sourceName),
-      kn: requireString(category.kn, "category.kn", sourceName),
+      ...requireLocalizedText(category, "category", sourceName),
     },
     deity: requireLocalizedText(metadata.deity, "deity", sourceName),
     sannidhi: requireLocalizedText(metadata.sannidhi, "sannidhi", sourceName),
     location: requireLocalizedText(metadata.location, "location", sourceName),
     amount,
+    image: parseSevaImage(metadata.image, sourceName),
     currency: requireString(metadata.currency ?? "INR", "currency", sourceName),
     formattedAmount: metadata.formatted_amount
       ? requireLocalizedText(metadata.formatted_amount, "formatted_amount", sourceName)
-      : { en: "", kn: "" },
+      : resolveLocalizedValues("", languageCodes, defaultLanguage),
     description: requireLocalizedText(metadata.description, "description", sourceName),
     significance: requireLocalizedText(metadata.significance, "significance", sourceName),
     bookingUrl: requireUrl(metadata.booking_url, "booking_url", sourceName),
@@ -124,20 +126,13 @@ function parseSeva(metadata, body, sourceName) {
   }
 
   record.searchText = [
-    record.title.en,
-    record.title.kn,
-    record.category.en,
-    record.category.kn,
-    record.deity.en,
-    record.deity.kn,
-    record.sannidhi.en,
-    record.sannidhi.kn,
-    record.location.en,
-    record.location.kn,
-    record.description.en,
-    record.description.kn,
-    record.significance.en,
-    record.significance.kn,
+    ...Object.values(record.title),
+    ...Object.values(record.category),
+    ...Object.values(record.deity),
+    ...Object.values(record.sannidhi),
+    ...Object.values(record.location),
+    ...Object.values(record.description),
+    ...Object.values(record.significance),
     body,
   ].join(" ");
 
@@ -145,18 +140,17 @@ function parseSeva(metadata, body, sourceName) {
 }
 
 function placeholderSeva(seva, index) {
-  const localized = (field) => ({
-    en: `en·sevas ${field} ${index + 1} — content goes here`,
-    kn: `kn·sevas ${field} ${index + 1} — content goes here`,
-  });
+  const localized = (field) => Object.fromEntries(languageCodes.map((code) =>
+    [code, `${code}·sevas ${field} ${index + 1} — content goes here`]));
   const placeholder = {
     ...seva,
+    image: "",
     title: localized("title"),
     category: { ...localized("category"), code: seva.category.code },
     deity: localized("deity"),
     sannidhi: localized("sannidhi"),
     location: localized("location"),
-    formattedAmount: seva.amount > 0 ? localized("amount") : { en: "", kn: "" },
+    formattedAmount: seva.amount > 0 ? localized("amount") : resolveLocalizedValues("", languageCodes, defaultLanguage),
     description: localized("description"),
     significance: localized("significance"),
     bookingUrl: `https://example.invalid/sevas/${index + 1}`,
@@ -164,10 +158,8 @@ function placeholderSeva(seva, index) {
       phone: seva.contact.phone,
       email: seva.contact.email ? "support@example.invalid" : "",
     },
-    detailsHtml: {
-      en: `<p>en·sevas details ${index + 1} — content goes here</p>`,
-      kn: `<p>kn·sevas details ${index + 1} — content goes here</p>`,
-    },
+    detailsHtml: Object.fromEntries(languageCodes.map((code) =>
+      [code, `<p>${code}·sevas details ${index + 1} — content goes here</p>`])),
     searchText: "",
   };
   placeholder.searchText = [
@@ -244,7 +236,7 @@ const defaultSevas = isPlaceholderDefault ? placeholderSevas : realSevas;
 await mkdir(outputDir, { recursive: true });
 
 const dataCode = `// Generated by build/build-sevas-content.mjs — do not edit
-export interface LocalizedSevaText { en: string; kn: string }
+export type LocalizedSevaText = Record<string, string>;
 export interface SevaRecord {
   id: string;
   code: number;
@@ -254,6 +246,7 @@ export interface SevaRecord {
   sannidhi: LocalizedSevaText;
   location: LocalizedSevaText;
   amount: number;
+  image: string;
   currency: string;
   formattedAmount: LocalizedSevaText;
   description: LocalizedSevaText;
@@ -277,7 +270,7 @@ const docs = realSevas.map((seva, index) => ({
 const miniSearch = new MiniSearch(withSearchDefaults({
   idField: "__search_id",
   fields: ["searchText"],
-  searchOptions: { boost: { searchText: 1 } },
+  searchOptions: { boost: getSearchProfile("sevas").boost },
 }));
 miniSearch.addAll(docs);
 

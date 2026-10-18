@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { interactionSettings } from "@/gen/settings/ui-elements";
 import {
   createSearchIndex,
   loadCompressedIndex,
@@ -34,7 +35,7 @@ export function useMiniSearch<T extends object>(
  * React hook that lazy-loads a pre-computed, gzip-compressed MiniSearch index.
  * - Defers loading until idle time or user interaction (focus/typing).
  * - Decompresses via native DecompressionStream in the background.
- * - Provides optimistic search while loading, then smoothly switches to full ranked MiniSearch results.
+ * - Uses the shared in-memory search while loading, then switches to the pre-computed index.
  */
 export function useLazyMiniSearch<T extends object>(
   items: T[],
@@ -77,7 +78,7 @@ export function useLazyMiniSearch<T extends object>(
         win.cancelIdleCallback?.(handle);
       };
     }
-    const timer = setTimeout(ensureLoaded, 300);
+    const timer = setTimeout(ensureLoaded, interactionSettings.searchPreloadDelayMs);
     return () => {
       clearTimeout(timer);
     };
@@ -90,23 +91,20 @@ export function useLazyMiniSearch<T extends object>(
     }
   }, [query, ensureLoaded]);
 
+  const hasQuery = Boolean(query.trim());
+  const pendingIndex = useMemo(() => {
+    if (index || !hasQuery) return null;
+    return createSearchIndex(items, config);
+  }, [items, config, index, hasQuery]);
+
   const results = useMemo(() => {
     const trimmed = query.trim();
     if (!trimmed) return items;
     if (index) {
       return searchItems(index, trimmed);
     }
-    // Optimistic fallback while index chunk is loading
-    const q = trimmed.toLowerCase();
-    return items.filter((item) => {
-      for (const field of config.fields) {
-        const val = (item as Record<string, unknown>)[field];
-        if (typeof val === "string" && val.toLowerCase().includes(q)) return true;
-        if (Array.isArray(val) && val.some((v) => typeof v === "string" && v.toLowerCase().includes(q))) return true;
-      }
-      return false;
-    });
-  }, [items, query, index, config.fields]);
+    return pendingIndex ? searchItems(pendingIndex, trimmed) : items;
+  }, [items, query, index, pendingIndex]);
 
   return {
     results,

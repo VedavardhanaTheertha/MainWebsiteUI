@@ -1,11 +1,17 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateMedia } from "./media-schema.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const environmentName = process.env.SITE_ENV || "dev";
 const settingsEnvironment = environmentName === "local" ? "dev" : environmentName;
 const outputPath = path.join(projectRoot, "src", "gen", "media", "albums.ts");
+const languagesDirectory = path.join(projectRoot, "content", "languages");
+for (const filename of (await readdir(languagesDirectory)).filter((name) => name.endsWith(".json"))) {
+  const content = JSON.parse(await readFile(path.join(languagesDirectory, filename), "utf8"));
+  validateMedia(content.media, `content/languages/${filename}.media`);
+}
 
 const languageContent = JSON.parse(
   await readFile(path.join(projectRoot, "content", "languages", "en.json"), "utf8"),

@@ -1,16 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { browserDefaults } from "@/gen/settings/ui-elements";
 import Image from "next/image";
-import { BookOpen, UserRound, X } from "lucide-react";
+import { BookOpen, GitBranch, List, UserRound, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import {
   alternateParamparaByLanguage,
   paramparaByLanguage,
   type ParamparaGuru,
 } from "@/gen/parampara/data";
-import { defaultContentMode } from "@/gen/content";
+import { defaultContentMode, defaultLang } from "@/gen/content";
+import { useDialog } from "@/hooks/useDialog";
+import { useMiniSearch } from "@/hooks/useMiniSearch";
 
 export default function ParamparaBrowser() {
   const { lang, tr, contentMode } = useLang();
@@ -18,15 +21,23 @@ export default function ParamparaBrowser() {
     ? alternateParamparaByLanguage
     : paramparaByLanguage;
   const labels = tr.pages.parampara;
-  const lineage = parampara[lang] ?? parampara.en ?? [];
+  const lineage = useMemo(() => parampara[lang] ?? parampara[defaultLang] ?? [], [parampara, lang]);
   const founder = lineage.find((guru) => guru.officialPosition === null) ?? null;
-  const gurus = lineage.filter((guru) => guru.officialPosition !== null);
+  const gurus = useMemo(() => lineage.filter((guru) => guru.officialPosition !== null), [lineage]);
+  const [view, setView] = useState<"timeline" | "list">(browserDefaults.lineageView);
+  const [query, setQuery] = useState("");
+  const matches = useMiniSearch(gurus, query, { fields: ["name"] });
+  const visibleGurus = useMemo(() => {
+    const ids = new Set(matches.map((guru) => guru.id));
+    return gurus.filter((guru) => ids.has(guru.id));
+  }, [gurus, matches]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedIndex = gurus.findIndex((guru) => guru.id === selectedId);
   const selected = selectedIndex >= 0 ? gurus[selectedIndex] : null;
   useEffect(() => {
     const selectFromHash = () => {
-      const id = decodeURIComponent(window.location.hash.slice(1));
+      let id = "";
+      try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { /* Ignore malformed hashes. */ }
       setSelectedId(gurus.some((guru) => guru.id === id) ? id : null);
     };
     selectFromHash();
@@ -46,18 +57,7 @@ export default function ParamparaBrowser() {
     window.history.replaceState(null, "", window.location.pathname + window.location.search);
   };
 
-  useEffect(() => {
-    if (!selected) return undefined;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeGuru();
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [selected]);
+  const dialogRef = useDialog(Boolean(selected), closeGuru);
 
   const positionLabel = (guru: ParamparaGuru) => guru.officialPosition === null
     ? labels.founder
@@ -65,7 +65,7 @@ export default function ParamparaBrowser() {
 
   return (
     <>
-      <main className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
         <header className="max-w-2xl mb-7 lg:mb-10">
           <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
             {labels.title}
@@ -117,16 +117,33 @@ export default function ParamparaBrowser() {
           <h2 className="mb-4 font-display text-xl font-bold text-[var(--color-text-primary)] lg:text-2xl">
             {labels.lineage}
           </h2>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 lg:gap-3">
-          {gurus.map((guru) => (
+          <div className="mb-6 flex items-end gap-2 sm:max-w-md">
+            <label className="flex min-w-0 flex-1 flex-col gap-2 font-body text-sm">
+              {labels.search}
+              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} className="min-h-11 min-w-0 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] px-3" />
+            </label>
             <button
-              key={guru.id}
+              type="button"
+              aria-label={view === "list" ? labels.show_timeline : labels.show_list}
+              title={view === "list" ? labels.show_timeline : labels.show_list}
+              aria-pressed={view === "timeline"}
+              onClick={() => setView((current) => current === "list" ? "timeline" : "list")}
+              className="grid size-11 shrink-0 place-items-center rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] text-[var(--color-text-brand)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+            >
+              {view === "list" ? <GitBranch size={20} aria-hidden="true" /> : <List size={20} aria-hidden="true" />}
+            </button>
+          </div>
+          {!visibleGurus.length && <div role="status" className="py-8"><p>{labels.no_results}</p>{query && <button type="button" onClick={() => setQuery("")} className="mt-3 min-h-11 text-[var(--color-text-brand)] underline">{labels.clear_search}</button>}</div>}
+          <ol className={view === "timeline" ? "ml-3 space-y-4 border-l-2 border-[var(--color-saffron-400)] pl-5" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"}>
+          {visibleGurus.map((guru) => (
+            <li key={guru.id} className={view === "timeline" ? "relative before:absolute before:-left-[27px] before:top-6 before:size-3 before:rounded-full before:bg-[var(--color-saffron-600)]" : ""}>
+            <button
               type="button"
               onClick={() => openGuru(guru)}
               aria-pressed={selected?.id === guru.id}
-              className="group grid h-32 grid-cols-[80px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] shadow-[var(--shadow-xs)] hover:border-[var(--color-saffron-400)] hover:shadow-[var(--shadow-md)] aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-[border-color,box-shadow,background-color]"
+              className="group grid min-h-36 w-full grid-cols-[80px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] shadow-[var(--shadow-xs)] hover:border-[var(--color-saffron-400)] hover:shadow-[var(--shadow-md)] aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-[border-color,box-shadow,background-color]"
             >
-              <span className="relative block h-32 w-20 overflow-hidden bg-[var(--color-saffron-50)]">
+              <span className="relative block h-full min-h-36 w-20 overflow-hidden bg-[var(--color-saffron-50)]">
                 {guru.thumbnailImage ? (
                   <Image
                     src={guru.thumbnailImage}
@@ -158,13 +175,15 @@ export default function ParamparaBrowser() {
                 </span>
               </span>
             </button>
+            </li>
           ))}
-          </div>
+          </ol>
         </section>
-      </main>
+      </div>
 
       {selected && (
         <div
+          ref={dialogRef}
           className="fixed inset-0 z-[9000] flex items-end justify-center bg-[var(--color-ink-900)]/70 sm:items-center sm:p-5"
           role="dialog"
           aria-modal="true"
@@ -180,7 +199,7 @@ export default function ParamparaBrowser() {
                   <p className="font-body text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
                     {positionLabel(selected)}
                   </p>
-                  <h2 id="parampara-dialog-title" className="mt-1 truncate font-display text-xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-2xl">
+                  <h2 id="parampara-dialog-title" className="mt-1 font-display text-xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-2xl">
                     {selected.name}
                   </h2>
                   {selected.timePeriod && (
@@ -192,7 +211,7 @@ export default function ParamparaBrowser() {
                   onClick={closeGuru}
                   aria-label={labels.close}
                   title={labels.close}
-                  className="grid size-10 shrink-0 place-items-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+                  className="grid size-11 shrink-0 place-items-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                 >
                   <X size={21} aria-hidden="true" />
                 </button>

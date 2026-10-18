@@ -12,11 +12,18 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Content never goes in code
 
-All user-visible text lives in `content/languages/*.json`; articles live in
-`content/blog/<slug>/`. **Never hardcode a display string in `src/`.** Components read
-content through `useLang()`. This is what allows a contributor to add a language or an
-article without touching code. `build/verify.mjs` fails on the detectable leak classes
-described below.
+**Never hardcode a display string in `src/`.** Short UI labels and the explicitly
+retained media catalogs live in `content/languages/*.json`. Editorial content lives in
+topic Markdown under `library/`: About/policies/legal in `general/`, announcements in
+`announcement/`, all Learn content and configuration in `learn/`, and multilingual
+articles in `blog/<slug>.md`. Page copy and its metadata share one Markdown source.
+Homepage content and configuration, including legacy/demo content, live in `settings/`
+JSON; the original environment hero groups stay in `library/hero/{dev,prod}/`.
+Lineage order comes from guru Markdown numeric filename prefixes, with no settings index.
+Other presentation and navigation configuration
+also belongs in `settings/`. Keep `config/site.yml` as the central YAML environment
+entry point. Components consume generated content through `useLang()`; do not add
+duplicate authorities. `build/verify.mjs` checks the canonical authored sources.
 
 No file in `src/` may name a language or a blog post. Both are discovered from the
 filesystem at build time by `scripts/generate-content.mjs`.
@@ -38,7 +45,7 @@ reloads or session checkpoints do not overwrite or discard them.
 ## Before claiming something works
 
 Run `npm run build:dev` and read the verification output. In rendered HTML and the web
-manifest, it detects exact default-language JSON prose of at least 30 characters and
+manifest, it detects exact default-language authored prose of at least 30 characters and
 configured brand terms at any length. This catches important leaks that type-checking
 cannot, but it is not a complete source-level guarantee: short, altered, or non-default
 language literals may evade it. Review `src/` for display strings as well.

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import { useDialog } from "@/hooks/useDialog";
 import Image from "next/image";
 import {
   Clock,
@@ -13,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { localizedText as localized } from "@/lib/localization";
 import { defaultContentMode } from "@/gen/content";
 import {
   alternateBranches,
@@ -20,13 +22,8 @@ import {
   branches,
   connectLinks,
   type BranchRecord,
-  type LocalizedText,
 } from "@/gen/connect/data";
 import type { ConnectPageShape } from "@/lib/content-types";
-
-function localized(value: LocalizedText, lang: string) {
-  return value[lang] ?? value.en;
-}
 
 export default function ConnectBrowser() {
   const { lang, tr, contentMode } = useLang();
@@ -43,21 +40,8 @@ export default function ConnectBrowser() {
     [activeBranches, selectedId]
   );
 
-  useEffect(() => {
-    if (!selected) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedId(null);
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [selected]);
-
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10 lg:px-10 lg:py-14">
+    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-10 lg:py-14">
       <header className="mx-auto mb-10 max-w-3xl text-center">
         <h1 className="font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           {copy.title}
@@ -104,9 +88,6 @@ export default function ConnectBrowser() {
                   {branch.phone}
                 </span>
               )}
-              <span className="mt-auto pt-5 font-body text-xs font-bold text-[var(--color-text-brand)]">
-                {copy.view_details}
-              </span>
             </button>
           ))}
         </div>
@@ -166,7 +147,7 @@ export default function ConnectBrowser() {
           onClose={() => setSelectedId(null)}
         />
       )}
-    </main>
+    </div>
   );
 }
 
@@ -181,8 +162,11 @@ function BranchDetails({
   copy: ConnectPageShape;
   onClose: () => void;
 }) {
+  const { tr } = useLang();
+  const dialogRef = useDialog(true, onClose);
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-[10000] flex items-center justify-center bg-[rgba(26,17,8,0.72)] p-3 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
@@ -205,7 +189,7 @@ function BranchDetails({
             type="button"
             onClick={onClose}
             aria-label={copy.close}
-            className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--color-line)] text-[var(--color-text-secondary)] transition hover:bg-[var(--color-saffron-50)]"
+            className="grid size-11 shrink-0 place-items-center rounded-full border border-[var(--color-line)] text-[var(--color-text-secondary)] transition hover:bg-[var(--color-saffron-50)]"
           >
             <X size={20} aria-hidden="true" />
           </button>
@@ -237,6 +221,20 @@ function BranchDetails({
               className="max-w-none space-y-4 font-body text-sm leading-7 text-[var(--color-text-secondary)]"
               dangerouslySetInnerHTML={{ __html: localized(branch.detailsHtml, lang) }}
             />
+            <div className="flex flex-wrap gap-3">
+              {branch.phone && (
+                <a href={`tel:${branch.phone.replace(/[^\d+]/g, "")}`}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[var(--color-line-strong)] px-4 text-sm font-semibold text-[var(--color-text-brand)]">
+                  <Phone size={16} aria-hidden="true" />{tr.page_controls.call}
+                </a>
+              )}
+              {branch.email && (
+                <a href={`mailto:${branch.email}`}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[var(--color-line-strong)] px-4 text-sm font-semibold text-[var(--color-text-brand)]">
+                  <Mail size={16} aria-hidden="true" />{tr.page_controls.email}
+                </a>
+              )}
+            </div>
           </div>
 
           <aside className="border-t border-[var(--color-line)] bg-[var(--color-cream-soft)]/40 p-4 sm:p-6 lg:border-l lg:border-t-0">
@@ -294,7 +292,7 @@ function Detail({
     <div className="grid grid-cols-[20px_1fr] gap-2">
       <span className="mt-0.5 text-[var(--color-saffron-700)]" aria-hidden="true">{icon}</span>
       <div>
-        <dt className="font-body text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">{label}</dt>
+        <dt className="font-body text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)]">{label}</dt>
         <dd className="mt-0.5 font-body leading-6 text-[var(--color-text-secondary)]">{value}</dd>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import { siteConfig, type Lang } from "@/gen/content";
+import { navigationRoutes, siteConfig, type Lang } from "@/gen/content";
 import type { NavItem } from "@/lib/nav-types";
 
 export default function MobileHeader() {
@@ -40,7 +40,7 @@ export default function MobileHeader() {
 
         {/* Left — logo only, circular saffron halo */}
         <Link
-          href="/"
+          href={navigationRoutes.home}
           onClick={closeMenu}
           className="shrink-0 rounded-full p-1 focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
           style={{ background: "radial-gradient(circle, var(--color-saffron-50) 0%, transparent 72%)" }}
@@ -50,7 +50,7 @@ export default function MobileHeader() {
 
         {/* Centre — Kannada sacred sloka (absolutely centred in bar) */}
         <p className="absolute left-0 right-0 text-center font-display font-bold text-[12px] text-[var(--color-text-brand)] tracking-wide leading-tight select-none pointer-events-none">
-          ॥ ಶ್ರೀ ವಿಠ್ಠಲೋ ವಿಜಯತೇ ॥
+          {tr.editorial.site_chrome.chant}
         </p>
 
         {/* Right — language toggle + hamburger, same row */}
@@ -58,20 +58,20 @@ export default function MobileHeader() {
           <button
             onClick={() => setLang(nextLanguage.code as Lang)}
             className="w-7 h-7 rounded-full border border-[var(--color-line-strong)] bg-transparent text-[11px] font-bold text-[var(--color-ink-500)] active:text-[var(--color-saffron-600)] active:border-[var(--color-saffron-400)] flex items-center justify-center transition-colors"
-            aria-label={`Switch to ${nextLanguage.name}`}
+            aria-label={tr.ui.switch_language.replace("{language}", nextLanguage.name)}
           >
             {nextLanguage.short_label}
           </button>
           <button onClick={() => setOpen((o) => !o)}
             className="p-1 rounded-full hover:bg-[var(--color-saffron-100)] transition-colors text-[var(--color-text-primary)] focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
-            aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="mobile-nav">
+            aria-label={open ? tr.ui.close_menu : tr.ui.open_menu} aria-expanded={open} aria-controls="mobile-nav">
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile navigation"
+        <nav id="mobile-nav" aria-label={tr.ui.mobile_navigation}
           className="absolute top-full left-0 right-0 bg-[var(--color-paper)] border-b border-[var(--color-saffron-600)] shadow-lg max-h-[80vh] overflow-y-auto">
           <ul className="py-2">
             {NAV.map((item) => {
