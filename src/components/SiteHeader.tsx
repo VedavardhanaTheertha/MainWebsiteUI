@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 import { useQRModal } from "@/hooks/useQRModal";
 import { useLang } from "@/context/LanguageContext";
 import { navigationRoutes, siteConfig } from "@/gen/content";
@@ -19,10 +19,26 @@ export default function SiteHeader() {
   const { tr } = useLang();
   const NAV = tr.nav as unknown as NavItem[];
   const [open, setOpen] = useState<DropKey>(null);
+  const navId = useId();
+  const headerRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => {
     if (closeTimer.current !== null) clearTimeout(closeTimer.current);
   }, []);
+  useEffect(() => {
+    if (!open) return;
+    const desktop = window.matchMedia("(min-width: 80rem)");
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !headerRef.current?.contains(event.target)) setOpen(null);
+    };
+    const onResize = () => { if (!desktop.matches) setOpen(null); };
+    document.addEventListener("pointerdown", onPointerDown);
+    desktop.addEventListener("change", onResize);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      desktop.removeEventListener("change", onResize);
+    };
+  }, [open]);
 
   const show = (key: DropKey) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -35,7 +51,7 @@ export default function SiteHeader() {
   const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(href));
 
   return (
-    <header className="hidden lg:block sticky top-0 z-50 bg-[var(--color-parchment)]/95 backdrop-blur-sm border-b border-[var(--color-saffron-600)]">
+    <header ref={headerRef} className="hidden xl:block sticky top-0 z-50 bg-[var(--color-parchment)]/95 backdrop-blur-sm border-b border-[var(--color-saffron-600)]">
       <div className="max-w-7xl mx-auto px-4 xl:px-6 h-14 flex items-center justify-between gap-3">
 
         {/* Logo */}
@@ -50,27 +66,54 @@ export default function SiteHeader() {
               const hasDropdown = !!(item.children && item.children.length > 0);
               const active = item.href ? isActive(item.href) : item.children?.some(i => isActive(i.href));
               return (
-                <li key={item.key} className="relative"
-                  onMouseEnter={() => hasDropdown ? show(item.key) : undefined}
-                  onMouseLeave={() => hasDropdown ? hide() : undefined}>
-                  {item.href ? (
+                <li key={item.key} className="relative flex items-center"
+                  onPointerEnter={(event) => { if (event.pointerType === "mouse" && hasDropdown) show(item.key); }}
+                  onPointerLeave={(event) => {
+                    if (event.pointerType === "mouse" && hasDropdown && !event.currentTarget.contains(document.activeElement)) hide();
+                  }}
+                  onFocus={() => {
+                    if (closeTimer.current !== null) clearTimeout(closeTimer.current);
+                  }}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) show(null);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Escape" && open === item.key) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      show(null);
+                      event.currentTarget.querySelector<HTMLButtonElement>("[data-nav-disclosure]")?.focus();
+                    }
+                  }}>
+                  {item.href && (
                     <Link href={item.href}
+                      onClick={() => show(null)}
                       className={`flex items-center gap-0.5 px-2.5 py-1.5 rounded-full font-body text-[12px] font-medium transition-colors whitespace-nowrap ${active ? "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-600)]/60"}`}>
                       {item.label}
                     </Link>
-                  ) : (
+                  )}
+                  {hasDropdown && (
                     <button
+                      type="button"
+                      data-nav-disclosure
+                      aria-label={item.href ? item.label : undefined}
+                      aria-expanded={open === item.key}
+                      aria-controls={`${navId}-${item.key}`}
+                      onClick={() => show(open === item.key ? null : item.key)}
                       className={`flex items-center gap-0.5 px-2.5 py-1.5 rounded-full font-body text-[12px] font-medium transition-colors whitespace-nowrap ${open === item.key || active ? "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-600)]/60"}`}>
-                      {item.label}
+                      {!item.href && item.label}
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                   )}
-                  {hasDropdown && open === item.key && (
+                  {hasDropdown && (
                     <div
+                      id={`${navId}-${item.key}`}
+                      hidden={open !== item.key}
                       className="absolute top-full left-0 mt-1 min-w-[200px] bg-[var(--color-paper)] border border-[var(--color-saffron-600)] shadow-xl rounded-lg py-1.5 z-50"
-                      onMouseEnter={() => show(item.key)} onMouseLeave={hide}>
+                    >
                       {item.children!.map((sub) => (
                         <Link key={sub.key} href={sub.href}
+                          onClick={() => show(null)}
                           className="block px-4 py-2 font-body text-[12px] text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-saffron-100)] hover:text-[var(--color-text-brand)]">
                           {sub.label}
                         </Link>
@@ -85,7 +128,6 @@ export default function SiteHeader() {
 
         {/* Right actions */}
         <div className="flex items-center gap-1.5 shrink-0">
-          {/* Panchanga — mirror of mobile bottom nav */}
           <Link href={navigationRoutes.panchanga}
             className="flex items-center gap-1 px-3 py-1.5 rounded-full font-body text-[11px] font-medium text-[var(--color-text-secondary)] border border-[var(--color-saffron-600)] hover:border-[var(--color-saffron-600)] hover:text-[var(--color-text-brand)] transition-colors">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

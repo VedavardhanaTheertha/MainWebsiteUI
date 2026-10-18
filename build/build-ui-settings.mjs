@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 import { loadAnnouncementSettings, loadUiSettings } from "./ui-settings.mjs";
 import { searchSettings } from "./search-config.mjs";
 import { loadActionSettings } from "./action-settings.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 
+holdWorkspaceLock("settings generation");
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputPath = path.join(projectRoot, "src", "gen", "settings", "ui-elements.ts");
 const settings = loadUiSettings();

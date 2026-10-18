@@ -140,7 +140,7 @@ export default function MediaViewer({
         {item && (
           <>
             <div
-              className={`relative mt-4 ${item.type === "photo" ? "touch-pan-y" : ""}`}
+              className={`relative mt-4 ${item.type === "photo" ? "touch-pan-y touch-pinch-zoom" : ""}`}
               onTouchStart={(event) => {
                 const target = event.target as HTMLElement;
                 const video = target.closest("video");

@@ -9,22 +9,43 @@
 body {
   background-color: var(--color-cream);
   color: var(--color-text-primary);
-  font-family: var(--font-body);
+  font-family: var(--font-localized, var(--font-body));
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
+  font-family: var(--font-localized, var(--font-display));
 }
 
-/* Kannada content renders in a script-appropriate font once the language toggle
-   switches — see LanguageContext, which sets document.documentElement.lang. */
-html[lang="kn"] body {
-  font-family: var(--font-kannada);
+@layer utilities {
+  .font-body {
+    font-family: var(--font-localized, var(--font-body));
+  }
+
+  .font-display {
+    font-family: var(--font-localized, var(--font-display));
+  }
 }
-html[lang="kn"] h1, html[lang="kn"] h2, html[lang="kn"] h3,
-html[lang="kn"] h4, html[lang="kn"] h5, html[lang="kn"] h6 {
-  font-family: var(--font-kannada);
+
+@utility text-policy {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+@utility touch-target {
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-text-brand);
+  outline-offset: 3px;
+}
+
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline-color: Highlight;
+  }
 }
 
 /* Ken Burns animation */
@@ -42,9 +63,11 @@ html[lang="kn"] h4, html[lang="kn"] h5, html[lang="kn"] h6 {
   .animate-kenburns {
     animation: none;
   }
-  * {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -166,15 +189,14 @@ html[lang="kn"] h4, html[lang="kn"] h5, html[lang="kn"] h6 {
   text-decoration: underline;
 }
 
-/* Blog article body — styles the HTML that the content build generates from
-   Markdown. Scoped to .blog-body so it cannot affect any other page. */
+/* Generated article Markdown, scoped to its reading body. */
 .blog-body p {
   margin-bottom: 1.15rem;
   line-height: 1.75;
 }
 .blog-body h2,
 .blog-body h3 {
-  font-family: var(--font-marcellus), serif;
+  font-family: var(--font-localized, var(--font-display));
   font-weight: 700;
   color: var(--color-text-primary);
   margin-top: 2rem;

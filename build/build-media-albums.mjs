@@ -2,7 +2,9 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateMedia } from "./media-schema.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 
+holdWorkspaceLock("media generation");
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const environmentName = process.env.SITE_ENV || "dev";
 const settingsEnvironment = environmentName === "local" ? "dev" : environmentName;

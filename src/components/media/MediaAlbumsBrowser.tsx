@@ -14,6 +14,8 @@ import { useMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
 import type { MediaAlbum } from "@/lib/content-types";
 import { filterMediaAlbums, mediaCounts, type MediaFilters } from "@/lib/media-utils";
+import CollectionEmptyState from "@/components/presentation/CollectionEmptyState";
+import { collectionCardBodyClassName, collectionCardClassName, collectionCardImageClassName } from "@/lib/collection-presentation";
 
 const defaultFilters: MediaFilters = { from: "", to: "", event: "", type: "", sort: browserDefaults.albumsSort };
 
@@ -34,13 +36,11 @@ function AlbumTile({
   return (
     <Link
       href={`/albums/${album.id}`}
-      className={`group flex flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg ${
-        featured ? "h-80" : "h-[360px]"
-      } ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection")} ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
-      <div className="relative h-40 overflow-hidden bg-[var(--color-cream-soft)]">
+      <div className={collectionCardImageClassName}>
         <Image
           src={album.cover}
           alt=""
@@ -55,7 +55,7 @@ function AlbumTile({
           {counts.photos} {photoLabel} · {counts.videos} {videoLabel}
         </span>
       </div>
-      <div className="flex flex-1 flex-col p-4">
+      <div className={collectionCardBodyClassName}>
         <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {album.title}
         </h3>
@@ -254,9 +254,9 @@ export default function MediaAlbumsBrowser() {
               ))}
             </div>
           ) : (
-            <p className="rounded-xl border border-[var(--color-line)] bg-white p-10 text-center text-sm text-[var(--color-text-secondary)]">
+            <CollectionEmptyState>
               {copy.no_results}
-            </p>
+            </CollectionEmptyState>
           )}
 
           {filtered.length > visibleCount && (

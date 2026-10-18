@@ -26,6 +26,9 @@ article translations live with their canonical Markdown in `library/`.
    descriptor's `code` should match the filename for clarity, although discovery uses
    the filename. When a descriptor label is absent, the generator falls back to the
    name, filename code, or uppercase code as appropriate.
+   For a script-specific typeface, set the optional `font_family` to an existing
+   theme font stack, such as `var(--font-sanskrit)`. It applies to body text,
+   headings, and font utilities without registering language codes in components.
 3. Add translated keys using the same nesting and value types as the configured default-language
    JSON. Never translate key names, paths, identifiers, dates, or URLs.
 4. A partial file is valid. Missing object keys are deep-merged from the default
@@ -42,7 +45,8 @@ copying default-language text; this keeps the fallback report useful.
 ## Update an interface translation
 
 - Edit values only, preserving JSON syntax, keys, nesting, and value types.
-- Save the file as UTF-8 and review long labels at mobile widths.
+- Save the file as UTF-8 and review long labels at mobile, tablet, and desktop widths,
+  including enlarged text and the compact/full navigation boundary.
 - Compare devotional terms, names, punctuation, numbers, and links with the source.
 - State in the pull request whether review was performed by a fluent speaker.
 

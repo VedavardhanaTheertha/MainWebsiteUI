@@ -17,6 +17,8 @@ import {
 import { collectionPagination } from "@/gen/settings/ui-elements";
 import { articleHref, knowledgeReadingTime, knowledgeText, localizeArticle, type DisplayArticle } from "@/lib/knowledge";
 import KnowledgeBody from "./KnowledgeBody";
+import CollectionEmptyState from "@/components/presentation/CollectionEmptyState";
+import { collectionCardBodyClassName, collectionCardClassName, collectionCardImageClassName } from "@/lib/collection-presentation";
 
 function ArticleModal({
   article,
@@ -115,13 +117,11 @@ function ArticleTile({
     <button
       type="button"
       onClick={onOpen}
-      className={`group flex flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg ${
-        featured ? "h-80" : "h-[360px]"
-      } ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection")} ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
-      <div className={`relative overflow-hidden ${featured ? "h-40" : "h-40"}`}>
+      <div className={collectionCardImageClassName}>
         <Image
           src={article.image}
           alt=""
@@ -134,7 +134,7 @@ function ArticleTile({
           {projectStatus ? copy.detail_labels[projectStatus] : article.status}
         </span>
       </div>
-      <div className="flex flex-1 flex-col p-4">
+      <div className={collectionCardBodyClassName}>
         {projectStatus && <p className="mb-1 text-xs font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
         <h3 className="line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {article.title}
@@ -304,9 +304,9 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
               ))}
             </div>
           ) : (
-            <p className="rounded-xl border border-[var(--color-line)] bg-white p-10 text-center text-sm text-[var(--color-text-secondary)]">
+            <CollectionEmptyState>
               {copy.no_results}
-            </p>
+            </CollectionEmptyState>
           )}
 
           {filtered.length > visibleCount && (

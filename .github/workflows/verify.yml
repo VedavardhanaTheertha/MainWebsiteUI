@@ -12,7 +12,7 @@
 # All build logic lives in build/build.mjs and can be run locally:
 #     node build/build.mjs dev
 #     node build/build.mjs prod
-# See docs/DEVELOPER.md §6 and docs/ARCHITECTURE.md §7.
+# See docs/DEVELOPER.md (Validation) and docs/ARCHITECTURE.md (Build and deployment).
 name: Verify build
 
 on:
@@ -54,14 +54,8 @@ jobs:
 
       - run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit tests
-        run: npm run test:unit
+      - name: Generate content, lint, typecheck, and unit tests
+        run: npm run check
 
       - name: Build and verify (dev)
         run: npm run build:dev

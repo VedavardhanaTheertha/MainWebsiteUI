@@ -23,9 +23,13 @@ import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "js-yaml";
+import { generateContent } from "./pipeline.mjs";
+import { holdWorkspaceLock } from "./workspace-lock.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const envName = process.argv[2] || process.env.SITE_ENV || "dev";
+process.env.SITE_ENV = envName;
+holdWorkspaceLock(`export build (${envName})`);
 
 /**
  * Runs a Node script in the project root, aborting the build if it fails.
@@ -79,14 +83,7 @@ console.log(`  base path   : ${environment.base_path || "(site root)"}`);
 console.log("─".repeat(70));
 
 run("cleaning stale output", path.join(rootDir, "build", "clean.mjs"));
-run("generating shared theme", path.join(rootDir, "build", "build-theme-settings.mjs"));
-run("generating shared settings", path.join(rootDir, "build", "build-ui-settings.mjs"));
-run("generating media albums", path.join(rootDir, "build", "build-media-albums.mjs"));
-run("generating Bhakti", path.join(rootDir, "build", "build-bhakti-content.mjs"));
-run("generating Sevas", path.join(rootDir, "build", "build-sevas-content.mjs"));
-run("generating Events", path.join(rootDir, "build", "build-events-content.mjs"));
-run("generating Library sections", path.join(rootDir, "build", "build-library-sections.mjs"));
-run("generating website content", path.join(rootDir, "scripts", "generate-content.mjs"));
+generateContent((script) => run(script, path.join(rootDir, script)));
 run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build"]);
 run("normalizing canonical URLs", path.join(rootDir, "build", "write-canonicals.mjs"));
 run("verifying output", path.join(rootDir, "build", "verify.mjs"));

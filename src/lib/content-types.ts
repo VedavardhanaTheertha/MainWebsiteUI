@@ -479,6 +479,8 @@ export interface LanguageDescriptor {
   label: string;
   /** Compact label for the mobile toggle, where space is tight. */
   short_label: string;
+  /** Optional theme font family for this script, applied to text and font utilities. */
+  font_family?: string;
   /** True for the language every other language falls back to. */
   is_default: boolean;
 }

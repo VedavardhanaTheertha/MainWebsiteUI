@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useId } from "react";
+import { lockPageScroll } from "@/hooks/useDialog";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { navigationRoutes, siteConfig, type Lang } from "@/gen/content";
@@ -13,6 +14,9 @@ export default function MobileHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const navId = useId();
   const { lang, setLang, tr, languages } = useLang();
   const NAV = tr.nav as unknown as NavItem[];
 
@@ -23,8 +27,28 @@ export default function MobileHeader() {
   const nextLanguage = languages[(currentIndex + 1) % languages.length];
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (!open) return;
+    const unlock = lockPageScroll();
+    const desktopQuery = "(min-width: 80rem)";
+    const desktop = window.matchMedia(desktopQuery);
+    const close = () => { setOpen(false); setExpanded(null); };
+    const onResize = () => { if (window.matchMedia(desktopQuery).matches) close(); };
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !headerRef.current?.contains(event.target)) close();
+    };
+    onResize();
+    desktop.addEventListener("change", onResize);
+    window.addEventListener("resize", onResize);
+    const viewportObserver = new ResizeObserver(onResize);
+    viewportObserver.observe(document.documentElement);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      unlock();
+      desktop.removeEventListener("change", onResize);
+      window.removeEventListener("resize", onResize);
+      viewportObserver.disconnect();
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
   }, [open]);
 
   const toggle = (key: string) => setExpanded((prev) => (prev === key ? null : key));
@@ -34,7 +58,15 @@ export default function MobileHeader() {
   };
 
   return (
-    <header className="lg:hidden sticky top-0 z-50 shadow-md">
+    <header ref={headerRef} className="xl:hidden sticky top-0 z-50 shadow-md"
+      onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) closeMenu(); }}
+      onKeyDown={(event) => {
+        if (open && event.key === "Escape") {
+          event.preventDefault();
+          closeMenu();
+          toggleRef.current?.focus();
+        }
+      }}>
       {/* Single unified header bar */}
       <div className="relative h-14 flex items-center justify-between px-3 bg-[var(--color-parchment)]">
 
@@ -48,8 +80,7 @@ export default function MobileHeader() {
           <Image src={`${siteConfig.basePath}/main-logo.png`} alt={tr.logo_alt} width={44} height={44} className="object-contain" />
         </Link>
 
-        {/* Centre — Kannada sacred sloka (absolutely centred in bar) */}
-        <p className="absolute left-0 right-0 text-center font-display font-bold text-[12px] text-[var(--color-text-brand)] tracking-wide leading-tight select-none pointer-events-none">
+        <p className="absolute left-[4.25rem] right-28 line-clamp-2 text-center font-display font-bold text-[12px] text-[var(--color-text-brand)] tracking-wide leading-tight select-none pointer-events-none">
           {tr.editorial.site_chrome.chant}
         </p>
 
@@ -57,13 +88,13 @@ export default function MobileHeader() {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setLang(nextLanguage.code as Lang)}
-            className="w-7 h-7 rounded-full border border-[var(--color-line-strong)] bg-transparent text-[11px] font-bold text-[var(--color-ink-500)] active:text-[var(--color-saffron-600)] active:border-[var(--color-saffron-400)] flex items-center justify-center transition-colors"
+            className="min-w-11 min-h-11 shrink-0 rounded-full border border-[var(--color-line-strong)] bg-transparent text-[11px] font-bold text-[var(--color-ink-500)] active:text-[var(--color-saffron-600)] active:border-[var(--color-saffron-400)] flex items-center justify-center transition-colors"
             aria-label={tr.ui.switch_language.replace("{language}", nextLanguage.name)}
           >
             {nextLanguage.short_label}
           </button>
-          <button onClick={() => setOpen((o) => !o)}
-            className="p-1 rounded-full hover:bg-[var(--color-saffron-100)] transition-colors text-[var(--color-text-primary)] focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
+          <button ref={toggleRef} type="button" onClick={() => setOpen((o) => !o)}
+            className="min-w-11 min-h-11 grid place-items-center p-1 rounded-full hover:bg-[var(--color-saffron-100)] transition-colors text-[var(--color-text-primary)] focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
             aria-label={open ? tr.ui.close_menu : tr.ui.open_menu} aria-expanded={open} aria-controls="mobile-nav">
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -86,13 +117,14 @@ export default function MobileHeader() {
                     </Link>
                   ) : (
                     <>
-                      <button onClick={() => toggle(item.key)}
+                      <button type="button" onClick={() => toggle(item.key)}
+                        aria-expanded={expanded === item.key}
+                        aria-controls={`${navId}-${item.key}`}
                         className="w-full flex items-center justify-between px-6 py-3 font-body text-[15px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)] transition-colors">
                         {item.label}
                         <ChevronDown size={15} className={`transition-transform duration-200 ${expanded === item.key ? "rotate-180" : ""}`} />
                       </button>
-                      {expanded === item.key && (
-                        <ul className="bg-[var(--color-gold-100)] border-t border-[var(--color-saffron-600)]">
+                        <ul id={`${navId}-${item.key}`} hidden={expanded !== item.key} className="bg-[var(--color-gold-100)] border-t border-[var(--color-saffron-600)]">
                           {item.children!.map((sub) => (
                             <li key={sub.key}>
                               <Link href={sub.href} onClick={closeMenu}
@@ -102,7 +134,6 @@ export default function MobileHeader() {
                             </li>
                           ))}
                         </ul>
-                      )}
                     </>
                   )}
                 </li>

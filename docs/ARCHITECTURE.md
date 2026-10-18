@@ -4,11 +4,10 @@
 
 This is the multilingual, statically exported website for Shri Shiroor Matha.
 Next.js and React provide page structure and interactions; reviewed Markdown,
-language JSON, and settings provide visitor-facing content. There is no application
-server, account system, payment processor, or form-submission backend in this repository.
+language JSON, and settings provide visitor-facing content. The deployed application
+consists of static files.
 External services handle registration, payments, and official communication.
 
-This guide describes the active system, not a migration history or feature roadmap.
 Contributor commands are in [DEVELOPER.md](DEVELOPER.md).
 
 ## 2. Source ownership
@@ -16,8 +15,8 @@ Contributor commands are in [DEVELOPER.md](DEVELOPER.md).
 | Source | Responsibility |
 |---|---|
 | `src/app/`, `src/components/`, `src/hooks/`, `src/lib/`, `src/context/` | Routes, rendering, interactions, and typed runtime helpers |
-| `content/languages/<code>.json` | Language descriptors, short UI labels, and retained media catalogs |
-| `library/` | Canonical topic Markdown, devotional corpus, page-reference metadata, and original hero groups |
+| `content/languages/<code>.json` | Language descriptors, short UI labels, and media catalogs |
+| `library/` | Canonical topic Markdown, devotional corpus, page-reference metadata, and environment-specific hero groups |
 | `settings/` | Homepage composition, navigation, images, theme, search, and interaction behavior |
 | `config/site.yml` | Default language, canonical production URL, environment matrix, and verification policy |
 | `build/`, `scripts/` | Validation, content generation, export, preview, and output verification |
@@ -50,11 +49,16 @@ are tracked separately in [ASSET_PROVENANCE.md](../ASSET_PROVENANCE.md).
 The generator discovers `content/languages/*.json`; the filename supplies the language
 code. `_language` supplies human-readable switcher labels. The default comes from
 `site.default_language` in `config/site.yml`, not a hardcoded runtime assumption.
+Its optional `font_family` selects a theme font stack for the active script;
+the same selection applies to body text, headings, and font utilities. Hero title
+maps cover the discovered languages and use the configured default for missing copy.
 
 Missing translated object keys inherit default-language values. Arrays are complete
 replacement values, not item-by-item merges. The default language must be complete.
 Library translation discovery and fallback follow the same configured language set;
 missing translations are not a reason to fabricate a body.
+Language and preview preferences are persisted when browser storage is available;
+otherwise they remain usable in memory for the current page session.
 
 Structured page copy uses multilingual frontmatter, for example:
 
@@ -79,7 +83,7 @@ and language JSON. Active shared control and editorial namespaces are `ui` and
 | Bhakti | `library/dasasahitya/*.md`; preserve source identifiers, attribution, and verse layout |
 | Sevas | `library/sevas/*.md`; localized offerings and language-specific guideline bodies |
 | Material enquiries | `library/donations/pages/donation.md`; one localized catalog preserving the selected material names and prices |
-| Events | `library/events/`; authored dates and metadata drive catalog/detail pages |
+| Events | `library/events/`; validated calendar dates and metadata drive catalog/detail pages; malformed records fail generation |
 | Guru Parampara | `library/parampara/`; numeric filename prefixes determine order; translations inherit missing optional facts |
 | Learn | `library/learn/index.md` and subject Markdown; collection order, page labels, suggested paths, and subject metadata live together |
 | Branches and official channels | `library/branches/` and `library/connect/`; generated data supplies locations and shared official destinations |
@@ -101,7 +105,7 @@ sample or unreviewed content must not appear to be verified institutional guidan
 
 ### Dated and temporary information
 
-The Yajna progress figures are an authored snapshot (initially **2026-07-01**).
+The Yajna progress figures are an authored snapshot.
 Update the count and `pages.local_copy.yajna_as_of_date` together in the announcement
 Markdown. The date must be valid and identical across translations; rebuilding must
 not substitute today's date. Panchanga currently carries a temporary test-data note.
@@ -117,12 +121,17 @@ homepage has six top cards, five icon cards, six bottom cards, and three explore
 cards. Card titles, descriptions, images, types, destinations, and footnotes belong
 in those multilingual Markdown records, not repeated in settings.
 
+The five `icon_carousel` links use equal-width grid columns without horizontal
+scrolling. Icons scale from 44px on narrow phones to 54px on larger screens, and
+localized labels wrap within their columns without truncation. The six-card
+`bottom_carousel` is a separate collection.
+
 The generated `remidies_carousel` contains three distinct remedies drawn from
 `library/remedies/` per content generation. Selection is shared by all languages and
 content variants for that generation; keep at least four eligible remedy articles.
 The existing key spelling is part of the data contract.
 
-Original environment hero groups remain in `library/hero/{dev,prod}/*.hero.json`.
+Environment-specific hero groups live in `library/hero/{dev,prod}/*.hero.json`.
 Local preview uses the development groups. Preserve their selection and ordering
 when changing image resolution or controls.
 
@@ -130,6 +139,17 @@ when changing image resolution or controls.
 official social `connectId` references. Labels are localized separately. Only concrete
 active routes belong in page references, navigation, and sitemaps; a metadata record
 does not create a route.
+
+Compact navigation serves widths below `80rem`, including intermediate
+tablet/small-laptop widths; full navigation and its utility bar start at `80rem`.
+Menu groups
+support touch/click and keyboard disclosure, expose their expanded state, and close
+on Escape. Crossing into full navigation closes an open compact menu and releases
+its scroll lock.
+
+Learn and Panchanga use server route wrappers for content-owned metadata and client
+components for language-aware interactions. Each Learn subject supplies its own
+title and description rather than inheriting homepage metadata.
 
 ## 5. Images, media, and interactions
 
@@ -144,8 +164,12 @@ Environment image maps in `settings/{dev,prod}/images.json` resolve stable alias
 `settings/image_policy.json` separately controls framework image optimization and
 allowed remote hosts. `settings/theme.json` owns theme tokens; the generator emits
 `src/gen/settings/theme.css`. Layout and responsive behavior remain source code.
+Category tones share semantic mappings across event rails, lists, and badges.
+Shared featured/collection presentation variants preserve their distinct layouts
+while keeping spacing, controls, focus, and result states consistent. Policy text
+uses a readable shared size; utility controls have touch-friendly targets.
 
-Media albums are built from retained language catalog data. Use stable explicit IDs
+Media albums are built from language catalog data. Use stable explicit IDs
 and valid image/video metadata; do not infer publication rights from remote availability.
 
 `settings/ui_elements.json` supplies collection pagination, reader controls, viewer
@@ -153,11 +177,26 @@ boundaries, default filters/sorting, upcoming-event limits, slideshow timing,
 interaction delays, and horizontal auto-scroll behavior. Horizontal rails preserve
 manual touch scrolling, desktop dragging, interaction pause/resume, and reduced-motion
 preferences. Turning autoplay off does not disable manual navigation. Runtime callers
-use the current settings-aware scroll API, not a one-argument compatibility wrapper.
+use the shared settings-aware scroll API.
+Rails suspend animation work when movement is unavailable, recover from canceled
+touches, and preserve manual input. Decorative loops stop under reduced motion.
+Hero autoplay has a separate pause/resume control and responds to motion-preference
+changes while the page is open.
+
+Dialogs own focus, restore it on close, and keep controls reachable in short
+viewports through constrained panels and scrollable content. Photo viewing permits
+pinch zoom without treating multi-touch as item navigation. Reader transitions move
+focus into the reading view and restore it to the originating result on return.
+Announcements remain visually on top during normal browsing, are temporarily hidden
+while a dialog is open, and return afterward unless dismissed.
+Dialog and menu scroll locks are reference-counted so closing one overlay cannot
+release another overlay's active lock.
 
 Search uses MiniSearch with generated indexes and runtime loading where appropriate.
 `settings/search.json` supplies matching options and collection field weights.
 Content, generated indexes, and runtime searches must use the same configuration.
+Runtime indexes follow the active catalog; switching copy mode invalidates stale
+indexes and ignores asynchronous completions for the previous catalog.
 
 ## 6. Environments
 
@@ -186,8 +225,10 @@ not generate synthetic copies.
 The deployment entry point is `build/build.mjs`. It cleans generated output, builds
 theme/settings, media, Bhakti, Sevas, Events, and knowledge sections, generates the
 remaining website content, runs Next's static export, normalizes canonical URLs, and
-verifies the result. `next.config.ts` uses static export; there is no production
-`next start` application server.
+verifies the result. Shared preparation includes theme generation for local
+development as well as builds. Test entry points prepare required generated content;
+CI can reuse preparation across lint, type checking, and tests while full environment
+builds remain independent. `next.config.ts` enables static export.
 
 The exported site is written to `out/`. Only one environment's export occupies that
 directory at a time. `npm start -- dev|local|prod` (choose one environment) serves the
@@ -199,11 +240,21 @@ URLs are mapped to their existing nested export files so client navigation can l
 its static payloads. It binds to localhost:3000 unless
 `PORT` is set.
 
+Development, generation, cleaning, and full builds coordinate ownership of shared
+workspace output. Do not run a build or cleanup against a workspace serving active
+development; stop that server first. Separate checkouts can run independently.
+Ownership is recorded in `node_modules/.cache/website-tooling.lock`, inherited by
+authorized generator subprocesses, and reclaimed when its owner is no longer alive.
+Next's own development/build locks also block writes by the tooling entry points.
+`npm run check` prepares content once before lint, type checking, and unit tests.
+
 Verification checks exported HTML and the manifest for detectable real-content leaks
 when placeholders are the default, checks routing/metadata expectations, and fails
 the build on configured violations. Exact default-language prose of at least 30
 characters and configured brand terms are detectable; short, altered, or non-default
 language literals can escape that check. Review source for display strings too.
+Sitemap verification compares exact canonical route membership and rejects duplicate,
+missing, and unexpected URLs rather than relying only on a URL count.
 
 GitHub workflows verify pull requests and `main`; the development workflow publishes
 the reviewed `main` export to GitHub Pages. The production configuration targets a
@@ -216,31 +267,28 @@ procedure is in the Developer Guide.
 
 ## 8. Official actions and trust boundaries
 
-Public destinations are resolved from authored settings/topic data, never invented
-inside a component. Current official external actions are:
+`settings/public_actions.json` owns public action destinations. Its `connectId`
+references resolve to canonical `library/connect/` records. Do not invent destinations
+inside components.
 
-- Volunteer registration: `https://volunteer.shiroormatha.org/`
-- Mantra Lekhana registration: `https://kmly.shiroormatha.org/`
-- Monetary offering: `https://pay.shiroormatha.org/?entity_id=3&event_id=4&seva_id=3`
-- Verified support email: `support@shiroormatha.org`
+The payment QR is generated at build time from the configured payment destination.
+Preserve the complete URL and its query parameters. External services handle payment
+processing and confirmation.
 
-Keep the complete monetary URL, including all three query parameters, unchanged.
-The payment QR is generated at build time from that same destination. This website
-does not claim to process or confirm the payment.
-
-The preserved Sevas material catalog now has one authority in
-`library/donations/pages/donation.md`, used by the active enquiry flow. There is no
-separate donation panel. Display only real
-submission/contact capabilities; do not show a successful registration or enquiry
-when nothing was sent.
+Material enquiries use the localized catalog in
+`library/donations/pages/donation.md` and the configured email destination.
+Display only real submission/contact capabilities; do not show a successful
+registration or enquiry when nothing was sent.
 
 The official WhatsApp record is a **broadcast channel**, not a direct-message inbox.
 Use it for following announcements, not for prefilled private enquiries or promised
-message delivery. Public configuration must never contain credentials.
+message delivery.
+Public configuration must never contain credentials.
 
 ## 9. Maintenance
 
 Update this guide when ownership, structure, environments, or the pipeline changes.
 Update the Developer Guide when contributor steps change. Keep tests and validation
-at the layer that owns the behavior; do not retain obsolete migration narratives as
-setup instructions.
+at the layer that owns the behavior. Document existing behavior and explicit
+restrictions. Exclude migration narratives, removed or unimplemented features,
+historical implementation notes, and duplicated configuration values.

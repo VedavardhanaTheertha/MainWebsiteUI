@@ -1,4 +1,5 @@
 ﻿import type { Metadata } from "next";
+import Link from "next/link";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
@@ -27,9 +28,9 @@ export default function TermsPage() {
             <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "terms_heading_2"]} /></h2>
             <p>
               <LocalizedCopy path={["pages", "terms", "donations"]} />{" "}<LocalizedCopy path={["pages", "local_copy", "terms_refund_before"]} />{" "}
-              <a href="/refund" className="text-[var(--color-text-brand)] hover:underline">
+              <Link href="/refund" className="text-[var(--color-text-brand)] hover:underline">
                 <LocalizedCopy path={["pages", "local_copy", "refund_title"]} />
-              </a>{" "}
+              </Link>{" "}
               <LocalizedCopy path={["pages", "local_copy", "terms_refund_after"]} />
             </p>
           </section>

@@ -13,30 +13,8 @@ import { imagePaths } from "@/lib/images";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import EventDetailModal from "./EventDetailModal";
 import RailMotionControl from "./RailMotionControl";
-
-const catColor: Record<string, string> = {
-  festival: "bg-[#FFF7C5] text-[#92400E]",
-  concert: "bg-[#E0F2FE] text-[#0369A1]",
-  dance: "bg-[#FCE7F3] text-[#BE185D]",
-  yakshagana: "bg-[#FEE2E2] text-[#B91C1C]",
-  pravachana: "bg-[#F3E8FF] text-[#6B21A8]",
-  utsava: "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]",
-  pooja: "bg-[#FEF3C7] text-[#92400E]",
-  parayana: "bg-[#EFF6FF] text-[#2B6CB0]",
-  annadaana: "bg-[#F0FDF4] text-[#166534]",
-  special: "bg-[#CCFBF1] text-[#0F766E]",
-};
-
-function CategoryBadge({ category, code }: { category: string; code?: string }) {
-  const colorClass = (code && catColor[code]) || "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]";
-  return (
-    <span
-      className={`font-body text-[10px] font-semibold uppercase tracking-wider rounded-full px-2 py-0.5 ${colorClass}`}
-    >
-      {category}
-    </span>
-  );
-}
+import CategoryBadge from "./presentation/CategoryBadge";
+import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/collection-presentation";
 
 export default function EventsAccordion() {
   const { lang, contentMode, tr } = useLang();
@@ -97,7 +75,7 @@ export default function EventsAccordion() {
                   setSelectedEvent(ev);
                 }
               }}
-              className="event-card flex h-80 w-[82vw] max-w-[320px] shrink-0 flex-col overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white shadow-sm transition-all duration-300 hover:shadow-md cursor-pointer"
+              className={`${collectionCardClassName("featured")} event-card w-[82vw] max-w-[320px] shrink-0 cursor-pointer`}
             >
               <div className="relative h-40 w-full shrink-0">
                 <Image
@@ -114,7 +92,7 @@ export default function EventsAccordion() {
                   </span>
                 )}
               </div>
-              <div className="flex flex-1 flex-col p-4">
+              <div className={collectionCardBodyClassName}>
                 <p className="font-body text-sm text-[var(--color-text-secondary)]/80 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>
@@ -154,7 +132,7 @@ export default function EventsAccordion() {
                   setSelectedEvent(ev);
                 }
               }}
-              className="event-card flex h-80 flex-col overflow-hidden rounded-xl border border-[var(--color-saffron-600)] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
+              className={`${collectionCardClassName("featured")} event-card cursor-pointer`}
             >
               <div className="relative h-40 w-full shrink-0">
                 <Image
@@ -171,7 +149,7 @@ export default function EventsAccordion() {
                   </span>
                 )}
               </div>
-              <div className="flex flex-1 flex-col p-4">
+              <div className={collectionCardBodyClassName}>
                 <p className="font-body text-sm text-[var(--color-text-secondary)]/80 mb-0.5">
                   {displayDate} {time ? `· ${time}` : ""}
                 </p>

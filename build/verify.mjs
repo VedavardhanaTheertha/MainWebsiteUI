@@ -6,18 +6,13 @@
 //   1. robots.txt matches the environment's indexing policy
 //   2. non-production pages carry a noindex directive
 //   3. every page has its route-specific production canonical URL
-//   4. non-production pages contain no real content
-//   5. non-production pages contain none of the institution's brand terms
+//   4. placeholder-default HTML and manifests contain no detectable real prose
+//   5. placeholder-default output contains none of the configured brand terms
 //   6. the web manifest exists and uses environment-correct paths
 //
-// The content checks make the architecture partly self-policing. In a placeholder
-// build the generated content module contains no real text at all, so any real
-// sentence appearing in the output can only have come from a string hardcoded in
-// a component — exactly the mistake the content system exists to prevent.
-//
-// Check 4 exists because check 3 only matches prose above a length threshold, to
-// avoid false positives on ordinary words. A brand name is short but is exactly
-// what someone would search for, so it is matched at any length.
+// Switchable builds intentionally include real alternate copy in public assets.
+// Prose checks match exact default-language strings of at least 30 characters;
+// brand terms are checked at any length. Neither check is a confidentiality gate.
 //
 // See docs/ARCHITECTURE.md §3 and §6.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -31,6 +26,7 @@ import { loadAuthoredLanguage } from "./authored-content.mjs";
 import { discoverParampara } from "./parampara-content.mjs";
 import { collectRealProse } from "./content-values.mjs";
 import { loadRemedyCarouselCandidates } from "./home-carousels.mjs";
+import { validateSitemapLocations } from "./sitemap-utils.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outDir = path.join(rootDir, "out");
@@ -131,23 +127,9 @@ if (!existsSync(sitemapFile)) {
   problems.push("out/sitemap.xml is missing.");
 } else {
   const sitemap = readFileSync(sitemapFile, "utf8");
-  const productionOrigin = new URL(config.site.production_url).origin;
-  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => decodeEntities(match[1]));
   if (!locations.length) problems.push("sitemap.xml contains no URLs.");
-  const wrongOrigin = locations.find((location) => {
-    try {
-      return new URL(location).origin !== productionOrigin;
-    } catch {
-      return true;
-    }
-  });
-  if (wrongOrigin) problems.push(`sitemap.xml contains a non-canonical URL: ${wrongOrigin}`);
-  if (locations.length !== sitemapEligibleHtmlFiles.length) {
-    problems.push(
-      `sitemap.xml lists ${locations.length} URL(s), but the export contains ` +
-        `${sitemapEligibleHtmlFiles.length} indexable page(s).`
-    );
-  }
+  problems.push(...validateSitemapLocations(locations, exportedRoutes, config.site.production_url));
 }
 
 // ── Check 4: each HTML file has the route-specific production canonical ──────
@@ -261,8 +243,8 @@ if (mode.defaultVariant === "placeholder") {
     remedies: remedyCandidates,
   }))];
 
-  // Include the generated module to prove real content was not merely hidden from
-  // rendered HTML while remaining available in the development client bundle.
+  // Pure-placeholder builds also check generated content; switchable builds
+  // intentionally retain real alternate copy in that module.
   const contentFiles = [
     ...htmlFiles,
     ...(existsSync(manifestFile) ? [manifestFile] : []),

@@ -28,6 +28,11 @@ async function mountComponent(file, options = {}) {
     getItem: (key) => values.get(key) ?? null,
     setItem: (key, value) => values.set(key, value),
   });
+  const browser = {
+    matchMedia: () => ({ matches: options.reducedMotion ?? false }),
+    sessionStorage: storage(session), localStorage: storage(local),
+    addEventListener() {}, removeEventListener() {},
+  };
   const compile = (source) => ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020,
@@ -36,6 +41,10 @@ async function mountComponent(file, options = {}) {
   }).outputText;
   const helpers = {};
   vm.runInNewContext(compile(await readFile(new URL("../../src/lib/ui-settings.ts", import.meta.url), "utf8")), { exports: helpers });
+  const preferences = {};
+  vm.runInNewContext(compile(await readFile(new URL("../../src/lib/browser-preferences.ts", import.meta.url), "utf8")), {
+    exports: preferences, window: browser, console,
+  });
   const jsx = (type, props, key) => ({ type, props, key });
   const exports = {};
   const addTimer = (callback, delay, interval = false) => {
@@ -48,7 +57,8 @@ async function mountComponent(file, options = {}) {
     Date: class extends Date { static now() { return now; } },
     sessionStorage: storage(session),
     localStorage: storage(local),
-    window: { matchMedia: () => ({ matches: options.reducedMotion ?? false }) },
+    window: browser,
+    document: { activeElement: null },
     setTimeout: (callback, delay) => addTimer(callback, delay),
     clearTimeout: (id) => timers.delete(id),
     setInterval: (callback, delay) => addTimer(callback, delay, true),
@@ -56,6 +66,8 @@ async function mountComponent(file, options = {}) {
     require: (name) => {
       if (name === "react/jsx-runtime") return { jsx, jsxs: jsx, Fragment: "fragment" };
       if (name === "react") return {
+        useId: () => "navigation",
+        useSyncExternalStore: (_subscribe, snapshot) => snapshot(),
         useState: (initial) => {
           const index = stateIndex++;
           if (!(index in state)) state[index] = initial;
@@ -71,6 +83,10 @@ async function mountComponent(file, options = {}) {
       if (name === "next/link" || name === "next/image") return { default: name, __esModule: true };
       if (name === "next/navigation") return { usePathname: () => options.pathname ?? "/events" };
       if (name === "@/hooks/useQRModal") return { useQRModal: () => ({ openQR: () => {} }) };
+      if (name === "@/hooks/useReducedMotion") return { useReducedMotion: () => options.reducedMotion ?? false };
+      if (name === "@/hooks/useDialog") return { useDialogsOpen: () => options.dialogsOpen ?? false };
+      if (name === "@/lib/browser-preferences") return preferences;
+      if (name === "lucide-react") return { Pause: "pause", Play: "play" };
       if (name === "@/context/LanguageContext") return { useLang: () => ({
         lang: "test", contentMode: "real",
         tr: {
@@ -155,20 +171,44 @@ test("hero uses configured interval/fade and respects autoplay and reduced motio
   }
 });
 
+test("hero pause is a separate localized toggle and reduced motion disables its animation", async () => {
+  const options = {};
+  const hero = await mountComponent("../../src/components/home/HeroCarousel.tsx", options);
+  let tree = hero.render();
+  let toggle = findNode(tree, (node) => node.type === "button");
+  assert.equal(toggle.props["aria-pressed"], false);
+  assert.equal(toggle.props["aria-label"], authoredCopy.page_controls.pause_motion);
+  const link = findNode(tree, (node) => node.type === "next/link");
+  assert.equal(findNode(link, (node) => node.type === "button"), undefined);
+  toggle.props.onClick();
+  tree = hero.render();
+  toggle = findNode(tree, (node) => node.type === "button");
+  assert.equal(toggle.props["aria-pressed"], true);
+  assert.equal(toggle.props["aria-label"], authoredCopy.page_controls.resume_motion);
+  assert.ok(findNode(tree, (node) => node.props?.style?.transitionDuration === "0ms"));
+  toggle.props.onClick();
+  options.reducedMotion = true;
+  tree = hero.render();
+  assert.equal(findNode(tree, (node) => node.type === "button"), undefined);
+  assert.ok(findNode(tree, (node) => node.props?.style?.transitionDuration === "0ms"));
+  hero.cleanup();
+});
+
 test("desktop dropdown uses the configured close delay and cleans up pending timers", async () => {
   const header = await mountComponent("../../src/components/SiteHeader.tsx", {
     interaction: { dropdownCloseDelayMs: 75 },
   });
-  const menuItem = findNode(header.render(), (node) => typeof node.props?.onMouseLeave === "function");
-  menuItem.props.onMouseEnter();
+  const menuItem = findNode(header.render(), (node) => typeof node.props?.onPointerLeave === "function");
+  const mouse = { pointerType: "mouse", currentTarget: { contains: () => false } };
+  menuItem.props.onPointerEnter(mouse);
   assert.equal(header.state[0], "resources");
-  menuItem.props.onMouseLeave();
+  menuItem.props.onPointerLeave(mouse);
   header.advance(74);
   assert.equal(header.state[0], "resources");
   header.advance(1);
   assert.equal(header.state[0], null);
-  menuItem.props.onMouseLeave();
-  menuItem.props.onMouseLeave();
+  menuItem.props.onPointerLeave(mouse);
+  menuItem.props.onPointerLeave(mouse);
   assert.equal(header.timers.size, 1);
   header.cleanup();
   assert.equal(header.timers.size, 0);
@@ -225,4 +265,39 @@ test("announcement dismissal uses only the configured persistence store", async 
     assert.equal(next.render() === null, dismissal !== "none");
     next.cleanup();
   }
+});
+
+test("announcements temporarily yield to dialogs without losing dismissal state", async () => {
+  const options = { announcement: { ...announcementDefaults, delayMs: 0 }, dialogsOpen: false };
+  const popup = await mountComponent("../../src/components/YajnaAnnouncement.tsx", options);
+  popup.advance(0);
+  assert.ok(popup.render());
+  options.dialogsOpen = true;
+  assert.equal(popup.render(), null);
+  assert.equal(popup.session.size, 0, "opening a dialog must not persist a dismissal");
+  options.dialogsOpen = false;
+  assert.ok(popup.render());
+  findNode(popup.render(), (node) => node.type === "button").props.onClick();
+  options.dialogsOpen = true;
+  assert.equal(popup.render(), null);
+  options.dialogsOpen = false;
+  assert.equal(popup.render(), null, "closing a dialog must not resurrect a dismissed announcement");
+  popup.cleanup();
+});
+
+test("desktop disclosures open for keyboard/touch clicks without touch hover", async () => {
+  const header = await mountComponent("../../src/components/SiteHeader.tsx");
+  const group = findNode(header.render(), (node) => typeof node.props?.onPointerEnter === "function");
+  group.props.onPointerEnter({ pointerType: "touch" });
+  assert.equal(header.state[0], null);
+  let toggle = findNode(header.render(), (node) => node.type === "button" && node.props?.["aria-controls"]);
+  assert.equal(toggle.props["aria-expanded"], false);
+  toggle.props.onClick();
+  toggle = findNode(header.render(), (node) => node.type === "button" && node.props?.["aria-controls"]);
+  assert.equal(toggle.props["aria-expanded"], true);
+  const panel = findNode(header.render(), (node) => node.props?.id === toggle.props["aria-controls"]);
+  assert.equal(panel.props.hidden, false);
+  toggle.props.onClick();
+  assert.equal(header.state[0], null);
+  header.cleanup();
 });

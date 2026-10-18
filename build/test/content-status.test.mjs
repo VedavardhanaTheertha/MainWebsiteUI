@@ -16,7 +16,6 @@ const section = { id: "projects", route: "/projects", items: [first, second], fe
 
 function render(file, props, tr) {
   const jsx = (type, attributes) => typeof type === "function" ? type(attributes) : { type, props: attributes };
-  const exports = {};
   const dependencies = {
     "react/jsx-runtime": { jsx, jsxs: jsx, Fragment: "fragment" },
     react: { useDeferredValue: (value) => value, useMemo: (fn) => fn(), useState: (initial) => [initial, () => {}] },
@@ -39,13 +38,22 @@ function render(file, props, tr) {
     },
     "./KnowledgeBody": { default: "knowledge-body" },
   };
-  vm.runInNewContext(ts.transpileModule(readFileSync(new URL(`../../src/${file}`, import.meta.url), "utf8"), {
-    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
-  }).outputText, { exports, require: (name) => {
-    assert.ok(name in dependencies, `Unexpected dependency ${name}`);
-    return dependencies[name];
-  } });
-  return exports.default(props);
+  const sharedModules = {
+    "@/components/presentation/CollectionEmptyState": "components/presentation/CollectionEmptyState.tsx",
+    "@/lib/collection-presentation": "lib/collection-presentation.ts",
+  };
+  function compile(sourceFile) {
+    const exports = {};
+    vm.runInNewContext(ts.transpileModule(readFileSync(new URL(`../../src/${sourceFile}`, import.meta.url), "utf8"), {
+      compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
+    }).outputText, { exports, require: (name) => {
+      if (Object.hasOwn(sharedModules, name)) return compile(sharedModules[name]);
+      assert.ok(name in dependencies, `Unexpected dependency ${name}`);
+      return dependencies[name];
+    } });
+    return exports;
+  }
+  return compile(file).default(props);
 }
 
 function text(tree) {
@@ -82,7 +90,7 @@ test("homepage remedy cards expose the real authored editorial status", () => {
 
 test("Panchanga renders its localized testing notice before sample information", () => {
   const tr = loadAuthoredLanguage(root, language);
-  const output = text(render("app/panchanga/page.tsx", {}, tr));
+  const output = text(render("components/PanchangaPage.tsx", {}, tr));
   const notice = tr.pages.local_copy.panchanga_notice;
   assert.ok(notice);
   assert.ok(output.includes(notice));

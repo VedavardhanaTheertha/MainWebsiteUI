@@ -7,7 +7,7 @@ integrity, clarity, and consistency.
 >
 > | You are changing | Repository | Path |
 > |---|---|---|
-> | Short UI labels and retained media catalogs | **this one** | `content/languages/<code>.json` |
+> | Short UI labels and media catalogs | **this one** | `content/languages/<code>.json` |
 > | Editorial pages, Learn and articles | **WebsiteLibrary** | `library/<topic>/` |
 > | Homepage copy and configuration | **Settings submodule** | `settings/` JSON |
 > | Library corpus — stotras, dasa padas, archival texts | [WebsiteLibrary](https://github.com/VedavardhanaTheertha/WebsiteLibrary) | see that repo |

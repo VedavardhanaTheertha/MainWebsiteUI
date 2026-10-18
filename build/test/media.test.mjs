@@ -16,6 +16,8 @@ const compile = (source) => ts.transpileModule(source, {
 const source = (file) => readFile(new URL(`../../${file}`, import.meta.url), "utf8");
 const utils = {};
 vm.runInNewContext(compile(await source("src/lib/media-utils.ts")), { exports: utils, URL });
+const collectionPresentation = {};
+vm.runInNewContext(compile(await source("src/lib/collection-presentation.ts")), { exports: collectionPresentation });
 const rootDir = fileURLToPath(new URL("../../", import.meta.url));
 const copy = loadAuthoredLanguage(rootDir, "en");
 const defaults = { from: "", to: "", event: "", type: "", sort: "newest" };
@@ -114,6 +116,8 @@ async function component(file, additional = {}) {
     "@/context/LanguageContext": { useLang: () => ({ tr: copy }) },
     "@/hooks/useDialog": { useDialog: (open, close) => { dependencies.dialog = { open, close }; return { current: null }; } },
     "@/lib/media-utils": utils,
+    "@/lib/collection-presentation": collectionPresentation,
+    "@/components/presentation/CollectionEmptyState": "collection-empty-state",
     "@/hooks/useMiniSearch": { useMiniSearch: (items, query) => items.filter((item) => item.title.includes(query)) },
     "@/lib/search": { getSearchProfile: () => ({}) },
     "@/gen/settings/ui-elements": {
@@ -295,7 +299,7 @@ test("album controls filter real metadata, reset results, and pause each feature
   const date = nodes(tree, (node) => node.type === "input" && node.props.type === "date")[0];
   date.props.onChange({ target: { value: "2026-01-01" } });
   tree = render();
-  assert.ok(nodes(tree, (node) => node.type === "p" && node.props.children === copy.media.no_results).length);
+  assert.ok(nodes(tree, (node) => node.type === "collection-empty-state" && node.props.children === copy.media.no_results).length);
   const clear = nodes(tree, (node) => node.type === "button" && node.props.children === copy.media.clear_filters)[0];
   clear.props.onClick();
   tree = render();

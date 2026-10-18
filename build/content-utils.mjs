@@ -1,7 +1,7 @@
 import path from "node:path";
 import yaml from "js-yaml";
 
-export function parseMarkdownFrontmatter(markdown, sourceName) {
+export function parseMarkdownFrontmatter(markdown, sourceName, yamlOptions = {}) {
   const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
   if (!match) {
     throw new Error(`${sourceName} must begin with YAML front matter.`);
@@ -9,7 +9,7 @@ export function parseMarkdownFrontmatter(markdown, sourceName) {
 
   let metadata;
   try {
-    metadata = yaml.load(match[1]);
+    metadata = yaml.load(match[1], yamlOptions);
   } catch (error) {
     throw new Error(`Invalid YAML front matter in ${sourceName}: ${error.message}`, { cause: error });
   }

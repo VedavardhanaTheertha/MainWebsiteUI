@@ -7,6 +7,12 @@ import { fileURLToPath } from "node:url";
 import { loadAuthoredLanguage } from "../authored-content.mjs";
 
 const rootDir = fileURLToPath(new URL("../../", import.meta.url));
+const collectionPresentation = {};
+vm.runInNewContext(ts.transpileModule(await readFile(
+  new URL("../../src/lib/collection-presentation.ts", import.meta.url), "utf8",
+), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText, {
+  exports: collectionPresentation,
+});
 
 function nodes(tree, predicate) {
   if (!tree || typeof tree !== "object") return [];
@@ -24,6 +30,7 @@ async function mount(name, enabled = true, additional = {}) {
     exports,
     require: (dependency) => {
       if (dependency in additional) return additional[dependency];
+      if (dependency === "@/lib/collection-presentation") return collectionPresentation;
       if (dependency === "react/jsx-runtime") return { jsx, jsxs: jsx };
       if (dependency === "react") return {
         useId: () => "filter-panel",
@@ -38,6 +45,8 @@ async function mount(name, enabled = true, additional = {}) {
       };
       if (dependency === "lucide-react") return { Pause: "pause", Play: "play", SlidersHorizontal: "filters", GitBranch: "timeline", List: "list" };
       if (dependency === "next/link" || dependency === "next/image") return { default: dependency === "next/link" ? "link" : "image" };
+      if (dependency === "@/hooks/useReducedMotion") return { useReducedMotion: () => false };
+      if (dependency === "@/hooks/useDialog") return { useDialogsOpen: () => false };
       if (dependency === "@/gen/settings/ui-elements") return {
         railAutoScroll: { enabled }, browserDefaults: { advancedFiltersOpen: false, lineageView: "list" },
       };
@@ -70,7 +79,7 @@ test("homepage hero and feature tiles are single links with no separate CTA butt
       "@/gen/content": { defaultContentMode: "real", homeHero: { titles: { fixture: "Hero" }, href: "/about", images: ["/hero.jpg"] } },
       "@/gen/settings/ui-elements": { heroSettings: { autoplay: false } },
     });
-    const banner = hero();
+    const banner = nodes(hero(), (node) => node.type === "link")[0];
     assert.equal(banner.type, "link");
     assert.equal(banner.props.href, "/about");
     assert.equal(nodes(banner, (node) => node.type === "link").length, 1);

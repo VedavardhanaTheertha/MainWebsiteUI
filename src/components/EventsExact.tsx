@@ -23,18 +23,7 @@ import { imagePaths } from "@/lib/images";
 import { browserDefaults, collectionPagination } from "@/gen/settings/ui-elements";
 import EventDetailModal from "./EventDetailModal";
 import AdvancedFilters from "./AdvancedFilters";
-
-const catColor: Record<string, { bg: string; text: string }> = {
-  festival: { bg: "bg-[#FFF7C5]", text: "text-[#92400E]" },
-  concert: { bg: "bg-[#E0F2FE]", text: "text-[#0369A1]" },
-  dance: { bg: "bg-[#FCE7F3]", text: "text-[#BE185D]" },
-  yakshagana: { bg: "bg-[#FEE2E2]", text: "text-[#B91C1C]" },
-  pravachana: { bg: "bg-[#F3E8FF]", text: "text-[#6B21A8]" },
-  utsava: { bg: "bg-[#FFEDD5]", text: "text-[#C2410C]" },
-  pooja: { bg: "bg-[#FEF3C7]", text: "text-[#92400E]" },
-  parayana: { bg: "bg-[#E0E7FF]", text: "text-[#3730A3]" },
-  special: { bg: "bg-[#CCFBF1]", text: "text-[#0F766E]" },
-};
+import { categoryToneClassName } from "@/lib/category-tones";
 
 export default function EventsExact() {
   const { lang, contentMode, tr } = useLang();
@@ -379,7 +368,7 @@ export default function EventsExact() {
                       className="object-cover"
                     />
                     {item.categories?.[0] && (
-                      <span className="absolute top-2 left-2 bg-[rgba(26,17,8,0.75)] backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                      <span className={`absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryToneClassName(item.categories[0].code)}`}>
                         {localizedText(item.categories[0], lang)}
                       </span>
                     )}
@@ -432,9 +421,7 @@ export default function EventsExact() {
                         {item.categories?.slice(1, 3).map((cat: EventCategory) => (
                           <span
                             key={cat.code}
-                            className={`shrink-0 text-[9.5px] px-2 py-0.5 rounded-full font-medium ${
-                              catColor[cat.code]?.bg ?? "bg-[var(--color-cream)]"
-                            } ${catColor[cat.code]?.text ?? "text-[var(--color-text-secondary)]"}`}
+                            className={`shrink-0 text-[9.5px] px-2 py-0.5 rounded-full font-medium ${categoryToneClassName(cat.code)}`}
                           >
                             {localizedText(cat, lang)}
                           </span>
