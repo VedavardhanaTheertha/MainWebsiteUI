@@ -95,7 +95,7 @@ Open the final navigation entry, **Developer options**, in local or development
 builds (`/developer-options`, under the configured base path). Copy-preview controls
 live on this page rather than in a global toolbar. The copy checkbox is checked for
 placeholder copy and unchecked for real copy (local defaults to unchecked; development
-defaults to checked) and changes immediately. All 41 supported settings from
+defaults to checked) and changes immediately. All 43 supported settings from
 `settings/ui_elements.json` also appear as grouped checkboxes, numeric inputs, and
 selectors. Edit these as drafts, then use **Apply and reload** to validate and use
 them throughout the site, including initial pagination, reader size, sorting, and
@@ -145,8 +145,18 @@ For carousel navigation, test first/last positions, no-overflow tracks, keyboard
 buttons, resized windows, reduced motion, and automatic scrolling disabled.
 Previous/next controls sit at the left/right edges, vertically centered alongside
 the rail, without adding a control row above or below it.
-**Emphasize the centered carousel tile** follows the tile nearest the rail center
-during both automatic and manual movement, including mobile neighboring previews.
+**Emphasize the centered carousel tile** slides one card at a time into the center,
+holds it larger than its neighbors, then advances. At either end it reverses one
+card at a time. Configure **Centered card hold duration (ms)** and **Centered card
+slide duration (ms)** in the automatic-scrolling group; defaults are owned by
+[UI settings](../settings/ui_elements.json). Existing saved preferences inherit
+these timing defaults. Scroll speed and return duration apply to continuous rails
+when the centered comparison is off.
+Manual movement also updates center emphasis, including mobile neighboring previews.
+After a drag, swipe, wheel, or keyboard scroll stops, the rail settles on the
+nearest card instead of resting between cards. This also works with autoplay
+paused or disabled; reduced motion uses immediate centering. Check release outside
+the rail, interrupted settling, and both ends.
 It works independently of the navigation comparison and autoplay. Test first/last
 items, resizing, long translated titles, keyboard focus, reduced motion, and both
 image treatments; static non-scrolling grids keep their original presentation.

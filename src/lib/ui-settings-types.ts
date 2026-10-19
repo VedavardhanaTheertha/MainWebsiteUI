@@ -9,7 +9,7 @@ export type UiFieldDefinition = { group: string; key: string } & (
 
 export interface UiSettings {
   collectionPagination: { initialVisible: number; loadIncrement: number };
-  railAutoScroll: { enabled: boolean; pixelsPerSecond: number; returnDurationMs: number; resumeDelayMs: number };
+  railAutoScroll: { enabled: boolean; pixelsPerSecond: number; returnDurationMs: number; resumeDelayMs: number; holdDurationMs: number; slideDurationMs: number };
   heroSettings: { autoplay: boolean; intervalMs: number; fadeDurationMs: number };
   upcomingEventSettings: { lookAheadDays: number; maxCards: number };
   readingTimeSettings: { wordsPerMinute: number };

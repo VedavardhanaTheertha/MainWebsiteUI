@@ -140,11 +140,19 @@ components. Existing layouts and homepage shortcut order remain the default.
   Where a rail also has a pause control, it sits below Next with an 8px gap.
   Rails without the optional navigation retain their existing pause placement.
 - `centeredCarousel`: emphasize the tile nearest a scrolling rail's center,
-  changing emphasis as automatic or manual movement brings another tile into
-  focus. Mobile layouts include neighboring previews. Static, non-scrolling
+  with smaller neighboring tiles. Autoplay slides one card into the center,
+  holds it stationary, then advances; at either boundary it reverses one card at
+  a time. Hold and slide durations come from `autoScroll.holdDurationMs` and
+  `autoScroll.slideDurationMs` in [UI settings](../settings/ui_elements.json).
+  Manual movement also updates emphasis and smoothly settles on the nearest card
+  after scrolling and pointer gestures end, even with autoplay paused or disabled.
+  Settling is immediate under reduced motion and pauses autoplay until it finishes.
+  Mobile layouts include neighboring previews. Static, non-scrolling
   desktop grids remain unchanged. This comparison is independent of the navigation
   controls and autoplay, respects reduced motion, and retains actual first/last
   boundaries rather than duplicating content for an infinite loop.
+  Saved browser preferences missing only the newer hold/slide fields inherit their
+  configured defaults; invalid provided values are still rejected.
 
 Control and navigation copy comes from language JSON. These switches share the
 existing validated Apply/reset, denied-storage, and production browser-local

@@ -166,7 +166,7 @@ function preferencesFixture({ denied = false } = {}) {
 test("every UI setting has a typed editor definition and localized labels", () => {
   const actual = Object.entries(uiDefaults).flatMap(([group, fields]) => Object.keys(fields).map((key) => `${group}.${key}`));
   const defined = schema.uiFieldDefinitions.map(({ group, key }) => `${group}.${key}`);
-  assert.equal(defined.length, 41);
+  assert.equal(defined.length, 43);
   assert.deepEqual(defined.toSorted(), actual.toSorted());
   assert.equal(new Set(defined).size, defined.length);
   for (const language of ["en", "kn"]) {
@@ -426,7 +426,7 @@ function pageFixture(defaultMode = "real", persistent = true) {
 
 test("the editor covers every setting, keeps edits as drafts and applies typed values only on submit", () => {
   const page = pageFixture();
-  assert.equal(page.controls().filter((node) => node.props.name).length, 41);
+  assert.equal(page.controls().filter((node) => node.props.name).length, 43);
   page.field("collections.initialVisible").props.onChange({ target: { value: "3", valueAsNumber: 3 } });
   page.field("browserDefaults.lineageView").props.onChange({ target: { value: "timeline" } });
   page.field("presentation.headerActions").props.onChange({ target: { checked: true } });

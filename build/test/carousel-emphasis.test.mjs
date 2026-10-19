@@ -30,6 +30,11 @@ function setup({ enabled = true, reducedMotion = false, desktop = false, count =
       return edge + track.children.indexOf(this) * (this.offsetWidth + 20);
     }
     getBoundingClientRect() { throw new Error("Transformed metrics must not be measured"); }
+    scrollTo(options) {
+      this.lastScroll = options;
+      this.scrollLeft = options.left;
+      this.dispatchEvent(new Event("scroll"));
+    }
   }
   const track = new Element();
   track.clientWidth = width;
@@ -43,10 +48,12 @@ function setup({ enabled = true, reducedMotion = false, desktop = false, count =
     return Math.max(track.clientWidth, edge * 2 + track.children.length * cardWidth + Math.max(0, track.children.length - 1) * 20);
   } });
   const frames = new Map();
+  const timers = new Map();
   const observers = [];
   const view = new EventTarget();
   const fonts = new EventTarget();
   let nextFrame = 0;
+  let nextTimer = 0;
   let cleanup;
   class Observer {
     observed = new Set();
@@ -56,11 +63,13 @@ function setup({ enabled = true, reducedMotion = false, desktop = false, count =
   }
   const exports = {};
   vm.runInNewContext(source, {
-    exports, HTMLElement: Element, window: Object.assign(view, { matchMedia: () => ({ matches: desktop }) }),
+    exports, Event, HTMLElement: Element, window: Object.assign(view, { matchMedia: () => ({ matches: desktop }) }),
     document: { fonts }, getComputedStyle: () => ({ display: track.display, overflowX: track.overflowX, columnGap: "20px" }),
     ResizeObserver: Observer, MutationObserver: Observer,
     requestAnimationFrame: (callback) => { frames.set(++nextFrame, callback); return nextFrame; },
     cancelAnimationFrame: (id) => frames.delete(id),
+    setTimeout: (callback, delay) => { timers.set(++nextTimer, { callback, delay }); return nextTimer; },
+    clearTimeout: (id) => timers.delete(id),
     require: (name) => {
       if (name === "react") return { useEffect: (effect) => { cleanup = effect(); } };
       if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ layoutSettings: { centeredCarousel: enabled } }) };
@@ -76,7 +85,12 @@ function setup({ enabled = true, reducedMotion = false, desktop = false, count =
     pending.forEach((callback) => callback());
   };
   return {
-    track, frames, observers, view, fonts, flush,
+    track, frames, timers, observers, view, fonts, flush,
+    settle: () => {
+      const pending = Array.from(timers.values());
+      timers.clear();
+      pending.forEach(({ callback }) => callback());
+    },
     scales: () => track.children.map((card) => Number(card.style.getPropertyValue("--centered-scale"))),
     unmount: () => cleanup?.(),
     disable: () => { cleanup?.(); enabled = false; mount(); },
@@ -136,6 +150,103 @@ test("manual and automatic scroll events interpolate continuously with one batch
   fixture.flush();
   assert.deepEqual(fixture.scales(), [0.8875, 0.9625, 0.85, 0.85]);
   fixture.unmount();
+});
+
+test("manual scrolls settle on the nearest exact card center after an idle interval", () => {
+  for (const desktop of [false, true]) {
+    const fixture = setup({ desktop, width: desktop ? 1000 : 360 });
+    fixture.flush();
+    const { track } = fixture;
+    const stride = track.children[0].offsetWidth + 20;
+    const interactions = [];
+    for (const name of ["rail-centering-start", "rail-centering-end"]) {
+      track.addEventListener(name, () => interactions.push(name));
+    }
+    for (const [fraction, index] of [[0.4, 0], [0.6, 1], [1.6, 2], [2.8, 3]]) {
+      track.scrollLeft = stride * fraction;
+      track.dispatchEvent(new Event("scroll"));
+      fixture.flush();
+      assert.equal(track.scrollLeft, stride * fraction, "scrolling remains free until idle");
+      assert.equal(fixture.timers.size, 1);
+      assert.equal(Array.from(fixture.timers.values())[0].delay, 160);
+      fixture.settle();
+      assert.equal(track.lastScroll.behavior, "smooth");
+      assert.ok(Math.abs(track.scrollLeft - stride * index) < 0.001);
+      fixture.settle();
+      assert.equal(fixture.timers.size, 0, "an already centered card does not start another snap");
+      assert.deepEqual(interactions.splice(0), ["rail-centering-start", "rail-centering-end"]);
+    }
+    fixture.unmount();
+  }
+});
+
+test("continued scrolling debounces centering and does not fight automatic slide frames", () => {
+  const fixture = setup();
+  fixture.flush();
+  for (let index = 1; index <= 12; index++) {
+    fixture.track.scrollLeft = index * 10;
+    fixture.track.dispatchEvent(new Event("scroll"));
+    assert.equal(fixture.timers.size, 1);
+    assert.equal(fixture.track.lastScroll, undefined);
+  }
+  fixture.settle();
+  assert.equal(fixture.track.lastScroll.behavior, "smooth");
+  fixture.unmount();
+});
+
+test("pointer gestures defer settling until every pointer ends, including release outside the track", () => {
+  for (const end of ["pointerup", "pointercancel", "blur"]) {
+    const fixture = setup();
+    fixture.flush();
+    const pointer = (name, pointerId) => Object.assign(new Event(name), { pointerId });
+    fixture.track.dispatchEvent(pointer("pointerdown", 1));
+    fixture.track.dispatchEvent(pointer("pointerdown", 2));
+    fixture.track.scrollLeft = 100;
+    fixture.track.dispatchEvent(new Event("scroll"));
+    fixture.settle();
+    assert.equal(fixture.track.lastScroll, undefined);
+    fixture.view.dispatchEvent(pointer("pointerup", 1));
+    assert.equal(fixture.timers.size, 0);
+    fixture.view.dispatchEvent(pointer(end, 2));
+    assert.equal(fixture.timers.size, 1);
+    fixture.settle();
+    assert.equal(fixture.track.scrollLeft, 0);
+    fixture.unmount();
+  }
+});
+
+test("reduced motion centers manual scrolling immediately without a smooth animation", () => {
+  const fixture = setup({ reducedMotion: true });
+  fixture.flush();
+  const stride = fixture.track.children[0].offsetWidth + 20;
+  fixture.track.scrollLeft = stride * 0.7;
+  fixture.track.dispatchEvent(new Event("scroll"));
+  fixture.settle();
+  assert.equal(fixture.track.lastScroll.behavior, "instant");
+  assert.equal(fixture.track.scrollLeft, stride);
+  fixture.unmount();
+});
+
+test("a new gesture cancels pending or active settling and resumes only after release", () => {
+  const fixture = setup();
+  fixture.flush();
+  fixture.track.scrollLeft = 100;
+  fixture.track.dispatchEvent(new Event("scroll"));
+  fixture.track.dispatchEvent(Object.assign(new Event("pointerdown"), { pointerId: 1 }));
+  assert.equal(fixture.timers.size, 0);
+  fixture.view.dispatchEvent(Object.assign(new Event("pointerup"), { pointerId: 1 }));
+  fixture.settle();
+  fixture.track.dispatchEvent(Object.assign(new Event("pointerdown"), { pointerId: 2 }));
+  assert.equal(fixture.track.lastScroll.behavior, "instant", "interrupts the owned smooth scroll");
+  fixture.track.scrollLeft = 200;
+  fixture.track.dispatchEvent(new Event("scroll"));
+  fixture.settle();
+  assert.equal(fixture.track.scrollLeft, 200, "does not pull against an active gesture");
+  fixture.view.dispatchEvent(Object.assign(new Event("pointerup"), { pointerId: 2 }));
+  fixture.settle();
+  assert.equal(fixture.track.lastScroll.behavior, "smooth");
+  fixture.unmount();
+  assert.equal(fixture.timers.size, 0);
 });
 
 test("desktop scrolling rails show approximately three cards and resize back to untouched static grids", () => {
