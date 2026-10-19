@@ -10,6 +10,7 @@ export const uiFieldDefinitions = [
   flag("autoScroll", "enabled"),
   { ...number("autoScroll", "pixelsPerSecond", 0), integer: false, exclusiveMinimum: true },
   number("autoScroll", "returnDurationMs"), number("autoScroll", "resumeDelayMs", 0, timerMaximum),
+  number("autoScroll", "holdDurationMs", 1, timerMaximum), number("autoScroll", "slideDurationMs", 1, timerMaximum),
   flag("hero", "autoplay"), number("hero", "intervalMs", 1, timerMaximum), number("hero", "fadeDurationMs", 0),
   number("upcomingEvents", "lookAheadDays", 0, 365000), number("upcomingEvents", "maxCards"),
   number("readingTime", "wordsPerMinute"),
@@ -104,6 +105,14 @@ export function parseUiSettings(value) {
 
 /** @returns {import("../src/lib/ui-settings-types").UiElements} */
 export function validateUiPreferences(value, defaults) {
+  const autoScroll = value?.autoScroll;
+  if (autoScroll && typeof autoScroll === "object" && !Array.isArray(autoScroll)) {
+    const migrated = { ...autoScroll };
+    for (const key of ["holdDurationMs", "slideDurationMs"]) {
+      if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.autoScroll[key];
+    }
+    value = { ...value, autoScroll: migrated };
+  }
   if (value && typeof value === "object" && !Array.isArray(value) && !Object.hasOwn(value, "layout")) {
     value = { ...value, layout: defaults.layout };
   }

@@ -12,7 +12,7 @@ function easeInOutCubic(progress: number) {
 }
 
 export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
-  const { railAutoScroll } = useUiSettings();
+  const { railAutoScroll, layoutSettings } = useUiSettings();
   const scrollRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const dialogsOpen = useDialogsOpen();
@@ -24,6 +24,7 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
     let rafId: number | null = null;
     let resumeTimer: ReturnType<typeof setTimeout> | null = null;
     let paused = false;
+    let centering = false;
     let inView = true;
     let focused = el.contains(document.activeElement);
     let returningToStart = false;
@@ -32,8 +33,11 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
     let previousTimestamp: number | null = null;
     let forwardPosition: number | null = null;
     let lastScrollLeft = 0;
+    let holdStartedAt: number | null = null;
+    let direction = 1;
+    let slide: { startedAt: number; from: number; to: number } | null = null;
 
-    const canAnimate = () => !paused && !focused && inView && !document.hidden &&
+    const canAnimate = () => !paused && !centering && !focused && inView && !document.hidden &&
       el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1;
     const stop = () => {
       if (rafId !== null) cancelAnimationFrame(rafId);
@@ -42,6 +46,8 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
       returnStartedAt = null;
       returningToStart = false;
       forwardPosition = null;
+      holdStartedAt = null;
+      slide = null;
     };
     const refresh = () => {
       if (!canAnimate()) stop();
@@ -52,7 +58,37 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
       if (!canAnimate()) { stop(); return; }
       const elapsedMs = previousTimestamp === null ? 0 : Math.min(timestamp - previousTimestamp, 100);
       previousTimestamp = timestamp;
-      if (returningToStart) {
+      if (layoutSettings.centeredCarousel && el.dataset.centeredRail === "active") {
+        if (slide === null) {
+          holdStartedAt ??= timestamp;
+          if (timestamp - holdStartedAt >= railAutoScroll.holdDurationMs) {
+            const maximum = el.scrollWidth - el.clientWidth;
+            const positions = Array.from(el.children)
+              .filter((child): child is HTMLElement => child instanceof HTMLElement)
+              .map((card) => Math.max(0, Math.min(maximum, card.offsetLeft + card.offsetWidth / 2 - el.clientWidth / 2)));
+            if (positions.length > 1) {
+              const nearest = positions.reduce((best, position, index) =>
+                Math.abs(position - el.scrollLeft) < Math.abs(positions[best] - el.scrollLeft) ? index : best, 0);
+              let next = nearest;
+              // Finish centering a manually moved card before advancing again.
+              if (Math.abs(positions[nearest] - el.scrollLeft) <= 1) {
+                if (nearest === positions.length - 1) direction = -1;
+                else if (nearest === 0) direction = 1;
+                next += direction;
+              }
+              slide = { startedAt: timestamp, from: el.scrollLeft, to: positions[next] };
+            }
+          }
+        }
+        if (slide !== null) {
+          const progress = Math.min((timestamp - slide.startedAt) / railAutoScroll.slideDurationMs, 1);
+          el.scrollLeft = slide.from + (slide.to - slide.from) * easeInOutCubic(progress);
+          if (progress === 1) {
+            slide = null;
+            holdStartedAt = timestamp;
+          }
+        }
+      } else if (returningToStart) {
         if (returnStartedAt === null) {
           returnStartedAt = timestamp;
           returnStartLeft = el.scrollLeft;
@@ -104,12 +140,18 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
       }, railAutoScroll.resumeDelayMs);
     };
     const wheel = () => { pause(); resume(); };
+    const centeringStart = () => { centering = true; refresh(); };
+    const centeringEnd = () => { centering = false; refresh(); };
     const focusIn = () => { focused = true; refresh(); };
     const focusOut = (event: FocusEvent) => {
       focused = event.relatedTarget instanceof Node && el.contains(event.relatedTarget);
       refresh();
     };
-    const resizeObserver = new ResizeObserver(refresh);
+    const resize = () => {
+      if (layoutSettings.centeredCarousel) stop();
+      refresh();
+    };
+    const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(el);
     const visibilityObserver = new IntersectionObserver((entries) => {
       inView = entries.some((entry) => entry.isIntersecting);
@@ -125,10 +167,12 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
     el.addEventListener("mouseup", resume);
     el.addEventListener("rail-interaction-start", pause);
     el.addEventListener("rail-interaction-end", resume);
+    el.addEventListener("rail-centering-start", centeringStart);
+    el.addEventListener("rail-centering-end", centeringEnd);
     el.addEventListener("wheel", wheel, { passive: true });
     el.addEventListener("focusin", focusIn);
     el.addEventListener("focusout", focusOut);
-    window.addEventListener("resize", refresh);
+    window.addEventListener("resize", resize);
     document.addEventListener("visibilitychange", refresh);
 
     return () => {
@@ -143,13 +187,15 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
       el.removeEventListener("mouseup", resume);
       el.removeEventListener("rail-interaction-start", pause);
       el.removeEventListener("rail-interaction-end", resume);
+      el.removeEventListener("rail-centering-start", centeringStart);
+      el.removeEventListener("rail-centering-end", centeringEnd);
       el.removeEventListener("wheel", wheel);
       el.removeEventListener("focusin", focusIn);
       el.removeEventListener("focusout", focusOut);
-      window.removeEventListener("resize", refresh);
+      window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [itemCount, manuallyPaused, reducedMotion, dialogsOpen, railAutoScroll]);
+  }, [itemCount, manuallyPaused, reducedMotion, dialogsOpen, railAutoScroll, layoutSettings.centeredCarousel]);
 
   return scrollRef;
 }

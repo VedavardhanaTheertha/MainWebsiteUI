@@ -12,8 +12,22 @@ export function useCenteredRail(scrollRef: RefObject<HTMLElement | null>) {
     const track = scrollRef.current;
     if (!layoutSettings.centeredCarousel || !track) return;
     let frame: number | null = null;
+    let settleTimer: ReturnType<typeof setTimeout> | null = null;
+    let settling = false;
+    const pointers = new Set<number>();
     const styledCards = new Set<HTMLElement>();
+    const cancelSettleTimer = () => {
+      if (settleTimer !== null) clearTimeout(settleTimer);
+      settleTimer = null;
+    };
+    const finishSettling = () => {
+      if (!settling) return;
+      settling = false;
+      track.dispatchEvent(new Event("rail-centering-end"));
+    };
     const clear = () => {
+      cancelSettleTimer();
+      finishSettling();
       delete track.dataset.centeredRail;
       for (const property of ["--centered-card-width", "--centered-edge", "--centered-room"]) track.style.removeProperty(property);
       for (const card of styledCards) card.style.removeProperty("--centered-scale");
@@ -64,6 +78,39 @@ export function useCenteredRail(scrollRef: RefObject<HTMLElement | null>) {
       set(track, "--centered-room", `${16 + height * 0.025}px`);
     };
     const schedule = () => { if (frame === null) frame = requestAnimationFrame(update); };
+    const settle = () => {
+      settleTimer = null;
+      if (pointers.size || track.dataset.centeredRail !== "active") return;
+      const children = cards();
+      if (children.length < 2) { finishSettling(); return; }
+      const center = track.scrollLeft + track.clientWidth / 2;
+      const nearest = children.reduce((best, card) =>
+        Math.abs(card.offsetLeft + card.offsetWidth / 2 - center) <
+        Math.abs(best.offsetLeft + best.offsetWidth / 2 - center) ? card : best);
+      const left = Math.max(0, Math.min(track.scrollWidth - track.clientWidth,
+        nearest.offsetLeft + nearest.offsetWidth / 2 - track.clientWidth / 2));
+      if (Math.abs(left - track.scrollLeft) <= 1) { finishSettling(); return; }
+      if (!settling) {
+        settling = true;
+        track.dispatchEvent(new Event("rail-centering-start"));
+      }
+      track.scrollTo({ left, behavior: reducedMotion ? "instant" : "smooth" });
+    };
+    const scheduleSettle = () => {
+      cancelSettleTimer();
+      if (!pointers.size) settleTimer = setTimeout(settle, 160);
+    };
+    const scroll = () => { schedule(); scheduleSettle(); };
+    const pointerDown = (event: PointerEvent) => {
+      pointers.add(event.pointerId);
+      cancelSettleTimer();
+      if (settling) track.scrollTo({ left: track.scrollLeft, behavior: "instant" });
+      finishSettling();
+    };
+    const pointerEnd = (event: PointerEvent) => {
+      if (pointers.delete(event.pointerId)) scheduleSettle();
+    };
+    const blur = () => { pointers.clear(); scheduleSettle(); };
     const observer = new ResizeObserver(schedule);
     const observeCards = () => {
       observer.disconnect();
@@ -74,16 +121,24 @@ export function useCenteredRail(scrollRef: RefObject<HTMLElement | null>) {
     const mutations = new MutationObserver(observeCards);
     mutations.observe(track, { childList: true, subtree: true, characterData: true });
     observeCards();
-    track.addEventListener("scroll", schedule, { passive: true });
+    track.addEventListener("scroll", scroll, { passive: true });
+    track.addEventListener("pointerdown", pointerDown, { passive: true });
     track.addEventListener("load", schedule, { capture: true });
+    window.addEventListener("pointerup", pointerEnd);
+    window.addEventListener("pointercancel", pointerEnd);
+    window.addEventListener("blur", blur);
     window.addEventListener("resize", schedule);
     document.fonts?.addEventListener("loadingdone", schedule);
     return () => {
       if (frame !== null) cancelAnimationFrame(frame);
       observer.disconnect();
       mutations.disconnect();
-      track.removeEventListener("scroll", schedule);
+      track.removeEventListener("scroll", scroll);
+      track.removeEventListener("pointerdown", pointerDown);
       track.removeEventListener("load", schedule, { capture: true });
+      window.removeEventListener("pointerup", pointerEnd);
+      window.removeEventListener("pointercancel", pointerEnd);
+      window.removeEventListener("blur", blur);
       window.removeEventListener("resize", schedule);
       document.fonts?.removeEventListener("loadingdone", schedule);
       clear();
