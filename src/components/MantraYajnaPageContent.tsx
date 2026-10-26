@@ -16,7 +16,7 @@ export default function MantraYajnaPageContent() {
         <ContentImage src={imagePaths.krishna} alt="" fill sizes="100vw" />
       </div>
       <header className="bg-[var(--color-parchment)] px-4 py-5 lg:px-8">
-        <p className="text-[10px] font-bold tracking-[.16em] uppercase text-[var(--color-text-brand)]">
+        <p className="text-micro font-bold tracking-[.16em] uppercase text-[var(--color-text-brand)]">
           <LocalizedCopy path={["pages", "detected", "yajna_eyebrow"]} />
         </p>
         <h1 className="font-display text-[30px] lg:text-5xl text-[var(--color-text-primary)] leading-tight mt-1">{copy.yajna_title}</h1>
@@ -55,13 +55,13 @@ export default function MantraYajnaPageContent() {
 
         {/* Progress */}
         <div className="bg-gradient-to-br from-[var(--color-saffron-600)] to-[var(--color-saffron-700)] rounded-2xl p-6 text-white mb-6">
-          <p className="font-body text-[11px] uppercase tracking-widest font-semibold opacity-80 mb-1">{copy.yajna_progress}</p>
+          <p className="font-body text-micro uppercase tracking-widest font-semibold opacity-80 mb-1">{copy.yajna_progress}</p>
           <p className="font-display font-bold text-3xl mb-1">{copy.yajna_count}</p>
           <p className="font-body text-white/80 text-sm mb-4">{copy.yajna_goal}</p>
           <div className="h-2 bg-white/20 rounded-full overflow-hidden">
             <div className="h-full bg-white rounded-full" style={{ width: copy.yajna_progress_percent }} />
           </div>
-          <p className="font-body text-white/70 text-[11px] mt-1">{copy.yajna_complete}</p>
+          <p className="font-body text-white/70 text-meta mt-1">{copy.yajna_complete}</p>
           <p className="mt-3 text-sm">{copy.yajna_as_of.replace("{date}", formatArticleDate(copy.yajna_as_of_date, lang))}</p>
         </div>
 

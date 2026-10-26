@@ -70,11 +70,11 @@ function ArticleModal({
           </div>
 
           <div className="p-5 sm:p-7">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-brand)]">{article.status}</p>
+            <p className="mb-3 text-badge font-bold uppercase tracking-widest text-[var(--color-text-brand)]">{article.status}</p>
             <p className="text-sm leading-6 text-[var(--color-text-secondary)]">{article.summary}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {article.tags.map((tag) => (
-                <span key={tag} className="rounded-full bg-[var(--color-saffron-50)] px-3 py-1 text-xs text-[var(--color-text-brand)]">
+                <span key={tag} className="rounded-full bg-[var(--color-saffron-50)] px-3 py-1 text-badge text-[var(--color-text-brand)]">
                   {tag}
                 </span>
               ))}
@@ -121,8 +121,8 @@ function ArticleTile({
         />
       </div>
       <div className={collectionCardBodyClassName}>
-        <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
-        {projectStatus && <p className="layout-tile-category mb-1 text-xs font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
+        <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-badge font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
+        {projectStatus && <p className="layout-tile-category mb-1 text-meta font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
         <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {article.title}
         </h3>
@@ -196,7 +196,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
   return (
     <>
       <header className="bg-[var(--color-parchment)] px-5 py-7 text-center lg:py-10">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
+        <p className="text-badge font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {sectionCopy.eyebrow}
         </p>
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">

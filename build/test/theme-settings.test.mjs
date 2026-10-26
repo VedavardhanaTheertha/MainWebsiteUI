@@ -52,7 +52,7 @@ test("root fields, token namespaces and malformed token values are rejected", ()
     assert.throws(() => parseThemeSettings({ tokens: { ...settings.tokens, [name]: value } }),
       /settings\/theme\.json/, `${name}: ${value}`);
   }
-  for (const namespace of ["color", "font", "spacing", "radius", "shadow"]) {
+  for (const namespace of ["color", "spacing", "radius", "shadow"]) {
     assert.throws(() => parseThemeSettings({ tokens: Object.fromEntries(
       Object.entries(settings.tokens).filter(([name]) => !name.startsWith(`--${namespace}-`))
     ) }), /requires at least one/);

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import ImageListCards from "@/components/ImageListCards";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
@@ -14,7 +14,7 @@ export default function VolunteerPage() {
     <div>
       {/* Page hero */}
       <div className="bg-[var(--color-parchment)] pt-4 pb-3 lg:pt-7 lg:pb-6 text-center px-5">
-        <p className="font-body text-[11px] tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-3">
+        <p className="font-body text-micro tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-3">
           <LocalizedCopy path={["pages", "local_copy", "volunteer_eyebrow"]} />
         </p>
         <h1 className="font-display font-bold text-[var(--color-text-primary)] text-4xl sm:text-5xl lg:text-6xl mb-3">
@@ -88,7 +88,7 @@ export default function VolunteerPage() {
                       ? <LocalizedCopy path={["pages", "detected", "volunteer_role"]} />
                       : <LocalizedCopy path={["pages", "local_copy", `volunteer_role_${index}_description`]} />}
                   </p>
-                  <span className="inline-block font-body text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-brand)] bg-[var(--color-saffron-100)] rounded-full px-3 py-1">
+                  <span className="inline-block font-body text-badge font-semibold uppercase tracking-wider text-[var(--color-text-brand)] bg-[var(--color-saffron-100)] rounded-full px-3 py-1">
                     <LocalizedCopy path={["pages", "local_copy", `volunteer_role_${index}_commitment`]} />
                   </span>
                 </div>

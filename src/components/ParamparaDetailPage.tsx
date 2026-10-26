@@ -41,7 +41,7 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
 
       <article className="mx-auto max-w-5xl">
         <header className="mb-8 border-b border-[var(--color-line)] pb-7 lg:mb-10 lg:pb-9">
-          <p className="font-body text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
+          <p className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
             {positionLabel}
           </p>
           <h1 className="mt-2 font-display text-3xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-4xl lg:text-5xl">
@@ -97,7 +97,7 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
                 className="flex min-h-14 items-center gap-2 rounded-[8px] border border-[var(--color-line)] px-4 font-body text-sm font-semibold text-[var(--color-text-secondary)] hover:border-[var(--color-saffron-400)] hover:text-[var(--color-text-brand)]"
               >
                 <ChevronLeft size={18} aria-hidden="true" />
-                <span><span className="block text-xs text-[var(--color-text-muted)]">{labels.previous}</span>{previousGuru.name}</span>
+                <span><span className="block text-meta text-[var(--color-text-muted)]">{labels.previous}</span>{previousGuru.name}</span>
               </Link>
             ) : <span />}
             {nextGuru && (
@@ -105,7 +105,7 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
                 href={`/history/parampara/${encodeURIComponent(nextGuru.id)}`}
                 className="flex min-h-14 items-center justify-end gap-2 rounded-[8px] border border-[var(--color-line)] px-4 text-right font-body text-sm font-semibold text-[var(--color-text-secondary)] hover:border-[var(--color-saffron-400)] hover:text-[var(--color-text-brand)]"
               >
-                <span><span className="block text-xs text-[var(--color-text-muted)]">{labels.next}</span>{nextGuru.name}</span>
+                <span><span className="block text-meta text-[var(--color-text-muted)]">{labels.next}</span>{nextGuru.name}</span>
                 <ChevronRight size={18} aria-hidden="true" />
               </Link>
             )}

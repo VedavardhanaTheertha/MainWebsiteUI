@@ -50,14 +50,14 @@ function AlbumTile({
         />
       </div>
       <div className={collectionCardBodyClassName}>
-        <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{counts.photos} {photoLabel} · {counts.videos} {videoLabel}</span>
+        <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-badge font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{counts.photos} {photoLabel} · {counts.videos} {videoLabel}</span>
         <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {album.title}
         </h3>
         <p className="layout-tile-summary mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
           {album.description}
         </p>
-        <p className="layout-tile-footer layout-tile-date mt-2 text-xs text-[var(--color-text-muted)]">
+        <p className="layout-tile-footer layout-tile-date mt-2 text-meta text-[var(--color-text-muted)]">
           {album.date ? <time dateTime={album.date}>{album.date}</time> : unknownDate}
           {album.event && <span> · {album.event}</span>}
         </p>

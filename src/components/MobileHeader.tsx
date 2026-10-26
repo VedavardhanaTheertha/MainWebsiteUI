@@ -80,7 +80,7 @@ export default function MobileHeader() {
           <Image src={`${siteConfig.basePath}/main-logo.png`} alt={tr.logo_alt} width={44} height={44} className="object-contain" />
         </Link>
 
-        <p className="absolute left-[4.25rem] right-28 line-clamp-2 text-center font-display font-bold text-[12px] text-[var(--color-text-brand)] tracking-wide leading-tight select-none pointer-events-none">
+        <p className="absolute left-[4.25rem] right-28 line-clamp-2 text-center font-display font-bold text-micro text-[var(--color-text-brand)] tracking-wide leading-tight select-none pointer-events-none">
           {tr.editorial.site_chrome.chant}
         </p>
 
@@ -88,7 +88,7 @@ export default function MobileHeader() {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setLang(nextLanguage.code as Lang)}
-            className="min-w-11 min-h-11 shrink-0 rounded-full border border-[var(--color-line-strong)] bg-transparent text-[11px] font-bold text-[var(--color-ink-500)] active:text-[var(--color-saffron-600)] active:border-[var(--color-saffron-400)] flex items-center justify-center transition-colors"
+            className="min-w-11 min-h-11 shrink-0 rounded-full border border-[var(--color-line-strong)] bg-transparent text-micro font-bold text-[var(--color-ink-500)] active:text-[var(--color-saffron-600)] active:border-[var(--color-saffron-400)] flex items-center justify-center transition-colors"
             aria-label={tr.ui.switch_language.replace("{language}", nextLanguage.name)}
           >
             {nextLanguage.short_label}
@@ -103,8 +103,8 @@ export default function MobileHeader() {
 
       {open && (
         <nav id="mobile-nav" aria-label={tr.ui.mobile_navigation}
-          className="absolute top-full left-0 right-0 bg-[var(--color-paper)] border-b border-[var(--color-saffron-600)] shadow-lg max-h-[80vh] overflow-y-auto">
-          <ul className="py-2">
+          className="absolute top-full right-3 left-auto mt-1.5 w-max min-w-[11rem] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-[var(--color-saffron-600)] bg-[var(--color-paper)] shadow-2xl max-h-[calc(100dvh-5rem)] overflow-y-auto z-50 py-1.5 text-right whitespace-nowrap">
+          <ul className="space-y-0.5 px-1.5">
             {NAV.map((item) => {
               const hasChildren = !!(item.children && item.children.length > 0);
               const isActive = item.href ? pathname === item.href : false;
@@ -112,29 +112,32 @@ export default function MobileHeader() {
                 <li key={item.key}>
                   {!hasChildren ? (
                     <Link href={item.href!} onClick={closeMenu}
-                      className={`block px-6 py-3 font-body text-[15px] font-medium transition-colors ${isActive ? "text-[var(--color-text-brand)] bg-[var(--color-saffron-100)]" : "text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)]"}`}>
+                      className={`block text-right px-3.5 py-2 rounded-xl font-body text-nav font-medium transition-colors ${isActive ? "text-[var(--color-text-brand)] bg-[var(--color-saffron-100)] font-semibold" : "text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)]/70"}`}>
                       {item.label}
                     </Link>
                   ) : (
-                    <>
+                    <div>
                       <button type="button" onClick={() => toggle(item.key)}
                         aria-expanded={expanded === item.key}
                         aria-controls={`${navId}-${item.key}`}
-                        className="w-full flex items-center justify-between px-6 py-3 font-body text-[15px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)] transition-colors">
-                        {item.label}
-                        <ChevronDown size={15} className={`transition-transform duration-200 ${expanded === item.key ? "rotate-180" : ""}`} />
+                        className={`w-full flex items-center justify-end gap-2 px-3.5 py-2 rounded-xl font-body text-nav font-medium text-right transition-colors ${expanded === item.key ? "bg-[var(--color-saffron-100)]/60 text-[var(--color-text-brand)]" : "text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)]/70"}`}>
+                        <span>{item.label}</span>
+                        <ChevronDown size={14} className={`shrink-0 transition-transform duration-200 ${expanded === item.key ? "rotate-180" : ""}`} />
                       </button>
-                        <ul id={`${navId}-${item.key}`} hidden={expanded !== item.key} className="bg-[var(--color-gold-100)] border-t border-[var(--color-saffron-600)]">
-                          {item.children!.map((sub) => (
+                      <ul id={`${navId}-${item.key}`} hidden={expanded !== item.key} className="my-1 space-y-0.5 rounded-xl bg-[var(--color-saffron-50)]/70 p-1 border border-[var(--color-saffron-200)] text-right">
+                        {item.children!.map((sub) => {
+                          const isSubActive = pathname === sub.href;
+                          return (
                             <li key={sub.key}>
                               <Link href={sub.href} onClick={closeMenu}
-                                className="block px-8 py-2.5 font-body text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] hover:bg-[var(--color-saffron-100)] transition-colors">
+                                className={`block text-right px-3 py-1.5 rounded-lg font-body text-ui transition-colors ${isSubActive ? "text-[var(--color-text-brand)] bg-[var(--color-saffron-100)] font-semibold" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] hover:bg-[var(--color-saffron-100)]/60"}`}>
                                 {sub.label}
                               </Link>
                             </li>
-                          ))}
-                        </ul>
-                    </>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   )}
                 </li>
               );

@@ -270,9 +270,13 @@ Environment image maps in `settings/{dev,prod}/images.json` resolve stable alias
 - Unsafe schemes, traversal, credentials, and malformed targets are rejected.
 
 `settings/image_policy.json` separately controls framework image optimization and
-allowed remote hosts. `settings/common.json` owns shared webpage presentation defaults
-(such as the fixed unscrollable full-page background image positioned behind main content).
-`settings/theme.json` owns theme tokens; the generator emits
+allowed remote hosts. `settings/common.json` owns shared webpage presentation defaults:
+fixed unscrollable full-page background images positioned behind main content, font
+family stacks (`fontFamily`), and the uniform semantic font size scale (`fontSize`:
+`micro`, `caption`, `ui`, `nav`, `body`, `badge`, `formLabel`, `formInput`,
+`actionButton`, `meta`), which the root layout injects as `--font-*` and `--text-*`
+CSS custom properties consumed by utility classes in `src/app/globals.css`.
+`settings/theme.json` owns color, spacing, radius, and shadow tokens; the generator emits
 `src/gen/settings/theme.css`. Layout and responsive behavior remain source code.
 Category tones share semantic mappings across event rails, lists, and badges.
 Content photographs, posters, portraits, and thumbnails use

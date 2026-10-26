@@ -65,13 +65,79 @@ export function parseBackgroundSettings(parsedBackground) {
   };
 }
 
+const fontReference = /^var\((--font-[a-z0-9]+(?:-[a-z0-9]+)*)\)$/;
+
+function validFontFamily(value) {
+  return typeof value === "string" && Boolean(value.trim()) && !/[;{}\\\n\r]/.test(value) && value.split(",").every((part) => {
+    const family = part.trim();
+    return fontReference.test(family) || /^(?:'[a-zA-Z0-9 -]+'|"[a-zA-Z0-9 -]+"|[a-zA-Z][a-zA-Z0-9-]*|-[a-zA-Z][a-zA-Z0-9-]*)$/.test(family);
+  });
+}
+
+export function parseFontFamilySettings(parsedFontFamily) {
+  if (parsedFontFamily !== undefined) {
+    object(parsedFontFamily, "fontFamily");
+  }
+  const familyObj = parsedFontFamily ?? {};
+  const validateFamily = (value, field, defaultValue) => {
+    if (value === undefined) return defaultValue;
+    if (!validFontFamily(value)) {
+      throw new Error(`${source} fontFamily.${field} must be a valid CSS font-family string.`);
+    }
+    return value.trim();
+  };
+
+  return {
+    display: validateFamily(familyObj.display, "display", "var(--font-marcellus), 'Cormorant Garamond', Georgia, 'Times New Roman', serif"),
+    body: validateFamily(familyObj.body, "body", "var(--font-montserrat), system-ui, -apple-system, 'Segoe UI', sans-serif"),
+    sanskrit: validateFamily(familyObj.sanskrit, "sanskrit", "var(--font-noto-devanagari), var(--font-marcellus), serif"),
+    kannada: validateFamily(familyObj.kannada, "kannada", "var(--font-noto-kannada), var(--font-montserrat), sans-serif"),
+    mono: validateFamily(familyObj.mono, "mono", "ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace"),
+  };
+}
+
+export function parseFontSizeSettings(parsedFontSize) {
+  if (parsedFontSize !== undefined) {
+    object(parsedFontSize, "fontSize");
+  }
+  const fontObj = parsedFontSize ?? {};
+  const lengthPattern = /^(?:\d+(?:\.\d+)?(?:px|rem|em))$/;
+  const validateSize = (value, field, defaultValue) => {
+    if (value === undefined) return defaultValue;
+    if (typeof value !== "string" || !lengthPattern.test(value.trim())) {
+      throw new Error(`${source} fontSize.${field} must be a valid CSS font size (e.g. "12px", "1rem").`);
+    }
+    return value.trim();
+  };
+
+  return {
+    micro: validateSize(fontObj.micro, "micro", "12px"),
+    caption: validateSize(fontObj.caption, "caption", "13px"),
+    ui: validateSize(fontObj.ui, "ui", "14px"),
+    nav: validateSize(fontObj.nav, "nav", "15px"),
+    body: validateSize(fontObj.body, "body", "16px"),
+    badge: validateSize(fontObj.badge, "badge", "12px"),
+    formLabel: validateSize(fontObj.formLabel, "formLabel", "13px"),
+    formInput: validateSize(fontObj.formInput, "formInput", "16px"),
+    actionButton: validateSize(fontObj.actionButton, "actionButton", "14px"),
+    meta: validateSize(fontObj.meta, "meta", "13px"),
+  };
+}
+
+export const parseFontSettings = parseFontSizeSettings;
+
 export function parseCommonSettings(parsed) {
   object(parsed, "a common settings");
   const backgroundSource = parsed.background ?? parsed;
   const background = parseBackgroundSettings(backgroundSource);
+  const fontFamily = parseFontFamilySettings(parsed.fontFamily);
+  const fontSize = parseFontSizeSettings(parsed.fontSize ?? parsed.font);
 
   return {
     background,
+    fontFamily,
+    fontSize,
+    font: fontSize,
   };
 }
 
@@ -107,6 +173,9 @@ export function resolveCommonSettings(parsed, environmentName = "dev", rootDir =
   return {
     ...parsed,
     background: resolveBackgroundSettings(parsed.background, environmentName, rootDir),
+    fontFamily: parsed.fontFamily,
+    fontSize: parsed.fontSize,
+    font: parsed.fontSize,
   };
 }
 

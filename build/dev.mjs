@@ -6,4 +6,6 @@ const envName = args[0] && !args[0].startsWith("-") ? args.shift() : process.env
 process.env.SITE_ENV = envName;
 holdWorkspaceLock(`development server (${envName})`);
 generateContent();
-runNode("node_modules/next/dist/bin/next", ["dev", ...args]);
+const hasBundler = args.some((a) => a === "--turbo" || a === "--turbopack" || a === "--webpack");
+const bundlerArgs = hasBundler ? args : ["--webpack", ...args];
+runNode("node_modules/next/dist/bin/next", ["dev", ...bundlerArgs]);

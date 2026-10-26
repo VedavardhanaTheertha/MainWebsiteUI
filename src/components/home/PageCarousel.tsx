@@ -29,10 +29,10 @@ export default function PageCarousel({ items }: { items: HomePageCard[] }) {
               <ContentImage src={item.image} alt="" fill sizes="(min-width: 1280px) 400px, (min-width: 1024px) 33vw, (min-width: 391px) 320px, 82vw" />
             </div>
             <div className="visual-tile-body flex-1 px-[18px] py-4 text-[var(--color-text-primary)]">
-              <p className="layout-tile-category text-[9.5px] font-bold tracking-[.12em] uppercase mb-1">{item.page_type}</p>
+              <p className="layout-tile-category text-badge font-bold tracking-[.12em] uppercase mb-1">{item.page_type}</p>
               <h2 className="layout-tile-title font-display text-[21px] leading-[1.2] line-clamp-2">{item.title}</h2>
-              <p className="layout-tile-summary text-[12px] leading-[1.5] mt-2 line-clamp-3">{item.description}</p>
-              {item.footnote && <p className="text-[11px] mt-2">{item.footnote}</p>}
+              <p className="layout-tile-summary text-caption leading-[1.5] mt-2 line-clamp-3">{item.description}</p>
+              {item.footnote && <p className="text-meta mt-2">{item.footnote}</p>}
             </div>
           </Link>
         ))}
