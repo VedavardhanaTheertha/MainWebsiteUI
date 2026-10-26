@@ -25,11 +25,63 @@ h1, h2, h3, h4, h5, h6 {
   .font-display {
     font-family: var(--font-localized, var(--font-display));
   }
+
+  .font-sanskrit {
+    font-family: var(--font-sanskrit);
+  }
+
+  .font-kannada {
+    font-family: var(--font-kannada);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
 }
 
 @utility text-policy {
   font-size: 0.8125rem;
   line-height: 1.5;
+}
+
+@utility text-micro {
+  font-size: var(--text-micro, 12px);
+}
+
+@utility text-caption {
+  font-size: var(--text-caption, 13px);
+}
+
+@utility text-ui {
+  font-size: var(--text-ui, 14px);
+}
+
+@utility text-nav {
+  font-size: var(--text-nav, 15px);
+}
+
+@utility text-body-size {
+  font-size: var(--text-body, 16px);
+}
+
+@utility text-badge {
+  font-size: var(--text-badge, 12px);
+}
+
+@utility text-form-label {
+  font-size: var(--text-form-label, 13px);
+}
+
+@utility text-form-input {
+  font-size: var(--text-form-input, 16px);
+}
+
+@utility text-action-btn {
+  font-size: var(--text-action-button, 14px);
+}
+
+@utility text-meta {
+  font-size: var(--text-meta, 13px);
 }
 
 @utility touch-target {

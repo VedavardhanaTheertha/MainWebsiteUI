@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 const source = "settings/theme.json";
-const namespaces = ["color", "font", "spacing", "radius", "shadow"];
+const namespaces = ["color", "spacing", "radius", "shadow"];
 const number = String.raw`(?:\d+(?:\.\d+)?|\.\d+)`;
 const length = new RegExp(`^(?:0|${number}(?:px|rem|em))$`);
 const signedLength = new RegExp(`^-?(?:0|${number}(?:px|rem|em))$`);

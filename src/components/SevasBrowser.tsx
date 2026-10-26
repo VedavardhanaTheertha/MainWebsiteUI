@@ -76,7 +76,7 @@ function SevaCard({
     >
       <SevaImage title={title} image={seva.image} featured />
       <div className={collectionCardBodyClassName}>
-        <p className="layout-tile-category text-xs font-semibold uppercase tracking-wide text-[var(--color-text-brand)]">
+        <p className="layout-tile-category text-badge font-semibold uppercase tracking-wide text-[var(--color-text-brand)]">
           {localized(seva.deity, lang)}
         </p>
         <h3 className="layout-tile-title mt-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">
@@ -136,7 +136,7 @@ function SevaModal({
         <div className="overflow-y-auto">
           <SevaImage title={title} image={seva.image} featured />
           <div className="p-5 sm:p-7">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
+            <p className="text-badge font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
               {localized(seva.category, lang)}
             </p>
             <h2 id="seva-dialog-title" className="mt-1 font-display text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
@@ -146,15 +146,15 @@ function SevaModal({
 
             <dl className="mt-5 grid gap-3 rounded-xl bg-[var(--color-parchment)] p-4 sm:grid-cols-2">
               <div>
-                <dt className="text-xs font-semibold text-[var(--color-text-secondary)]">{tr.sevas_deity}</dt>
+                <dt className="text-meta font-semibold text-[var(--color-text-secondary)]">{tr.sevas_deity}</dt>
                 <dd className="mt-1 text-sm text-[var(--color-text-primary)]">{localized(seva.deity, lang)}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold text-[var(--color-text-secondary)]">{tr.sevas_sannidhi}</dt>
+                <dt className="text-meta font-semibold text-[var(--color-text-secondary)]">{tr.sevas_sannidhi}</dt>
                 <dd className="mt-1 text-sm text-[var(--color-text-primary)]">{localized(seva.sannidhi, lang)}</dd>
               </div>
               <div className="sm:col-span-2">
-                <dt className="text-xs font-semibold text-[var(--color-text-secondary)]">{tr.sevas_location}</dt>
+                <dt className="text-meta font-semibold text-[var(--color-text-secondary)]">{tr.sevas_location}</dt>
                 <dd className="mt-1 text-sm text-[var(--color-text-primary)]">{localized(seva.location, lang)}</dd>
               </div>
             </dl>
@@ -363,7 +363,7 @@ export default function SevasBrowser() {
             <button
               type="button"
               onClick={clearFilters}
-              className="min-h-11 self-start rounded-full px-3 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white sm:self-auto"
+              className="min-h-11 self-start rounded-full px-3 py-2 text-ui font-semibold text-[var(--color-text-brand)] hover:bg-white sm:self-auto"
             >
               {tr.sevas_clear_filters}
             </button>
@@ -371,7 +371,7 @@ export default function SevasBrowser() {
         </div>
         </AdvancedFilters>
 
-        <p role="status" aria-live="polite" className="mt-4 text-xs text-[var(--color-text-secondary)]">
+        <p role="status" aria-live="polite" className="mt-4 text-meta text-[var(--color-text-secondary)]">
           {tr.sevas_results_template.replace("{n}", String(visibleSevas.length))}
         </p>
         {visibleSevas.length > 0 ? (

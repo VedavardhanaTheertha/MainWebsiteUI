@@ -166,7 +166,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   return (
     <div className="bhakti-reader-page bg-[radial-gradient(circle_at_12%_8%,rgba(216,170,77,.1),transparent_28rem),linear-gradient(180deg,#fbf3e5_0%,#f7efe4_70%,#f5ecdf_100%)] px-4 py-4 text-[var(--color-text-primary)] sm:px-6">
       <section className="mx-auto max-w-[820px] text-center">
-        <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.eyebrow}</p>
+        <p className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.eyebrow}</p>
         <h1 className="mt-1 font-display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight">{copy.title}</h1>
         <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{copy.description}</p>
         <div className="mx-auto mt-3 max-w-[690px]">
@@ -261,10 +261,10 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
                     <strong className={`block pr-5 text-sm leading-relaxed ${presentation?.title_class}`}>
                       {display(item).title}
                     </strong>
-                    <span className="mt-1.5 block text-[11px] text-[var(--color-text-muted)]">
+                    <span className="mt-1.5 block text-caption text-[var(--color-text-muted)]">
                       {copy.by}: {display(item).kruti}
                     </span>
-                    <span className="mt-2 block pr-6 text-[11px] text-[var(--color-text-brand)]">
+                    <span className="mt-2 block pr-6 text-caption text-[var(--color-text-brand)]">
                       {copy.ankita}: {display(item).ankita}
                     </span>
                     <span aria-hidden="true" className="absolute bottom-3 right-3 grid size-5 place-items-center rounded-full bg-[var(--color-saffron-600)] text-xs text-white">→</span>
@@ -291,7 +291,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
         <section id="bhakti-reading" tabIndex={-1} aria-label={display(selected).title} className="mx-auto mt-4 max-w-6xl scroll-mt-28 pt-2">
           <div className="bhakti-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)]">
             <button type="button" onClick={backToResults} className="min-h-11 py-3 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
-            <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>
+            <span className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>
           </div>
           <div className="bhakti-reading-controls flex flex-wrap items-center gap-3 py-3 text-sm">
             <label className="flex min-h-11 items-center gap-2">

@@ -25,6 +25,7 @@ import path from "node:path";
 import yaml from "js-yaml";
 import { generateContent } from "./pipeline.mjs";
 import { holdWorkspaceLock } from "./workspace-lock.mjs";
+import { patchNextFont } from "../scripts/patch-next-font.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const envName = process.argv[2] || process.env.SITE_ENV || "dev";
@@ -83,6 +84,7 @@ console.log(`  base path   : ${environment.base_path || "(site root)"}`);
 console.log("─".repeat(70));
 
 run("cleaning stale output", path.join(rootDir, "build", "clean.mjs"));
+patchNextFont(rootDir);
 generateContent((script) => run(script, path.join(rootDir, script)));
 run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build", "--webpack"]);
 run("normalizing canonical URLs", path.join(rootDir, "build", "write-canonicals.mjs"));

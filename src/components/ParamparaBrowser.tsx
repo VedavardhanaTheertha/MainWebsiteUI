@@ -90,7 +90,7 @@ export default function ParamparaBrowser() {
                 </div>
               )}
               <div>
-                <p className="font-body text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--color-text-brand)]">
+                <p className="font-body text-badge font-bold uppercase tracking-[0.18em] text-[var(--color-text-brand)]">
                   {labels.founder}
                 </p>
                 <h2 className="mt-2 font-display text-2xl font-bold leading-tight text-[var(--color-text-primary)] lg:text-4xl">
@@ -160,18 +160,18 @@ export default function ParamparaBrowser() {
                 )}
               </span>
               <span className="visual-tile-body flex min-w-0 flex-col p-3.5">
-                <span className="font-body text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)] mb-2">
+                <span className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)] mb-2">
                   {positionLabel(guru)}
                 </span>
                 <span className="font-display text-[17px] lg:text-[18px] font-bold leading-tight text-[var(--color-text-primary)] group-hover:text-[var(--color-text-brand)] transition-colors">
                   {guru.name}
                 </span>
                 {guru.timePeriod && (
-                  <span className="font-body text-[11px] text-[var(--color-text-muted)] mt-1">
+                  <span className="font-body text-meta text-[var(--color-text-muted)] mt-1">
                     {guru.timePeriod}
                   </span>
                 )}
-                <span className="mt-auto pt-3 font-body text-[12px] leading-[1.5] text-[var(--color-text-secondary)] line-clamp-2">
+                <span className="mt-auto pt-3 font-body text-caption leading-[1.5] text-[var(--color-text-secondary)] line-clamp-2">
                   {guru.summary}
                 </span>
               </span>
@@ -197,14 +197,14 @@ export default function ParamparaBrowser() {
             <header className="shrink-0 border-b border-[var(--color-line)] px-4 pb-0 pt-4 sm:px-6 sm:pt-5 lg:px-8">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="font-body text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
+                  <p className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
                     {positionLabel(selected)}
                   </p>
                   <h2 id="parampara-dialog-title" className="mt-1 font-display text-xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-2xl">
                     {selected.name}
                   </h2>
                   {selected.timePeriod && (
-                    <p className="mt-1 font-body text-xs text-[var(--color-text-muted)]">{selected.timePeriod}</p>
+                    <p className="mt-1 font-body text-meta text-[var(--color-text-muted)]">{selected.timePeriod}</p>
                   )}
                 </div>
                 <button
@@ -237,7 +237,7 @@ export default function ParamparaBrowser() {
                   </p>
                   <Link
                     href={`/history/parampara/${encodeURIComponent(selected.id)}`}
-                    className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--color-saffron-600)] px-5 font-body text-[13px] font-bold text-[var(--color-text-on-brand)] hover:bg-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+                    className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--color-saffron-600)] px-5 font-body text-action-btn font-bold text-[var(--color-text-on-brand)] hover:bg-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
                   >
                     <BookOpen size={17} aria-hidden="true" />
                     {labels.see_more}

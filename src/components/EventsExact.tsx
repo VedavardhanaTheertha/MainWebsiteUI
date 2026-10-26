@@ -372,13 +372,13 @@ export default function EventsExact() {
                   {/* Main Event Info */}
                   <div className="flex min-h-0 min-w-0 flex-1 flex-col p-4">
                     {item.categories?.[0] && (
-                      <span className={`mb-1.5 w-fit max-w-full truncate text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryToneClassName(item.categories[0].code)}`}>
+                      <span className={`mb-1.5 w-fit max-w-full truncate text-badge font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryToneClassName(item.categories[0].code)}`}>
                         {localizedText(item.categories[0], lang)}
                       </span>
                     )}
                     <div>
                       {/* Meta badges */}
-                      <div className="mb-1.5 flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-[var(--color-text-secondary)]">
+                      <div className="mb-1.5 flex items-center gap-2 overflow-hidden whitespace-nowrap text-meta text-[var(--color-text-secondary)]">
                         <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-[var(--color-saffron-800)]">
                           <Calendar size={13} />
                           {displayDate}

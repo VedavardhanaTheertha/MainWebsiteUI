@@ -97,13 +97,13 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
             {event.categories?.map((cat: EventCategory) => (
               <span
                 key={cat.code}
-                className="bg-[rgba(26,17,8,0.8)] backdrop-blur-xs text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                className="bg-[rgba(26,17,8,0.8)] backdrop-blur-xs text-white text-badge font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
               >
                 {localizedText(cat, lang)}
               </span>
             ))}
             {event.isRecurring && (
-              <span className="bg-[#166534]/90 text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
+              <span className="bg-[#166534]/90 text-white text-badge font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
                 {copy.recurring_badge}
               </span>
             )}
@@ -158,7 +158,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
               {event.tags.map((tag, tIdx) => (
                 <span
                   key={tIdx}
-                  className="text-[10px] bg-[var(--color-cream-soft)] text-[var(--color-text-secondary)] px-2 py-0.5 rounded-md border border-[var(--color-line)]"
+                  className="text-badge bg-[var(--color-cream-soft)] text-[var(--color-text-secondary)] px-2 py-0.5 rounded-md border border-[var(--color-line)]"
                 >
                   #{tag}
                 </span>
@@ -169,7 +169,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
           {/* Gallery */}
           {event.images && event.images.length > 0 && (
             <div className="pt-2">
-              <h4 className="font-body text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-2">
+              <h4 className="font-body text-caption font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-2">
                 {copy.gallery}
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -188,17 +188,17 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
 
         {/* Footer actions */}
         <div className="shrink-0 px-4 py-3 sm:px-6 bg-[var(--color-cream-soft)] border-t border-[var(--color-line)]">
-          <p role="status" className="text-xs text-[var(--color-text-brand)]">{actionStatus.slug === event.slug ? actionStatus.message : ""}</p>
+          <p role="status" className="text-meta text-[var(--color-text-brand)]">{actionStatus.slug === event.slug ? actionStatus.message : ""}</p>
           <div className="flex flex-wrap items-center justify-end gap-2">
-          <button type="button" onClick={() => void shareEvent(false)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-xs font-semibold">{copy.copy_link}</button>
-          <button type="button" onClick={() => void shareEvent(true)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-xs font-semibold">{copy.share}</button>
+          <button type="button" onClick={() => void shareEvent(false)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-action-btn font-semibold">{copy.copy_link}</button>
+          <button type="button" onClick={() => void shareEvent(true)} className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-action-btn font-semibold">{copy.share}</button>
           <button type="button" onClick={downloadCalendar}
             disabled={!validEventDate(event.startDate)}
-            className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-xs font-semibold disabled:opacity-40">{copy.add_calendar}</button>
+            className="min-h-11 rounded-xl border border-[var(--color-line-strong)] px-3 text-action-btn font-semibold disabled:opacity-40">{copy.add_calendar}</button>
           <button
             type="button"
             onClick={onClose}
-            className="min-h-11 px-4 py-1.5 rounded-xl bg-[var(--color-saffron-600)] text-white font-body text-xs font-semibold hover:bg-[var(--color-saffron-800)] transition-colors"
+            className="min-h-11 px-4 py-1.5 rounded-xl bg-[var(--color-saffron-600)] text-white font-body text-action-btn font-semibold hover:bg-[var(--color-saffron-800)] transition-colors"
           >
             {copy.close_modal}
           </button>

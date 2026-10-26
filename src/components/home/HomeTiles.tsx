@@ -32,7 +32,7 @@ export default function HomeTiles() {
           <Link
             key={t.id}
             href={t.url}
-            className="min-w-0 min-h-11 flex flex-col items-center gap-2 text-center text-[11px] font-semibold text-[var(--color-text-secondary)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+            className="min-w-0 min-h-11 flex flex-col items-center gap-2 text-center text-caption font-semibold text-[var(--color-text-secondary)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
           >
             <span
               className="size-11 shrink-0 rounded-[17px] flex items-center justify-center transition-transform active:scale-[.93] min-[360px]:size-12 sm:size-[54px]"

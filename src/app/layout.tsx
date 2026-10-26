@@ -70,8 +70,23 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const fontStyle: CSSProperties & { "--font-localized"?: string } = {
+  const fontStyle: CSSProperties & { [key: `--${string}`]: string | undefined } = {
     "--font-localized": languages.find(({ code }) => code === defaultLang)?.font_family,
+    "--font-display": commonSettings.fontFamily?.display ?? "var(--font-marcellus), 'Cormorant Garamond', Georgia, 'Times New Roman', serif",
+    "--font-body": commonSettings.fontFamily?.body ?? "var(--font-montserrat), system-ui, -apple-system, 'Segoe UI', sans-serif",
+    "--font-sanskrit": commonSettings.fontFamily?.sanskrit ?? "var(--font-noto-devanagari), var(--font-marcellus), serif",
+    "--font-kannada": commonSettings.fontFamily?.kannada ?? "var(--font-noto-kannada), var(--font-montserrat), sans-serif",
+    "--font-mono": commonSettings.fontFamily?.mono ?? "ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace",
+    "--text-micro": commonSettings.fontSize?.micro ?? commonSettings.font?.micro ?? "12px",
+    "--text-caption": commonSettings.fontSize?.caption ?? commonSettings.font?.caption ?? "13px",
+    "--text-ui": commonSettings.fontSize?.ui ?? commonSettings.font?.ui ?? "14px",
+    "--text-nav": commonSettings.fontSize?.nav ?? commonSettings.font?.nav ?? "15px",
+    "--text-body": commonSettings.fontSize?.body ?? commonSettings.font?.body ?? "16px",
+    "--text-badge": commonSettings.fontSize?.badge ?? commonSettings.font?.badge ?? "12px",
+    "--text-form-label": commonSettings.fontSize?.formLabel ?? commonSettings.font?.formLabel ?? "13px",
+    "--text-form-input": commonSettings.fontSize?.formInput ?? commonSettings.font?.formInput ?? "16px",
+    "--text-action-button": commonSettings.fontSize?.actionButton ?? commonSettings.font?.actionButton ?? "14px",
+    "--text-meta": commonSettings.fontSize?.meta ?? commonSettings.font?.meta ?? "13px",
   };
   return (
     <html

@@ -270,9 +270,13 @@ Environment image maps in `settings/{dev,prod}/images.json` resolve stable alias
 - Unsafe schemes, traversal, credentials, and malformed targets are rejected.
 
 `settings/image_policy.json` separately controls framework image optimization and
-allowed remote hosts. `settings/common.json` owns shared webpage presentation defaults
-(such as the fixed unscrollable full-page background image positioned behind main content).
-`settings/theme.json` owns theme tokens; the generator emits
+allowed remote hosts. `settings/common.json` owns shared webpage presentation defaults:
+fixed unscrollable full-page background images positioned behind main content, font
+family stacks (`fontFamily`), and the uniform semantic font size scale (`fontSize`:
+`micro`, `caption`, `ui`, `nav`, `body`, `badge`, `formLabel`, `formInput`,
+`actionButton`, `meta`), which the root layout injects as `--font-*` and `--text-*`
+CSS custom properties consumed by utility classes in `src/app/globals.css`.
+`settings/theme.json` owns color, spacing, radius, and shadow tokens; the generator emits
 `src/gen/settings/theme.css`. Layout and responsive behavior remain source code.
 Category tones share semantic mappings across event rails, lists, and badges.
 Content photographs, posters, portraits, and thumbnails use
@@ -382,6 +386,8 @@ development as well as builds. Test entry points prepare required generated cont
 CI can reuse preparation across lint, type checking, and tests while full environment
 builds remain independent. `next.config.ts` enables static export. The deployment
 entry point selects Webpack with `next build --webpack` for every export environment.
+`scripts/patch-next-font.mjs` applies a fallback for Google Fonts URLs without explicit
+file extensions in `@next/font` during postinstall and build entry points.
 
 The exported site is written to `out/`. Only one environment's export occupies that
 directory at a time. `npm start -- dev|local|prod` (choose one environment) serves the

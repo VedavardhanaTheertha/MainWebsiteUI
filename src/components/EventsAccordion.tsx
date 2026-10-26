@@ -144,7 +144,7 @@ export default function EventsAccordion() {
                 <p className="font-display font-bold text-[var(--color-text-primary)] text-base leading-snug mb-1 line-clamp-2">
                   {title}
                 </p>
-                <p className="font-body text-[10px] text-[var(--color-text-secondary)]/60 line-clamp-1">
+                <p className="font-body text-meta text-[var(--color-text-secondary)]/60 line-clamp-1">
                   {location}
                 </p>
               </div>

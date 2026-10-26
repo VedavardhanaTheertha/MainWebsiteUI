@@ -75,7 +75,7 @@ export default function ConnectBrowser() {
               <span className="font-display text-xl font-bold text-[var(--color-text-primary)]">
                 {localized(branch.title, lang)}
               </span>
-              <span className="mt-1 font-body text-xs font-semibold uppercase tracking-wider text-[var(--color-text-brand)]">
+              <span className="mt-1 font-body text-badge font-semibold uppercase tracking-wider text-[var(--color-text-brand)]">
                 {localized(branch.branchType, lang)}
               </span>
               <span className="mt-4 flex items-start gap-2 font-body text-sm leading-6 text-[var(--color-text-secondary)]">
@@ -121,7 +121,7 @@ export default function ConnectBrowser() {
               <strong className="mt-3 font-body text-sm text-[var(--color-text-primary)]">
                 {localized(link.platform, lang)}
               </strong>
-              <span className="mt-1 break-all font-body text-[11px]" style={{ color: link.brandColor }}>
+              <span className="mt-1 break-all font-body text-caption" style={{ color: link.brandColor }}>
                 {localized(link.handle, lang)}
               </span>
               {link.audience && (
@@ -129,7 +129,7 @@ export default function ConnectBrowser() {
                   <span className="mt-4 font-display text-2xl font-bold text-[var(--color-text-primary)]">
                     {link.audience}
                   </span>
-                  <span className="mt-1 font-body text-[10px] uppercase tracking-widest text-[var(--color-text-muted)]">
+                  <span className="mt-1 font-body text-micro uppercase tracking-widest text-[var(--color-text-muted)]">
                     {copy.audience}
                   </span>
                 </>
@@ -178,7 +178,7 @@ function BranchDetails({
       <div className="flex max-h-[94dvh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-[var(--color-paper)] shadow-2xl">
         <header className="flex items-start justify-between gap-4 border-b border-[var(--color-line)] p-4 sm:p-6">
           <div>
-            <p className="font-body text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-brand)]">
+            <p className="font-body text-badge font-bold uppercase tracking-widest text-[var(--color-text-brand)]">
               {localized(branch.branchType, lang)}
             </p>
             <h2 id="branch-dialog-title" className="mt-1 font-display text-2xl font-bold text-[var(--color-text-primary)]">

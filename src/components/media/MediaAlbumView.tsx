@@ -51,7 +51,7 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
                 />
               </div>
               <div className="visual-tile-body p-4">
-                <span className="layout-tile-category visual-tile-badge mb-2 inline-block rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{item.type === "video" ? copy.video_label : copy.photo_label}</span>
+                <span className="layout-tile-category visual-tile-badge mb-2 inline-block rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-badge font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{item.type === "video" ? copy.video_label : copy.photo_label}</span>
                 <h3 className="layout-tile-title font-display text-lg font-bold text-[var(--color-text-primary)]">
                   {item.title}
                 </h3>
