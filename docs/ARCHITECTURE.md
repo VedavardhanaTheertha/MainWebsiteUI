@@ -17,7 +17,7 @@ Contributor commands are in [DEVELOPER.md](DEVELOPER.md).
 | `src/app/`, `src/components/`, `src/hooks/`, `src/lib/`, `src/context/` | Routes, rendering, interactions, and typed runtime helpers |
 | `content/languages/<code>.json` | Language descriptors, short UI labels, and media catalogs |
 | `library/` | Canonical topic Markdown, devotional corpus, page-reference metadata, and environment-specific hero groups |
-| `settings/` | Homepage composition, navigation, images, theme, search, and interaction behavior |
+| `settings/` | Homepage composition, common webpage presentation, navigation, images, theme, search, and interaction behavior |
 | `config/site.yml` | Default language, canonical production URL, environment matrix, and verification policy |
 | `build/`, `scripts/` | Validation, content generation, export, preview, and output verification |
 | `build/test/` | Node unit and regression tests for build tools, content contracts, and runtime behavior |
@@ -270,7 +270,9 @@ Environment image maps in `settings/{dev,prod}/images.json` resolve stable alias
 - Unsafe schemes, traversal, credentials, and malformed targets are rejected.
 
 `settings/image_policy.json` separately controls framework image optimization and
-allowed remote hosts. `settings/theme.json` owns theme tokens; the generator emits
+allowed remote hosts. `settings/common.json` owns shared webpage presentation defaults
+(such as the fixed unscrollable full-page background image positioned behind main content).
+`settings/theme.json` owns theme tokens; the generator emits
 `src/gen/settings/theme.css`. Layout and responsive behavior remain source code.
 Category tones share semantic mappings across event rails, lists, and badges.
 Content photographs, posters, portraits, and thumbnails use

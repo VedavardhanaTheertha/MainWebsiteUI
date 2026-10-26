@@ -6,6 +6,7 @@ import "./collection-experiments.css";
 import "./home-experiments.css";
 import "./carousel-emphasis.css";
 import { siteConfig, defaultLang, content, languages } from "@/gen/content";
+import { commonSettings } from "@/gen/settings/common";
 import { LanguageProvider } from "@/context/LanguageContext";
 import TopBar from "@/components/TopBar";
 import SiteHeader from "@/components/SiteHeader";
@@ -92,7 +93,22 @@ export default function RootLayout({
             {/* Mobile hamburger header */}
             <MobileHeader />
 
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 relative isolate">
+              {commonSettings.background?.backgroundImage ? (
+                <div
+                  aria-hidden="true"
+                  className="common-background-image"
+                  style={{
+                    backgroundImage: `url("${commonSettings.background.backgroundImage}")`,
+                    backgroundPosition: commonSettings.background.position ?? "center",
+                    backgroundSize: commonSettings.background.size ?? "cover",
+                    backgroundRepeat: commonSettings.background.repeat ?? "no-repeat",
+                    opacity: commonSettings.background.opacity ?? 0.12,
+                  }}
+                />
+              ) : null}
+              {children}
+            </main>
 
             <SiteFooter />
 

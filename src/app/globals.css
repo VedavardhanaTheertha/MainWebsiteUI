@@ -37,6 +37,13 @@ h1, h2, h3, h4, h5, h6 {
   min-block-size: 2.75rem;
 }
 
+.common-background-image {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -10;
+}
+
 .content-image-frame,
 .content-image-natural {
   display: block;
