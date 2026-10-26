@@ -109,6 +109,7 @@ function loadImageConfig(environmentName) {
   const paths = config.paths ?? {};
   const resolve = (imagePath) => resolveImageUrl(imagePath, baseUrl);
   const lookup = new Map(Object.entries(paths).map(([key, imagePath]) => [`@image.${key}`, resolve(imagePath)]));
+  for (const [key, imagePath] of Object.entries(paths)) lookup.set(`@${key}`, resolve(imagePath));
   for (const imagePath of Object.values(paths)) lookup.set(imagePath, resolve(imagePath));
   for (const [alias, key] of Object.entries(config.aliases ?? {})) {
     if (!paths[key]) throw new Error(`settings/images.json alias ${alias} points to unknown image ${key}.`);

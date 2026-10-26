@@ -1,0 +1,118 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { resolveImageUrl } from "./image-resolution.mjs";
+
+const source = "settings/common.json";
+
+function toPath(dirOrUrl) {
+  if (typeof dirOrUrl === "string") return dirOrUrl;
+  if (dirOrUrl instanceof URL) return fileURLToPath(dirOrUrl);
+  return process.cwd();
+}
+
+function object(value, field) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${source} must define ${field} object.`);
+  }
+  return value;
+}
+
+export function parseBackgroundSettings(parsedBackground) {
+  object(parsedBackground, "background");
+  if (typeof parsedBackground.backgroundImage !== "string" || !parsedBackground.backgroundImage.trim()) {
+    throw new Error(`${source} background.backgroundImage must be a non-empty string.`);
+  }
+
+  let opacity = 0.12;
+  if ("opacity" in parsedBackground && parsedBackground.opacity !== undefined) {
+    if (typeof parsedBackground.opacity !== "number" || Number.isNaN(parsedBackground.opacity) || parsedBackground.opacity < 0 || parsedBackground.opacity > 1) {
+      throw new Error(`${source} background.opacity must be a number between 0 and 1.`);
+    }
+    opacity = parsedBackground.opacity;
+  }
+
+  let size = "cover";
+  if ("size" in parsedBackground && parsedBackground.size !== undefined) {
+    if (typeof parsedBackground.size !== "string" || !parsedBackground.size.trim()) {
+      throw new Error(`${source} background.size must be a non-empty string.`);
+    }
+    size = parsedBackground.size.trim();
+  }
+
+  let repeat = "no-repeat";
+  if ("repeat" in parsedBackground && parsedBackground.repeat !== undefined) {
+    if (typeof parsedBackground.repeat !== "string" || !parsedBackground.repeat.trim()) {
+      throw new Error(`${source} background.repeat must be a non-empty string.`);
+    }
+    repeat = parsedBackground.repeat.trim();
+  }
+
+  let position = "center";
+  if ("position" in parsedBackground && parsedBackground.position !== undefined) {
+    if (typeof parsedBackground.position !== "string" || !parsedBackground.position.trim()) {
+      throw new Error(`${source} background.position must be a non-empty string.`);
+    }
+    position = parsedBackground.position.trim();
+  }
+
+  return {
+    backgroundImage: parsedBackground.backgroundImage.trim(),
+    opacity,
+    size,
+    repeat,
+    position,
+  };
+}
+
+export function parseCommonSettings(parsed) {
+  object(parsed, "a common settings");
+  const backgroundSource = parsed.background ?? parsed;
+  const background = parseBackgroundSettings(backgroundSource);
+
+  return {
+    background,
+  };
+}
+
+export function resolveBackgroundSettings(background, environmentName = "dev", rootDir = process.cwd()) {
+  const root = toPath(rootDir);
+  const configName = environmentName === "prod" ? "prod" : "dev";
+  const imageConfigFile = path.join(root, "settings", configName, "images.json");
+  const imageConfig = JSON.parse(readFileSync(imageConfigFile, "utf8"));
+  const baseUrl = imageConfig.baseUrl ?? "";
+  const paths = imageConfig.paths ?? {};
+
+  let resolvedImage = background.backgroundImage;
+  if (resolvedImage.startsWith("@")) {
+    const key = resolvedImage.startsWith("@image.")
+      ? resolvedImage.slice("@image.".length)
+      : resolvedImage.slice(1);
+    const imagePath = paths[key];
+    if (typeof imagePath !== "string") {
+      throw new Error(`${source} background.backgroundImage references unknown image alias "${background.backgroundImage}".`);
+    }
+    resolvedImage = resolveImageUrl(imagePath, baseUrl);
+  } else if (!/^https?:\/\//i.test(resolvedImage)) {
+    resolvedImage = resolveImageUrl(resolvedImage, baseUrl);
+  }
+
+  return {
+    ...background,
+    backgroundImage: resolvedImage,
+  };
+}
+
+export function resolveCommonSettings(parsed, environmentName = "dev", rootDir = process.cwd()) {
+  return {
+    ...parsed,
+    background: resolveBackgroundSettings(parsed.background, environmentName, rootDir),
+  };
+}
+
+export function loadCommonSettings(environmentName = (process.env.SITE_ENV || "dev"), rootDir = process.cwd()) {
+  const root = toPath(rootDir);
+  const file = path.join(root, "settings", "common.json");
+  const parsed = parseCommonSettings(JSON.parse(readFileSync(file, "utf8")));
+  return resolveCommonSettings(parsed, environmentName, root);
+}

@@ -65,10 +65,15 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   await copyFile(new URL("../ui-settings.mjs", import.meta.url), path.join(root, "build", "ui-settings.mjs"));
   await copyFile(new URL("../ui-settings-schema.mjs", import.meta.url), path.join(root, "build", "ui-settings-schema.mjs"));
   await copyFile(new URL("../action-settings.mjs", import.meta.url), path.join(root, "build", "action-settings.mjs"));
+  await copyFile(new URL("../common-settings.mjs", import.meta.url), path.join(root, "build", "common-settings.mjs"));
+  await copyFile(new URL("../image-resolution.mjs", import.meta.url), path.join(root, "build", "image-resolution.mjs"));
   await copyFile(new URL("../../settings/public_actions.json", import.meta.url), path.join(root, "settings", "public_actions.json"));
   await copyFile(new URL("../search-config.mjs", import.meta.url), path.join(root, "build", "search-config.mjs"));
   await copyFile(new URL("../../settings/search.json", import.meta.url), path.join(root, "settings", "search.json"));
   await copyFile(new URL("../../settings/announcements.json", import.meta.url), path.join(root, "settings", "announcements.json"));
+  await copyFile(new URL("../../settings/common.json", import.meta.url), path.join(root, "settings", "common.json"));
+  await mkdir(path.join(root, "settings", "dev"), { recursive: true });
+  await copyFile(new URL("../../settings/dev/images.json", import.meta.url), path.join(root, "settings", "dev", "images.json"));
   const source = path.join(root, "settings", "ui_elements.json");
   const run = (settings) => {
     return writeFile(source, JSON.stringify(settings)).then(() =>
@@ -90,6 +95,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   }
   assert.match(await readFile(path.join(root, "src", "gen", "settings", "announcements.ts"), "utf8"), /AnnouncementSettings/);
   assert.match(await readFile(path.join(root, "src", "gen", "settings", "search.ts"), "utf8"), /export const searchSettings/);
+  assert.match(await readFile(path.join(root, "src", "gen", "settings", "common.ts"), "utf8"), /export const commonSettings/);
 
   for (const value of [0, -1, "36", null]) {
     const result = await run({ ...defaults, autoScroll: { ...defaults.autoScroll, pixelsPerSecond: value } });
