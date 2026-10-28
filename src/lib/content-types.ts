@@ -20,7 +20,7 @@ export interface HomePageCard {
 }
 
 export interface HomeIconCard extends HomePageCard {
-  icon: "calendar" | "hand-heart" | "sparkles" | "book-open" | "video";
+  icon: "calendar" | "hand-heart" | "sparkles" | "book-open" | "video" | "home" | "users";
   tone: "saffron" | "green" | "amber" | "rose" | "plum";
 }
 
