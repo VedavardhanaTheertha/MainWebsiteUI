@@ -424,3 +424,11 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* Fixed bottom icon_carousel spacing for footer and floating widgets on homepage */
+body:has([data-carousel="icon_carousel"]) footer {
+  padding-bottom: clamp(5.5rem, 12vh, 6.5rem);
+}
+body:has([data-carousel="icon_carousel"]) .yajna-card {
+  bottom: calc(5.5rem + 1rem);
+}

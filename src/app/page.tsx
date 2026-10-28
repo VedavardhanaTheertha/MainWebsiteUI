@@ -11,9 +11,9 @@ export default function HomePage() {
       <HeroCarousel />
       <KaaviDivider />
       <SpotlightCarousel />
-      <HomeTiles />
       <HomeFeatures />
       <BottomLinks />
+      <HomeTiles />
     </>
   );
 }
