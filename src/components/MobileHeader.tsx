@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef, useId } from "react";
-import { lockPageScroll } from "@/hooks/useDialog";
+import { lockPageScroll, useDialogsOpen } from "@/hooks/useDialog";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { navigationRoutes, siteConfig, type Lang } from "@/gen/content";
@@ -14,6 +14,9 @@ export default function MobileHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const dialogsOpen = useDialogsOpen();
+  const isMenuOpen = open && !dialogsOpen;
+  const isExpanded = (key: string) => (!dialogsOpen && expanded === key);
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const navId = useId();
@@ -27,7 +30,7 @@ export default function MobileHeader() {
   const nextLanguage = languages[(currentIndex + 1) % languages.length];
 
   useEffect(() => {
-    if (!open) return;
+    if (!isMenuOpen) return;
     const unlock = lockPageScroll();
     const desktopQuery = "(min-width: 80rem)";
     const desktop = window.matchMedia(desktopQuery);
@@ -49,7 +52,7 @@ export default function MobileHeader() {
       viewportObserver.disconnect();
       document.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [open]);
+  }, [isMenuOpen]);
 
   const toggle = (key: string) => setExpanded((prev) => (prev === key ? null : key));
   const closeMenu = () => {
@@ -58,10 +61,12 @@ export default function MobileHeader() {
   };
 
   return (
-    <header ref={headerRef} className="xl:hidden sticky top-0 z-50 shadow-md"
+    <header
+      ref={headerRef}
+      className={`xl:hidden sticky top-0 ${dialogsOpen ? "z-0 pointer-events-none" : "z-50"} shadow-md`}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) closeMenu(); }}
       onKeyDown={(event) => {
-        if (open && event.key === "Escape") {
+        if (isMenuOpen && event.key === "Escape") {
           event.preventDefault();
           closeMenu();
           toggleRef.current?.focus();
@@ -95,13 +100,13 @@ export default function MobileHeader() {
           </button>
           <button ref={toggleRef} type="button" onClick={() => setOpen((o) => !o)}
             className="min-w-11 min-h-11 grid place-items-center p-1 rounded-full hover:bg-[var(--color-saffron-100)] transition-colors text-[var(--color-text-primary)] focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
-            aria-label={open ? tr.ui.close_menu : tr.ui.open_menu} aria-expanded={open} aria-controls="mobile-nav">
-            {open ? <X size={20} /> : <Menu size={20} />}
+            aria-label={isMenuOpen ? tr.ui.close_menu : tr.ui.open_menu} aria-expanded={isMenuOpen} aria-controls="mobile-nav">
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
-      {open && (
+      {isMenuOpen && (
         <nav id="mobile-nav" aria-label={tr.ui.mobile_navigation}
           className="absolute top-full right-3 left-auto mt-1.5 w-max min-w-[11rem] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-[var(--color-saffron-600)] bg-[var(--color-paper)] shadow-2xl max-h-[calc(100dvh-5rem)] overflow-y-auto z-50 py-1.5 text-right whitespace-nowrap">
           <ul className="space-y-0.5 px-1.5">
@@ -118,13 +123,13 @@ export default function MobileHeader() {
                   ) : (
                     <div>
                       <button type="button" onClick={() => toggle(item.key)}
-                        aria-expanded={expanded === item.key}
+                        aria-expanded={isExpanded(item.key)}
                         aria-controls={`${navId}-${item.key}`}
-                        className={`w-full flex items-center justify-end gap-2 px-3.5 py-2 rounded-xl font-body text-nav font-medium text-right transition-colors ${expanded === item.key ? "bg-[var(--color-saffron-100)]/60 text-[var(--color-text-brand)]" : "text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)]/70"}`}>
+                        className={`w-full flex items-center justify-end gap-2 px-3.5 py-2 rounded-xl font-body text-nav font-medium text-right transition-colors ${isExpanded(item.key) ? "bg-[var(--color-saffron-100)]/60 text-[var(--color-text-brand)]" : "text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-100)]/70"}`}>
                         <span>{item.label}</span>
-                        <ChevronDown size={14} className={`shrink-0 transition-transform duration-200 ${expanded === item.key ? "rotate-180" : ""}`} />
+                        <ChevronDown size={14} className={`shrink-0 transition-transform duration-200 ${isExpanded(item.key) ? "rotate-180" : ""}`} />
                       </button>
-                      <ul id={`${navId}-${item.key}`} hidden={expanded !== item.key} className="my-1 space-y-0.5 rounded-xl bg-[var(--color-saffron-50)]/70 p-1 border border-[var(--color-saffron-200)] text-right">
+                      <ul id={`${navId}-${item.key}`} hidden={!isExpanded(item.key)} className="my-1 space-y-0.5 rounded-xl bg-[var(--color-saffron-50)]/70 p-1 border border-[var(--color-saffron-200)] text-right">
                         {item.children!.map((sub) => {
                           const isSubActive = pathname === sub.href;
                           return (

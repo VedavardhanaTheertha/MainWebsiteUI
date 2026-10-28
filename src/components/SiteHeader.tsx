@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useId } from "react";
+import { useDialogsOpen } from "@/hooks/useDialog";
 import { useQRModal } from "@/hooks/useQRModal";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import { useLang } from "@/context/LanguageContext";
@@ -20,6 +21,8 @@ export default function SiteHeader() {
   const { tr } = useLang();
   const NAV = tr.nav as unknown as NavItem[];
   const [open, setOpen] = useState<DropKey>(null);
+  const dialogsOpen = useDialogsOpen();
+  const activeOpen = dialogsOpen ? null : open;
   const navId = useId();
   const headerRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -27,7 +30,7 @@ export default function SiteHeader() {
     if (closeTimer.current !== null) clearTimeout(closeTimer.current);
   }, []);
   useEffect(() => {
-    if (!open) return;
+    if (!activeOpen) return;
     const desktop = window.matchMedia("(min-width: 80rem)");
     const onPointerDown = (event: PointerEvent) => {
       if (event.target instanceof Node && !headerRef.current?.contains(event.target)) setOpen(null);
@@ -39,7 +42,7 @@ export default function SiteHeader() {
       document.removeEventListener("pointerdown", onPointerDown);
       desktop.removeEventListener("change", onResize);
     };
-  }, [open]);
+  }, [activeOpen]);
 
   const show = (key: DropKey) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -52,7 +55,10 @@ export default function SiteHeader() {
   const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(href));
 
   return (
-    <header ref={headerRef} className="hidden xl:block sticky top-0 z-50 bg-[var(--color-parchment)]/95 backdrop-blur-sm border-b border-[var(--color-saffron-600)]">
+    <header
+      ref={headerRef}
+      className={`hidden xl:block sticky top-0 ${dialogsOpen ? "z-0 pointer-events-none" : "z-50"} bg-[var(--color-parchment)]/95 backdrop-blur-sm border-b border-[var(--color-saffron-600)]`}
+    >
       <div className="max-w-7xl mx-auto px-4 xl:px-6 min-h-14 py-1 flex items-center justify-between gap-3">
 
         {/* Logo */}
@@ -79,7 +85,7 @@ export default function SiteHeader() {
                     if (!event.currentTarget.contains(event.relatedTarget)) show(null);
                   }}
                   onKeyDown={(event) => {
-                    if (event.key === "Escape" && open === item.key) {
+                    if (event.key === "Escape" && activeOpen === item.key) {
                       event.preventDefault();
                       event.stopPropagation();
                       show(null);
@@ -98,10 +104,10 @@ export default function SiteHeader() {
                       type="button"
                       data-nav-disclosure
                       aria-label={item.href ? item.label : undefined}
-                      aria-expanded={open === item.key}
+                      aria-expanded={activeOpen === item.key}
                       aria-controls={`${navId}-${item.key}`}
-                      onClick={() => show(open === item.key ? null : item.key)}
-                      className={`flex items-center gap-0.5 px-2.5 py-1.5 rounded-full font-body text-ui font-medium transition-colors whitespace-nowrap ${open === item.key || active ? "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-600)]/60"}`}>
+                      onClick={() => show(activeOpen === item.key ? null : item.key)}
+                      className={`flex items-center gap-0.5 px-2.5 py-1.5 rounded-full font-body text-ui font-medium transition-colors whitespace-nowrap ${activeOpen === item.key || active ? "bg-[var(--color-saffron-100)] text-[var(--color-text-brand)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-saffron-600)]/60"}`}>
                       {!item.href && item.label}
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
@@ -109,7 +115,7 @@ export default function SiteHeader() {
                   {hasDropdown && (
                     <div
                       id={`${navId}-${item.key}`}
-                      hidden={open !== item.key}
+                      hidden={activeOpen !== item.key}
                       className="absolute top-full left-0 mt-1 min-w-[200px] bg-[var(--color-paper)] border border-[var(--color-saffron-600)] shadow-xl rounded-lg py-1.5 z-50"
                     >
                       {item.children!.map((sub) => (

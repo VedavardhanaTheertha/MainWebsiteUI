@@ -185,7 +185,7 @@ export default function ParamparaBrowser() {
       {selected && (
         <div
           ref={dialogRef}
-          className="fixed inset-0 z-[9000] flex items-end justify-center bg-[var(--color-ink-900)]/70 sm:items-center sm:p-5"
+          className="fixed inset-0 z-[10000] flex items-end justify-center bg-[var(--color-ink-900)]/70 sm:items-center sm:p-5"
           role="dialog"
           aria-modal="true"
           aria-labelledby="parampara-dialog-title"

@@ -55,6 +55,9 @@ function hooks() {
         });
       }
     },
+    useSyncExternalStore(_subscribe, getSnapshot) {
+      return getSnapshot();
+    },
   };
   return {
     react,

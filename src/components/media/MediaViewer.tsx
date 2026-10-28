@@ -117,7 +117,7 @@ export default function MediaViewer({
   const controlClass = "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-white/40 px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2";
   return (
     <div
-      className="fixed inset-0 z-[100] grid items-center overflow-y-auto bg-black/85 p-3 text-white sm:p-6"
+      className="fixed inset-0 z-[10000] grid items-center overflow-y-auto bg-black/85 p-3 text-white sm:p-6"
       onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}
     >
       <div

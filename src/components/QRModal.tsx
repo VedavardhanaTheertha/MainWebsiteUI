@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { X } from "lucide-react";
 import PaymentQr from "@/components/PaymentQr";
@@ -16,7 +16,7 @@ export default function QRModal() {
   return (
     <div
       ref={dialogRef}
-      className="fixed inset-0 z-[200] flex items-center justify-center overflow-y-auto p-4 bg-[var(--color-ink-900)]/70 backdrop-blur-sm"
+      className="fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto p-4 bg-[var(--color-ink-900)]/70 backdrop-blur-sm"
       onClick={closeQR}
       role="dialog"
       aria-modal="true"
