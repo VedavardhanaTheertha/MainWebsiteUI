@@ -259,6 +259,11 @@ Learn and Panchanga use server route wrappers for content-owned metadata and cli
 components for language-aware interactions. Each Learn subject supplies its own
 title and description rather than inheriting homepage metadata.
 
+App and generated pages (all routes except the home page) provide top back navigation
+via `src/components/BackNavigation.tsx` mounted in the root layout. It provides a
+localized back action that uses in-site browser history when available, falling back
+to the logical parent route computed by `src/lib/back-navigation.ts`.
+
 ## 5. Images, media, and interactions
 
 Environment image maps in `settings/{dev,prod}/images.json` resolve stable aliases.

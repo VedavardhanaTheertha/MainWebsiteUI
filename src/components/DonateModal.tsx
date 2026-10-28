@@ -55,7 +55,7 @@ export default function DonateModal() {
   return (
     <div
       ref={dialogRef}
-      className="fixed inset-0 z-[200] flex items-end justify-center overflow-y-auto sm:items-center p-0 sm:p-4 bg-[var(--color-ink-900)]/70 backdrop-blur-sm"
+      className="fixed inset-0 z-[10000] flex items-end justify-center overflow-y-auto sm:items-center p-0 sm:p-4 bg-[var(--color-ink-900)]/70 backdrop-blur-sm"
       onClick={handleClose}
       role="dialog" aria-modal="true" aria-label={copy.donate_label}
     >

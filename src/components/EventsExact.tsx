@@ -418,9 +418,9 @@ export default function EventsExact() {
 
                     <div className="mt-auto flex items-center justify-between gap-2 border-t border-[var(--color-line)] pt-2">
                       <div className="flex min-w-0 items-center gap-1 overflow-hidden">
-                        {item.categories?.slice(1, 3).map((cat: EventCategory) => (
+                        {item.categories?.slice(1, 3).map((cat: EventCategory, cIdx: number) => (
                           <span
-                            key={cat.code}
+                            key={`${cat.code}-${cIdx}`}
                             className={`shrink-0 text-[9.5px] px-2 py-0.5 rounded-full font-medium ${categoryToneClassName(cat.code)}`}
                           >
                             {localizedText(cat, lang)}

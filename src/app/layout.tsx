@@ -17,6 +17,7 @@ import DonateModal from "@/components/DonateModal";
 import YajnaAnnouncement from "@/components/YajnaAnnouncement";
 import DeveloperPreferences from "@/components/DeveloperPreferences";
 import HorizontalScrollSupport from "@/components/HorizontalScrollSupport";
+import BackNavigation from "@/components/BackNavigation";
 import { UiSettingsProvider } from "@/context/UiSettingsContext";
 
 const marcellus = Marcellus({
@@ -122,6 +123,7 @@ export default function RootLayout({
                   }}
                 />
               ) : null}
+              <BackNavigation />
               {children}
             </main>
 

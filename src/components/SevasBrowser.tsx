@@ -115,7 +115,7 @@ function SevaModal({
   return (
     <div
       ref={dialogRef}
-      className="fixed inset-0 z-[200] flex items-end justify-center bg-[var(--color-ink-900)]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+      className="fixed inset-0 z-[10000] flex items-end justify-center bg-[var(--color-ink-900)]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
       role="dialog"
       aria-modal="true"
       aria-labelledby="seva-dialog-title"

@@ -94,9 +94,9 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
         {/* Content body */}
         <div className="min-h-0 p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
           <div className="flex flex-wrap items-center gap-1.5">
-            {event.categories?.map((cat: EventCategory) => (
+            {event.categories?.map((cat: EventCategory, cIdx: number) => (
               <span
-                key={cat.code}
+                key={`${cat.code}-${cIdx}`}
                 className="bg-[rgba(26,17,8,0.8)] backdrop-blur-xs text-white text-badge font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
               >
                 {localizedText(cat, lang)}

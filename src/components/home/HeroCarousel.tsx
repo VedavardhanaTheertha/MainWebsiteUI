@@ -43,7 +43,7 @@ export default function HeroCarousel() {
       <div className="home-hero-viewport relative h-[462px] lg:h-[600px]">
       {images.map((src, k) => (
         <div
-          key={src}
+          key={`${src}-${k}`}
           className="absolute inset-0 transition-opacity"
           style={{ opacity: k === current ? 1 : 0, transitionDuration: `${reducedMotion || paused ? 0 : heroSettings.fadeDurationMs}ms` }}
         >
