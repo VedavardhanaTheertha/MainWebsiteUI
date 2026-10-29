@@ -3,6 +3,7 @@ import path from "node:path";
 import { loadEditorialContent, mergeAuthoredSources } from "./editorial-content.mjs";
 import { loadHomeContent } from "./home-content.mjs";
 import { applyNavigation, loadNavigation } from "./navigation-content.mjs";
+import { loadAlbumContent } from "./album-content.mjs";
 
 export function loadAuthoredLanguage(rootDir, languageCode, languagesDir = "content/languages", { navigation = true } = {}) {
   const source = path.join(rootDir, languagesDir, `${languageCode}.json`);
@@ -16,7 +17,8 @@ export function loadAuthoredLanguage(rootDir, languageCode, languagesDir = "cont
   if (labels === null || typeof labels !== "object" || Array.isArray(labels)) {
     throw new Error(`${source}: language UI content must be an object.`);
   }
-  const editorial = mergeAuthoredSources(labels, loadEditorialContent(rootDir, languageCode));
+  const withAlbums = mergeAuthoredSources(labels, loadAlbumContent(rootDir, languageCode));
+  const editorial = mergeAuthoredSources(withAlbums, loadEditorialContent(rootDir, languageCode));
   const authored = mergeAuthoredSources(editorial, loadHomeContent(rootDir, languageCode));
   return navigation ? applyNavigation(authored, loadNavigation(rootDir)) : authored;
 }

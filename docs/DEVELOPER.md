@@ -246,6 +246,7 @@ segment-prefetch URLs from the matching nested export files.
 | Theme and interaction defaults | `settings/theme.json`, `settings/ui_elements.json` |
 | Announcement visibility/schedule | `settings/announcements.json` |
 | Announcement wording and dated progress | Its canonical `library/announcement/` Markdown |
+| Media albums and image lists | `library/albums/*.md` and `settings/album_config.json` |
 | Search behavior | `settings/search.json` |
 | Knowledge order/default images | `settings/knowledge_sections.json` |
 | Environment behavior | `config/site.yml` |
