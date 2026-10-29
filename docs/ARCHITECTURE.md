@@ -15,7 +15,7 @@ Contributor commands are in [DEVELOPER.md](DEVELOPER.md).
 | Source | Responsibility |
 |---|---|
 | `src/app/`, `src/components/`, `src/hooks/`, `src/lib/`, `src/context/` | Routes, rendering, interactions, and typed runtime helpers |
-| `content/languages/<code>.json` | Language descriptors, short UI labels, and media catalogs |
+| `content/languages/<code>.json` | Language descriptors and short UI labels |
 | `library/` | Canonical topic Markdown, devotional corpus, page-reference metadata, and environment-specific hero groups |
 | `settings/` | Homepage composition, common webpage presentation, navigation, images, theme, search, and interaction behavior |
 | `config/site.yml` | Default language, canonical production URL, environment matrix, and verification policy |
@@ -197,6 +197,7 @@ and language JSON. Active shared control and editorial namespaces are `ui` and
 | Branches and official channels | `library/branches/` and `library/connect/`; generated data supplies locations and shared official destinations |
 | Institutional and policy pages | Corresponding topic Markdown, including `library/general/` |
 | Announcement | `library/announcement/krishna-mantra-lekhana-yajna.md`; one owner for popup, associated page copy, and metadata |
+| Media Albums | `library/albums/*.md`; responsive 4-variant image lists, optional event references, and dynamic ranking via `settings/album_config.json` |
 | Knowledge sections | Topic Markdown in `library/mantra/`, `shastra/`, `jnana/`, `dharma/`, `projects/`, `stories/`, `articles/`, `symbolism/`, `remedies/`, `science/`, and `pilgrim/` |
 
 Knowledge section routes and supported IDs are defined in

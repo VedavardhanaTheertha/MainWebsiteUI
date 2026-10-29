@@ -57,28 +57,45 @@ function items(records, location, albumIds) {
     const id = record.id ?? `item-${index + 1}`;
     if (ids.has(id)) fail(at, `duplicate item id "${id}".`);
     ids.add(id);
-    for (const key of ["title", "detail", "image"]) text(record, key, at, true);
-    for (const key of ["caption", "language", "albumId"]) text(record, key, at);
-    if (record.albumId !== undefined && !albumIds.has(record.albumId)) fail(at, `unknown albumId "${record.albumId}".`);
-    date(record, "recordedAt", at);
-    url(record, "fullImage", at);
-    const type = record.type;
-    if (type !== "photo" && type !== "video") fail(at, 'type must be "photo" or "video".');
-    if (type === "video") {
-      const durationKey = "duration";
-      text(record, durationKey, at);
-      if (record[durationKey] !== undefined && !/^\d+:[0-5]\d(?::[0-5]\d)?$/.test(record[durationKey])) {
-        fail(at, `${durationKey} must use minutes:seconds or hours:minutes:seconds.`);
+
+    const smallWebp = record["small-webp"] ?? record.smallWebp;
+    const smallAvif = record["small-avif"] ?? record.smallAvif;
+    const largeWebp = record["large-webp"] ?? record.largeWebp;
+    const largeAvif = record["large-avif"] ?? record.largeAvif;
+
+    if (smallWebp !== undefined || smallAvif !== undefined || largeWebp !== undefined || largeAvif !== undefined) {
+      for (const [k, v] of [
+        ["small-webp", smallWebp],
+        ["small-avif", smallAvif],
+        ["large-webp", largeWebp],
+        ["large-avif", largeAvif],
+      ]) {
+        if (typeof v !== "string" || !v.trim()) fail(at, `${k} must be a non-empty string.`);
       }
-      url(record, "videoUrl", at);
-      url(record, "externalUrl", at, true);
-    } else if (record.videoUrl !== undefined || record.externalUrl !== undefined) {
-      fail(at, "photo records must not define video playback URLs.");
+    } else {
+      for (const key of ["title", "detail", "image"]) text(record, key, at, true);
+      for (const key of ["caption", "language", "albumId"]) text(record, key, at);
+      if (record.albumId !== undefined && !albumIds.has(record.albumId)) fail(at, `unknown albumId "${record.albumId}".`);
+      date(record, "recordedAt", at);
+      url(record, "fullImage", at);
+      const type = record.type;
+      if (type !== "photo" && type !== "video") fail(at, 'type must be "photo" or "video".');
+      if (type === "video") {
+        const durationKey = "duration";
+        text(record, durationKey, at);
+        if (record[durationKey] !== undefined && !/^\d+:[0-5]\d(?::[0-5]\d)?$/.test(record[durationKey])) {
+          fail(at, `${durationKey} must use minutes:seconds or hours:minutes:seconds.`);
+        }
+        url(record, "videoUrl", at);
+        url(record, "externalUrl", at, true);
+      } else if (record.videoUrl !== undefined || record.externalUrl !== undefined) {
+        fail(at, "photo records must not define video playback URLs.");
+      }
     }
   });
 }
 
-export function validateMedia(media, source = "media") {
+export function validateMedia(media, source = "media", { existingEventSlugs } = {}) {
   object(media, source);
   list(media.albums, `${source}.albums`);
   const albumIds = new Set();
@@ -91,6 +108,9 @@ export function validateMedia(media, source = "media") {
     albumIds.add(album.id);
     for (const key of ["title", "description", "cover"]) text(album, key, at, true);
     text(album, "event", at);
+    if (album.event && existingEventSlugs && !existingEventSlugs.has(album.event)) {
+      fail(at, `references unknown event "${album.event}".`);
+    }
     date(album, "date", at);
     list(album.tags, `${at}.tags`);
     if (album.tags.some((tag) => typeof tag !== "string" || !tag.trim())) fail(at, "tags must contain non-empty strings.");

@@ -12,12 +12,44 @@ import { useUiSettings } from "@/context/UiSettingsContext";
 
 export type ViewerItem = MediaAlbumItem & { viewerId: string };
 
+export function AlbumItemOverviewImage({
+  item,
+  className = "h-full w-full object-cover",
+}: {
+  item: MediaAlbumItem;
+  className?: string;
+}) {
+  if (item.smallAvif || item.smallWebp) {
+    return (
+      <picture className="block h-full w-full">
+        {item.smallAvif && <source srcSet={item.smallAvif} type="image/avif" />}
+        {item.smallWebp && <source srcSet={item.smallWebp} type="image/webp" />}
+        <img
+          src={item.smallWebp || item.smallAvif || item.image}
+          alt={item.caption ?? item.title ?? ""}
+          loading="lazy"
+          className={className}
+        />
+      </picture>
+    );
+  }
+  return (
+    <Image
+      src={item.image}
+      alt={item.caption ?? item.title ?? ""}
+      fill
+      unoptimized
+      className={className}
+    />
+  );
+}
+
 export function MediaTileAction({ item, onOpen }: { item: MediaAlbumItem; onOpen: () => void }) {
   const { tr } = useLang();
   if (item.type === "photo" || safeMediaUrl(item.videoUrl) || safeMediaUrl(item.externalUrl, true)) return (
     <button
       type="button"
-      aria-label={`${item.type === "photo" ? tr.media.open_photo : tr.media.open_video}: ${item.title}`}
+      aria-label={`${item.type === "photo" ? tr.media.open_photo : tr.media.open_video}: ${item.title ?? ""}`}
       onClick={onOpen}
       className="absolute inset-0 z-10 h-full w-full cursor-zoom-in rounded-[inherit] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
     />
@@ -30,12 +62,29 @@ export function MediaPlayback({ item }: { item: MediaAlbumItem }) {
   const [failed, setFailed] = useState(false);
   const videoUrl = safeMediaUrl(item.videoUrl);
   const externalUrl = safeMediaUrl(item.externalUrl, true);
-  if (item.type === "photo") {
-    return failed ? <p role="status" className="p-8">{tr.media.media_error}</p> : (
+  if (item.type !== "video") {
+    if (failed) return <p role="status" className="p-8">{tr.media.media_error}</p>;
+    if (item.largeAvif || item.largeWebp) {
+      return (
+        <div className="relative flex min-h-48 max-h-[75vh] w-full items-center justify-center p-2">
+          <picture className="flex max-h-[75vh] max-w-full items-center justify-center">
+            {item.largeAvif && <source srcSet={item.largeAvif} type="image/avif" />}
+            {item.largeWebp && <source srcSet={item.largeWebp} type="image/webp" />}
+            <img
+              src={item.largeWebp || item.largeAvif || item.image}
+              alt={item.caption ?? item.title ?? ""}
+              className="max-h-[75vh] w-auto max-w-full object-contain"
+              onError={() => setFailed(true)}
+            />
+          </picture>
+        </div>
+      );
+    }
+    return (
       <div className="relative h-[60vh] min-h-48 w-full">
         <Image
           src={item.fullImage ?? item.image}
-          alt={item.caption ?? item.title}
+          alt={item.caption ?? item.title ?? ""}
           fill
           unoptimized
           sizes="100vw"
