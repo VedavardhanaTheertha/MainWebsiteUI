@@ -290,9 +290,9 @@ export interface MediaMetadata {
 
 export interface MediaAlbumItem extends MediaMetadata {
   smallWebp: string;
-  smallAvif: string;
+  smallAvif?: string;
   largeWebp: string;
-  largeAvif: string;
+  largeAvif?: string;
   image: string;
   title?: string;
   detail?: string;
