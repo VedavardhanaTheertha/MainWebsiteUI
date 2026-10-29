@@ -64,13 +64,13 @@ function items(records, location, albumIds) {
     const largeAvif = record["large-avif"] ?? record.largeAvif;
 
     if (smallWebp !== undefined || smallAvif !== undefined || largeWebp !== undefined || largeAvif !== undefined) {
-      for (const [k, v] of [
-        ["small-webp", smallWebp],
-        ["small-avif", smallAvif],
-        ["large-webp", largeWebp],
-        ["large-avif", largeAvif],
-      ]) {
-        if (typeof v !== "string" || !v.trim()) fail(at, `${k} must be a non-empty string.`);
+      if (typeof smallWebp !== "string" || !smallWebp.trim()) fail(at, "small-webp must be a non-empty string.");
+      if (typeof largeWebp !== "string" || !largeWebp.trim()) fail(at, "large-webp must be a non-empty string.");
+      if (smallAvif !== undefined && (typeof smallAvif !== "string" || !smallAvif.trim())) {
+        fail(at, "small-avif must be a non-empty string.");
+      }
+      if (largeAvif !== undefined && (typeof largeAvif !== "string" || !largeAvif.trim())) {
+        fail(at, "large-avif must be a non-empty string.");
       }
     } else {
       for (const key of ["title", "detail", "image"]) text(record, key, at, true);

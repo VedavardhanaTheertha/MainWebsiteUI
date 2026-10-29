@@ -102,23 +102,25 @@ export function loadAlbums(rootDir) {
       const largeWebp = item["large-webp"] ?? item.largeWebp;
       const largeAvif = item["large-avif"] ?? item.largeAvif;
 
-      for (const [key, val] of [
-        ["small-webp", smallWebp],
-        ["small-avif", smallAvif],
-        ["large-webp", largeWebp],
-        ["large-avif", largeAvif],
-      ]) {
-        if (typeof val !== "string" || !val.trim()) {
-          throw new Error(`${at}: ${key} must be a non-empty string.`);
-        }
+      if (typeof smallWebp !== "string" || !smallWebp.trim()) {
+        throw new Error(`${at}: small-webp must be a non-empty string.`);
+      }
+      if (typeof largeWebp !== "string" || !largeWebp.trim()) {
+        throw new Error(`${at}: large-webp must be a non-empty string.`);
+      }
+      if (smallAvif !== undefined && (typeof smallAvif !== "string" || !smallAvif.trim())) {
+        throw new Error(`${at}: small-avif must be a non-empty string.`);
+      }
+      if (largeAvif !== undefined && (typeof largeAvif !== "string" || !largeAvif.trim())) {
+        throw new Error(`${at}: large-avif must be a non-empty string.`);
       }
 
       return {
         id: item.id ?? `item-${index + 1}`,
         smallWebp,
-        smallAvif,
+        ...(smallAvif ? { smallAvif } : {}),
         largeWebp,
-        largeAvif,
+        ...(largeAvif ? { largeAvif } : {}),
         image: largeWebp || smallWebp,
         type: "photo",
       };
