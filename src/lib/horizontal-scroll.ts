@@ -15,10 +15,12 @@ export function enableHorizontalMouseScroll(root: Document) {
   function scrollable(target: EventTarget | null) {
     let element = target instanceof Element ? target : null;
     while (element && element !== root.documentElement) {
-      if (element instanceof HTMLElement &&
-          element.scrollWidth > element.clientWidth + 1 &&
-          /^(auto|scroll)$/.test(getComputedStyle(element).overflowX)) {
-        return element;
+      if (element instanceof HTMLElement) {
+        if (element.dataset.mouseScroll) return element;
+        if (element.scrollWidth > element.clientWidth + 1 &&
+            /^(auto|scroll)$/.test(getComputedStyle(element).overflowX)) {
+          return element;
+        }
       }
       element = element.parentElement;
     }
