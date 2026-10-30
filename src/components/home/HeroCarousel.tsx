@@ -21,13 +21,25 @@ export default function HeroCarousel() {
   const title = hero.titles[lang];
   const { href, images } = hero;
   const [i, setI] = useState(0);
+  const [maxVisited, setMaxVisited] = useState(1);
   const [paused, setPaused] = useState(false);
   const [focused, setFocused] = useState(false);
   const current = images.length ? i % images.length : 0;
 
+  const goToSlide = (idx: number) => {
+    setI(idx);
+    setMaxVisited((m) => Math.max(m, idx + 1));
+  };
+
   useEffect(() => {
     if (reducedMotion || paused || focused || dialogsOpen || !heroSettings.autoplay || images.length <= 1) return undefined;
-    const t = setInterval(() => setI((p) => (p + 1) % images.length), heroSettings.intervalMs);
+    const t = setInterval(() => {
+      setI((p) => {
+        const next = (p + 1) % images.length;
+        setMaxVisited((m) => Math.max(m, next + 1));
+        return next;
+      });
+    }, heroSettings.intervalMs);
     return () => clearInterval(t);
   }, [images.length, reducedMotion, paused, focused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
 
@@ -38,22 +50,27 @@ export default function HeroCarousel() {
     >
     <Link href={href} className="hero-rounded-frame relative block w-full overflow-hidden rounded-b-[22px] bg-[var(--color-paper)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
       <div className="home-hero-viewport relative h-[462px] lg:h-[600px]">
-      {images.map((src, k) => (
-        <div
-          key={`${src}-${k}`}
-          className="absolute inset-0 transition-opacity"
-          style={{ opacity: k === current ? 1 : 0, transitionDuration: `${reducedMotion || paused ? 0 : heroSettings.fadeDurationMs}ms` }}
-        >
-          <ContentImage
-            src={src}
-            alt=""
-            fill
-            priority={k === 0}
-            loading={k === 0 ? "eager" : "lazy"}
-            sizes="100vw"
-          />
-        </div>
-      ))}
+      {images.map((src, k) => {
+        const isRendered = k <= maxVisited || k === current || k === (current + 1) % images.length;
+        return (
+          <div
+            key={`${src}-${k}`}
+            className="absolute inset-0 transition-opacity"
+            style={{ opacity: k === current ? 1 : 0, transitionDuration: `${reducedMotion || paused ? 0 : heroSettings.fadeDurationMs}ms` }}
+          >
+            {isRendered && (
+              <ContentImage
+                src={src}
+                alt=""
+                fill
+                priority={k === 0}
+                loading={k === 0 ? "eager" : "lazy"}
+                sizes="100vw"
+              />
+            )}
+          </div>
+        );
+      })}
 
       </div>
 
@@ -91,7 +108,7 @@ export default function HeroCarousel() {
             role="tab"
             aria-selected={idx === current}
             aria-label={`${tr.media?.photo_label ?? "Slide"} ${idx + 1}`}
-            onClick={() => setI(idx)}
+            onClick={() => goToSlide(idx)}
             className={`pointer-events-auto h-2 transition-all rounded-full ${
               idx === current ? "w-6 bg-[var(--color-saffron-500)]" : "w-2 bg-white/40 hover:bg-white/75"
             }`}

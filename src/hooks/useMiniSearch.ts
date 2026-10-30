@@ -18,17 +18,21 @@ export function useMiniSearch<T extends object>(
   query: string,
   config: MiniSearchConfig<T>
 ): T[] {
+  const trimmed = query.trim();
+  const hasQuery = Boolean(trimmed);
   const fieldsKey = config.fields.join(",");
   const boostKey = config.boost ? JSON.stringify(config.boost) : "";
 
   const index = useMemo(() => {
+    if (!hasQuery) return null;
     return createSearchIndex(items, config);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, fieldsKey, boostKey, config.searchOptions, config.extractField]);
+  }, [items, fieldsKey, boostKey, config.searchOptions, config.extractField, hasQuery]);
 
   return useMemo(() => {
+    if (!trimmed || !index) return items;
     return searchItems(index, query);
-  }, [index, query]);
+  }, [index, query, items, trimmed]);
 }
 
 /**
