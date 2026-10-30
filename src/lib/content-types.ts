@@ -347,7 +347,6 @@ export interface MediaShape {
   previous_item: string;
   next_item: string;
   position_template: string;
-  back_to_albums: string;
   parent_album: string;
   item_link: string;
   open_photo: string;

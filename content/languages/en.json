@@ -471,7 +471,6 @@
     "previous_item": "Previous item",
     "next_item": "Next item",
     "position_template": "Item {current} of {total}",
-    "back_to_albums": "Back to albums",
     "parent_album": "View parent album",
     "item_link": "Link to this item",
     "open_photo": "View full-size photo",
