@@ -154,7 +154,7 @@ function SocialPreviewSection() {
               key={p}
               type="button"
               onClick={() => setPlatform(p)}
-              className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
+              className={`min-h-11 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
                 platform === p
                   ? "bg-[var(--color-saffron-600)] text-white"
                   : "border border-[var(--color-line-strong)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"

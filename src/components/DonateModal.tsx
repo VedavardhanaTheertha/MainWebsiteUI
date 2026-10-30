@@ -95,7 +95,7 @@ export default function DonateModal() {
           {/* MATERIAL — list */}
           {mode === "material" && (
             <div>
-              <button onClick={() => setMode("scan")} className="flex items-center gap-1 font-body text-action-btn text-[var(--color-text-brand)] mb-4 hover:underline">
+              <button onClick={() => setMode("scan")} className="min-h-11 flex items-center gap-1 font-body text-action-btn text-[var(--color-text-brand)] mb-4 hover:underline">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 {ui.back}
               </button>
@@ -119,7 +119,7 @@ export default function DonateModal() {
           {/* FORM — collect details */}
           {mode === "form" && selectedMaterial && (
             <div>
-              <button onClick={() => setMode("material")} className="flex items-center gap-1 font-body text-action-btn text-[var(--color-text-brand)] mb-4 hover:underline">
+              <button onClick={() => setMode("material")} className="min-h-11 flex items-center gap-1 font-body text-action-btn text-[var(--color-text-brand)] mb-4 hover:underline">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 {ui.back}
               </button>
