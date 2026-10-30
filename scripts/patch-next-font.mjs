@@ -15,6 +15,17 @@ const replacement =
  * extensionless dynamic font URLs (such as /l/font?kit=... for Noto Sans Kannada).
  */
 export function patchNextFont(projectRoot = process.cwd()) {
+  const findFilesPath = path.resolve(
+    projectRoot,
+    "node_modules/next/dist/compiled/@next/font/dist/google/find-font-files-in-css.js"
+  );
+  if (fs.existsSync(findFilesPath)) {
+    const findFilesContent = fs.readFileSync(findFilesPath, "utf8");
+    if (findFilesContent.includes("formatToExtension") || findFilesContent.includes("'woff2'")) {
+      return true;
+    }
+  }
+
   const loaderPath = path.resolve(
     projectRoot,
     "node_modules/next/dist/compiled/@next/font/dist/google/loader.js"

@@ -18,6 +18,7 @@ import YajnaAnnouncement from "@/components/YajnaAnnouncement";
 import DeveloperPreferences from "@/components/DeveloperPreferences";
 import HorizontalScrollSupport from "@/components/HorizontalScrollSupport";
 import BackNavigation from "@/components/BackNavigation";
+import StructuredData from "@/components/StructuredData";
 import { UiSettingsProvider } from "@/context/UiSettingsContext";
 
 const marcellus = Marcellus({
@@ -48,6 +49,16 @@ const notoDevanagari = Noto_Serif_Devanagari({
   display: "swap",
 });
 
+const languageAlternates: Record<string, string> = {
+  ...Object.fromEntries(
+    languages.map(({ code }) => [
+      code,
+      code === defaultLang ? `${siteConfig.productionUrl}/` : `${siteConfig.productionUrl}/?lang=${code}`,
+    ])
+  ),
+  "x-default": siteConfig.productionUrl,
+};
+
 // Non-production environments must never appear in search results, where they
 // would compete with the live site. `indexable` comes from config/site.yml, so
 // this behaviour is changed by editing configuration rather than code.
@@ -63,6 +74,35 @@ export const metadata: Metadata = {
   // Resolves relative page metadata against the intended production origin.
   // Per-route canonicals are normalized from exported paths by the build pipeline.
   metadataBase: new URL(siteConfig.productionUrl),
+  alternates: {
+    canonical: siteConfig.productionUrl,
+    languages: languageAlternates,
+  },
+  openGraph: {
+    type: "website",
+    locale: `${defaultLang}_IN`,
+    alternateLocale: languages
+      .filter(({ code }) => code !== defaultLang)
+      .map(({ code }) => `${code}_IN`),
+    url: siteConfig.productionUrl,
+    siteName: content[defaultLang].site_name,
+    title: content[defaultLang].meta_title,
+    description: content[defaultLang].meta_description,
+    images: [
+      {
+        url: `${siteConfig.productionUrl}/main-logo.png`,
+        width: 1200,
+        height: 630,
+        alt: content[defaultLang].site_name,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: content[defaultLang].meta_title,
+    description: content[defaultLang].meta_description,
+    images: [`${siteConfig.productionUrl}/main-logo.png`],
+  },
   robots: siteConfig.indexable
     ? { index: true, follow: true }
     : { index: false, follow: false, nocache: true },
@@ -97,6 +137,13 @@ export default function RootLayout({
       style={fontStyle}
       className={`${marcellus.variable} ${montserrat.variable} ${notoKannada.variable} ${notoDevanagari.variable}`}
     >
+      <head>
+        <link rel="preconnect" href="https://pub-40778d02c0624406be0340bf0ee4b2b4.r2.dev" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://vedavardhanatheertha.github.io" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://pub-40778d02c0624406be0340bf0ee4b2b4.r2.dev" />
+        <link rel="dns-prefetch" href="https://vedavardhanatheertha.github.io" />
+        <StructuredData />
+      </head>
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">
         <UiSettingsProvider>
           <LanguageProvider>

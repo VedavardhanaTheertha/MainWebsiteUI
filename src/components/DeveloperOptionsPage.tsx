@@ -134,6 +134,66 @@ function HeroExperimentsSection() {
   );
 }
 
+function SocialPreviewSection() {
+  const { tr } = useLang();
+  const [platform, setPlatform] = useState<"whatsapp" | "twitter" | "facebook">("whatsapp");
+
+  return (
+    <fieldset className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper)] p-5">
+      <legend className="px-2 font-semibold text-[var(--color-text-primary)]">
+        Social Media Share Cards (Open Graph / Twitter)
+      </legend>
+      <p className="mb-4 text-sm leading-6 text-[var(--color-text-secondary)]">
+        Live preview of how the website displays when shared on WhatsApp, Twitter/X, and Facebook.
+      </p>
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          {(["whatsapp", "twitter", "facebook"] as const).map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPlatform(p)}
+              className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                platform === p
+                  ? "bg-[var(--color-saffron-600)] text-white"
+                  : "border border-[var(--color-line-strong)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+
+        {/* Card Mockup */}
+        <div className="overflow-hidden rounded-xl border border-[var(--color-line-strong)] bg-[var(--color-paper)] shadow-sm max-w-md">
+          <div className="relative aspect-[1200/630] w-full bg-[#1a1108] flex items-center justify-center p-6 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <span className="font-display text-2xl font-bold text-[#fff8ed]">
+                {tr.site_name}
+              </span>
+              <span className="text-xs text-[var(--color-saffron-400)]">
+                shiroormatha.org
+              </span>
+            </div>
+          </div>
+          <div className="p-3.5 space-y-1 bg-[var(--color-paper)]">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-brand)]">
+              shiroormatha.org
+            </p>
+            <p className="font-semibold text-sm text-[var(--color-text-primary)] line-clamp-1">
+              {tr.meta_title}
+            </p>
+            <p className="text-xs text-[var(--color-text-secondary)] line-clamp-2">
+              {tr.meta_description}
+            </p>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  );
+}
+
 export default function DeveloperOptionsPage() {
   const { tr, setContentMode } = useLang();
   const editor = useUiSettingsEditor();
@@ -199,6 +259,7 @@ export default function DeveloperOptionsPage() {
         </form>
         <LocalContentToggle />
         <HeroExperimentsSection />
+        <SocialPreviewSection />
         <button
           type="button"
           onClick={() => {
