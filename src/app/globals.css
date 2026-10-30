@@ -190,7 +190,6 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--color-line);
   }
 }
-
 /* Hero Aspect-Ratio & Visual Presentation Modes */
 :root[data-hero-aspect="focal"] .home-hero-viewport .content-image-foreground {
   object-position: center 25%;

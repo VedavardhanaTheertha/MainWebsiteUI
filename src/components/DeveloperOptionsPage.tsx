@@ -193,7 +193,6 @@ function SocialPreviewSection() {
     </fieldset>
   );
 }
-
 export default function DeveloperOptionsPage() {
   const { tr, setContentMode } = useLang();
   const editor = useUiSettingsEditor();
