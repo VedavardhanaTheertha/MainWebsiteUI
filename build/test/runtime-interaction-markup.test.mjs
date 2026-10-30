@@ -176,7 +176,7 @@ test("compact-header and desktop utility controls reserve at least 44px touch ta
     };
     visit(source);
     const targeted = file === "MobileHeader" ? controls.slice(0, 2) : controls;
-    assert.equal(targeted.length, file === "MobileHeader" ? 2 : 4);
+    assert.equal(targeted.length, file === "MobileHeader" ? 2 : 3);
     for (const className of targeted) {
       assert.match(className, /min-w-11/);
       assert.match(className, /min-h-11/);

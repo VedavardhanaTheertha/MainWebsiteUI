@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
-import { appendDeveloperNavigation, developerOptionsForEnvironment, headerActionsStorageKey, imageTreatmentStorageKey, pageExtensionsForEnvironment, topSubscribeStorageKey, uiSettingsStorageKey, validateDeveloperOptionsOutput } from "../developer-options.mjs";
+import { appendDeveloperNavigation, developerOptionsForEnvironment, imageTreatmentStorageKey, pageExtensionsForEnvironment, uiSettingsStorageKey, validateDeveloperOptionsOutput } from "../developer-options.mjs";
 import { isPreservedContentField } from "../content-values.mjs";
 import * as schema from "../ui-settings-schema.mjs";
 import { loadUiElements } from "../ui-settings.mjs";
@@ -46,10 +46,6 @@ test("developer controls are local/dev-only and presentation defaults belong onl
     assert.equal(options.enabled, ["local", "dev"].includes(environment));
     assert.equal(Object.hasOwn(options, "defaultImageTreatment"), false);
     assert.equal(options.imageStorageKey, imageTreatmentStorageKey);
-    assert.equal(Object.hasOwn(options, "defaultHeaderActions"), false);
-    assert.equal(options.headerActionsStorageKey, headerActionsStorageKey);
-    assert.equal(Object.hasOwn(options, "defaultTopSubscribe"), false);
-    assert.equal(options.topSubscribeStorageKey, topSubscribeStorageKey);
     assert.equal(options.uiSettingsStorageKey, uiSettingsStorageKey);
   }
 });
@@ -166,7 +162,7 @@ function preferencesFixture({ denied = false } = {}) {
 test("every UI setting has a typed editor definition and localized labels", () => {
   const actual = Object.entries(uiDefaults).flatMap(([group, fields]) => Object.keys(fields).map((key) => `${group}.${key}`));
   const defined = schema.uiFieldDefinitions.map(({ group, key }) => `${group}.${key}`);
-  assert.equal(defined.length, 43);
+  assert.equal(defined.length, 40);
   assert.deepEqual(defined.toSorted(), actual.toSorted());
   assert.equal(new Set(defined).size, defined.length);
   for (const language of ["en", "kn"]) {
@@ -187,7 +183,7 @@ test("runtime UI settings persist all field types, remount initial-state consume
   custom.hero = { autoplay: false, intervalMs: 12000, fadeDurationMs: 0 };
   custom.bhaktiReader = { minSize: 90, initialSize: 110, maxSize: 170, step: 10 };
   custom.browserDefaults.lineageView = "timeline";
-  custom.presentation = { ...custom.presentation, imageTreatment: true, imageBackedTiles: true, tileOverlayOpacity: 40, headerActions: true, topSubscribe: true };
+  custom.presentation = { ...custom.presentation, imageTreatment: true, imageBackedTiles: true, tileOverlayOpacity: 40 };
   assert.equal(fixture.preferences.applyUiSettings(custom), true);
   assert.equal(fixture.stored.get(uiSettingsStorageKey), JSON.stringify(schema.validateUiElements(custom)));
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 3);
@@ -204,7 +200,7 @@ test("runtime UI settings persist all field types, remount initial-state consume
 test("legacy production flags override file values, and applying settings clears their precedence", () => {
   const fixture = preferencesFixture();
   for (const [key, setting] of [
-    [imageTreatmentStorageKey, "imageTreatment"], [headerActionsStorageKey, "headerActions"], [topSubscribeStorageKey, "topSubscribe"],
+    [imageTreatmentStorageKey, "imageTreatment"],
   ]) {
     fixture.stored.set(key, "on");
     assert.equal(fixture.render().settings.presentationSettings[setting], true);
@@ -292,7 +288,7 @@ test("tile corner radius preserves the default, supports square corners, and val
 
 test("layout comparisons are independent default-off flags with strict validation and persistence", () => {
   const keys = Object.keys(uiDefaults.layout);
-  assert.equal(keys.length, 8);
+  assert.equal(keys.length, 7);
   assert.equal(Object.values(uiDefaults.layout).every((value) => value === false), true);
   for (const key of keys) {
     const fixture = preferencesFixture();
@@ -314,10 +310,10 @@ test("layout comparisons are independent default-off flags with strict validatio
   assert.equal(migrated.presentation.imageBackedTiles, true);
   assert.equal(Object.hasOwn(previous, "layout"), false);
   const priorLayout = structuredClone(uiDefaults);
-  priorLayout.layout.adaptiveHero = true;
+  priorLayout.layout.featuredTiles = true;
   delete priorLayout.layout.centeredCarousel;
   assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.centeredCarousel, false);
-  assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.adaptiveHero, true);
+  assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.featuredTiles, true);
   assert.throws(() => schema.validateUiElements(priorLayout), schema.UiSettingsError);
   assert.throws(() => schema.validateUiPreferences({ ...uiDefaults, layout: {} }, uiDefaults), schema.UiSettingsError);
   assert.throws(() => schema.validateUiPreferences({ ...uiDefaults, layout: { ...uiDefaults.layout, unknown: true } }, uiDefaults), schema.UiSettingsError);
@@ -331,7 +327,7 @@ test("denied browser storage retains UI choices in memory and reports non-persis
   assert.equal(fixture.preferences.applyUiSettings(custom), false);
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 2);
   assert.equal(fixture.render().persistent, false);
-  assert.equal(fixture.warnings.length, 4);
+  assert.equal(fixture.warnings.length, 2);
 });
 
 test("the root preference applier gates images without mounting a global copy toolbar", () => {
@@ -426,23 +422,21 @@ function pageFixture(defaultMode = "real", persistent = true) {
 
 test("the editor covers every setting, keeps edits as drafts and applies typed values only on submit", () => {
   const page = pageFixture();
-  assert.equal(page.controls().filter((node) => node.props.name).length, 43);
+  assert.equal(page.controls().filter((node) => node.props.name).length, 40);
   page.field("collections.initialVisible").props.onChange({ target: { value: "3", valueAsNumber: 3 } });
   page.field("browserDefaults.lineageView").props.onChange({ target: { value: "timeline" } });
-  page.field("presentation.headerActions").props.onChange({ target: { checked: true } });
   page.field("presentation.imageBackedTiles").props.onChange({ target: { checked: true } });
   page.field("presentation.tileOverlayOpacity").props.onChange({ target: { value: "75", valueAsNumber: 75 } });
-  page.field("layout.adaptiveHero").props.onChange({ target: { checked: true } });
+  page.field("layout.featuredTiles").props.onChange({ target: { checked: true } });
   page.field("presentation.tileCornerRadius").props.onChange({ target: { value: "0", valueAsNumber: 0 } });
   assert.equal(page.applied, undefined);
   assert.equal(page.reloads, 0);
   page.submit();
   assert.equal(page.applied.collections.initialVisible, 3);
   assert.equal(page.applied.browserDefaults.lineageView, "timeline");
-  assert.equal(page.applied.presentation.headerActions, true);
   assert.equal(page.applied.presentation.imageBackedTiles, true);
   assert.equal(page.applied.presentation.tileOverlayOpacity, 75);
-  assert.equal(page.applied.layout.adaptiveHero, true);
+  assert.equal(page.applied.layout.featuredTiles, true);
   assert.equal(page.applied.presentation.tileCornerRadius, 0);
   assert.equal(page.reloads, 1);
 });
@@ -607,13 +601,11 @@ test("the standalone hero applies validated UI overrides for fitting, fades, int
   const custom = structuredClone(uiDefaults);
   custom.presentation.imageTreatment = true;
   custom.hero = { autoplay: true, intervalMs: 1234, fadeDurationMs: 42 };
-  custom.layout.adaptiveHero = true;
   custom.presentation.tileCornerRadius = 0;
   const hero = standaloneHero(null, false, JSON.stringify(custom), false);
   assert.equal(hero.dataset.imageTreatment, "on");
   assert.equal(hero.styles.get("--hero-fade-duration"), "42ms");
   assert.equal(hero.interval, 1234);
-  assert.equal(hero.dataset.adaptiveHero, "on");
   assert.equal(hero.styles.get("--tile-corner-radius"), "0px");
   custom.presentation.tileCornerRadius = 48;
   custom.hero.autoplay = false;

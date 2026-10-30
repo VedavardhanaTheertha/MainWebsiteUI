@@ -73,8 +73,8 @@ without changing the selected language. If storage is unavailable, Apply and Res
 apply settings in memory and show a warning instead of reloading away those changes.
 
 `build/developer-options.mjs` owns the technical route and storage keys;
-`settings/ui_elements.json` owns all UI defaults, including the image treatment,
-image-backed tiles, desktop header shortcuts, and top Subscribe visibility (all initially false).
+`settings/ui_elements.json` owns all UI defaults, including the image treatment and
+image-backed tiles (both initially false).
 Copy-preview defaults remain environment-owned.
 The page uses `page.preview.tsx`; Next configuration recognizes the `preview.tsx`
 extension only in local/dev while retaining all standard page extensions.
@@ -101,10 +101,9 @@ validator accepts older complete configurations missing `imageBackedTiles`,
 from current defaults without losing existing choices. A present but incomplete
 layout group is invalid, except that older complete groups may omit the later
 `centeredCarousel` flag and inherit its configured default.
-Build-time settings remain strict. Legacy `site-image-treatment`,
-`site-header-actions`, and `site-top-subscribe` values of `on` or `off` override the
-corresponding presentation fields; absent or other values inherit the configuration.
-Apply and Reset clear their precedence with `default`. Legacy-only changes do not
+Build-time settings remain strict. Legacy `site-image-treatment` values of `on` or `off` override the
+corresponding presentation field; absent or other values inherit the configuration.
+Apply and Reset clear its precedence with `default`. Legacy-only changes do not
 remount the site. The root image subscriber updates `data-image-treatment` after
 hydration. The standalone generated hero embeds the same validator and defaults,
 applies image/autoplay/interval/fade settings, and follows cross-document storage
@@ -114,14 +113,12 @@ environment variables, secrets, or an authorization mechanism.
 
 ### Optional layout comparisons
 
-Eight independent booleans in `settings/ui_elements.json`'s `layout` group
+Seven independent booleans in `settings/ui_elements.json`'s `layout` group
 normalize to `layoutSettings`; all default to false. The root preference
 subscriber sets corresponding `data-*` attributes after hydration. Experiment CSS
 is loaded after the baseline stylesheet and affects only explicitly marked
 components. Existing layouts and homepage shortcut order remain the default.
 
-- `adaptiveHero`: viewport-sensitive, clamped hero height, including the generated
-  standalone hero. Its title stays over the image without a background panel.
 - `featuredTiles`: a larger first configured item in the featured homepage grid,
   without changing content order or collection grids.
 - `sectionHeaders`: consistent homepage headings and introductions. Mixed

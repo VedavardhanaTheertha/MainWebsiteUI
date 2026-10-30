@@ -101,8 +101,7 @@ selectors. Edit these as drafts, then use **Apply and reload** to validate and u
 them throughout the site, including initial pagination, reader size, sorting, and
 filter/view defaults.
 
-The image treatment, image-backed tiles, desktop header shortcuts (Panchanga, Scan QR, Join WhatsApp),
-and top YouTube Subscribe controls default to false in `presentation` in that JSON
+The image treatment and image-backed tiles default to false in `presentation` in that JSON
 file. Copy-preview defaults remain defined by the environment, not UI settings.
 With image treatment off, images cover their frames, potentially cropping edges.
 Turning it on shows
@@ -131,8 +130,8 @@ opacity (%)** controls the tile background from transparent (0) to opaque (100),
 defaulting to 40 in `presentation.tileOverlayOpacity`. Apply and reload to save
 it. Text shadows aid readability, but contrast depends on the photograph and opacity.
 
-The **Layout experiments** group contains eight independent, default-off checkboxes:
-adaptive hero height, featured homepage tiles, consistent section headers,
+The **Layout experiments** group contains seven independent, default-off checkboxes:
+featured homepage tiles, consistent section headers,
 standardized widths/spacing, compact seva/library results, tile information
 placement, carousel navigation, and centered-tile emphasis. Apply and reload after changing a comparison;
 turn it off to compare with the existing layout. The homepage shortcut order does
@@ -194,10 +193,10 @@ Partial objects, unknown fields, invalid ranges, and invalid reader-size
 relationships are rejected with a console warning and configured-default fallback.
 Remove that key and reload to restore configured defaults.
 
-For individual presentation flags, the compatibility keys
-`site-image-treatment`, `site-header-actions`, and `site-top-subscribe` accept `on`
-or `off` and take precedence over the JSON configuration. Apply or Reset on the
-Developer page replaces these with `default` so stale flags cannot defeat its
+For individual presentation flags, the compatibility key
+`site-image-treatment` accepts `on`
+or `off` and takes precedence over the JSON configuration. Apply or Reset on the
+Developer page replaces it with `default` so stale flags cannot defeat its
 choices. For example, to enable only the image effect in production:
 
 ```js

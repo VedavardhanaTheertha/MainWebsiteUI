@@ -209,11 +209,9 @@ test("homepage experiments preserve hero defaults and scope featured composition
   const css = read("src/app/home-experiments.css");
   const hero = read("src/components/home/HeroCarousel.tsx");
   assert.match(hero, /home-hero-viewport relative h-\[462px\] lg:h-\[600px\]/);
-  assert.match(css, /data-adaptive-hero="on"[\s\S]*clamp\(20rem, 65svh, 28\.875rem\)/);
-  assert.match(css, /clamp\(22\.5rem, 70svh, 37\.5rem\)/);
-  assert.doesNotMatch(css, /hero-text-overlay|data-image-backed-tiles/);
+  assert.doesNotMatch(css, /hero-text-overlay|data-image-backed-tiles|data-adaptive-hero/);
   for (const selector of css.matchAll(/([^{}]+)\{/g)) {
-    if (!selector[1].trim().startsWith("@")) assert.match(selector[1], /:root\[data-(?:adaptive-hero|featured-tiles|section-headers|carousel-navigation)="on"\]/);
+    if (!selector[1].trim().startsWith("@")) assert.match(selector[1], /:root\[data-(?:featured-tiles|section-headers|carousel-navigation)="on"\]/);
   }
   for (const selector of css.matchAll(/([^{}]*data-featured-tiles[^{}]*)\{/g)) {
     assert.match(selector[1], /\.home-featured-layout \.layout-tile-grid/);

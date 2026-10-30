@@ -9,6 +9,131 @@ import { UiSettingsError, validateUiElements } from "../../build/ui-settings-sch
 import type { UiElements, UiValue } from "@/lib/ui-settings-types";
 import LocalContentToggle from "@/components/LocalContentToggle";
 
+interface HeroExperiments {
+  aspectMode: "focal" | "dual" | "fluid";
+  indicators: boolean;
+  animation: "kenburns" | "fade";
+  scrim: "ambient" | "minimal";
+}
+
+const defaultExperiments: HeroExperiments = {
+  aspectMode: "focal",
+  indicators: true,
+  animation: "kenburns",
+  scrim: "ambient",
+};
+
+function HeroExperimentsSection() {
+  const [settings, setSettings] = useState<HeroExperiments>(() => {
+    if (typeof window === "undefined") return defaultExperiments;
+    try {
+      const raw = window.localStorage.getItem("site-hero-experiments");
+      return raw ? { ...defaultExperiments, ...JSON.parse(raw) } : defaultExperiments;
+    } catch {
+      return defaultExperiments;
+    }
+  });
+
+  const update = (partial: Partial<HeroExperiments>) => {
+    const next = { ...settings, ...partial };
+    setSettings(next);
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem("site-hero-experiments", JSON.stringify(next));
+        window.dispatchEvent(new Event("storage"));
+      } catch {}
+    }
+  };
+
+  const baseId = useId();
+
+  return (
+    <fieldset className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper)] p-5">
+      <legend className="px-2 font-semibold text-[var(--color-text-primary)]">
+        Hero Section Experiments &amp; Aspect Ratio Modes
+      </legend>
+      <p className="mb-4 text-sm leading-6 text-[var(--color-text-secondary)]">
+        Test all 3 aspect-ratio approaches and visual enhancements for the homepage Hero carousel across portrait and landscape screens.
+      </p>
+
+      <div className="space-y-6">
+        <div>
+          <label htmlFor={`${baseId}-aspect`} className="block font-semibold text-[var(--color-text-primary)]">
+            Aspect Ratio &amp; Cropping Approach
+          </label>
+          <select
+            id={`${baseId}-aspect`}
+            value={settings.aspectMode}
+            onChange={(e) => update({ aspectMode: e.target.value as HeroExperiments["aspectMode"] })}
+            className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--color-line-strong)] bg-[var(--color-paper)] px-3 py-2 text-ui text-[var(--color-text-primary)]"
+          >
+            <option value="focal">
+              Approach 2: Focal-Point Controlled (Anchors faces/deities at 25% vertical focal point)
+            </option>
+            <option value="dual">
+              Approach 1: Art-Directed Dual View (Portrait crop on mobile, Wide panoramic on desktop)
+            </option>
+            <option value="fluid">
+              Approach 3: Fluid Aspect Ratio (aspect-[4/3] mobile to aspect-[21/9] desktop)
+            </option>
+          </select>
+          <p className="mt-1.5 text-caption text-[var(--color-text-secondary)]">
+            {settings.aspectMode === "focal" && "Keeps standard hero height while ensuring top of idols/faces are never cut off during horizontal cropping."}
+            {settings.aspectMode === "dual" && "Switches between portrait-optimized framing on phones and wide panoramic framing on desktop."}
+            {settings.aspectMode === "fluid" && "Adapts container ratio smoothly from 4:3 (phones) to 16:9 and 21:9 (desktop), avoiding excessive vertical space."}
+          </p>
+        </div>
+
+        <div className="flex min-h-11 items-center justify-between gap-4 border-t border-[var(--color-line)] pt-4">
+          <label htmlFor={`${baseId}-indicators`} className="cursor-pointer font-semibold text-[var(--color-text-primary)]">
+            <span>Slide Progress Indicator Pills</span>
+            <span className="block text-caption font-normal text-[var(--color-text-secondary)]">
+              Displays 6 discreet progress pills at the bottom with saffron active state and click-to-jump.
+            </span>
+          </label>
+          <input
+            id={`${baseId}-indicators`}
+            type="checkbox"
+            checked={settings.indicators}
+            onChange={(e) => update({ indicators: e.target.checked })}
+            className="size-5 shrink-0 accent-[var(--color-saffron-600)] cursor-pointer"
+          />
+        </div>
+
+        <div className="border-t border-[var(--color-line)] pt-4">
+          <label htmlFor={`${baseId}-animation`} className="block font-semibold text-[var(--color-text-primary)]">
+            Motion &amp; Transition Style
+          </label>
+          <select
+            id={`${baseId}-animation`}
+            value={settings.animation}
+            onChange={(e) => update({ animation: e.target.value as HeroExperiments["animation"] })}
+            className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--color-line-strong)] bg-[var(--color-paper)] px-3 py-2 text-ui text-[var(--color-text-primary)]"
+          >
+            <option value="kenburns">Cinematic Ken Burns (Subtle slow zoom + cross-fade)</option>
+            <option value="fade">Classic Smooth Cross-Fade</option>
+          </select>
+        </div>
+
+        <div className="border-t border-[var(--color-line)] pt-4">
+          <label htmlFor={`${baseId}-scrim`} className="block font-semibold text-[var(--color-text-primary)]">
+            Text Scrim &amp; Contrast Overlay
+          </label>
+          <select
+            id={`${baseId}-scrim`}
+            value={settings.scrim}
+            onChange={(e) => update({ scrim: e.target.value as HeroExperiments["scrim"] })}
+            className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--color-line-strong)] bg-[var(--color-paper)] px-3 py-2 text-ui text-[var(--color-text-primary)]"
+          >
+            <option value="ambient">Warm Temple Ambient Gradient (Deep darkroom saffron gradient)</option>
+            <option value="minimal">Minimal Scrim (Subtle text shadow only)</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+  );
+}
+
 export default function DeveloperOptionsPage() {
   const { tr, setContentMode } = useLang();
   const editor = useUiSettingsEditor();
@@ -73,6 +198,7 @@ export default function DeveloperOptionsPage() {
           <button type="submit" className="min-h-11 rounded-full bg-[var(--color-saffron-600)] px-5 py-2 font-semibold text-white">{copy.apply}</button>
         </form>
         <LocalContentToggle />
+        <HeroExperimentsSection />
         <button
           type="button"
           onClick={() => {

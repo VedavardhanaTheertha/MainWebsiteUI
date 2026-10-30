@@ -24,5 +24,20 @@ export default function DeveloperPreferences() {
       document.documentElement.dataset[name] = enabled ? "on" : "off";
     }
   }, [layoutSettings]);
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const apply = () => {
+      try {
+        const raw = window.localStorage.getItem("site-hero-experiments");
+        const exp = raw ? JSON.parse(raw) : null;
+        document.documentElement.dataset.heroAspect = exp?.aspectMode || "focal";
+        document.documentElement.dataset.heroScrim = exp?.scrim || "ambient";
+        document.documentElement.dataset.heroIndicators = exp?.indicators === false ? "off" : "on";
+      } catch {}
+    };
+    apply();
+    window.addEventListener("storage", apply);
+    return () => window.removeEventListener("storage", apply);
+  }, []);
   return null;
 }
