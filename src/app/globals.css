@@ -168,6 +168,28 @@ h1, h2, h3, h4, h5, h6 {
   text-shadow: 0 1px 4px rgb(0 0 0 / 70%);
 }
 
+/* Skeleton Shimmer Loading States */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--color-line) 0%, rgba(255, 255, 255, 0.5) 50%, var(--color-line) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    background: var(--color-line);
+  }
+}
 /* Hero Aspect-Ratio & Visual Presentation Modes */
 :root[data-hero-aspect="focal"] .home-hero-viewport .content-image-foreground {
   object-position: center 25%;

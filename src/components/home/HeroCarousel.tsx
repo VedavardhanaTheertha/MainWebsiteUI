@@ -49,6 +49,7 @@ export default function HeroCarousel() {
             alt=""
             fill
             priority={k === 0}
+            loading={k === 0 ? "eager" : "lazy"}
             sizes="100vw"
           />
         </div>

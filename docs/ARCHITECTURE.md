@@ -256,7 +256,11 @@ its scroll lock.
 
 Learn and Panchanga use server route wrappers for content-owned metadata and client
 components for language-aware interactions. Each Learn subject supplies its own
-title and description rather than inheriting homepage metadata.
+title and description rather than inheriting homepage metadata. Root layout
+configures canonical and bilingual `hreflang` alternate URLs, Open Graph and Twitter
+card metadata, preconnects to remote image CDN origins, and injects Schema.org
+JSON-LD structured data (`HinduTemple`, `Organization`, `WebSite`) via
+`src/components/StructuredData.tsx`.
 
 App and generated pages (all routes except the home page) provide top back navigation
 via `src/components/BackNavigation.tsx` mounted in the root layout. It provides a
@@ -378,7 +382,7 @@ not generate synthetic copies.
 
 ## 7. Build and deployment
 
-`package.json` declares dependencies and `package-lock.json` records their resolved
+`package.json` declares dependencies as an ES module (`"type": "module"`) and `package-lock.json` records their resolved
 versions for `npm ci`. Next.js and its ESLint configuration use matching stable
 versions.
 

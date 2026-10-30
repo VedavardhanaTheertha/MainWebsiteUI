@@ -95,11 +95,12 @@ Open the final navigation entry, **Developer options**, in local or development
 builds (`/developer-options`, under the configured base path). Copy-preview controls
 live on this page rather than in a global toolbar. The copy checkbox is checked for
 placeholder copy and unchecked for real copy (local defaults to unchecked; development
-defaults to checked) and changes immediately. All 43 supported settings from
+defaults to checked) and changes immediately. All 40 supported settings from
 `settings/ui_elements.json` also appear as grouped checkboxes, numeric inputs, and
 selectors. Edit these as drafts, then use **Apply and reload** to validate and use
 them throughout the site, including initial pagination, reader size, sorting, and
-filter/view defaults.
+filter/view defaults. The page also provides an interactive social share card previewer
+to inspect Open Graph and Twitter cards across WhatsApp, Twitter/X, and Facebook.
 
 The image treatment and image-backed tiles default to false in `presentation` in that JSON
 file. Copy-preview defaults remain defined by the environment, not UI settings.
