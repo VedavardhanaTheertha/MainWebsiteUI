@@ -109,10 +109,14 @@ export default function HeroCarousel() {
             aria-selected={idx === current}
             aria-label={`${tr.media?.photo_label ?? "Slide"} ${idx + 1}`}
             onClick={() => goToSlide(idx)}
-            className={`pointer-events-auto h-2 transition-all rounded-full ${
-              idx === current ? "w-6 bg-[var(--color-saffron-500)]" : "w-2 bg-white/40 hover:bg-white/75"
-            }`}
-          />
+            className="pointer-events-auto flex min-h-11 items-center px-1 focus-visible:outline-2 focus-visible:outline-white"
+          >
+            <span
+              className={`block h-2 transition-all rounded-full ${
+                idx === current ? "w-6 bg-[var(--color-saffron-500)]" : "w-2 bg-white/40 hover:bg-white/75"
+              }`}
+            />
+          </button>
         ))}
       </div>
     )}
