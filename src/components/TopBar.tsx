@@ -5,18 +5,8 @@ import { useLang } from "@/context/LanguageContext";
 import type { Lang } from "@/gen/content";
 import { openDonateModal } from "@/hooks/useDonateModal";
 import { actionDestinations } from "@/gen/settings/actions";
-import { useUiSettings } from "@/context/UiSettingsContext";
 
 const actions = [
-  {
-    id: "subscribe",
-    svg: (
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
-        <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/>
-      </svg>
-    ),
-  },
   {
     id: "donate",
     svg: (
@@ -40,7 +30,6 @@ const actions = [
 
 export default function TopBar() {
   const { lang, setLang, languages, tr } = useLang();
-  const { presentationSettings } = useUiSettings();
   const copy = tr.public_actions;
 
   return (
@@ -76,14 +65,6 @@ export default function TopBar() {
 
         {/* Right — action icons with tooltips */}
         <div className="flex items-center gap-4 justify-end">
-          {/* YouTube — Subscribe */}
-          {presentationSettings.topSubscribe && actions.filter(a => a.id === "subscribe").map(({ id, svg }) => (
-            <a key={id} data-top-subscribe href={actionDestinations.subscribe} target="_blank" rel="noopener noreferrer" aria-label={copy.subscribe_label}
-              className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
-              {svg}
-              <span className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap bg-[#1a1108] text-[var(--color-text-brand)] text-micro font-body px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[9999] border border-[var(--color-saffron-600)]/20">{copy.subscribe_label}</span>
-            </a>
-          ))}
           {/* Donate */}
           <button onClick={openDonateModal} aria-label={copy.donate_label}
             className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">

@@ -22,20 +22,17 @@ export default function HeroCarousel() {
   const { href, images } = hero;
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const current = images.length ? i % images.length : 0;
 
   useEffect(() => {
-    if (reducedMotion || paused || hovered || focused || dialogsOpen || !heroSettings.autoplay || images.length <= 1) return undefined;
+    if (reducedMotion || paused || focused || dialogsOpen || !heroSettings.autoplay || images.length <= 1) return undefined;
     const t = setInterval(() => setI((p) => (p + 1) % images.length), heroSettings.intervalMs);
     return () => clearInterval(t);
-  }, [images.length, reducedMotion, paused, hovered, focused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
+  }, [images.length, reducedMotion, paused, focused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
 
   return (
     <div className="layout-wide home-hero relative"
-      onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true); }}
-      onPointerLeave={() => setHovered(false)}
       onFocus={() => setFocused(true)}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
     >
@@ -61,12 +58,14 @@ export default function HeroCarousel() {
 
       <div className={`hero-text-overlay absolute inset-x-0 bottom-0 px-6 pb-6 pt-12 text-center ${heroSettings.autoplay && images.length > 1 && !reducedMotion ? "pr-20" : ""}`}>
         <h1
-          className="font-display text-[26px] lg:text-4xl leading-tight whitespace-pre-line"
+          className="font-display text-[26px] lg:text-4xl leading-tight whitespace-pre-line text-[#fff8ed] drop-shadow-md"
         >
           {title}
         </h1>
       </div>
     </Link>
+
+    {/* Accessible Pause / Play Motion Control */}
     {heroSettings.autoplay && images.length > 1 && !reducedMotion && (
       <button type="button" onClick={() => setPaused((value) => !value)}
         aria-pressed={paused}
@@ -75,6 +74,29 @@ export default function HeroCarousel() {
       >
         {paused ? <Play aria-hidden="true" size={20} /> : <Pause aria-hidden="true" size={20} />}
       </button>
+    )}
+
+    {/* Slide Indicator Progress Pills (Interactive, jump-to-slide, hideable in Dev Options) */}
+    {!reducedMotion && images.length > 1 && (
+      <div
+        role="tablist"
+        aria-label="Hero slides"
+        className="hero-slide-indicators pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 backdrop-blur-xs border border-white/10"
+      >
+        {images.map((_, idx) => (
+          <button
+            key={idx}
+            type="button"
+            role="tab"
+            aria-selected={idx === current}
+            aria-label={`${tr.media?.photo_label ?? "Slide"} ${idx + 1}`}
+            onClick={() => setI(idx)}
+            className={`pointer-events-auto h-2 transition-all rounded-full ${
+              idx === current ? "w-6 bg-[var(--color-saffron-500)]" : "w-2 bg-white/40 hover:bg-white/75"
+            }`}
+          />
+        ))}
+      </div>
     )}
     </div>
   );

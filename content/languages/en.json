@@ -85,7 +85,6 @@
       "layout": "Independent comparisons, disabled by default. Apply and reload to compare layouts; the homepage shortcut order stays unchanged."
     },
     "fields": {
-      "layout.adaptiveHero": { "label": "Adaptive hero height", "description": "Fit the hero height to the viewport within readable minimum and maximum sizes. The title remains over the image without a background panel." },
       "layout.featuredTiles": { "label": "Featured homepage tile layout", "description": "Compare a larger lead tile with smaller supporting tiles in the featured homepage grid." },
       "layout.sectionHeaders": { "label": "Consistent homepage section headers", "description": "Show aligned section headings and short introductions. Links are shown only for genuine collection destinations." },
       "layout.layoutProfiles": { "label": "Standardized page widths and spacing", "description": "Compare wide visual, contained collection, and narrow reading layouts." },
@@ -137,14 +136,6 @@
       "presentation.tileCornerRadius": {
         "label": "Tile and hero corner radius (px)",
         "description": "Adjust card corners and the hero's bottom corners from 0 to 48 pixels. Use 0 for square corners; the default is 20. The hero's top corners stay square. Shortcut icons, dialogs, and full-screen images are unchanged."
-      },
-      "presentation.headerActions": {
-        "label": "Show header shortcuts",
-        "description": "Show Panchanga, Scan QR, and Join WhatsApp together in the desktop header."
-      },
-      "presentation.topSubscribe": {
-        "label": "Show YouTube Subscribe button",
-        "description": "Show the Subscribe button linking to YouTube in the top bar. Donate, Volunteer, and other YouTube links are unchanged."
       }
     },
     "choices": {

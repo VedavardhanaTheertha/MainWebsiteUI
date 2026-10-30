@@ -710,7 +710,6 @@ function writeHeroImages(hero, content, lang, basePath) {
         const legacy = readPreference(${JSON.stringify(imageTreatmentStorageKey)});
         const enabled = legacy === "on" || legacy !== "off" && settings.presentationSettings.imageTreatment;
         document.documentElement.dataset.imageTreatment = enabled ? "on" : "off";
-        document.documentElement.dataset.adaptiveHero = settings.layoutSettings.adaptiveHero ? "on" : "off";
         document.documentElement.style.setProperty("--tile-corner-radius", settings.presentationSettings.tileCornerRadius + "px");
         document.documentElement.style.setProperty("--hero-fade-duration", settings.heroSettings.fadeDurationMs + "ms");
       };

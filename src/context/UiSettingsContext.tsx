@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { uiElementDefaults } from "@/gen/settings/ui-elements";
-import { applyUiSettings, uiPreferences, imagePreference, headerPreference, subscribePreference } from "@/lib/ui-settings-preferences";
+import { applyUiSettings, uiPreferences, imagePreference } from "@/lib/ui-settings-preferences";
 import { parseUiSettings, validateUiPreferences } from "../../build/ui-settings-schema.mjs";
 import type { UiElements, UiSettings } from "@/lib/ui-settings-types";
 
@@ -19,8 +19,6 @@ const UiSettingsContext = createContext<UiSettingsState | null>(null);
 export function UiSettingsProvider({ children }: { children: ReactNode }) {
   const snapshot = useSyncExternalStore(uiPreferences.subscribe, uiPreferences.getSnapshot, uiPreferences.getServerSnapshot);
   const image = useSyncExternalStore(imagePreference.subscribe, imagePreference.getSnapshot, imagePreference.getServerSnapshot);
-  const header = useSyncExternalStore(headerPreference.subscribe, headerPreference.getSnapshot, headerPreference.getServerSnapshot);
-  const subscribe = useSyncExternalStore(subscribePreference.subscribe, subscribePreference.getSnapshot, subscribePreference.getServerSnapshot);
   const base = useMemo(() => {
     const values = validateUiPreferences(JSON.parse(snapshot), uiElementDefaults);
     return { values, settings: parseUiSettings(values) };
@@ -31,17 +29,15 @@ export function UiSettingsProvider({ children }: { children: ReactNode }) {
     settings.presentationSettings = {
       ...settings.presentationSettings,
       imageTreatment: resolved(image, settings.presentationSettings.imageTreatment),
-      headerActions: resolved(header, settings.presentationSettings.headerActions),
-      topSubscribe: resolved(subscribe, settings.presentationSettings.topSubscribe),
     };
     return {
       settings,
       values: { ...base.values, presentation: { ...settings.presentationSettings } },
       apply: applyUiSettings,
       reset: () => applyUiSettings(uiElementDefaults),
-      persistent: [uiPreferences, imagePreference, headerPreference, subscribePreference].every((store) => store.isPersistent()),
+      persistent: [uiPreferences, imagePreference].every((store) => store.isPersistent()),
     };
-  }, [base, image, header, subscribe]);
+  }, [base, image]);
   return <UiSettingsContext.Provider key={snapshot} value={state}>{children}</UiSettingsContext.Provider>;
 }
 

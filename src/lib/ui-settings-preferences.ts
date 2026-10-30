@@ -29,12 +29,10 @@ export const uiPreferences = createPreferenceStore(
   developerOptions.uiSettingsStorageKey, JSON.stringify(uiElementDefaults), validSettings,
 );
 export const imagePreference = flag(developerOptions.imageStorageKey);
-export const headerPreference = flag(developerOptions.headerActionsStorageKey);
-export const subscribePreference = flag(developerOptions.topSubscribeStorageKey);
 
 export function applyUiSettings(value: UiElements) {
   const validated = validateUiElements(value);
   uiPreferences.setValue(JSON.stringify(validated));
-  for (const store of [imagePreference, headerPreference, subscribePreference]) store.setValue("default");
-  return [uiPreferences, imagePreference, headerPreference, subscribePreference].every((store) => store.isPersistent());
+  imagePreference.setValue("default");
+  return [uiPreferences, imagePreference].every((store) => store.isPersistent());
 }

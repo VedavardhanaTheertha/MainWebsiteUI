@@ -111,7 +111,7 @@ async function mountComponent(file, options = {}) {
       if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({
         heroSettings: options.hero ?? heroDefaults,
         interactionSettings: options.interaction ?? { dropdownCloseDelayMs: 120 },
-      }), presentationSettings: { imageTreatment: false, headerActions: options.headerActionsEnabled ?? false, topSubscribe: options.topSubscribeEnabled ?? false } }) };
+      }), presentationSettings: { imageTreatment: false } }) };
       if (name === "@/gen/settings/ui-elements") return {
         heroSettings: options.hero ?? heroDefaults,
         interactionSettings: options.interaction ?? { dropdownCloseDelayMs: 120 },
@@ -228,23 +228,10 @@ test("desktop dropdown uses the configured close delay and cleans up pending tim
   assert.equal(header.timers.size, 0);
 });
 
-test("desktop shortcuts are hidden by default and appear together without changing their actions", async () => {
-  const options = { headerActionsEnabled: false, onOpenQR: () => opened++ };
-  let opened = 0;
-  const header = await mountComponent("../../src/components/SiteHeader.tsx", options);
-  const shortcuts = () => findNode(header.render(), (node) => node.props?.["data-header-actions"]);
-  assert.equal(shortcuts(), undefined);
-  options.headerActionsEnabled = true;
-  const group = shortcuts();
-  assert.equal(group.props.children.length, 3);
-  assert.equal(findNode(group, (node) => node.props?.href === "/panchanga").type, "next/link");
-  const whatsapp = findNode(group, (node) => node.type === "a");
-  assert.equal(whatsapp.props.href, "https://whatsapp.com/channel/example");
-  assert.equal(whatsapp.props.rel, "noopener noreferrer");
-  findNode(group, (node) => node.type === "button").props.onClick();
-  assert.equal(opened, 1);
-  options.headerActionsEnabled = false;
-  assert.equal(shortcuts(), undefined);
+test("desktop shortcuts and actions are removed from header", async () => {
+  const header = await mountComponent("../../src/components/SiteHeader.tsx", {});
+  const shortcuts = findNode(header.render(), (node) => node.props?.["data-header-actions"]);
+  assert.equal(shortcuts, undefined);
   header.cleanup();
 });
 
@@ -268,21 +255,15 @@ test("announcement honors delay, page eligibility, and disabled state", async ()
   }
 });
 
-test("top Subscribe is independently hidden by default while Donate and Volunteer remain available", async () => {
+test("top bar renders Donate and Volunteer without a Subscribe button", async () => {
   let donations = 0;
-  const options = { topSubscribeEnabled: false, onDonate: () => donations++ };
+  const options = { onDonate: () => donations++ };
   const bar = await mountComponent("../../src/components/TopBar.tsx", options);
-  const subscribe = () => findNode(bar.render(), (node) => node.props?.["data-top-subscribe"]);
-  assert.equal(subscribe(), undefined);
+  const subscribe = findNode(bar.render(), (node) => node.props?.["data-top-subscribe"]);
+  assert.equal(subscribe, undefined);
   assert.ok(findNode(bar.render(), (node) => node.props?.href === "https://volunteer.example.org/"));
   findNode(bar.render(), (node) => node.type === "button" && node.props?.["aria-label"] === authoredCopy.public_actions.donate_label).props.onClick();
   assert.equal(donations, 1);
-  options.topSubscribeEnabled = true;
-  assert.equal(subscribe().props.href, "https://youtube.example.org/channel");
-  assert.equal(subscribe().props.rel, "noopener noreferrer");
-  options.topSubscribeEnabled = false;
-  assert.equal(subscribe(), undefined);
-  assert.ok(findNode(bar.render(), (node) => node.props?.href === "https://volunteer.example.org/"));
   bar.cleanup();
 });
 

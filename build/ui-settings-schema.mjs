@@ -22,10 +22,10 @@ export const uiFieldDefinitions = [
   choice("browserDefaults", "eventsPastSort", ["earliest", "latest"]),
   choice("browserDefaults", "albumsSort", ["newest", "oldest"]),
   ...["dropdownCloseDelayMs", "modalResetDelayMs", "searchPreloadDelayMs"].map((key) => number("interaction", key, 0, timerMaximum)),
-  ...["imageTreatment", "imageBackedTiles", "headerActions", "topSubscribe"].map((key) => flag("presentation", key)),
+  ...["imageTreatment", "imageBackedTiles"].map((key) => flag("presentation", key)),
   number("presentation", "tileOverlayOpacity", 0, 100),
   number("presentation", "tileCornerRadius", 0, 48),
-  ...["adaptiveHero", "featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation", "centeredCarousel"].map((key) => flag("layout", key)),
+  ...["featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation", "centeredCarousel"].map((key) => flag("layout", key)),
 ];
 
 export class UiSettingsError extends Error {}

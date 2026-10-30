@@ -19,8 +19,8 @@ const defaults = {
   bhaktiReader: { initialSize: 100, minSize: 85, maxSize: 150, step: 5 },
   mediaViewer: { swipeThresholdPx: 50, videoControlExclusionPx: 56, wrap: true },
   browserDefaults: { advancedFiltersOpen: false, lineageView: "list", eventsUpcomingSort: "earliest", eventsPastSort: "latest", albumsSort: "newest" },
-  presentation: { imageTreatment: false, imageBackedTiles: false, tileOverlayOpacity: 40, tileCornerRadius: 20, headerActions: false, topSubscribe: false },
-  layout: { adaptiveHero: false, featuredTiles: false, sectionHeaders: false, layoutProfiles: false, compactCollections: false, tileInformation: false, carouselNavigation: false, centeredCarousel: false },
+  presentation: { imageTreatment: false, imageBackedTiles: false, tileOverlayOpacity: 40, tileCornerRadius: 20 },
+  layout: { featuredTiles: false, sectionHeaders: false, layoutProfiles: false, compactCollections: false, tileInformation: false, carouselNavigation: false, centeredCarousel: false },
 };
 
 test("reader, viewer and browser defaults validate explicit configurable contracts", () => {
