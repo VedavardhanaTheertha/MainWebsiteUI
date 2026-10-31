@@ -4,7 +4,6 @@ import { Marcellus, Montserrat, Noto_Sans_Kannada, Noto_Serif_Devanagari } from 
 import "./globals.css";
 import "./collection-experiments.css";
 import "./home-experiments.css";
-import "./carousel-emphasis.css";
 import { siteConfig, defaultLang, content, languages } from "@/gen/content";
 import { commonSettings } from "@/gen/settings/common";
 import { LanguageProvider } from "@/context/LanguageContext";

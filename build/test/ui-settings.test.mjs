@@ -11,7 +11,7 @@ import { testUiSettings } from "./helpers/ui-settings.mjs";
 
 const defaults = {
   collections: { initialVisible: 6, loadIncrement: 9 },
-  autoScroll: { enabled: true, pixelsPerSecond: 36, returnDurationMs: 2200, resumeDelayMs: 1500, holdDurationMs: 3000, slideDurationMs: 800 },
+  autoScroll: { enabled: true, pixelsPerSecond: 36, returnDurationMs: 2200, resumeDelayMs: 1500 },
   hero: { autoplay: true, intervalMs: 4500, fadeDurationMs: 900 },
   upcomingEvents: { lookAheadDays: 30, maxCards: 6 },
   interaction: { dropdownCloseDelayMs: 120, modalResetDelayMs: 400, searchPreloadDelayMs: 300 },
@@ -20,7 +20,7 @@ const defaults = {
   mediaViewer: { swipeThresholdPx: 50, videoControlExclusionPx: 56, wrap: true },
   browserDefaults: { advancedFiltersOpen: false, lineageView: "list", eventsUpcomingSort: "earliest", eventsPastSort: "latest", albumsSort: "newest" },
   presentation: { imageTreatment: false, imageBackedTiles: false, tileOverlayOpacity: 40, tileCornerRadius: 20 },
-  layout: { featuredTiles: false, sectionHeaders: false, layoutProfiles: false, compactCollections: false, tileInformation: false, carouselNavigation: false, centeredCarousel: false },
+  layout: { featuredTiles: false, sectionHeaders: false, layoutProfiles: false, compactCollections: false, tileInformation: false, carouselNavigation: false },
 };
 
 test("reader, viewer and browser defaults validate explicit configurable contracts", () => {
@@ -86,7 +86,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   assert.equal(generatedResult.status, 0, generatedResult.stderr);
   const generated = await readFile(path.join(root, "src", "gen", "settings", "ui-elements.ts"), "utf8");
   assert.match(generated, /collectionPagination = \{"initialVisible":6,"loadIncrement":9\} as const/);
-  assert.match(generated, /railAutoScroll = \{"enabled":true,"pixelsPerSecond":12.5,"returnDurationMs":900,"resumeDelayMs":1500,"holdDurationMs":3000,"slideDurationMs":800\} as const/);
+  assert.match(generated, /railAutoScroll = \{"enabled":true,"pixelsPerSecond":12.5,"returnDurationMs":900,"resumeDelayMs":1500\} as const/);
   assert.match(generated, /heroSettings = \{"autoplay":true,"intervalMs":4500,"fadeDurationMs":900\}/);
   assert.match(generated, /interactionSettings = \{"dropdownCloseDelayMs":120,"modalResetDelayMs":400,"searchPreloadDelayMs":300\}/);
   assert.match(generated, /upcomingEventSettings = \{"lookAheadDays":30,"maxCards":6\}/);
@@ -115,7 +115,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   }
 });
 
-async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyPaused = false, motion = { matches: false }, { centered = false, dialogsOpen = false } = {}) {
+async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyPaused = false, motion = { matches: false }, { dialogsOpen = false } = {}) {
   const source = await readFile(new URL("../../src/hooks/useAutoScrollRail.ts", import.meta.url), "utf8");
   const { outputText } = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
@@ -130,8 +130,8 @@ async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyP
   const el = {
     get scrollLeft() { return scrollLeft; },
     set scrollLeft(value) { scrollLeft = Math.round(value * 4 / 5) * 5 / 4; },
-    scrollWidth: centered ? 300 + (itemCount - 1) * 250 : 10000, clientWidth: 300,
-    dataset: { centeredRail: centered ? "active" : undefined },
+    scrollWidth: 10000, clientWidth: 300,
+    dataset: {},
     children: Array.from({ length: itemCount }, (_, index) => new Element(index)),
     contains: () => false,
     addEventListener: (name, callback) => listeners.set(name, callback),
@@ -166,7 +166,6 @@ async function createRail(config = defaults.autoScroll, itemCount = 3, manuallyP
       assert.equal(name, "@/context/UiSettingsContext");
       return { useUiSettings: () => ({
         ...testUiSettings, railAutoScroll: config,
-        layoutSettings: { ...testUiSettings.layoutSettings, centeredCarousel: centered },
       }) };
     },
     requestAnimationFrame: (callback) => { frame = callback; return 1; },
@@ -288,148 +287,21 @@ test("every rail respects reduced motion with explicit pause state", async () =>
   rail.cleanup();
 });
 
-test("centered autoplay holds each exact card center, slides with easing, and reverses without skipping", async () => {
-  const rail = await createRail(defaults.autoScroll, 3, false, { matches: false }, { centered: true });
-  rail.tick(0);
-  rail.tick(2999);
-  assert.equal(rail.el.scrollLeft, 0, "first card remains still for the full hold");
-  rail.tick(3000);
-  rail.tick(3200);
-  assert.equal(rail.el.scrollLeft, 16.25, "quarter-slide uses cubic easing");
-  rail.tick(3400);
-  assert.equal(rail.el.scrollLeft, 125);
-  rail.tick(3800);
-  assert.equal(rail.el.scrollLeft, 250, "second card is exactly centered");
-  rail.tick(6799);
-  assert.equal(rail.el.scrollLeft, 250, "hold starts after the slide finishes");
-  rail.tick(6800);
-  rail.tick(7600);
-  assert.equal(rail.el.scrollLeft, 500, "last card is exactly centered");
-  rail.tick(10599);
-  assert.equal(rail.el.scrollLeft, 500);
-  rail.tick(10600);
-  rail.tick(11400);
-  assert.equal(rail.el.scrollLeft, 250, "reverse visits the adjacent card, not the first card");
-  rail.tick(14400);
-  rail.tick(15200);
-  assert.equal(rail.el.scrollLeft, 0);
-  rail.tick(18200);
-  rail.tick(19000);
-  assert.equal(rail.el.scrollLeft, 250, "forward motion restarts at the first boundary");
-  rail.cleanup();
-});
-
-test("centered timing is configurable and interaction re-centers the manually moved card before advancing", async () => {
-  const rail = await createRail({ ...defaults.autoScroll, holdDurationMs: 1000, slideDurationMs: 400 }, 3, false, { matches: false }, { centered: true });
-  rail.tick(0);
-  rail.tick(1000);
-  rail.tick(1200);
-  assert.equal(rail.el.scrollLeft, 125);
-  rail.listeners.get("rail-interaction-start")();
-  rail.el.scrollLeft = 200;
-  rail.tick(1400);
-  assert.equal(rail.el.scrollLeft, 200);
-  rail.listeners.get("rail-interaction-end")();
-  rail.resume();
-  rail.tick(2000);
-  rail.tick(2999);
-  assert.equal(rail.el.scrollLeft, 200);
-  rail.tick(3000);
-  rail.tick(3400);
-  assert.equal(rail.el.scrollLeft, 250, "settles on the nearest center rather than skipping a card");
-  rail.tick(4399);
-  assert.equal(rail.el.scrollLeft, 250);
-  rail.tick(4400);
-  rail.tick(4800);
-  assert.equal(rail.el.scrollLeft, 500);
-  rail.cleanup();
-});
-
-test("centered rails restart their hold after resizing, offscreen or hidden periods and focus", async () => {
-  for (const cause of ["resize", "offscreen", "hidden", "focus"]) {
-    const rail = await createRail(defaults.autoScroll, 3, false, { matches: false }, { centered: true });
-    rail.tick(0);
-    rail.tick(3000);
-    rail.tick(3400);
-    assert.equal(rail.el.scrollLeft, 125);
-    if (cause === "resize") rail.observers[0]();
-    if (cause === "offscreen") rail.observers[1]([{ isIntersecting: false }]);
-    if (cause === "hidden") {
-      rail.document.hidden = true;
-      rail.documentListeners.get("visibilitychange")();
-    }
-    if (cause === "focus") rail.listeners.get("focusin")();
-    rail.tick(5000);
-    assert.equal(rail.el.scrollLeft, 125);
-    if (cause === "offscreen") rail.observers[1]([{ isIntersecting: true }]);
-    if (cause === "hidden") {
-      rail.document.hidden = false;
-      rail.documentListeners.get("visibilitychange")();
-    }
-    if (cause === "focus") rail.listeners.get("focusout")({ relatedTarget: null });
-    rail.tick(6000);
-    rail.tick(7999);
-    assert.equal(rail.el.scrollLeft, 125, `${cause} must not resume mid-slide`);
-    rail.cleanup();
-    assert.equal(rail.hasFrame(), false);
-    assert.equal(rail.documentListeners.size, 0);
-  }
-});
-
-test("centered rails honor disabled autoplay, manual pause, reduced motion, open dialogs and nonoverflow", async () => {
-  for (const [config, count, paused, motion, options] of [
-    [{ ...defaults.autoScroll, enabled: false }, 3, false, { matches: false }, {}],
-    [defaults.autoScroll, 1, false, { matches: false }, {}],
-    [defaults.autoScroll, 3, true, { matches: false }, {}],
-    [defaults.autoScroll, 3, false, { matches: true }, {}],
-    [defaults.autoScroll, 3, false, { matches: false }, { dialogsOpen: true }],
-  ]) {
-    const rail = await createRail(config, count, paused, motion, { centered: true, ...options });
-    assert.equal(rail.hasFrame(), false);
-    rail.cleanup();
-  }
-  const rail = await createRail(defaults.autoScroll, 3, false, { matches: false }, { centered: true });
-  rail.el.scrollWidth = rail.el.clientWidth;
-  rail.tick(0);
-  assert.equal(rail.hasFrame(), false);
-  rail.cleanup();
-});
-
-test("manual centering suspends autoplay without releasing a separate navigation interaction pause", async () => {
-  const rail = await createRail(defaults.autoScroll, 3, false, { matches: false }, { centered: true });
-  rail.tick(0);
-  rail.listeners.get("rail-centering-start")();
-  assert.equal(rail.hasFrame(), false);
-  rail.listeners.get("rail-centering-end")();
-  assert.equal(rail.hasFrame(), true);
-  rail.tick(1000);
-  rail.tick(3999);
-  assert.equal(rail.el.scrollLeft, 0, "a full hold follows manual centering");
-  rail.listeners.get("rail-interaction-start")();
-  rail.listeners.get("rail-centering-start")();
-  rail.listeners.get("rail-centering-end")();
-  assert.equal(rail.hasFrame(), false, "navigation focus must retain its interaction pause");
-  rail.listeners.get("rail-interaction-end")();
-  rail.resume();
-  assert.equal(rail.hasFrame(), true);
-  rail.cleanup();
-});
-
-test("saved preferences inherit only missing centered timing fields and reject invalid provided timings", () => {
+test("saved preferences inherit only missing fields and clean up obsolete options", () => {
   const old = structuredClone(defaults);
-  delete old.autoScroll.holdDurationMs;
-  delete old.autoScroll.slideDurationMs;
   old.autoScroll.pixelsPerSecond = 12;
+  old.autoScroll.holdDurationMs = 3000;
+  old.autoScroll.slideDurationMs = 800;
   old.layout.centeredCarousel = true;
   const migrated = validateUiPreferences(old, defaults);
   assert.deepEqual(migrated.autoScroll, { ...defaults.autoScroll, pixelsPerSecond: 12 });
-  assert.equal(migrated.layout.centeredCarousel, true);
-  for (const field of ["holdDurationMs", "slideDurationMs"]) {
-    for (const value of [0, -1, 1.5, null, "800", 2147483648]) {
-      assert.throws(() => validateUiPreferences({
-        ...old, autoScroll: { ...old.autoScroll, [field]: value },
-      }, defaults), new RegExp(`autoScroll\\.${field}`));
-    }
+  assert.equal(migrated.layout.centeredCarousel, undefined);
+  assert.equal(migrated.autoScroll.holdDurationMs, undefined);
+  assert.equal(migrated.autoScroll.slideDurationMs, undefined);
+  for (const value of [0, -1, 1.5, null, "800"]) {
+    assert.throws(() => validateUiPreferences({
+      ...old, autoScroll: { ...old.autoScroll, returnDurationMs: value },
+    }, defaults), /autoScroll\.returnDurationMs/);
   }
 });
 

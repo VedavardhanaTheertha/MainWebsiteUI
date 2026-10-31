@@ -162,7 +162,7 @@ function preferencesFixture({ denied = false } = {}) {
 test("every UI setting has a typed editor definition and localized labels", () => {
   const actual = Object.entries(uiDefaults).flatMap(([group, fields]) => Object.keys(fields).map((key) => `${group}.${key}`));
   const defined = schema.uiFieldDefinitions.map(({ group, key }) => `${group}.${key}`);
-  assert.equal(defined.length, 40);
+  assert.equal(defined.length, 37);
   assert.deepEqual(defined.toSorted(), actual.toSorted());
   assert.equal(new Set(defined).size, defined.length);
   for (const language of ["en", "kn"]) {
@@ -288,7 +288,7 @@ test("tile corner radius preserves the default, supports square corners, and val
 
 test("layout comparisons are independent default-off flags with strict validation and persistence", () => {
   const keys = Object.keys(uiDefaults.layout);
-  assert.equal(keys.length, 7);
+  assert.equal(keys.length, 6);
   assert.equal(Object.values(uiDefaults.layout).every((value) => value === false), true);
   for (const key of keys) {
     const fixture = preferencesFixture();
@@ -311,8 +311,8 @@ test("layout comparisons are independent default-off flags with strict validatio
   assert.equal(Object.hasOwn(previous, "layout"), false);
   const priorLayout = structuredClone(uiDefaults);
   priorLayout.layout.featuredTiles = true;
-  delete priorLayout.layout.centeredCarousel;
-  assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.centeredCarousel, false);
+  priorLayout.layout.centeredCarousel = true;
+  assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.centeredCarousel, undefined);
   assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.featuredTiles, true);
   assert.throws(() => schema.validateUiElements(priorLayout), schema.UiSettingsError);
   assert.throws(() => schema.validateUiPreferences({ ...uiDefaults, layout: {} }, uiDefaults), schema.UiSettingsError);
@@ -422,7 +422,7 @@ function pageFixture(defaultMode = "real", persistent = true) {
 
 test("the editor covers every setting, keeps edits as drafts and applies typed values only on submit", () => {
   const page = pageFixture();
-  assert.equal(page.controls().filter((node) => node.props.name).length, 40);
+  assert.equal(page.controls().filter((node) => node.props.name).length, 37);
   page.field("collections.initialVisible").props.onChange({ target: { value: "3", valueAsNumber: 3 } });
   page.field("browserDefaults.lineageView").props.onChange({ target: { value: "timeline" } });
   page.field("presentation.imageBackedTiles").props.onChange({ target: { checked: true } });
