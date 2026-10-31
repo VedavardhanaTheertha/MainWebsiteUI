@@ -10,7 +10,6 @@ export const uiFieldDefinitions = [
   flag("autoScroll", "enabled"),
   { ...number("autoScroll", "pixelsPerSecond", 0), integer: false, exclusiveMinimum: true },
   number("autoScroll", "returnDurationMs"), number("autoScroll", "resumeDelayMs", 0, timerMaximum),
-  number("autoScroll", "holdDurationMs", 1, timerMaximum), number("autoScroll", "slideDurationMs", 1, timerMaximum),
   flag("hero", "autoplay"), number("hero", "intervalMs", 1, timerMaximum), number("hero", "fadeDurationMs", 0),
   number("upcomingEvents", "lookAheadDays", 0, 365000), number("upcomingEvents", "maxCards"),
   number("readingTime", "wordsPerMinute"),
@@ -25,7 +24,7 @@ export const uiFieldDefinitions = [
   ...["imageTreatment", "imageBackedTiles"].map((key) => flag("presentation", key)),
   number("presentation", "tileOverlayOpacity", 0, 100),
   number("presentation", "tileCornerRadius", 0, 48),
-  ...["featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation", "centeredCarousel"].map((key) => flag("layout", key)),
+  ...["featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation"].map((key) => flag("layout", key)),
 ];
 
 export class UiSettingsError extends Error {}
@@ -108,17 +107,18 @@ export function validateUiPreferences(value, defaults) {
   const autoScroll = value?.autoScroll;
   if (autoScroll && typeof autoScroll === "object" && !Array.isArray(autoScroll)) {
     const migrated = { ...autoScroll };
-    for (const key of ["holdDurationMs", "slideDurationMs"]) {
-      if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.autoScroll[key];
-    }
+    delete migrated.holdDurationMs;
+    delete migrated.slideDurationMs;
     value = { ...value, autoScroll: migrated };
   }
   if (value && typeof value === "object" && !Array.isArray(value) && !Object.hasOwn(value, "layout")) {
     value = { ...value, layout: defaults.layout };
   }
   const layout = value?.layout;
-  if (layout && typeof layout === "object" && !Array.isArray(layout) && !Object.hasOwn(layout, "centeredCarousel")) {
-    value = { ...value, layout: { ...layout, centeredCarousel: defaults.layout.centeredCarousel } };
+  if (layout && typeof layout === "object" && !Array.isArray(layout) && Object.hasOwn(layout, "centeredCarousel")) {
+    const migrated = { ...layout };
+    delete migrated.centeredCarousel;
+    value = { ...value, layout: migrated };
   }
   const presentation = value?.presentation;
   if (presentation && typeof presentation === "object" && !Array.isArray(presentation) &&

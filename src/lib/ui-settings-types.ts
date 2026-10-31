@@ -9,7 +9,7 @@ export type UiFieldDefinition = { group: string; key: string } & (
 
 export interface UiSettings {
   collectionPagination: { initialVisible: number; loadIncrement: number };
-  railAutoScroll: { enabled: boolean; pixelsPerSecond: number; returnDurationMs: number; resumeDelayMs: number; holdDurationMs: number; slideDurationMs: number };
+  railAutoScroll: { enabled: boolean; pixelsPerSecond: number; returnDurationMs: number; resumeDelayMs: number };
   heroSettings: { autoplay: boolean; intervalMs: number; fadeDurationMs: number };
   upcomingEventSettings: { lookAheadDays: number; maxCards: number };
   readingTimeSettings: { wordsPerMinute: number };
@@ -31,6 +31,5 @@ export interface UiSettings {
     compactCollections: boolean;
     tileInformation: boolean;
     carouselNavigation: boolean;
-    centeredCarousel: boolean;
   };
 }

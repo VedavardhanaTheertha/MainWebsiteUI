@@ -99,8 +99,7 @@ warning and falls back to configured defaults. The browser-only compatibility
 validator accepts older complete configurations missing `imageBackedTiles`,
 `tileOverlayOpacity`, `tileCornerRadius`, and/or the entire `layout` group, inheriting those values
 from current defaults without losing existing choices. A present but incomplete
-layout group is invalid, except that older complete groups may omit the later
-`centeredCarousel` flag and inherit its configured default.
+layout group is invalid.
 Build-time settings remain strict. Legacy `site-image-treatment` values of `on` or `off` override the
 corresponding presentation field; absent or other values inherit the configuration.
 Apply and Reset clear its precedence with `default`. Legacy-only changes do not
@@ -113,7 +112,7 @@ environment variables, secrets, or an authorization mechanism.
 
 ### Optional layout comparisons
 
-Seven independent booleans in `settings/ui_elements.json`'s `layout` group
+Six independent booleans in `settings/ui_elements.json`'s `layout` group
 normalize to `layoutSettings`; all default to false. The root preference
 subscriber sets corresponding `data-*` attributes after hydration. Experiment CSS
 is loaded after the baseline stylesheet and affects only explicitly marked
@@ -136,20 +135,6 @@ components. Existing layouts and homepage shortcut order remain the default.
   controls; manual navigation works independently of autoplay and honors reduced motion.
   Where a rail also has a pause control, it sits below Next with an 8px gap.
   Rails without the optional navigation retain their existing pause placement.
-- `centeredCarousel`: emphasize the tile nearest a scrolling rail's center,
-  with smaller neighboring tiles. Autoplay slides one card into the center,
-  holds it stationary, then advances; at either boundary it reverses one card at
-  a time. Hold and slide durations come from `autoScroll.holdDurationMs` and
-  `autoScroll.slideDurationMs` in [UI settings](../settings/ui_elements.json).
-  Manual movement also updates emphasis and smoothly settles on the nearest card
-  after scrolling and pointer gestures end, even with autoplay paused or disabled.
-  Settling is immediate under reduced motion and pauses autoplay until it finishes.
-  Mobile layouts include neighboring previews. Static, non-scrolling
-  desktop grids remain unchanged. This comparison is independent of the navigation
-  controls and autoplay, respects reduced motion, and retains actual first/last
-  boundaries rather than duplicating content for an infinite loop.
-  Saved browser preferences missing only the newer hold/slide fields inherit their
-  configured defaults; invalid provided values are still rejected.
 
 Control and navigation copy comes from language JSON. These switches share the
 existing validated Apply/reset, denied-storage, and production browser-local

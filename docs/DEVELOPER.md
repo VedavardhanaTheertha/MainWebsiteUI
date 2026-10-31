@@ -123,18 +123,17 @@ remain visible without hovering; test keyboard focus, separate action links,
 narrow screens, both languages, and forced-color mode when changing this treatment.
 Older complete saved UI configurations inherit new tile fields and a missing
 layout group while preserving their existing preferences; other missing fields,
-including incomplete original layout fields, remain invalid. Older complete layout
-groups may omit the later centered-carousel flag and inherit its default.
+including incomplete original layout fields, remain invalid.
 The hero title stays over its image in both tile modes, without a background
 panel; the standalone generated hero follows the same layout. **Tile text panel
 opacity (%)** controls the tile background from transparent (0) to opaque (100),
 defaulting to 40 in `presentation.tileOverlayOpacity`. Apply and reload to save
 it. Text shadows aid readability, but contrast depends on the photograph and opacity.
 
-The **Layout experiments** group contains seven independent, default-off checkboxes:
+The **Layout experiments** group contains six independent, default-off checkboxes:
 featured homepage tiles, consistent section headers,
 standardized widths/spacing, compact seva/library results, tile information
-placement, carousel navigation, and centered-tile emphasis. Apply and reload after changing a comparison;
+placement, and carousel navigation. Apply and reload after changing a comparison;
 turn it off to compare with the existing layout. The homepage shortcut order does
 not change. Try each option separately before testing combinations.
 
@@ -145,21 +144,6 @@ For carousel navigation, test first/last positions, no-overflow tracks, keyboard
 buttons, resized windows, reduced motion, and automatic scrolling disabled.
 Previous/next controls sit at the left/right edges, vertically centered alongside
 the rail, without adding a control row above or below it.
-**Emphasize the centered carousel tile** slides one card at a time into the center,
-holds it larger than its neighbors, then advances. At either end it reverses one
-card at a time. Configure **Centered card hold duration (ms)** and **Centered card
-slide duration (ms)** in the automatic-scrolling group; defaults are owned by
-[UI settings](../settings/ui_elements.json). Existing saved preferences inherit
-these timing defaults. Scroll speed and return duration apply to continuous rails
-when the centered comparison is off.
-Manual movement also updates center emphasis, including mobile neighboring previews.
-After a drag, swipe, wheel, or keyboard scroll stops, the rail settles on the
-nearest card instead of resting between cards. This also works with autoplay
-paused or disabled; reduced motion uses immediate centering. Check release outside
-the rail, interrupted settling, and both ends.
-It works independently of the navigation comparison and autoplay. Test first/last
-items, resizing, long translated titles, keyboard focus, reduced motion, and both
-image treatments; static non-scrolling grids keep their original presentation.
 The adaptive-height setting also applies to the generated standalone hero.
 **Tile and hero corner radius (px)** accepts 0–48, defaults to 20px, and uses 0
 for square corners. It applies to photographic and collection cards, including
