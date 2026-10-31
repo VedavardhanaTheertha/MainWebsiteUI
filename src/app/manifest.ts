@@ -20,14 +20,21 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: defaultLang,
     icons: [
       {
-        src: favicon,
+        src: `${favicon}?v=2`,
         sizes: "any",
         type: "image/x-icon",
       },
       {
-        src: `${basePath}/icon.png`,
+        src: `${basePath}/icon-192.png?v=2`,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: `${basePath}/icon.png?v=2`,
         sizes: "512x512",
         type: "image/png",
+        purpose: "any",
       },
     ],
   };
