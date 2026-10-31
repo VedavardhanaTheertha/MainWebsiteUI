@@ -44,6 +44,7 @@ published fix.
 | `npm run dev:local` | Generate local content and start the interactive development server |
 | `npm run dev` | Generate content and start Next development mode for the selected environment |
 | `npm run content:build` | Regenerate content, settings, indexes, and theme without exporting pages |
+| `npm run icons:generate` | Regenerate all favicon, icon, and touch assets from `public/main-logo.png` |
 | `npm run build:local` | Full verified local export |
 | `npm run build:dev` | Full verified development export |
 | `npm run build:prod` | Full verified production export |

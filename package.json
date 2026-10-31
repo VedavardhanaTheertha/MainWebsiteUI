@@ -31,6 +31,7 @@
     "library:build": "node build/build-library-sections.mjs",
     "settings:build": "node build/build-ui-settings.mjs",
     "theme:build": "node build/build-theme-settings.mjs",
+    "icons:generate": "node scripts/generate-icons.mjs",
     "media:build": "node build/build-media-albums.mjs",
     "content:build": "node build/generate.mjs",
     "typecheck": "npm run content:build && tsc --noEmit",
