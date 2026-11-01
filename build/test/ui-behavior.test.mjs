@@ -255,15 +255,14 @@ test("announcement honors delay, page eligibility, and disabled state", async ()
   }
 });
 
-test("top bar renders Donate and Volunteer without a Subscribe button", async () => {
-  let donations = 0;
-  const options = { onDonate: () => donations++ };
-  const bar = await mountComponent("../../src/components/TopBar.tsx", options);
+test("top bar renders without Subscribe, Donate or Volunteer action buttons", async () => {
+  const bar = await mountComponent("../../src/components/TopBar.tsx", {});
   const subscribe = findNode(bar.render(), (node) => node.props?.["data-top-subscribe"]);
   assert.equal(subscribe, undefined);
-  assert.ok(findNode(bar.render(), (node) => node.props?.href === "https://volunteer.example.org/"));
-  findNode(bar.render(), (node) => node.type === "button" && node.props?.["aria-label"] === authoredCopy.public_actions.donate_label).props.onClick();
-  assert.equal(donations, 1);
+  const donate = findNode(bar.render(), (node) => node.type === "button" && node.props?.["aria-label"] === authoredCopy.public_actions?.donate_label);
+  assert.equal(donate, undefined);
+  const volunteer = findNode(bar.render(), (node) => node.props?.href === "https://volunteer.example.org/");
+  assert.equal(volunteer, undefined);
   bar.cleanup();
 });
 
