@@ -19,7 +19,7 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el || itemCount <= 1 || !railAutoScroll.enabled || manuallyPaused || dialogsOpen) return;
+    if (!el || itemCount <= 1 || !railAutoScroll.enabled || manuallyPaused || reducedMotion || dialogsOpen) return;
 
     let rafId: number | null = null;
     let resumeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -33,7 +33,7 @@ export function useAutoScrollRail(itemCount: number, manuallyPaused: boolean) {
     let forwardPosition: number | null = null;
     let lastScrollLeft = 0;
 
-    const canAnimate = () => !paused && inView && !document.hidden &&
+    const canAnimate = () => !paused && !focused && inView && !document.hidden &&
       el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1;
     const stop = () => {
       if (rafId !== null) cancelAnimationFrame(rafId);

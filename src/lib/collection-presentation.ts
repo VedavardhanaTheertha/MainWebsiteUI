@@ -4,9 +4,9 @@ const cardBase = "collection-tile group flex min-w-0 flex-col overflow-hidden ro
 
 export function collectionCardClassName(variant: CollectionCardVariant, imageBacked = false): string {
   return `${cardBase}${imageBacked ? " visual-tile" : ""} ${variant === "featured"
-    ? "border-[var(--color-saffron-600)]"
-    : "border-[var(--color-line)]"}`;
+    ? "h-80 border-[var(--color-saffron-600)]"
+    : "h-[360px] border-[var(--color-line)]"}`;
 }
 
 export const collectionCardBodyClassName = "visual-tile-body flex min-h-0 min-w-0 flex-1 flex-col p-3 sm:p-3.5";
-export const collectionCardImageClassName = "visual-tile-art relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105";
+export const collectionCardImageClassName = "visual-tile-art relative h-40 w-full shrink-0 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105";

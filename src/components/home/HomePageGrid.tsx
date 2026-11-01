@@ -5,7 +5,7 @@ import { collectionCardBodyClassName, collectionCardClassName, collectionCardIma
 
 export default function HomePageGrid({ items, showFootnotes = true }: { items: HomePageCard[]; showFootnotes?: boolean }) {
   return (
-    <div className="layout-tile-grid grid gap-5 sm:grid-cols-2 md:grid-cols-3 items-stretch">
+    <div className="layout-tile-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
         <Link
           key={item.id}

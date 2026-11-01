@@ -32,7 +32,7 @@ export default function HeroCarousel() {
   };
 
   useEffect(() => {
-    if (paused || dialogsOpen || !heroSettings.autoplay || images.length <= 1) return undefined;
+    if (reducedMotion || paused || focused || dialogsOpen || !heroSettings.autoplay || images.length <= 1) return undefined;
     const t = setInterval(() => {
       setI((p) => {
         const next = (p + 1) % images.length;
@@ -41,12 +41,16 @@ export default function HeroCarousel() {
       });
     }, heroSettings.intervalMs);
     return () => clearInterval(t);
-  }, [images.length, paused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
+  }, [images.length, reducedMotion, paused, focused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
 
   return (
-    <div className="layout-wide home-hero relative">
+    <div
+      className="layout-wide home-hero relative"
+      onFocus={() => setFocused(true)}
+      onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
+    >
     <Link href={href} className="hero-rounded-frame relative block w-full overflow-hidden rounded-b-[22px] bg-[var(--color-paper)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
-      <div className="home-hero-viewport relative h-[340px] sm:h-[400px] lg:h-[460px]">
+      <div className="home-hero-viewport relative h-[462px] lg:h-[600px]">
       {images.map((src, k) => {
         const isRendered = k <= maxVisited || k === current || k === (current + 1) % images.length;
         return (
@@ -55,8 +59,7 @@ export default function HeroCarousel() {
             className="absolute inset-0 transition-all ease-out"
             style={{
               opacity: k === current ? 1 : 0,
-              transform: k === current ? "scale(1.02)" : "scale(1)",
-              transitionDuration: `${paused ? 0 : heroSettings.fadeDurationMs}ms`,
+              transitionDuration: `${reducedMotion || paused ? 0 : heroSettings.fadeDurationMs}ms`,
             }}
           >
             {isRendered && (
@@ -75,7 +78,7 @@ export default function HeroCarousel() {
 
       </div>
 
-      <div className={`hero-text-overlay absolute inset-x-0 bottom-0 px-6 pb-11 sm:pb-12 pt-8 text-center ${heroSettings.autoplay && images.length > 1 ? "pr-20" : ""}`}>
+      <div className={`hero-text-overlay absolute inset-x-0 bottom-0 px-6 pb-11 sm:pb-12 pt-8 text-center ${heroSettings.autoplay && images.length > 1 && !reducedMotion ? "pr-20" : ""}`}>
         <h1
           className="font-display text-[26px] lg:text-4xl leading-tight whitespace-pre-line text-[#fff8ed] drop-shadow-md"
         >
@@ -85,7 +88,7 @@ export default function HeroCarousel() {
     </Link>
 
     {/* Accessible Pause / Play Motion Control */}
-    {heroSettings.autoplay && images.length > 1 && (
+    {heroSettings.autoplay && images.length > 1 && !reducedMotion && (
       <button type="button" onClick={() => setPaused((value) => !value)}
         aria-pressed={paused}
         aria-label={paused ? tr.page_controls.resume_motion : tr.page_controls.pause_motion}
@@ -96,7 +99,7 @@ export default function HeroCarousel() {
     )}
 
     {/* Slide Indicator Progress Pills (No background container, clean with drop shadows) */}
-    {images.length > 1 && (
+    {!reducedMotion && images.length > 1 && (
       <div
         role="tablist"
         aria-label="Hero slides"
