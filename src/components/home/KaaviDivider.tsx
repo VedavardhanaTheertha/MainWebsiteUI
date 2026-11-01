@@ -1,6 +1,6 @@
 export default function KaaviDivider() {
 return (
-    <div className="kaavi-line-wrap flex flex-col items-center gap-[5px] py-[16px] pb-[14px]" aria-hidden="true">
+    <div className="kaavi-line-wrap flex flex-col items-center gap-[3px] py-0.5 sm:py-1" aria-hidden="true">
       <style>{`
         .kaavi-line-wrap { animation: kaaviPulse 6.5s ease-in-out infinite; }
         @keyframes kaaviPulse { 0%, 100% { opacity: .72; } 50% { opacity: 1; } }

@@ -26,7 +26,7 @@ const TONES: Record<HomeIconCard["tone"], { bg: string; color: string }> = {
 export default function HomeTiles() {
   const { tr } = useLang();
   return (
-    <div className="fixed bottom-0 inset-x-0 z-30 bg-[var(--color-parchment)]/95 backdrop-blur-md border-t border-[var(--color-line)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+    <div className="fixed bottom-0 inset-x-0 z-30 bg-[var(--color-cream)]/80 backdrop-blur-md border-t border-[var(--color-line)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
       <div className="max-w-7xl mx-auto">
         <section data-carousel="icon_carousel" className="grid grid-cols-5 gap-1.5 px-3 pt-2 pb-2.5 sm:gap-3 sm:px-3.5">
           {tr.home.icon_carousel.map((t) => {

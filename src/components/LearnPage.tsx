@@ -10,7 +10,7 @@ export default function LearnPage() {
   const labels = tr.pages.learn;
   return (
     <div>
-      <header className="bg-[var(--color-parchment)] px-4 py-10 text-center">
+      <header className="bg-transparent px-4 py-10 text-center">
         <p className="font-body text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">{labels.eyebrow}</p>
         <h1 className="mt-3 font-display text-3xl font-bold lg:text-5xl">{labels.title}</h1>
         <p className="mx-auto mt-4 max-w-2xl text-[var(--color-text-secondary)]">{labels.intro}</p>

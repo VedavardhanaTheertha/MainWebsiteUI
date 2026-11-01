@@ -195,7 +195,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
   return (
     <>
-      <header className="bg-[var(--color-parchment)] px-5 py-7 text-center lg:py-10">
+      <header className="bg-transparent px-5 py-7 text-center lg:py-10">
         <p className="text-badge font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {sectionCopy.eyebrow}
         </p>
@@ -212,7 +212,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
         {glossary.length ? <dl className="mt-5 grid gap-5 sm:grid-cols-2">{glossary.map((entry, index) => <div key={`${entry.articleId}-${index}`}><dt className="font-semibold"><Link href={articleHref(section, entry.articleId)} className="inline-flex min-h-11 items-center text-[var(--color-text-brand)] underline underline-offset-4">{entry.term}</Link></dt><dd className="text-base leading-8">{entry.definition}</dd></div>)}</dl> : <p role="status" className="mt-4 text-base leading-8">{copy.unavailable}</p>}
       </section>}
 
-      <section className="layout-section bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-library-title">
+      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-library-title">
         <div className="layout-wide mx-auto max-w-7xl">
           <div className="flex items-center justify-between gap-4">
           <h2 id="featured-library-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">

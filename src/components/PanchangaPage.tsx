@@ -7,7 +7,7 @@ export default function PanchangaPage() {
   const copy = tr.pages.local_copy;
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 lg:py-10">
-      <aside className="mb-5 rounded-lg border border-[var(--color-line)] bg-[var(--color-cream-soft)] p-4 text-sm text-[var(--color-text-secondary)]">{copy.panchanga_notice}</aside>
+      <aside className="mb-5 rounded-lg border border-[var(--color-line)] bg-[var(--color-cream-soft)]/50 p-4 text-sm text-[var(--color-text-secondary)]">{copy.panchanga_notice}</aside>
       <p className="font-body text-micro tracking-[.18em] uppercase text-[var(--color-text-brand)] font-bold">{copy.panchanga_date}</p>
       <h1 className="font-display text-2xl text-[var(--color-text-primary)] mt-1 mb-6">{copy.panchanga_title}</h1>
       <div className="bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] shadow-[var(--shadow-sm)] mb-4">
@@ -22,7 +22,7 @@ export default function PanchangaPage() {
           <span className="font-body font-semibold text-caption text-[var(--color-danger-500)]">{copy.panchanga_rahu_value}</span>
         </div>
       </div>
-      <div className="bg-[var(--color-cream-soft)] border border-[var(--color-line)] rounded-[8px] p-4 mb-8">
+      <div className="bg-[var(--color-cream-soft)]/50 border border-[var(--color-line)] rounded-[8px] p-4 mb-8">
         <p className="font-body text-micro tracking-[.18em] uppercase text-[var(--color-text-brand)] font-bold">{copy.panchanga_guidance}</p>
         <p className="text-sm text-[var(--color-text-secondary)] leading-[1.7] mt-2">{copy.panchanga_guidance_body}</p>
       </div>

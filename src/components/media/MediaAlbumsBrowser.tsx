@@ -117,7 +117,7 @@ export default function MediaAlbumsBrowser() {
 
   return (
     <>
-      <header className="bg-[var(--color-parchment)] px-5 py-7 text-center lg:py-10">
+      <header className="bg-transparent px-5 py-7 text-center lg:py-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {copy.eyebrow}
         </p>
@@ -129,7 +129,7 @@ export default function MediaAlbumsBrowser() {
         </p>
       </header>
 
-      <section className="layout-section bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="top-albums-heading">
+      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="top-albums-heading">
         <div className="layout-wide mx-auto max-w-7xl">
           <h2 id="top-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.top_title}
@@ -157,7 +157,7 @@ export default function MediaAlbumsBrowser() {
         </div>
       </section>
 
-      <section className="layout-section bg-[var(--color-paper)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="recent-albums-heading">
+      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="recent-albums-heading">
         <div className="layout-wide mx-auto max-w-7xl">
           <h2 id="recent-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.recent_title}

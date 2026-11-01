@@ -164,7 +164,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   };
 
   return (
-    <div className="bhakti-reader-page bg-[radial-gradient(circle_at_12%_8%,rgba(216,170,77,.1),transparent_28rem),linear-gradient(180deg,#fbf3e5_0%,#f7efe4_70%,#f5ecdf_100%)] px-4 py-4 text-[var(--color-text-primary)] sm:px-6">
+    <div className="bhakti-reader-page bg-transparent px-4 py-4 text-[var(--color-text-primary)] sm:px-6">
       <section className="mx-auto max-w-[820px] text-center">
         <p className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.eyebrow}</p>
         <h1 className="mt-1 font-display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight">{copy.title}</h1>

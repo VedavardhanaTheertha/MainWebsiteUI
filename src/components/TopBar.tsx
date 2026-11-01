@@ -3,42 +3,17 @@
 import { Fragment } from "react";
 import { useLang } from "@/context/LanguageContext";
 import type { Lang } from "@/gen/content";
-import { openDonateModal } from "@/hooks/useDonateModal";
-import { actionDestinations } from "@/gen/settings/actions";
-
-const actions = [
-  {
-    id: "donate",
-    svg: (
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    ),
-  },
-  {
-    id: "volunteer",
-    svg: (
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-    ),
-  },
-];
 
 export default function TopBar() {
   const { lang, setLang, languages, tr } = useLang();
-  const copy = tr.public_actions;
 
   return (
     <div className="hidden xl:block w-full bg-[#1a1108] text-[var(--color-text-brand)]">
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 min-h-14 grid grid-cols-3 gap-3 items-center">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 min-h-14 flex items-center justify-between gap-4">
 
         {/* Left — language switcher, rendered from the languages discovered at
             build time so a new content/languages/*.json file appears here on its own */}
-        <div className="flex min-w-0 flex-wrap items-center gap-1 border border-[var(--color-saffron-600)]/30 rounded-md px-2 py-1" role="group" aria-label={tr.ui.language_selector}>
+        <div className="flex min-w-0 flex-wrap items-center gap-1 border border-[var(--color-saffron-600)]/30 rounded-md px-2 py-1 shrink-0" role="group" aria-label={tr.ui.language_selector}>
           {languages.map((option, index) => (
             <Fragment key={option.code}>
               {index > 0 && (
@@ -58,26 +33,10 @@ export default function TopBar() {
           ))}
         </div>
 
-        {/* Centre — sacred sloka */}
-        <p className="text-center font-display text-micro sm:text-ui lg:text-sm font-semibold text-[var(--color-text-brand)] tracking-tight select-none whitespace-nowrap">
+        {/* Sacred sloka — always font-kannada so it renders identically across language switches */}
+        <p className="flex-1 text-center pr-28 font-kannada text-micro sm:text-ui lg:text-sm font-semibold text-[var(--color-text-brand)] tracking-tight select-none whitespace-nowrap">
           {tr.editorial.site_chrome.chant}
         </p>
-
-        {/* Right — action icons with tooltips */}
-        <div className="flex items-center gap-4 justify-end">
-          {/* Donate */}
-          <button onClick={openDonateModal} aria-label={copy.donate_label}
-            className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
-            {actions.find(a => a.id === "donate")?.svg}
-            <span className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap bg-[#1a1108] text-[var(--color-text-brand)] text-micro font-body px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[9999] border border-[var(--color-saffron-600)]/20">{copy.donate_tooltip}</span>
-          </button>
-          {/* Volunteer */}
-          <a href={actionDestinations.volunteer} target="_blank" rel="noopener noreferrer" aria-label={copy.volunteer_label}
-            className="group relative grid min-w-11 min-h-11 place-items-center text-[var(--color-text-brand)]/60 hover:text-[var(--color-text-brand)] transition-colors rounded">
-            {actions.find(a => a.id === "volunteer")?.svg}
-            <span className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap bg-[#1a1108] text-[var(--color-text-brand)] text-micro font-body px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-[9999] border border-[var(--color-saffron-600)]/20">{copy.volunteer_label}</span>
-          </a>
-        </div>
 
       </div>
     </div>

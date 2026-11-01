@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 import { knowledgeCollectionCounts, knowledgeSections } from "@/gen/library/presentation";
 import { applySectionPresentation } from "@/lib/ui-settings";
+import { collectionCardBodyClassName, collectionCardClassName, collectionCardImageClassName } from "@/lib/collection-presentation";
 
 type HubKey = "library" | "story";
 
@@ -15,7 +16,7 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
 
   return (
     <>
-      <header className="bg-[var(--color-parchment)] px-5 py-7 text-center lg:py-10">
+      <header className="bg-transparent px-5 py-7 text-center lg:py-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {hub.eyebrow}
         </p>
@@ -28,14 +29,14 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
       </header>
 
       <div className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 items-stretch">
           {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="layout-info-tile visual-tile group flex h-full flex-col overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-saffron-600)] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+              className={`${collectionCardClassName("collection", true)} layout-info-tile h-full flex flex-col`}
             >
-              <div className="visual-tile-art relative h-44 overflow-hidden bg-[var(--color-cream-soft)]">
+              <div className={collectionCardImageClassName}>
                 <ContentImage
                   src={item.image}
                   alt=""
@@ -43,14 +44,14 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
-              <div className="visual-tile-body flex flex-1 flex-col p-5">
-                <h2 className="layout-tile-title font-display text-xl font-bold text-[var(--color-text-primary)]">
+              <div className={collectionCardBodyClassName}>
+                <h2 className="layout-tile-title font-display text-base sm:text-lg font-bold leading-snug text-[var(--color-text-primary)]">
                   {item.title}
                 </h2>
-                <p className="layout-tile-footer mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{knowledgeCollectionCounts[item.href] === undefined ? tr.library_browser.unavailable : tr.library_browser.collection_count.replace("{count}", String(knowledgeCollectionCounts[item.href]))}</p>
-                <p className="layout-tile-summary mt-2 line-clamp-3 text-sm leading-6 text-[var(--color-text-secondary)]">
+                <p className="layout-tile-summary mt-1 line-clamp-2 font-body text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
                   {item.description}
                 </p>
+                <p className="layout-tile-footer mt-auto pt-1.5 border-t border-[var(--color-line)] text-meta text-[var(--color-text-brand)] font-semibold line-clamp-1">{knowledgeCollectionCounts[item.href] === undefined ? tr.library_browser.unavailable : tr.library_browser.collection_count.replace("{count}", String(knowledgeCollectionCounts[item.href]))}</p>
               </div>
             </Link>
           ))}

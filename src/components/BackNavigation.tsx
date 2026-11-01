@@ -43,7 +43,7 @@ export default function BackNavigation() {
   return (
     <nav
       aria-label={tr.ui.back}
-      className="back-navigation w-full border-b border-[var(--color-line)]/60 bg-[var(--color-parchment)]/80 backdrop-blur-xs"
+      className="back-navigation w-full border-b border-[var(--color-line)]/60 bg-transparent"
     >
       <div className="mx-auto flex max-w-7xl items-center px-4 py-2 sm:px-6 sm:py-2.5 lg:px-8">
         <Link
