@@ -38,7 +38,7 @@ export default function TopBar() {
 
         {/* Left — language switcher, rendered from the languages discovered at
             build time so a new content/languages/*.json file appears here on its own */}
-        <div className="flex min-w-0 flex-wrap items-center gap-1 border border-[var(--color-saffron-600)]/30 rounded-md px-2 py-1" role="group" aria-label={tr.ui.language_selector}>
+        <div className="flex min-w-0 flex-wrap items-center gap-1 border border-[var(--color-saffron-600)]/30 rounded-md px-2 py-1 shrink-0" role="group" aria-label={tr.ui.language_selector}>
           {languages.map((option, index) => (
             <Fragment key={option.code}>
               {index > 0 && (
@@ -58,8 +58,8 @@ export default function TopBar() {
           ))}
         </div>
 
-        {/* Centre — sacred sloka */}
-        <p className="text-center font-display text-micro sm:text-ui lg:text-sm font-semibold text-[var(--color-text-brand)] tracking-tight select-none whitespace-nowrap">
+        {/* Sacred sloka — always font-kannada so it renders identically across language switches */}
+        <p className="text-center font-kannada text-micro sm:text-ui lg:text-sm font-semibold text-[var(--color-text-brand)] tracking-tight select-none whitespace-nowrap">
           {tr.editorial.site_chrome.chant}
         </p>
 

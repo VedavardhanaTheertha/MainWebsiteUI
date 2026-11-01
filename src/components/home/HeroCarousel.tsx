@@ -44,7 +44,8 @@ export default function HeroCarousel() {
   }, [images.length, reducedMotion, paused, focused, dialogsOpen, heroSettings.autoplay, heroSettings.intervalMs]);
 
   return (
-    <div className="layout-wide home-hero relative"
+    <div
+      className="layout-wide home-hero relative"
       onFocus={() => setFocused(true)}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
     >
@@ -55,8 +56,11 @@ export default function HeroCarousel() {
         return (
           <div
             key={`${src}-${k}`}
-            className="absolute inset-0 transition-opacity"
-            style={{ opacity: k === current ? 1 : 0, transitionDuration: `${reducedMotion || paused ? 0 : heroSettings.fadeDurationMs}ms` }}
+            className="absolute inset-0 transition-all ease-out"
+            style={{
+              opacity: k === current ? 1 : 0,
+              transitionDuration: `${reducedMotion || paused ? 0 : heroSettings.fadeDurationMs}ms`,
+            }}
           >
             {isRendered && (
               <ContentImage
@@ -74,7 +78,7 @@ export default function HeroCarousel() {
 
       </div>
 
-      <div className={`hero-text-overlay absolute inset-x-0 bottom-0 px-6 pb-6 pt-12 text-center ${heroSettings.autoplay && images.length > 1 && !reducedMotion ? "pr-20" : ""}`}>
+      <div className={`hero-text-overlay absolute inset-x-0 bottom-0 px-6 pb-11 sm:pb-12 pt-8 text-center ${heroSettings.autoplay && images.length > 1 && !reducedMotion ? "pr-20" : ""}`}>
         <h1
           className="font-display text-[26px] lg:text-4xl leading-tight whitespace-pre-line text-[#fff8ed] drop-shadow-md"
         >
@@ -88,18 +92,18 @@ export default function HeroCarousel() {
       <button type="button" onClick={() => setPaused((value) => !value)}
         aria-pressed={paused}
         aria-label={paused ? tr.page_controls.resume_motion : tr.page_controls.pause_motion}
-        className="absolute right-4 bottom-4 grid size-11 place-items-center rounded-full border border-[var(--color-line-strong)] bg-[var(--color-paper)] text-[var(--color-text-brand)] shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+        className="absolute right-4 bottom-2 sm:bottom-2.5 grid size-9 place-items-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-sm shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] z-20"
       >
-        {paused ? <Play aria-hidden="true" size={20} /> : <Pause aria-hidden="true" size={20} />}
+        {paused ? <Play aria-hidden="true" size={16} /> : <Pause aria-hidden="true" size={16} />}
       </button>
     )}
 
-    {/* Slide Indicator Progress Pills (Interactive, jump-to-slide, hideable in Dev Options) */}
+    {/* Slide Indicator Progress Pills (No background container, clean with drop shadows) */}
     {!reducedMotion && images.length > 1 && (
       <div
         role="tablist"
         aria-label="Hero slides"
-        className="hero-slide-indicators pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 backdrop-blur-xs border border-white/10"
+        className="hero-slide-indicators absolute bottom-1.5 sm:bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2"
       >
         {images.map((_, idx) => (
           <button
@@ -109,11 +113,11 @@ export default function HeroCarousel() {
             aria-selected={idx === current}
             aria-label={`${tr.media?.photo_label ?? "Slide"} ${idx + 1}`}
             onClick={() => goToSlide(idx)}
-            className="pointer-events-auto flex min-h-11 items-center px-1 focus-visible:outline-2 focus-visible:outline-white"
+            className="flex min-h-8 min-w-8 items-center justify-center p-1 focus-visible:outline-2 focus-visible:outline-white"
           >
             <span
-              className={`block h-2 transition-all rounded-full ${
-                idx === current ? "w-6 bg-[var(--color-saffron-500)]" : "w-2 bg-white/40 hover:bg-white/75"
+              className={`block h-2.5 transition-all duration-300 rounded-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] ${
+                idx === current ? "w-7 bg-[var(--color-saffron-400)] shadow-sm" : "w-2.5 bg-white/80 hover:bg-white"
               }`}
             />
           </button>

@@ -13,7 +13,7 @@ export default function VolunteerPage() {
   return (
     <div>
       {/* Page hero */}
-      <div className="bg-[var(--color-parchment)] pt-4 pb-3 lg:pt-7 lg:pb-6 text-center px-5">
+      <div className="bg-transparent pt-4 pb-3 lg:pt-7 lg:pb-6 text-center px-5">
         <p className="font-body text-micro tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-3">
           <LocalizedCopy path={["pages", "local_copy", "volunteer_eyebrow"]} />
         </p>

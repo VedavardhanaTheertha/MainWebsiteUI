@@ -85,7 +85,7 @@ export default function MobileHeader() {
           <Image src={`${siteConfig.basePath}/main-logo.png`} alt={tr.logo_alt} width={44} height={44} className="object-contain" />
         </Link>
 
-        <p className="absolute left-[4.25rem] right-28 line-clamp-2 text-center font-display font-bold text-micro text-[var(--color-text-brand)] tracking-wide leading-tight select-none pointer-events-none">
+        <p className="absolute left-16 right-24 truncate text-center font-kannada font-bold text-micro sm:text-xs text-[var(--color-text-brand)] tracking-normal whitespace-nowrap select-none pointer-events-none">
           {tr.editorial.site_chrome.chant}
         </p>
 

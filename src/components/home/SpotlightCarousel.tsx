@@ -14,9 +14,9 @@ export default function SpotlightCarousel() {
           <h2 id="home-spotlight-title" className="font-display">{tr.layout_experiments.spotlight_title}</h2>
           <p>{tr.layout_experiments.spotlight_description}</p>
         </header>
-        <PageCarousel items={tr.home.top_carousel} />
+        <PageCarousel items={tr.home.top_carousel} dataCarousel="top_carousel" ariaLabel="Top carousel tiles" />
       </section>
     );
   }
-  return <PageCarousel items={tr.home.top_carousel} />;
+  return <PageCarousel items={tr.home.top_carousel} dataCarousel="top_carousel" ariaLabel="Top carousel tiles" />;
 }

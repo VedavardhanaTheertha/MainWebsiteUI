@@ -15,7 +15,7 @@ export default function MantraYajnaPageContent() {
       <div className="relative h-[180px] lg:h-[280px]">
         <ContentImage src={imagePaths.krishna} alt="" fill sizes="100vw" />
       </div>
-      <header className="bg-[var(--color-parchment)] px-4 py-5 lg:px-8">
+      <header className="bg-transparent px-4 py-5 lg:px-8">
         <p className="text-micro font-bold tracking-[.16em] uppercase text-[var(--color-text-brand)]">
           <LocalizedCopy path={["pages", "detected", "yajna_eyebrow"]} />
         </p>

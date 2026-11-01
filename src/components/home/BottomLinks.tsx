@@ -9,24 +9,26 @@ export default function BottomLinks() {
   const { layoutSettings } = useUiSettings();
   const home = tr.home;
   return (
-    <div className="w-full bg-[var(--color-cream)] px-4 lg:px-8 pt-6 pb-6">
+    <div className="w-full bg-transparent px-4 lg:px-8 pt-4 pb-20 sm:pb-24">
       <div className="layout-wide max-w-7xl mx-auto">
-        <section data-carousel="explore_carousel" aria-labelledby="home-explore-title" className="layout-section mb-10">
-          <header className="layout-section-header">
-          <p className="font-body text-micro tracking-[.25em] uppercase text-[var(--color-text-brand)] font-semibold mb-1 text-center">{home.explore_label}</p>
-          <h2 id="home-explore-title" className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-4 lg:mb-8 text-center">{home.explore_title}</h2>
-          {layoutSettings.sectionHeaders && <p>{tr.layout_experiments.explore_description}</p>}
+        <section data-carousel="explore_carousel" aria-labelledby="home-explore-title" className="layout-section mb-6 sm:mb-8">
+          <header className="layout-section-header text-center mb-4">
+            <p className="font-body text-micro tracking-[.2em] uppercase text-[var(--color-text-brand)] font-bold mb-1">{home.explore_label}</p>
+            <h2 id="home-explore-title" className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-3xl leading-tight">{home.explore_title}</h2>
+            {layoutSettings.sectionHeaders && <p className="mt-1.5 text-sm text-[var(--color-text-secondary)]">{tr.layout_experiments.explore_description}</p>}
           </header>
           <HomePageGrid items={home.explore_carousel} />
         </section>
-        <section data-carousel="remidies_carousel" aria-labelledby="home-remedies-title" className="layout-section">
-          <header className="layout-section-header">
-          <p className="font-body text-micro tracking-[.18em] uppercase text-[var(--color-text-brand)] font-bold lg:text-center">{home.guidance_label}</p>
-          <h2 id="home-remedies-title" className="font-display text-2xl text-[var(--color-text-primary)] mt-1 mb-3 lg:text-center">{home.guidance_title}</h2>
-          {layoutSettings.sectionHeaders && <p>{tr.layout_experiments.guidance_description}</p>}
-          </header>
-          <HomePageGrid items={home.remidies_carousel} showFootnotes={false} />
-        </section>
+        {home.remidies_carousel && home.remidies_carousel.length > 0 && (
+          <section data-carousel="remidies_carousel" aria-labelledby="home-remedies-title" className="layout-section">
+            <header className="layout-section-header text-center mb-4">
+              <p className="font-body text-micro tracking-[.2em] uppercase text-[var(--color-text-brand)] font-bold mb-1">{home.guidance_label}</p>
+              <h2 id="home-remedies-title" className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-3xl leading-tight">{home.guidance_title}</h2>
+              {layoutSettings.sectionHeaders && <p className="mt-1.5 text-sm text-[var(--color-text-secondary)]">{tr.layout_experiments.guidance_description}</p>}
+            </header>
+            <HomePageGrid items={home.remidies_carousel} showFootnotes={false} />
+          </section>
+        )}
       </div>
     </div>
   );

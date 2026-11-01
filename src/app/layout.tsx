@@ -176,14 +176,16 @@ export default function RootLayout({
                   style={{
                     backgroundImage: `url("${commonSettings.background.backgroundImage}")`,
                     backgroundPosition: commonSettings.background.position ?? "center",
-                    backgroundSize: commonSettings.background.size ?? "cover",
+                    backgroundSize: commonSettings.background.size ?? "contain",
                     backgroundRepeat: commonSettings.background.repeat ?? "no-repeat",
-                    opacity: commonSettings.background.opacity ?? 0.12,
+                    opacity: commonSettings.background.opacity ?? 0.18,
                   }}
                 />
               ) : null}
-              <BackNavigation />
-              {children}
+              <div className="relative z-1">
+                <BackNavigation />
+                {children}
+              </div>
             </main>
 
             <SiteFooter />

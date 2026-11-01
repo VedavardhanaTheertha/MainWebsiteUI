@@ -252,7 +252,7 @@ export default function SevasBrowser() {
 
   return (
     <>
-      <section className="layout-section bg-[var(--color-cream)] px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-sevas-title">
+      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-sevas-title">
         <div className="layout-wide mx-auto max-w-7xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="featured-sevas-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{tr.sevas_featured_title}</h2>
@@ -328,7 +328,7 @@ export default function SevasBrowser() {
           </label>
           }
         >
-        <div className="grid gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-parchment)] p-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-parchment)]/70 backdrop-blur-xs p-3 sm:grid-cols-2 lg:grid-cols-3">
           <label className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
             <span className="shrink-0 px-1">{tr.sevas_filter_category}</span>
             <select

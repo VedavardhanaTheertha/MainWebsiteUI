@@ -10,7 +10,7 @@ export const metadata: Metadata = content[defaultLang].page_metadata.events;
 export default function EventsPage() {
   return (
     <>
-      <header className="bg-[var(--color-parchment)] px-5 py-7 text-center lg:py-10">
+      <header className="bg-transparent px-5 py-7 text-center lg:py-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           <LocalizedCopy path={["events_label"]} />
         </p>
