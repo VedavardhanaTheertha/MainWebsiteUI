@@ -187,6 +187,11 @@ export interface LibraryBrowserShape {
   show_more: string;
   view_details: string;
   close_article: string;
+  collapse?: string;
+  expand?: string;
+  reading?: string;
+  tag?: string;
+  print?: string;
 }
 
 export interface LibrarySectionCopy {

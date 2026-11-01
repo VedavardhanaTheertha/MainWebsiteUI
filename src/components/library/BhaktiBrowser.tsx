@@ -288,12 +288,12 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
       </section>
 
       {selected && (
-        <section id="bhakti-reading" tabIndex={-1} aria-label={display(selected).title} className="mx-auto mt-4 max-w-6xl scroll-mt-28 pt-2">
-          <div className="bhakti-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)]">
-            <button type="button" onClick={backToResults} className="min-h-11 py-3 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
+        <section id="bhakti-reading" tabIndex={-1} aria-label={display(selected).title} className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
+          <div className="bhakti-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)] pb-3">
+            <button type="button" onClick={backToResults} className="min-h-11 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
             <span className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>
           </div>
-          <div className="bhakti-reading-controls flex flex-wrap items-center gap-3 py-3 text-sm">
+          <div className="bhakti-reading-controls flex flex-wrap items-center gap-3 border-b border-[var(--color-line-soft)] py-3 mb-5 text-sm">
             <label className="flex min-h-11 items-center gap-2">
               {controls.reading_size}
               <input type="range" min={bhaktiReaderSettings.minSize} max={bhaktiReaderSettings.maxSize} step={bhaktiReaderSettings.step} value={readingSize}

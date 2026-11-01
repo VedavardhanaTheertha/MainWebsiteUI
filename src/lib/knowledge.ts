@@ -23,7 +23,7 @@ export function localizeArticle(item: KnowledgeArticle, lang: string): DisplayAr
     summary: knowledgeText(item.summary, lang),
     status: knowledgeText(item.status, lang),
     tags: item.tags.map((tag) => knowledgeText(tag, lang)),
-    html: knowledgeText(item.html, lang),
+    html: item.html ? knowledgeText(item.html, lang) : "",
   };
 }
 

@@ -57,12 +57,13 @@ test("isolated library generation honors ordering and environment image override
   await mkdir(path.join(root, "settings"));
   await mkdir(path.join(root, "content", "languages"), { recursive: true });
   await mkdir(path.join(root, "config"));
-  for (const file of ["library-sections.config.mjs", "build-library-sections.mjs", "knowledge-schema.mjs", "content-utils.mjs", "markdown.mjs", "environment-utils.mjs", "editorial-content.mjs", "image-resolution.mjs", "language-content.mjs", "workspace-lock.mjs"]) {
+  for (const file of ["library-sections.config.mjs", "build-library-sections.mjs", "knowledge-schema.mjs", "content-utils.mjs", "markdown.mjs", "environment-utils.mjs", "editorial-content.mjs", "image-resolution.mjs", "language-content.mjs", "workspace-lock.mjs", "search-config.mjs"]) {
     await copyFile(path.join(projectRoot, "build", file), path.join(root, "build", file));
   }
   await cp(path.join(projectRoot, "library"), path.join(root, "library"), { recursive: true });
   await copyFile(path.join(projectRoot, "content", "languages", "en.json"), path.join(root, "content", "languages", "en.json"));
   await copyFile(path.join(projectRoot, "config", "site.yml"), path.join(root, "config", "site.yml"));
+  await copyFile(path.join(projectRoot, "settings", "search.json"), path.join(root, "settings", "search.json"));
   for (const environment of ["dev", "prod"]) {
     await cp(path.join(projectRoot, "settings", environment), path.join(root, "settings", environment), { recursive: true });
   }

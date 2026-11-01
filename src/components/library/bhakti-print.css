@@ -1,11 +1,15 @@
 @media print {
-  body:has(.bhakti-reader-page #bhakti-reading) *:not(:has(#bhakti-reading)):not(#bhakti-reading):not(#bhakti-reading *) {
+  body:has(.bhakti-reader-page #bhakti-reading) *:not(:has(#bhakti-reading)):not(#bhakti-reading):not(#bhakti-reading *),
+  body:has(.library-reader-page #library-reading) *:not(:has(#library-reading)):not(#library-reading):not(#library-reading *) {
     display: none !important;
   }
 
   body:has(.bhakti-reader-page #bhakti-reading),
   body:has(.bhakti-reader-page #bhakti-reading) *:has(#bhakti-reading),
-  .bhakti-reader-page #bhakti-reading {
+  .bhakti-reader-page #bhakti-reading,
+  body:has(.library-reader-page #library-reading),
+  body:has(.library-reader-page #library-reading) *:has(#library-reading),
+  .library-reader-page #library-reading {
     position: static !important;
     overflow: visible !important;
     height: auto !important;
@@ -15,25 +19,32 @@
     background: white !important;
     color: black !important;
     box-shadow: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
   }
 
-  .bhakti-reader-page #bhakti-reading .bhakti-reading-controls {
+  .bhakti-reader-page #bhakti-reading .bhakti-reading-controls,
+  .library-reader-page #library-reading .library-reading-controls {
     display: none !important;
   }
 
-  .bhakti-reader-page #bhakti-reading article {
+  .bhakti-reader-page #bhakti-reading article,
+  .library-reader-page #library-reading article {
     max-width: none;
     margin: 0;
     color: black;
   }
 
   .bhakti-reader-page #bhakti-reading h1,
-  .bhakti-reader-page #bhakti-reading h2 {
+  .bhakti-reader-page #bhakti-reading h2,
+  .library-reader-page #library-reading h1,
+  .library-reader-page #library-reading h2 {
     break-after: avoid;
     color: black;
   }
 
-  .bhakti-reader-page #bhakti-reading p {
+  .bhakti-reader-page #bhakti-reading p,
+  .library-reader-page #library-reading p {
     orphans: 3;
     widows: 3;
   }
