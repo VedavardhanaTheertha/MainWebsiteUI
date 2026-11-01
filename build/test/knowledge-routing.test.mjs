@@ -43,6 +43,7 @@ for (const prefix of ["library", "history"]) {
     const page = loadModule(`../../src/app/${prefix}/[section]/[article]/page.tsx`, {
       "@/lib/knowledge-routing": routing,
       "@/components/library/KnowledgeArticlePage": {},
+      "@/gen/library/loaders": { libraryContentLoaders: {} },
       "react/jsx-runtime": {},
     });
     const expected = sections
