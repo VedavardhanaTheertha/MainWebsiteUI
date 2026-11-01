@@ -98,12 +98,12 @@ export default function HeroCarousel() {
       </button>
     )}
 
-    {/* Slide Indicator Progress Pills (No background container, clean with drop shadows) */}
+    {/* Slide Indicator Progress Pills */}
     {!reducedMotion && images.length > 1 && (
       <div
         role="tablist"
         aria-label="Hero slides"
-        className="hero-slide-indicators absolute bottom-1.5 sm:bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2"
+        className="hero-slide-indicators pointer-events-none absolute bottom-3.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1.5 backdrop-blur-md border border-white/20 shadow-lg"
       >
         {images.map((_, idx) => (
           <button
@@ -113,11 +113,11 @@ export default function HeroCarousel() {
             aria-selected={idx === current}
             aria-label={`${tr.media?.photo_label ?? "Slide"} ${idx + 1}`}
             onClick={() => goToSlide(idx)}
-            className="flex min-h-8 min-w-8 items-center justify-center p-1 focus-visible:outline-2 focus-visible:outline-white"
+            className="pointer-events-auto flex min-h-11 min-w-8 items-center justify-center p-1 focus-visible:outline-2 focus-visible:outline-white"
           >
             <span
-              className={`block h-2.5 transition-all duration-300 rounded-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] ${
-                idx === current ? "w-7 bg-[var(--color-saffron-400)] shadow-sm" : "w-2.5 bg-white/80 hover:bg-white"
+              className={`block h-2.5 transition-all duration-300 rounded-full ${
+                idx === current ? "w-7 bg-[var(--color-saffron-400)] shadow-sm" : "w-2.5 bg-white/70 hover:bg-white"
               }`}
             />
           </button>

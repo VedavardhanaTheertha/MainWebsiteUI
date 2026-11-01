@@ -169,16 +169,16 @@ export default function RootLayout({
             <MobileHeader />
 
             <main className="flex-1 relative isolate">
-              {commonSettings.background?.backgroundImage ? (
+              {commonSettings.background ? (
                 <div
                   aria-hidden="true"
-                  className="common-background-image"
+                  className="common-background-image pointer-events-none fixed inset-0 z-0 bg-contain bg-center bg-no-repeat"
                   style={{
-                    backgroundImage: `url("${commonSettings.background.backgroundImage}")`,
+                    backgroundImage: `url("${siteConfig.basePath}/background.webp")`,
                     backgroundPosition: commonSettings.background.position ?? "center",
                     backgroundSize: commonSettings.background.size ?? "contain",
                     backgroundRepeat: commonSettings.background.repeat ?? "no-repeat",
-                    opacity: commonSettings.background.opacity ?? 0.18,
+                    opacity: 0.18,
                   }}
                 />
               ) : null}
