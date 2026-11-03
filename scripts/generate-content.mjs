@@ -565,7 +565,7 @@ function escapeHtml(value) {
 }
 
 /** Discovers hero groups and selects default.hero.md. */
-function loadDefaultHero(imageLookup, environmentName) {
+function loadDefaultHero(imageLookup) {
   const relativeHeroDir = path.join("library", "hero");
   const heroDir = path.join(rootDir, relativeHeroDir);
   if (!existsSync(heroDir)) {
@@ -771,7 +771,7 @@ const imageLookup = loadImageConfig(env.name);
 const mode = describeContentMode(env.content_mode, env.default_variant);
 const languageCodes = discoverLanguages(config);
 const defaultLang = config.site.default_language;
-const defaultHero = loadDefaultHero(imageLookup, env.name);
+const defaultHero = loadDefaultHero(imageLookup);
 
 const defaultContent = resolveImagePaths(loadLanguage(config, defaultLang), imageLookup);
 
