@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import ContentImage from "@/components/presentation/ContentImage";
 import { Search, X } from "lucide-react";
@@ -39,20 +39,20 @@ function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
 function SevaImage({ title, image, featured = false }: { title: string; image: string; featured?: boolean }) {
   const placeholderSrc = `${siteConfig.basePath}/icons/seva-placeholder.svg`;
   const source = image.startsWith("/") ? `${siteConfig.basePath}${image}` : image;
-  const [failedSource, setFailedSource] = useState("");
-  const [activeSrc, setActiveSrc] = useState(source);
+  const [triedFallback, setTriedFallback] = useState<string | null>(null);
+  const [failedSource, setFailedSource] = useState<string | null>(null);
 
-  useEffect(() => {
-    setActiveSrc(source);
-    setFailedSource("");
-  }, [source]);
+  const isFallbackActive = triedFallback === source;
+  const activeSrc = isFallbackActive && source.endsWith(".avif")
+    ? source.replace(/\.avif$/, ".webp")
+    : source;
 
   const showPlaceholder = !activeSrc || activeSrc === placeholderSrc || failedSource === activeSrc;
   const sizes = featured ? "(max-width: 768px) 85vw, 33vw" : "80px";
 
   const handleImageError = () => {
     if (activeSrc.endsWith(".avif")) {
-      setActiveSrc(activeSrc.replace(/\.avif$/, ".webp"));
+      setTriedFallback(source);
     } else {
       setFailedSource(activeSrc);
     }
