@@ -51,3 +51,4 @@ export default function ContentImage({ src, alt, sizes, ...props }: ContentImage
     </span>
   );
 }
+

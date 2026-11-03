@@ -39,15 +39,31 @@ function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
 function SevaImage({ title, image, featured = false }: { title: string; image: string; featured?: boolean }) {
   const placeholderSrc = `${siteConfig.basePath}/icons/seva-placeholder.svg`;
   const source = image.startsWith("/") ? `${siteConfig.basePath}${image}` : image;
-  const [failedSource, setFailedSource] = useState("");
-  const showPlaceholder = !source || source === placeholderSrc || failedSource === source;
+  const [triedFallback, setTriedFallback] = useState<string | null>(null);
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+
+  const isFallbackActive = triedFallback === source;
+  const activeSrc = isFallbackActive && source.endsWith(".avif")
+    ? source.replace(/\.avif$/, ".webp")
+    : source;
+
+  const showPlaceholder = !activeSrc || activeSrc === placeholderSrc || failedSource === activeSrc;
   const sizes = featured ? "(max-width: 768px) 85vw, 33vw" : "80px";
+
+  const handleImageError = () => {
+    if (activeSrc.endsWith(".avif")) {
+      setTriedFallback(source);
+    } else {
+      setFailedSource(activeSrc);
+    }
+  };
+
   return (
     <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "visual-tile-art h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
       {showPlaceholder ? (
         <Image src={placeholderSrc} alt="" fill sizes={sizes} className="object-contain" />
       ) : (
-        <ContentImage src={source} onError={() => setFailedSource(source)} alt="" fill sizes={sizes} />
+        <ContentImage src={activeSrc} onError={handleImageError} alt="" fill sizes={sizes} />
       )}
       <span className="sr-only">{title}</span>
     </div>
@@ -72,7 +88,7 @@ function SevaCard({
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName("collection", true)} layout-info-tile layout-compact-card w-full`}
+      className={`${collectionCardClassName("collection", true)} layout-info-tile layout-compact-card w-full !h-auto min-h-0`}
     >
       <SevaImage title={title} image={seva.image} featured />
       <div className={collectionCardBodyClassName}>
@@ -85,7 +101,7 @@ function SevaCard({
         <p className="layout-tile-summary mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
           {localized(seva.description, lang)}
         </p>
-        <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-3">
+        <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-2">
           {amount && (
             <p className="layout-tile-price font-body font-bold text-[var(--color-text-brand)]">
               {amount}
@@ -277,13 +293,13 @@ export default function SevasBrowser() {
                   type="button"
                   key={seva.id}
                   onClick={() => setSelectedSeva(seva)}
-                  className={`${collectionCardClassName("featured", true)} layout-info-tile w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none`}
+                  className={`${collectionCardClassName("featured", true)} layout-info-tile w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none !h-auto min-h-0`}
                 >
                   <SevaImage title={title} image={seva.image} featured />
                   <div className={collectionCardBodyClassName}>
                     <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
                     <p className="layout-tile-summary mt-1 line-clamp-2 text-sm text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
-                    <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-3">
+                    <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-2">
                       {amount && <p className="layout-tile-price font-bold text-[var(--color-text-brand)]">{amount}</p>}
                     </div>
                   </div>
