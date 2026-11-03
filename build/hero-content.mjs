@@ -1,5 +1,5 @@
 export function resolveHeroTitles(hero, codes, defaultLanguage, source = "hero") {
-  const authored = hero.titles ?? {};
+  const authored = hero.titles ?? (typeof hero.title === "object" && !Array.isArray(hero.title) ? hero.title : {});
   if (!authored || typeof authored !== "object" || Array.isArray(authored)) {
     throw new Error(`${source}: titles must be a language map.`);
   }

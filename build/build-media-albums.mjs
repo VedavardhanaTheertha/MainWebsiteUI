@@ -50,19 +50,17 @@ await writeFile(
   "utf8",
 );
 
-// Synchronize settings/{dev,prod}/toplibrary.json to prevent config drift
-for (const env of ["dev", "prod"]) {
-  const topLibPath = path.join(projectRoot, "settings", env, "toplibrary.json");
-  if (existsSync(topLibPath)) {
-    try {
-      const topLib = JSON.parse(readFileSync(topLibPath, "utf8"));
-      if (topLib?.sections) {
-        topLib.sections.album = topAlbumIds;
-        writeFileSync(topLibPath, JSON.stringify(topLib, null, 2) + "\n", "utf8");
-      }
-    } catch {
-      // Ignore if toplibrary.json cannot be parsed
+// Synchronize settings/toplibrary.json to prevent config drift
+const topLibPath = path.join(projectRoot, "settings", "toplibrary.json");
+if (existsSync(topLibPath)) {
+  try {
+    const topLib = JSON.parse(readFileSync(topLibPath, "utf8"));
+    if (topLib?.sections) {
+      topLib.sections.album = topAlbumIds;
+      writeFileSync(topLibPath, JSON.stringify(topLib, null, 2) + "\n", "utf8");
     }
+  } catch {
+    // Ignore if toplibrary.json cannot be parsed
   }
 }
 

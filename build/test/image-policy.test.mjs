@@ -36,7 +36,6 @@ test("root Next loader preserves existing and live-homepage image hosts and YAML
   assert.deepEqual(config.images, {
     unoptimized: true,
     remotePatterns: [
-      { protocol: "https", hostname: "vedavardhanatheertha.github.io", pathname: "/**" },
       { protocol: "https", hostname: "shiroormatha.org", pathname: "/**" },
       { protocol: "https", hostname: "www.shiroormatha.org", pathname: "/**" },
       { protocol: "https", hostname: "pub-*.r2.dev", pathname: "/**" },

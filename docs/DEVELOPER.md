@@ -223,17 +223,17 @@ segment-prefetch URLs from the matching nested export files.
 | Short UI labels or a language descriptor | `content/languages/<code>.json` |
 | Topic prose, page metadata, learning content, or an article | Canonical `library/<topic>/` Markdown |
 | Homepage copy and card selection | `settings/home.json` and referenced `library/pages/*.md` |
-| Environment-specific hero slides | `library/hero/{dev,prod}/*.hero.json` |
+| Hero slides and configuration | `library/hero/default.hero.md` |
 | Menus/footer destinations | `settings/navigation.json` |
 | Official channels and verified contact data | `library/connect/` and `library/branches/` |
 | Public action routing | `settings/public_actions.json` and the owning topic source |
-| Images and allowed image hosts | `settings/{dev,prod}/images.json`, `settings/image_policy.json` |
+| Allowed image hosts | `settings/image_policy.json` |
 | Theme and interaction defaults | `settings/theme.json`, `settings/ui_elements.json` |
 | Announcement visibility/schedule | `settings/announcements.json` |
 | Announcement wording and dated progress | Its canonical `library/announcement/` Markdown |
 | Media albums and image lists | `library/albums/*.md` and `settings/album_config.json` |
 | Search behavior | `settings/search.json` |
-| Knowledge order/default images | `settings/knowledge_sections.json` |
+| Knowledge section order | `settings/knowledge_sections.json` (section cover images live in `library/pages/*.md`) |
 | Environment behavior | `config/site.yml` |
 | Rendering/interactions | `src/` |
 | Validation/generation/export | `build/`, `scripts/` |

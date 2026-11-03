@@ -19,7 +19,6 @@ import { useLazyMiniSearch, useMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
 import { sortEventsByDateTime, type EventSortOrder } from "@/lib/event-sorting";
 import { eventDetailUrl, matchesEventDates } from "@/lib/event-tools";
-import { imagePaths } from "@/lib/images";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import EventDetailModal from "./EventDetailModal";
 import AdvancedFilters from "./AdvancedFilters";
@@ -343,7 +342,7 @@ export default function EventsExact() {
             const location = localizedText(item.location, lang);
             const performers = localized(item.performers, lang);
             const description = localizedText(item.description, lang);
-            const imgUrl = item.image || imagePaths.event || "/slide/1.jpg";
+            const imgUrl = item.image || "/icons/event-placeholder.svg";
 
             return (
               <article

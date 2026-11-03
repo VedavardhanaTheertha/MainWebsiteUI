@@ -32,9 +32,11 @@ test("Sevas page strings belong to language files and retired Blog strings stay 
   assert.equal(loadEditorialContent(root, "en").blog_title, undefined);
 });
 
-test("hero groups remain in their original library environment folders", () => {
+test("hero default definition lives in library/hero/default.hero.md", () => {
+  assert.ok(exists("library/hero/default.hero.md"));
+  assert.equal(exists("settings/default.hero.md"), false);
   for (const environment of ["dev", "prod"]) {
-    assert.ok(exists(`library/hero/${environment}/default.hero.json`));
+    assert.equal(exists(`library/hero/${environment}/default.hero.json`), false);
     assert.equal(exists(`settings/${environment}/default.hero.json`), false);
   }
 });

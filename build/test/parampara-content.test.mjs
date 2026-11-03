@@ -44,8 +44,8 @@ test("all 31 canonical gurus retain facts and fallback without a collection JSON
     for (const field of ["id", "name", "summary", "timePeriod", "thumbnailImage", "fullImage"]) assert.equal(guru[field], metadata[field]);
     assert.equal(guru.detailsMarkdown, body.split(/^##\s+Details\s*$/m)[1].trim());
   });
-  assert.equal(result.en[0].thumbnailImage, "https://www.shiroormatha.org/m.jpg");
-  assert.equal(result.en[30].fullImage, "https://shiroormatha.org/swamiji.png");
+  assert.equal(result.en[0].thumbnailImage, "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/m.avif");
+  assert.equal(result.en[30].fullImage, "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/swamiji.avif");
 });
 
 test("numeric filename prefixes alone control ordering, including gaps and three digits", (t) => {

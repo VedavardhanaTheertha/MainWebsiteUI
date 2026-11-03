@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
+  <defs>
+    <radialGradient id="eventBg" cx="50%" cy="46%" r="70%">
+      <stop offset="0%" stop-color="#fffdf7"/>
+      <stop offset="60%" stop-color="#fcedd0"/>
+      <stop offset="100%" stop-color="#edd1a4"/>
+    </radialGradient>
+    <radialGradient id="flameGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffb703" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#fb8500" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#c66b36" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lampMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="35%" stop-color="#b45309"/>
+      <stop offset="70%" stop-color="#78350f"/>
+      <stop offset="100%" stop-color="#451a03"/>
+    </linearGradient>
+    <linearGradient id="flameInner" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#ffedd5"/>
+      <stop offset="30%" stop-color="#fde047"/>
+      <stop offset="70%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="flameOuter" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="60%" stop-color="#c2410c"/>
+      <stop offset="100%" stop-color="#9a3412"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="640" height="360" fill="url(#eventBg)"/>
+
+  <!-- Sacred Geometric Aura / Festive Halo -->
+  <g fill="none" stroke="#b75c30" stroke-width="1.5" opacity="0.22" transform="translate(320 160)">
+    <circle r="130"/>
+    <circle r="112" stroke-dasharray="4 6"/>
+    <circle r="90"/>
+    <circle r="72" stroke-dasharray="2 4"/>
+    <path d="M0 -140 L0 -124 M0 124 L0 140 M-140 0 L-124 0 M124 0 L140 0 M-98 -98 L-88 -88 M88 88 L98 98 M98 -98 L88 -88 M-88 88 L-98 98"/>
+  </g>
+
+  <!-- Flame Radiance Aura -->
+  <circle cx="320" cy="142" r="75" fill="url(#flameGlow)"/>
+
+  <!-- Ornate Traditional Deepa (Festival Oil Lamp) -->
+  <g id="deepa">
+    <!-- Pedestal Base -->
+    <path d="M260 252 C260 244 285 240 320 240 C355 240 380 244 380 252 C380 258 360 262 320 262 C280 262 260 258 260 252 Z" fill="url(#lampMetal)"/>
+    <path d="M280 242 C295 232 305 220 312 208 L328 208 C335 220 345 232 360 242 Z" fill="url(#lampMetal)" opacity="0.95"/>
+    <ellipse cx="320" cy="208" rx="20" ry="5" fill="#f59e0b"/>
+
+    <!-- Lamp Bowl (Thali/Patra) -->
+    <path d="M235 198 C245 222 280 226 320 226 C360 226 395 222 405 198 C385 204 355 208 320 208 C285 208 255 204 235 198 Z" fill="url(#lampMetal)"/>
+    <!-- Rim Highlight -->
+    <ellipse cx="320" cy="198" rx="85" ry="10" fill="url(#lampMetal)"/>
+    <ellipse cx="320" cy="197" rx="78" ry="7" fill="#78350f" opacity="0.6"/>
+
+    <!-- Sacred Deepa Flame -->
+    <path d="M320 90 C340 125 352 155 336 178 C328 188 312 188 304 178 C288 155 300 125 320 90 Z" fill="url(#flameOuter)"/>
+    <path d="M320 108 C334 135 342 158 331 174 C325 182 315 182 309 174 C298 158 306 135 320 108 Z" fill="url(#flameInner)"/>
+    <ellipse cx="320" cy="156" rx="5" ry="12" fill="#fffdfa" opacity="0.9"/>
+  </g>
+
+  <!-- Festive Auspicious Stars / Deepotsava Sparkles -->
+  <g fill="#d97706" opacity="0.55">
+    <path d="M190 100 Q190 115 175 115 Q190 115 190 130 Q190 115 205 115 Q190 115 190 100 Z"/>
+    <path d="M450 95 Q450 110 435 110 Q450 110 450 125 Q450 110 465 110 Q450 110 450 95 Z"/>
+    <circle cx="150" cy="170" r="3"/>
+    <circle cx="490" cy="165" r="3.5"/>
+    <circle cx="215" cy="65" r="2.5"/>
+    <circle cx="425" cy="60" r="2.5"/>
+  </g>
+</svg>

@@ -179,10 +179,7 @@ function placeholderSeva(seva, index) {
 }
 
 async function loadFeaturedIds(sevaIds) {
-  const environmentName = process.env.SITE_ENV === "local"
-    ? "dev"
-    : (process.env.SITE_ENV || "dev");
-  const settingsFile = path.join(projectRoot, "settings", environmentName, "toplibrary.json");
+  const settingsFile = path.join(projectRoot, "settings", "toplibrary.json");
 
   try {
     await access(settingsFile);

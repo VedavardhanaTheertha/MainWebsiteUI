@@ -73,7 +73,6 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   await copyFile(new URL("../../settings/announcements.json", import.meta.url), path.join(root, "settings", "announcements.json"));
   await copyFile(new URL("../../settings/common.json", import.meta.url), path.join(root, "settings", "common.json"));
   await mkdir(path.join(root, "settings", "dev"), { recursive: true });
-  await copyFile(new URL("../../settings/dev/images.json", import.meta.url), path.join(root, "settings", "dev", "images.json"));
   const source = path.join(root, "settings", "ui_elements.json");
   const run = (settings) => {
     return writeFile(source, JSON.stringify(settings)).then(() =>

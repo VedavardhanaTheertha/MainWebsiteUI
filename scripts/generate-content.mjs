@@ -26,6 +26,7 @@ import { discoverParampara as discoverMarkdownParampara } from "../build/parampa
 import { loadAuthoredLanguage } from "../build/authored-content.mjs";
 import { applyNavigation, loadNavigation } from "../build/navigation-content.mjs";
 import { isMachineContentValue as isMachineValue, isPreservedContentField } from "../build/content-values.mjs";
+import { parseMarkdownFrontmatter } from "../build/content-utils.mjs";
 import { resolveHeroTitles } from "../build/hero-content.mjs";
 import { holdWorkspaceLock } from "../build/workspace-lock.mjs";
 import { createLanguageDescriptor } from "../build/language-content.mjs";
@@ -97,12 +98,12 @@ function loadLanguage(config, code) {
   return loadAuthoredLanguage(rootDir, code, config.content.languages_dir, { navigation: false });
 }
 
-/** Loads the single source of truth for all public image paths. */
+/** Loads the image lookup map if images.json is present, or returns an empty lookup. */
 function loadImageConfig(environmentName) {
   const configName = environmentName === "local" ? "dev" : environmentName;
   const file = path.join(rootDir, "settings", configName, "images.json");
   if (!existsSync(file)) {
-    throw new Error(`settings/${configName}/images.json is missing — it defines the website image paths.`);
+    return new Map();
   }
   const config = JSON.parse(readFileSync(file, "utf8"));
   const baseUrl = config.baseUrl ?? "";
@@ -112,8 +113,7 @@ function loadImageConfig(environmentName) {
   for (const [key, imagePath] of Object.entries(paths)) lookup.set(`@${key}`, resolve(imagePath));
   for (const imagePath of Object.values(paths)) lookup.set(imagePath, resolve(imagePath));
   for (const [alias, key] of Object.entries(config.aliases ?? {})) {
-    if (!paths[key]) throw new Error(`settings/images.json alias ${alias} points to unknown image ${key}.`);
-    lookup.set(alias, resolve(paths[key]));
+    if (paths[key]) lookup.set(alias, resolve(paths[key]));
   }
   return lookup;
 }
@@ -564,27 +564,34 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-/** Discovers hero groups for the active environment and selects default.hero.json. */
+/** Discovers hero groups and selects default.hero.md. */
 function loadDefaultHero(imageLookup, environmentName) {
-  const heroEnvironment = environmentName === "local" ? "dev" : environmentName;
-  const relativeHeroDir = path.join("library", "hero", heroEnvironment);
+  const relativeHeroDir = path.join("library", "hero");
   const heroDir = path.join(rootDir, relativeHeroDir);
   if (!existsSync(heroDir)) {
     throw new Error(`${relativeHeroDir} is missing — initialize the library submodule and add a hero group.`);
   }
 
-  const groupFiles = readdirSync(heroDir).filter((file) => file.endsWith(".hero.json")).sort();
-  const defaultFile = "default.hero.json";
-  if (!groupFiles.includes(defaultFile)) {
+  const groupFiles = readdirSync(heroDir).filter((file) => file.endsWith(".hero.md") || file.endsWith(".hero.json")).sort();
+  const defaultFile = existsSync(path.join(heroDir, "default.hero.md"))
+    ? "default.hero.md"
+    : "default.hero.json";
+  if (!existsSync(path.join(heroDir, defaultFile))) {
     throw new Error(`${path.join(relativeHeroDir, defaultFile)} is missing — it selects the default hero group.`);
   }
 
   const file = path.join(heroDir, defaultFile);
   let hero;
-  try {
-    hero = JSON.parse(readFileSync(file, "utf8"));
-  } catch (err) {
-    throw new Error(`${path.join(relativeHeroDir, defaultFile)} is not valid JSON — ${err.message}`);
+  if (defaultFile.endsWith(".json")) {
+    try {
+      hero = JSON.parse(readFileSync(file, "utf8"));
+    } catch (err) {
+      throw new Error(`${path.join(relativeHeroDir, defaultFile)} is not valid JSON — ${err.message}`);
+    }
+  } else {
+    const raw = readFileSync(file, "utf8");
+    const parsed = parseMarkdownFrontmatter(raw, path.join(relativeHeroDir, defaultFile));
+    hero = parsed.metadata;
   }
 
   const titles = resolveHeroTitles(hero, languageCodes, defaultLang, path.join(relativeHeroDir, defaultFile));
@@ -607,7 +614,7 @@ function loadDefaultHero(imageLookup, environmentName) {
     return image;
   });
 
-  console.log(`[content] hero env=${heroEnvironment} groups=[${groupFiles.map((name) => name.replace(/\.hero\.json$/, "")).join(", ")}] selected=default`);
+  console.log(`[content] hero groups=[${groupFiles.map((name) => name.replace(/\.hero\.(md|json)$/, "")).join(", ")}] selected=default`);
   return {
     ...hero, images,
     title_en: titles.en ?? titles[defaultLang],

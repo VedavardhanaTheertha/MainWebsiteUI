@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveImageUrl } from "./image-resolution.mjs";
@@ -145,9 +145,13 @@ export function resolveBackgroundSettings(background, environmentName = "dev", r
   const root = toPath(rootDir);
   const configName = environmentName === "prod" ? "prod" : "dev";
   const imageConfigFile = path.join(root, "settings", configName, "images.json");
-  const imageConfig = JSON.parse(readFileSync(imageConfigFile, "utf8"));
-  const baseUrl = imageConfig.baseUrl ?? "";
-  const paths = imageConfig.paths ?? {};
+  let baseUrl = "";
+  let paths = {};
+  if (existsSync(imageConfigFile)) {
+    const imageConfig = JSON.parse(readFileSync(imageConfigFile, "utf8"));
+    baseUrl = imageConfig.baseUrl ?? "";
+    paths = imageConfig.paths ?? {};
+  }
 
   let resolvedImage = background.backgroundImage;
   if (resolvedImage.startsWith("@")) {
