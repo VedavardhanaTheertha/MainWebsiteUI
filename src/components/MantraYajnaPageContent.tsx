@@ -3,7 +3,6 @@
 import ContentImage from "@/components/presentation/ContentImage";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { useLang } from "@/context/LanguageContext";
-import { imagePaths } from "@/lib/images";
 import { actionDestinations } from "@/gen/settings/actions";
 import { formatArticleDate } from "@/lib/reader-utils";
 
@@ -13,7 +12,7 @@ export default function MantraYajnaPageContent() {
   return (
     <div>
       <div className="relative h-[180px] lg:h-[280px]">
-        <ContentImage src={imagePaths.krishna} alt="" fill sizes="100vw" />
+        <ContentImage src={copy.yajna_image} alt="" fill sizes="100vw" />
       </div>
       <header className="bg-transparent px-4 py-5 lg:px-8">
         <p className="text-micro font-bold tracking-[.16em] uppercase text-[var(--color-text-brand)]">

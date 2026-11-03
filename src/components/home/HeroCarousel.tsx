@@ -102,7 +102,7 @@ export default function HeroCarousel() {
     {!reducedMotion && images.length > 1 && (
       <div
         role="tablist"
-        aria-label="Hero slides"
+        aria-label={tr.media?.photos_label}
         className="hero-slide-indicators pointer-events-none absolute bottom-3.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1.5 backdrop-blur-md border border-white/20 shadow-lg"
       >
         {images.map((_, idx) => (
@@ -111,7 +111,7 @@ export default function HeroCarousel() {
             type="button"
             role="tab"
             aria-selected={idx === current}
-            aria-label={`${tr.media?.photo_label ?? "Slide"} ${idx + 1}`}
+            aria-label={`${tr.media?.photo_label ?? ""} ${idx + 1}`.trim()}
             onClick={() => goToSlide(idx)}
             className="pointer-events-auto flex min-h-11 min-w-8 items-center justify-center p-1 focus-visible:outline-2 focus-visible:outline-white"
           >

@@ -1,4 +1,7 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseMarkdownFrontmatter } from "./content-utils.mjs";
 
 const sectionDefinitions = [
   { id: "mantra", route: "/library/mantra" },
@@ -13,6 +16,21 @@ const sectionDefinitions = [
   { id: "science", route: "/history/science" },
   { id: "pilgrim", route: "/history/pilgrim-guide" },
 ];
+
+export function loadSectionImages(pagesDir = new URL("../library/pages", import.meta.url)) {
+  const imagesByRoute = new Map();
+  const dirPath = typeof pagesDir === "string" ? pagesDir : fileURLToPath(pagesDir);
+  for (const file of readdirSync(dirPath)) {
+    if (!file.endsWith(".md")) continue;
+    const filePath = path.join(dirPath, file);
+    const content = readFileSync(filePath, "utf8");
+    const { metadata } = parseMarkdownFrontmatter(content, `library/pages/${file}`);
+    if (metadata.kind === "page-reference" && metadata.url && metadata.image) {
+      imagesByRoute.set(metadata.url, metadata.image);
+    }
+  }
+  return imagesByRoute;
+}
 
 export function parseKnowledgeSections(settings, sourceName = "settings/knowledge_sections.json") {
   if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
@@ -34,7 +52,7 @@ export function parseKnowledgeSections(settings, sourceName = "settings/knowledg
       throw new Error(`${sourceName} must define an object for section "${id}".`);
     }
     for (const field of Object.keys(entry)) {
-      if (field !== "order" && field !== "image") {
+      if (field !== "order") {
         throw new Error(`${sourceName} section "${id}" has unknown field "${field}".`);
       }
     }
@@ -45,13 +63,17 @@ export function parseKnowledgeSections(settings, sourceName = "settings/knowledg
       throw new Error(`${sourceName} contains duplicate order ${entry.order}.`);
     }
     orders.add(entry.order);
-    if (typeof entry.image !== "string" || !/^@image\.[A-Za-z][A-Za-z0-9_-]*$/u.test(entry.image)) {
-      throw new Error(`${sourceName} section "${id}" image must be a valid @image reference.`);
-    }
-    return { ...definition, order: entry.order, image: entry.image };
+    return { ...definition, order: entry.order };
   }).sort((a, b) => a.order - b.order);
 }
 
+const sectionImages = loadSectionImages();
 export const librarySections = parseKnowledgeSections(JSON.parse(
   readFileSync(new URL("../settings/knowledge_sections.json", import.meta.url), "utf8"),
-));
+)).map((section) => {
+  const image = sectionImages.get(section.route);
+  if (!image) {
+    throw new Error(`library/pages missing page-reference image for route "${section.route}".`);
+  }
+  return { ...section, image };
+});

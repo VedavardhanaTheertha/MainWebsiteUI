@@ -6,7 +6,6 @@ import { X, Calendar, Clock, MapPin, User, Tag } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { localized, localizedText } from "@/lib/localization";
 import type { EventItem, EventCategory } from "@/gen/events/data";
-import { imagePaths } from "@/lib/images";
 import { siteConfig } from "@/gen/content";
 import { useDialog } from "@/hooks/useDialog";
 import { createEventCalendar, eventDetailUrl, validEventDate } from "@/lib/event-tools";
@@ -31,7 +30,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
   const performers = localized(event.performers, lang);
   const description = localizedText(event.description, lang);
   const details = localizedText(event.details, lang);
-  const imgUrl = event.image || imagePaths.event || "/slide/1.jpg";
+  const imgUrl = event.image || "/icons/event-placeholder.svg";
   const detailUrl = () => eventDetailUrl(window.location.href, event.slug, `${siteConfig.basePath}/events/`);
   const shareEvent = async (nativeShare: boolean) => {
     const url = detailUrl();

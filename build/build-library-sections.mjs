@@ -1,5 +1,5 @@
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -90,11 +90,14 @@ function requireRoute(value, sourceName) {
 
 function loadImageResolver() {
   const sourceName = `settings/${settingsEnvironment}/images.json`;
-  const imageConfig = JSON.parse(
-    readFileSync(path.join(projectRoot, sourceName), "utf8"),
-  );
-  const baseUrl = imageConfig.baseUrl ?? "";
-  const paths = imageConfig.paths ?? {};
+  const imageConfigFile = path.join(projectRoot, sourceName);
+  let baseUrl = "";
+  let paths = {};
+  if (existsSync(imageConfigFile)) {
+    const imageConfig = JSON.parse(readFileSync(imageConfigFile, "utf8"));
+    baseUrl = imageConfig.baseUrl ?? "";
+    paths = imageConfig.paths ?? {};
+  }
 
   return (value, field, recordName) => {
     const image = requireString(value, field, recordName);
@@ -167,7 +170,7 @@ async function loadSections(resolveImage) {
         title,
         summary,
         status,
-        image: resolveImage(metadata.image ?? definition.image, "image", sourceName),
+        image: metadata.image ? resolveImage(metadata.image, "image", sourceName) : "",
         tags,
         searchText: normalizeSearchText([
           ...Object.values(title),
@@ -206,7 +209,7 @@ async function loadSections(resolveImage) {
 }
 
 async function applyFeaturedSettings(sections) {
-  const sourceName = `settings/${settingsEnvironment}/toplibrary.json`;
+  const sourceName = "settings/toplibrary.json";
   const parsed = JSON.parse(await readFile(path.join(projectRoot, sourceName), "utf8"));
   const configuredSections = parsed?.sections;
   if (!configuredSections || typeof configuredSections !== "object" || Array.isArray(configuredSections)) {

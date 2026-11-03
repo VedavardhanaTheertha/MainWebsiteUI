@@ -16,7 +16,7 @@ Contributor commands are in [DEVELOPER.md](DEVELOPER.md).
 |---|---|
 | `src/app/`, `src/components/`, `src/hooks/`, `src/lib/`, `src/context/` | Routes, rendering, interactions, and typed runtime helpers |
 | `content/languages/<code>.json` | Language descriptors and short UI labels |
-| `library/` | Canonical topic Markdown, devotional corpus, page-reference metadata, and environment-specific hero groups |
+| `library/` | Canonical topic Markdown, devotional corpus, page-reference metadata, and hero configuration |
 | `settings/` | Homepage composition, common webpage presentation, navigation, images, theme, search, and interaction behavior |
 | `config/site.yml` | Default language, canonical production URL, environment matrix, and verification policy |
 | `build/`, `scripts/` | Validation, content generation, export, preview, and output verification |
@@ -183,8 +183,9 @@ and language JSON. Active shared control and editorial namespaces are `ui` and
 | Knowledge sections | Topic Markdown in `library/mantra/`, `shastra/`, `jnana/`, `dharma/`, `projects/`, `stories/`, `articles/`, `symbolism/`, `remedies/`, `science/`, and `pilgrim/` |
 
 Knowledge section routes and supported IDs are defined in
-`build/library-sections.config.mjs`. Their display order and default image references
-come from `settings/knowledge_sections.json`. Section-specific schemas validate
+`build/library-sections.config.mjs`. Display order comes from
+`settings/knowledge_sections.json`, while section cover images are configured in
+their corresponding page-reference records in `library/pages/*.md`. Section-specific schemas validate
 metadata such as project status or verified outcomes; use existing records and
 `build/knowledge-schema.mjs` as the field reference. Collection index documents are
 not ordinary articles.
@@ -223,9 +224,8 @@ The generated `remidies_carousel` contains three distinct remedies drawn from
 content variants for that generation; keep at least four eligible remedy articles.
 The existing key spelling is part of the data contract.
 
-Environment-specific hero groups live in `library/hero/{dev,prod}/*.hero.json`.
-Local preview uses the development groups. Preserve their selection and ordering
-when changing image resolution or controls.
+Hero configuration lives in `library/hero/default.hero.md`.
+Preserve its image resolution and controls.
 
 `settings/navigation.json` owns menus, route destinations, footer policy links, and
 official social `connectId` references. Labels are localized separately. Only concrete
@@ -254,7 +254,7 @@ to the logical parent route computed by `src/lib/back-navigation.ts`.
 
 ## 5. Images, media, and interactions
 
-Environment image maps in `settings/{dev,prod}/images.json` resolve stable aliases.
+Images are configured as direct HTTPS targets in content Markdown and settings JSON.
 `build/image-resolution.mjs` is the shared resolution rule:
 
 - An absolute HTTPS target bypasses the media base.

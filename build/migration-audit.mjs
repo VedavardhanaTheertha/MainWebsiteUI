@@ -115,5 +115,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (result.errors.length) process.exitCode = 1;
   else console.log(`[migration] PASS: ${result.languages} languages, ${result.sources} source components; no obsolete sources, duplicate authorities, or direct JSX display literals.`);
   for (const candidate of result.candidates) console.log(`[migration] Remaining candidate: ${candidate}`);
-  console.log("[migration] Retained intentionally: UI strings and media catalogs in language JSON; config/site.yml; original library/hero environment groups; document-specific Markdown metadata; homepage/settings JSON.");
+  console.log("[migration] Retained intentionally: UI strings and media catalogs in language JSON; config/site.yml; library/hero default hero group; document-specific Markdown metadata; homepage/settings JSON.");
 }

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { copyFile, cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import test from "node:test";
@@ -16,7 +17,7 @@ test("knowledge settings preserve default presentation and code-owned routes", (
   ]);
   assert.deepEqual(librarySections.map(({ order }) => order), Array.from({ length: 11 }, (_, i) => i + 1));
   assert.equal(librarySections.find(({ id }) => id === "pilgrim").route, "/history/pilgrim-guide");
-  assert.equal(librarySections.find(({ id }) => id === "science").image, "@image.madhwacharyaNew");
+  assert.equal(librarySections.find(({ id }) => id === "science").image, "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/vedic-science-philosophy.avif");
 });
 
 test("knowledge settings reject incomplete, unknown, malformed and conflicting configuration", () => {
@@ -38,19 +39,14 @@ test("knowledge settings reject incomplete, unknown, malformed and conflicting c
   assert.throws(() => parseKnowledgeSections({
     ...defaults, mantra: { ...defaults.mantra, order: defaults.shastra.order },
   }), /duplicate order/);
-  for (const image of [undefined, null, "", "https://example.test/image.jpg", "@image.", "@image.bad key", "@image.krishna/other"]) {
-    assert.throws(() => parseKnowledgeSections({
-      ...defaults, mantra: { ...defaults.mantra, image },
-    }), /image must be a valid @image reference/);
-  }
-  for (const field of ["id", "route", "typo"]) {
+  for (const field of ["id", "route", "image", "typo"]) {
     assert.throws(() => parseKnowledgeSections({
       ...defaults, mantra: { ...defaults.mantra, [field]: "override" },
     }), new RegExp(`unknown field "${field}"`));
   }
 });
 
-test("isolated library generation honors ordering and environment image overrides and rejects invalid files", async (t) => {
+test("isolated library generation honors ordering and markdown section images and rejects invalid files", async (t) => {
   const root = await mkdtemp(path.join(projectRoot, ".knowledge-sections-fixture-"));
   t.after(() => rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }));
   await mkdir(path.join(root, "build"));
@@ -64,8 +60,12 @@ test("isolated library generation honors ordering and environment image override
   await copyFile(path.join(projectRoot, "content", "languages", "en.json"), path.join(root, "content", "languages", "en.json"));
   await copyFile(path.join(projectRoot, "config", "site.yml"), path.join(root, "config", "site.yml"));
   await copyFile(path.join(projectRoot, "settings", "search.json"), path.join(root, "settings", "search.json"));
+  await copyFile(path.join(projectRoot, "settings", "toplibrary.json"), path.join(root, "settings", "toplibrary.json"));
   for (const environment of ["dev", "prod"]) {
-    await cp(path.join(projectRoot, "settings", environment), path.join(root, "settings", environment), { recursive: true });
+    const envDir = path.join(projectRoot, "settings", environment);
+    if (existsSync(envDir)) {
+      await cp(envDir, path.join(root, "settings", environment), { recursive: true });
+    }
   }
 
   const source = path.join(root, "settings", "knowledge_sections.json");
@@ -79,11 +79,13 @@ test("isolated library generation honors ordering and environment image override
   const custom = structuredClone(defaults);
   custom.mantra.order = 11;
   custom.pilgrim.order = 1;
-  custom.mantra.image = "@image.chakra";
   await writeFile(source, JSON.stringify(custom));
+  const mantraPagePath = path.join(root, "library", "pages", "library--mantra.md");
+  const mantraPageContent = await readFile(mantraPagePath, "utf8");
+  await writeFile(mantraPagePath, mantraPageContent.replace(/image: "[^"]*"/, 'image: "https://example.test/custom-mantra.jpg"'));
   const { librarySections: configured } = await import(pathToFileURL(path.join(root, "build", "library-sections.config.mjs")).href);
   assert.equal(configured[0].id, "pilgrim");
-  assert.equal(configured.at(-1).image, "@image.chakra");
+  assert.equal(configured.at(-1).image, "https://example.test/custom-mantra.jpg");
   for (const environment of ["dev", "local", "prod"]) {
     const result = await run(environment);
     assert.equal(result.status, 0, result.stderr);
@@ -91,11 +93,9 @@ test("isolated library generation honors ordering and environment image override
     const sections = JSON.parse(generated.match(/export const realLibrarySections: LibrarySection\[\] = (.*);/u)[1]);
     assert.equal(sections[0].id, "pilgrim");
     assert.equal(sections.at(-1).id, "mantra");
-    const images = JSON.parse(await readFile(path.join(root, "settings", environment === "local" ? "dev" : environment, "images.json"), "utf8"));
-    assert.equal(sections.at(-1).image, `${images.baseUrl}${images.paths.chakra}`);
+    assert.equal(sections.at(-1).image, "https://example.test/custom-mantra.jpg");
   }
-  custom.mantra.image = "@image.unknownAlias";
-  await writeFile(source, JSON.stringify(custom));
+  await writeFile(mantraPagePath, mantraPageContent.replace(/image: "[^"]*"/, 'image: "@image.unknownAlias"'));
   for (const environment of ["dev", "local", "prod"]) {
     const result = await run(environment);
     assert.notEqual(result.status, 0);

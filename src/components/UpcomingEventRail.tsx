@@ -9,7 +9,6 @@ import {
   placeholderEvents,
   type EventItem,
 } from "@/gen/events/data";
-import { imagePaths } from "@/lib/images";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import { selectUpcomingEvents } from "@/lib/ui-settings";
@@ -65,7 +64,7 @@ export default function UpcomingEventRail() {
           const location = localizedText(ev.location, lang);
           const primaryCat = ev.categories?.[0];
           const catLabel = localizedText(primaryCat, lang);
-          const imgUrl = ev.image || imagePaths.event || "/slide/1.jpg";
+          const imgUrl = ev.image || "/icons/event-placeholder.svg";
 
           return (
             <div
@@ -116,7 +115,7 @@ export default function UpcomingEventRail() {
           const location = localizedText(ev.location, lang);
           const primaryCat = ev.categories?.[0];
           const catLabel = localizedText(primaryCat, lang);
-          const imgUrl = ev.image || imagePaths.event || "/slide/1.jpg";
+          const imgUrl = ev.image || "/icons/event-placeholder.svg";
 
           return (
             <article

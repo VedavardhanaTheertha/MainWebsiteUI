@@ -11,9 +11,9 @@ import {
 
 test("parseCommonSettings accepts valid configuration and assigns defaults", () => {
   const minimal = parseCommonSettings({
-    background: { backgroundImage: "@chakra" },
+    background: { backgroundImage: "@gopura" },
   });
-  assert.equal(minimal.background.backgroundImage, "@chakra");
+  assert.equal(minimal.background.backgroundImage, "@gopura");
   assert.equal(minimal.background.opacity, 0.12);
   assert.equal(minimal.background.size, "cover");
   assert.equal(minimal.background.repeat, "no-repeat");
@@ -28,7 +28,7 @@ test("parseCommonSettings accepts valid configuration and assigns defaults", () 
 
   const custom = parseCommonSettings({
     background: {
-      backgroundImage: "@image.chakra",
+      backgroundImage: "@image.gopura",
       opacity: 0.25,
       size: "contain",
       repeat: "repeat",
@@ -54,7 +54,7 @@ test("parseCommonSettings accepts valid configuration and assigns defaults", () 
       meta: "12px",
     },
   });
-  assert.equal(custom.background.backgroundImage, "@image.chakra");
+  assert.equal(custom.background.backgroundImage, "@image.gopura");
   assert.equal(custom.background.opacity, 0.25);
   assert.equal(custom.background.size, "contain");
   assert.equal(custom.background.repeat, "repeat");
@@ -122,41 +122,30 @@ test("parseCommonSettings rejects invalid values", () => {
     assert.throws(() => parseCommonSettings({ background: { backgroundImage: bg } }), /background\.backgroundImage must be a non-empty string/);
   }
   for (const opacity of [-0.1, 1.1, NaN, "0.5", null]) {
-    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@chakra", opacity } }), /background\.opacity must be a number between 0 and 1/);
+    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@gopura", opacity } }), /background\.opacity must be a number between 0 and 1/);
   }
   for (const size of ["", "   ", null, 123]) {
-    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@chakra", size } }), /background\.size must be a non-empty string/);
+    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@gopura", size } }), /background\.size must be a non-empty string/);
   }
   for (const repeat of ["", "   ", null, 123]) {
-    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@chakra", repeat } }), /background\.repeat must be a non-empty string/);
+    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@gopura", repeat } }), /background\.repeat must be a non-empty string/);
   }
   for (const position of ["", "   ", null, 123]) {
-    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@chakra", position } }), /background\.position must be a non-empty string/);
+    assert.throws(() => parseCommonSettings({ background: { backgroundImage: "@gopura", position } }), /background\.position must be a non-empty string/);
   }
 });
 
-test("resolveCommonSettings resolves @chakra, @image.chakra and direct URLs", () => {
-  const resolvedAtKey = resolveCommonSettings({
+test("resolveCommonSettings resolves direct paths and direct URLs", () => {
+  const directPath = resolveCommonSettings({
     background: {
-      backgroundImage: "@chakra",
+      backgroundImage: "/background.webp",
       opacity: 0.12,
       size: "cover",
       repeat: "no-repeat",
       position: "center",
     },
   }, "dev");
-  assert.match(resolvedAtKey.background.backgroundImage, /^https:\/\/.*\/chakra\.png$/);
-
-  const resolvedAtImageKey = resolveCommonSettings({
-    background: {
-      backgroundImage: "@image.chakra",
-      opacity: 0.12,
-      size: "cover",
-      repeat: "no-repeat",
-      position: "center",
-    },
-  }, "dev");
-  assert.equal(resolvedAtImageKey.background.backgroundImage, resolvedAtKey.background.backgroundImage);
+  assert.equal(directPath.background.backgroundImage, "/background.webp");
 
   const directHttps = resolveCommonSettings({
     background: {
@@ -185,7 +174,7 @@ test("resolveCommonSettings resolves @chakra, @image.chakra and direct URLs", ()
 
 test("loadCommonSettings loads and resolves settings/common.json", () => {
   const devSettings = loadCommonSettings("dev");
-  assert.match(devSettings.background.backgroundImage, /chakra\.png/);
+  assert.match(devSettings.background.backgroundImage, /background\.webp/);
   assert.equal(devSettings.background.size, "cover");
   assert.equal(devSettings.background.repeat, "no-repeat");
   assert.ok(devSettings.fontFamily.display.includes("var(--font-marcellus)"));
@@ -198,7 +187,7 @@ test("loadCommonSettings loads and resolves settings/common.json", () => {
   assert.equal(devSettings.font.micro, "12px");
 
   const prodSettings = loadCommonSettings("prod");
-  assert.match(prodSettings.background.backgroundImage, /chakra\.png/);
+  assert.match(prodSettings.background.backgroundImage, /background\.webp/);
   assert.equal(prodSettings.fontSize.micro, "12px");
   assert.equal(prodSettings.font.micro, "12px");
 });
