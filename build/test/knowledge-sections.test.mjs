@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { copyFile, cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import test from "node:test";
@@ -61,7 +62,10 @@ test("isolated library generation honors ordering and markdown section images an
   await copyFile(path.join(projectRoot, "settings", "search.json"), path.join(root, "settings", "search.json"));
   await copyFile(path.join(projectRoot, "settings", "toplibrary.json"), path.join(root, "settings", "toplibrary.json"));
   for (const environment of ["dev", "prod"]) {
-    await cp(path.join(projectRoot, "settings", environment), path.join(root, "settings", environment), { recursive: true });
+    const envDir = path.join(projectRoot, "settings", environment);
+    if (existsSync(envDir)) {
+      await cp(envDir, path.join(root, "settings", environment), { recursive: true });
+    }
   }
 
   const source = path.join(root, "settings", "knowledge_sections.json");
