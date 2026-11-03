@@ -150,10 +150,17 @@ export default function RootLayout({
       className={`${marcellus.variable} ${montserrat.variable} ${notoKannada.variable} ${notoDevanagari.variable}`}
     >
       <head>
+        <link rel="preconnect" href="https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://pub-40778d02c0624406be0340bf0ee4b2b4.r2.dev" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://vedavardhanatheertha.github.io" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev" />
         <link rel="dns-prefetch" href="https://pub-40778d02c0624406be0340bf0ee4b2b4.r2.dev" />
         <link rel="dns-prefetch" href="https://vedavardhanatheertha.github.io" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&t.src&&t.src.indexOf(".avif")!==-1){t.src=t.src.replace(/\\.avif(\\?.*)?$/,".webp$1");}},true);`,
+          }}
+        />
         <StructuredData />
       </head>
       <body className="min-h-screen flex flex-col bg-cream text-text-primary">
