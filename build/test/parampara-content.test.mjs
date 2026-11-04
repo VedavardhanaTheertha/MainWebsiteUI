@@ -27,22 +27,36 @@ function fixture(t) {
   return { root, directory, write, discover: (codes = ["en", "kn"]) => discoverParampara(root, codes, "en") };
 }
 
-test("all 31 canonical gurus retain facts and fallback without a collection JSON", () => {
+test("all 31 canonical gurus retain facts and support localized presentation without a collection JSON", () => {
   assert.equal(existsSync(path.join(project, "settings", "parampara.json")), false);
   assert.equal(existsSync(path.join(project, "library", "parampara", "index.json")), false);
   const filenames = readdirSync(path.join(project, "library", "parampara")).filter((name) => /^\d+-[^.]+\.md$/.test(name)).sort();
   const result = discoverParampara(project, ["en", "kn"], "en");
   assert.equal(result.en.length, 31);
-  assert.deepEqual(result.en, result.kn);
+  assert.equal(result.kn.length, 31);
+  assert.equal(result.en[0].name, "Sri Madhwacharyaru");
+  assert.equal(result.kn[0].name, "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರು");
+  assert.equal(result.en[1].name, "Sri Vamana Teertharu");
+  assert.equal(result.kn[1].name, "ಶ್ರೀ ವಾಮನ ತೀರ್ಥರು");
   filenames.forEach((filename, index) => {
     const { metadata, body } = parseMarkdownFrontmatter(readFileSync(path.join(project, "library", "parampara", filename), "utf8"), filename);
-    const guru = result.en[index];
-    assert.equal(metadata.position, undefined);
-    assert.equal(metadata.officialPosition, undefined);
-    assert.equal(guru.position, index);
-    assert.equal(guru.officialPosition, index === 0 ? null : index);
-    for (const field of ["id", "name", "summary", "timePeriod", "thumbnailImage", "fullImage"]) assert.equal(guru[field], metadata[field]);
-    assert.equal(guru.detailsMarkdown, body.split(/^##\s+Details\s*$/m)[1].trim());
+    const guruEn = result.en[index];
+    const guruKn = result.kn[index];
+    assert.equal(metadata.position, index);
+    assert.equal(guruEn.position, index);
+    assert.equal(guruKn.position, index);
+    assert.equal(guruEn.officialPosition, index === 0 ? null : index);
+    assert.equal(guruKn.officialPosition, index === 0 ? null : index);
+    assert.equal(guruEn.id, metadata.id);
+    assert.equal(guruKn.id, metadata.id);
+    assert.equal(guruEn.name, metadata["name-en"]);
+    assert.equal(guruKn.name, metadata["name-kn"]);
+    assert.equal(guruEn.summary, metadata["summary-en"]);
+    assert.equal(guruKn.summary, metadata["summary-kn"]);
+    assert.equal(guruEn.timePeriod, metadata["timePeriod-en"]);
+    assert.equal(guruKn.timePeriod, metadata["timePeriod-kn"]);
+    assert.equal(guruEn.thumbnailImage, metadata.thumbnailImage);
+    assert.equal(guruEn.fullImage, metadata.fullImage);
   });
   assert.equal(result.en[0].thumbnailImage, "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/m.avif");
   assert.equal(result.en[30].fullImage, "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/swamiji.avif");
@@ -98,7 +112,7 @@ test("malformed frontmatter, duplicated order metadata and body drift are reject
     markdown(founder).replace("# Source founder", "# Different title"),
     markdown(founder).replace("\nSource summary.\n", "\nDifferent summary.\n"),
     markdown(founder).replace("## Details", "## Other"),
-    markdown({ ...founder, position: 0 }),
+    markdown({ ...founder, unknownField: 0 }),
   ]) {
     writeFileSync(file, source);
     assert.throws(() => f.discover(), /front matter|YAML|title|summary|Details|unknown field/);

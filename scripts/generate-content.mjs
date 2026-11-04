@@ -299,6 +299,13 @@ function writeParamparaArtifacts(parampara, alternateParampara, content, default
     `export interface ParamparaGuru {\n` +
     `  id: string; name: string; position: number; officialPosition: number | null;\n` +
     `  timePeriod: string; summary: string; thumbnailImage: string; fullImage: string; detailsHtml: string;\n` +
+    `  nameEn?: string; nameKn?: string;\n` +
+    `  summaryEn?: string; summaryKn?: string;\n` +
+    `  timePeriodEn?: string; timePeriodKn?: string;\n` +
+    `  shaka?: string; shakaKn?: string;\n` +
+    `  samvatsaraEn?: string; samvatsaraKn?: string;\n` +
+    `  aradhanaEn?: string; aradhanaKn?: string;\n` +
+    `  vrindavanaKshetraEn?: string; vrindavanaKshetraKn?: string;\n` +
     `  references?: Array<{ label: string; href: string }>;\n` +
     `  relatedPlaces?: Array<{ label: string; href: string }>;\n` +
     `  relatedWorks?: Array<{ label: string; href: string }>;\n` +

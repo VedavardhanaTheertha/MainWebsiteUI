@@ -3,6 +3,16 @@ import path from "node:path";
 import { parseMarkdownFrontmatter } from "./content-utils.mjs";
 
 const linkFields = ["references", "relatedPlaces", "relatedWorks"];
+const localizedMetadataFields = [
+  "position",
+  "name-en", "name-kn",
+  "summary-en", "summary-kn",
+  "timePeriod-en", "timePeriod-kn",
+  "shaka", "shaka-kn",
+  "samvatsara-en", "samvatsara-kn",
+  "aradhana-en", "aradhana-kn",
+  "vrindavanaKshetra-en", "vrindavanaKshetra-kn",
+];
 const object = (value) => value !== null && typeof value === "object" &&
   Object.getPrototypeOf(value) === Object.prototype;
 const languageCode = (value) => typeof value === "string" &&
@@ -54,6 +64,65 @@ function references(value, field, source) {
   });
 }
 
+function splitDetailsByLanguage(detailsMarkdown, code) {
+  if (typeof detailsMarkdown !== "string") return "";
+  const enHeader = detailsMarkdown.match(/^###\s+English Details\s*$/m);
+  const knHeader = detailsMarkdown.match(/^###\s+ಕನ್ನಡ ವಿವರಗಳು[^\n]*/m);
+  const stotraHeader = detailsMarkdown.match(/^###\s+ಪರಂಪರಾ ಶ್ಲೋಕ[^\n]*/m);
+
+  if (!enHeader || !knHeader) return detailsMarkdown;
+
+  if (code === "kn") {
+    return detailsMarkdown.slice(knHeader.index).trim();
+  }
+
+  // English
+  const enSection = detailsMarkdown.slice(enHeader.index + enHeader[0].length, knHeader.index).trim();
+  if (stotraHeader && stotraHeader.index > knHeader.index) {
+    const stotraSection = detailsMarkdown.slice(stotraHeader.index).trim();
+    return `${enSection}\n\n${stotraSection}`.trim();
+  }
+  return enSection;
+}
+
+function localizeGuru(raw, code) {
+  const isKn = code === "kn";
+  const name = isKn ? (raw.nameKn || raw.name) : (raw.nameEn || raw.name);
+  const summary = isKn ? (raw.summaryKn || raw.summary) : (raw.summaryEn || raw.summary);
+  const timePeriod = isKn ? (raw.timePeriodKn || raw.timePeriod) : (raw.timePeriodEn || raw.timePeriod);
+  const detailsMarkdown = splitDetailsByLanguage(raw.rawDetailsMarkdown, code);
+
+  return {
+    id: raw.id,
+    name,
+    position: raw.position,
+    officialPosition: raw.officialPosition,
+    timePeriod,
+    summary,
+    thumbnailImage: raw.thumbnailImage,
+    fullImage: raw.fullImage,
+    detailsMarkdown,
+    rawDetailsMarkdown: raw.rawDetailsMarkdown,
+    nameEn: raw.nameEn,
+    nameKn: raw.nameKn,
+    summaryEn: raw.summaryEn,
+    summaryKn: raw.summaryKn,
+    timePeriodEn: raw.timePeriodEn,
+    timePeriodKn: raw.timePeriodKn,
+    shaka: raw.shaka,
+    shakaKn: raw.shakaKn,
+    samvatsaraEn: raw.samvatsaraEn,
+    samvatsaraKn: raw.samvatsaraKn,
+    aradhanaEn: raw.aradhanaEn,
+    aradhanaKn: raw.aradhanaKn,
+    vrindavanaKshetraEn: raw.vrindavanaKshetraEn,
+    vrindavanaKshetraKn: raw.vrindavanaKshetraKn,
+    ...(raw.references ? { references: raw.references } : {}),
+    ...(raw.relatedPlaces ? { relatedPlaces: raw.relatedPlaces } : {}),
+    ...(raw.relatedWorks ? { relatedWorks: raw.relatedWorks } : {}),
+  };
+}
+
 function loadGuru(directory, reference, index, inherited) {
   const file = path.join(directory, reference.contentFile);
   if (!existsSync(file)) throw new Error(`${file}: canonical guru Markdown is missing.`);
@@ -64,13 +133,22 @@ function loadGuru(directory, reference, index, inherited) {
   keys(metadata, [
     "id", "name", "summary", "timePeriod",
     "thumbnailImage", "fullImage", ...linkFields,
+    ...localizedMetadataFields,
   ], `${file} front matter`);
   if (typeof metadata.id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(metadata.id) ||
       (reference.id !== undefined && metadata.id !== reference.id)) {
     throw new Error(`${file}: needs a stable id matching its canonical guru.`);
   }
-  const name = text(metadata.name, "name", file).trim();
-  const summary = text(metadata.summary, "summary", file).trim();
+  const position = Object.hasOwn(metadata, "position")
+    ? (typeof metadata.position === "number" ? metadata.position : (metadata.position === "Founder" ? 0 : Number(metadata.position)))
+    : index;
+  const officialPosition = position === 0 ? null : position;
+  const name = text(metadata.name ?? metadata["name-en"], "name", file).trim();
+  const summary = text(metadata.summary ?? metadata["summary-en"], "summary", file).trim();
+  const nameEn = Object.hasOwn(metadata, "name-en") ? text(metadata["name-en"], "name-en", file).trim() : name;
+  const nameKn = Object.hasOwn(metadata, "name-kn") ? text(metadata["name-kn"], "name-kn", file).trim() : name;
+  const summaryEn = Object.hasOwn(metadata, "summary-en") ? text(metadata["summary-en"], "summary-en", file).trim() : summary;
+  const summaryKn = Object.hasOwn(metadata, "summary-kn") ? text(metadata["summary-kn"], "summary-kn", file).trim() : summary;
   const heading = body.match(/^#\s+(.+)$/m)?.[1]?.trim();
   const details = body.match(/^##\s+Details\s*$/m);
   if (!heading || !details) throw new Error(`${file} needs a title and a "## Details" heading.`);
@@ -78,7 +156,10 @@ function loadGuru(directory, reference, index, inherited) {
     .split(/\r?\n/)
     .filter((line) => !/^\s*-\s+\*\*[^*]+:\*\*/.test(line) && line.trim())
     .join("\n\n").trim();
-  if (heading !== name || bodySummary !== summary) {
+  if (heading !== name && heading !== nameEn) {
+    throw new Error(`${file} body title or summary does not match its front matter.`);
+  }
+  if (bodySummary !== summary && bodySummary !== summaryEn) {
     throw new Error(`${file} body title or summary does not match its front matter.`);
   }
   const optionalLinks = {};
@@ -97,16 +178,47 @@ function loadGuru(directory, reference, index, inherited) {
   const timePeriod = Object.hasOwn(metadata, "timePeriod")
     ? text(metadata.timePeriod, "timePeriod", file, true)
     : inherited?.timePeriod ?? "";
+  const timePeriodEn = Object.hasOwn(metadata, "timePeriod-en")
+    ? text(metadata["timePeriod-en"], "timePeriod-en", file, true)
+    : timePeriod;
+  const timePeriodKn = Object.hasOwn(metadata, "timePeriod-kn")
+    ? text(metadata["timePeriod-kn"], "timePeriod-kn", file, true)
+    : timePeriod;
+  const shaka = Object.hasOwn(metadata, "shaka") ? String(metadata.shaka).trim() : (inherited?.shaka ?? "");
+  const shakaKn = Object.hasOwn(metadata, "shaka-kn") ? String(metadata["shaka-kn"]).trim() : (inherited?.shakaKn ?? shaka);
+  const samvatsaraEn = Object.hasOwn(metadata, "samvatsara-en") ? text(metadata["samvatsara-en"], "samvatsara-en", file, true).trim() : (inherited?.samvatsaraEn ?? "");
+  const samvatsaraKn = Object.hasOwn(metadata, "samvatsara-kn") ? text(metadata["samvatsara-kn"], "samvatsara-kn", file, true).trim() : (inherited?.samvatsaraKn ?? samvatsaraEn);
+  const aradhanaEn = Object.hasOwn(metadata, "aradhana-en") ? text(metadata["aradhana-en"], "aradhana-en", file, true).trim() : (inherited?.aradhanaEn ?? "");
+  const aradhanaKn = Object.hasOwn(metadata, "aradhana-kn") ? text(metadata["aradhana-kn"], "aradhana-kn", file, true).trim() : (inherited?.aradhanaKn ?? aradhanaEn);
+  const vrindavanaKshetraEn = Object.hasOwn(metadata, "vrindavanaKshetra-en") ? text(metadata["vrindavanaKshetra-en"], "vrindavanaKshetra-en", file, true).trim() : (inherited?.vrindavanaKshetraEn ?? "");
+  const vrindavanaKshetraKn = Object.hasOwn(metadata, "vrindavanaKshetra-kn") ? text(metadata["vrindavanaKshetra-kn"], "vrindavanaKshetra-kn", file, true).trim() : (inherited?.vrindavanaKshetraKn ?? vrindavanaKshetraEn);
+
+  const rawDetailsMarkdown = body.slice(details.index + details[0].length).trim();
   return {
     id: metadata.id,
     name,
-    position: index,
-    officialPosition: index === 0 ? null : index,
+    position,
+    officialPosition,
     timePeriod,
     summary,
     thumbnailImage,
     fullImage,
-    detailsMarkdown: body.slice(details.index + details[0].length).trim(),
+    detailsMarkdown: rawDetailsMarkdown,
+    rawDetailsMarkdown,
+    nameEn,
+    nameKn,
+    summaryEn,
+    summaryKn,
+    timePeriodEn,
+    timePeriodKn,
+    shaka,
+    shakaKn,
+    samvatsaraEn,
+    samvatsaraKn,
+    aradhanaEn,
+    aradhanaKn,
+    vrindavanaKshetraEn,
+    vrindavanaKshetraKn,
     ...optionalLinks,
   };
 }
@@ -146,11 +258,12 @@ export function discoverParampara(rootDir, languageCodes, defaultLang) {
   return Object.fromEntries(languageCodes.map((code) => [
     code,
     items.map((item, index) => {
-      if (code === defaultLang) return base[index];
       const parsed = path.parse(item.contentFile);
       const translated = { id: base[index].id, contentFile: `${parsed.name}.${code}${parsed.ext}` };
-      if (!existsSync(path.join(directory, translated.contentFile))) return base[index];
-      return loadGuru(directory, translated, index, base[index]);
+      if (code !== defaultLang && existsSync(path.join(directory, translated.contentFile))) {
+        return loadGuru(directory, translated, index, base[index]);
+      }
+      return localizeGuru(base[index], code);
     }),
   ]));
 }
