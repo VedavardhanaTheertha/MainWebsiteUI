@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import ContentImage from "@/components/presentation/ContentImage";
-import { BookOpen, GitBranch, List, UserRound, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, GitBranch, List, UserRound, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import {
   alternateParamparaByLanguage,
@@ -14,6 +14,7 @@ import {
 import { defaultContentMode, defaultLang } from "@/gen/content";
 import { useDialog } from "@/hooks/useDialog";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
+import ParamparaRelatedLinks, { type ParamparaRelatedContent } from "@/components/ParamparaRelatedLinks";
 
 export default function ParamparaBrowser() {
   const { lang, tr, contentMode } = useLang();
@@ -35,6 +36,16 @@ export default function ParamparaBrowser() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedIndex = gurus.findIndex((guru) => guru.id === selectedId);
   const selected = selectedIndex >= 0 ? gurus[selectedIndex] : null;
+  const previousGuru = selectedIndex > 0 ? gurus[selectedIndex - 1] : null;
+  const nextGuru = selectedIndex >= 0 && selectedIndex < gurus.length - 1 ? gurus[selectedIndex + 1] : null;
+  const modalBodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedId && modalBodyRef.current) {
+      modalBodyRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [selectedId]);
+
   useEffect(() => {
     const selectFromHash = () => {
       let id = "";
@@ -67,14 +78,15 @@ export default function ParamparaBrowser() {
   return (
     <>
       <div className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
-        <header className="max-w-2xl mb-7 lg:mb-10">
-          <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
-            {labels.title}
-          </h1>
-          <p className="font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
-            {labels.intro}
-          </p>
-        </header>
+        <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
+          <header className="max-w-2xl mb-7 lg:mb-10">
+            <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
+              {labels.title}
+            </h1>
+            <p className="font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+              {labels.intro}
+            </p>
+          </header>
 
         {founder && (
           <section className="mb-10 border-y border-[var(--color-line-strong)] py-7 lg:mb-14 lg:py-9">
@@ -180,12 +192,13 @@ export default function ParamparaBrowser() {
           ))}
           </ol>
         </section>
+        </div>
       </div>
 
       {selected && (
         <div
           ref={dialogRef}
-          className="fixed inset-0 z-[10000] flex items-end justify-center bg-[var(--color-ink-900)]/70 sm:items-center sm:p-5"
+          className="fixed inset-0 z-[10000] flex items-end justify-center bg-[var(--color-ink-900)]/70 backdrop-blur-sm sm:items-center sm:p-5"
           role="dialog"
           aria-modal="true"
           aria-labelledby="parampara-dialog-title"
@@ -193,14 +206,14 @@ export default function ParamparaBrowser() {
             if (event.target === event.currentTarget) closeGuru();
           }}
         >
-          <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[var(--color-paper)] shadow-[var(--shadow-lg)] sm:h-[min(90dvh,820px)] sm:max-w-5xl sm:rounded-[8px]">
-            <header className="shrink-0 border-b border-[var(--color-line)] px-4 pb-0 pt-4 sm:px-6 sm:pt-5 lg:px-8">
+          <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[var(--color-paper)] shadow-[var(--shadow-lg)] sm:h-[min(90dvh,820px)] sm:max-w-5xl sm:rounded-[12px]">
+            <header className="shrink-0 border-b border-[var(--color-line)] px-4 pb-3 pt-4 sm:px-6 sm:pt-5 lg:px-8">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
                     {positionLabel(selected)}
                   </p>
-                  <h2 id="parampara-dialog-title" className="mt-1 font-display text-xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-2xl">
+                  <h2 id="parampara-dialog-title" className="mt-1 font-display text-xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-2xl lg:text-3xl">
                     {selected.name}
                   </h2>
                   {selected.timePeriod && (
@@ -212,17 +225,20 @@ export default function ParamparaBrowser() {
                   onClick={closeGuru}
                   aria-label={labels.close}
                   title={labels.close}
-                  className="grid size-11 shrink-0 place-items-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+                  className="grid size-11 shrink-0 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-cream-soft)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                 >
                   <X size={21} aria-hidden="true" />
                 </button>
               </div>
             </header>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
+            <div
+              ref={modalBodyRef}
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-7 lg:px-8"
+            >
               <div className={selected.fullImage ? "mx-auto grid max-w-4xl items-start gap-6 md:grid-cols-[minmax(220px,300px)_1fr] lg:gap-10" : "mx-auto max-w-3xl"}>
                 {selected.fullImage && (
-                  <div className="relative mx-auto aspect-[4/5] w-full max-w-[300px] overflow-hidden bg-[var(--color-saffron-50)]">
+                  <div className="relative mx-auto aspect-[4/5] w-full max-w-[300px] overflow-hidden rounded-xl bg-[var(--color-saffron-50)]">
                     <ContentImage
                       src={selected.fullImage}
                       alt={selected.name}
@@ -231,19 +247,59 @@ export default function ParamparaBrowser() {
                     />
                   </div>
                 )}
-                <div>
-                  <p className="font-body text-[14px] leading-[1.8] text-[var(--color-text-secondary)] sm:text-[15px]">
+                <div className="min-w-0">
+                  <p className="font-body text-base leading-[1.85] text-[var(--color-text-secondary)]">
                     {selected.summary}
                   </p>
-                  <Link
-                    href={`/history/parampara/${encodeURIComponent(selected.id)}`}
-                    className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--color-saffron-600)] px-5 font-body text-action-btn font-bold text-[var(--color-text-on-brand)] hover:bg-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+                  <section
+                    aria-label={labels.details}
+                    className="mt-8 border-t border-[var(--color-line)] pt-7 font-body text-[15px] leading-[1.85] text-[var(--color-text-secondary)] [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-[var(--color-text-primary)] [&_h3]:mt-6 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_p]:mt-4"
                   >
-                    <BookOpen size={17} aria-hidden="true" />
-                    {labels.see_more}
-                  </Link>
+                    {selected.detailsHtml ? (
+                      <div dangerouslySetInnerHTML={{ __html: selected.detailsHtml }} />
+                    ) : (
+                      <p className="border-l-2 border-[var(--color-saffron-400)] pl-4 text-[var(--color-text-muted)]">
+                        {labels.details_placeholder}
+                      </p>
+                    )}
+                  </section>
+                  <ParamparaRelatedLinks guru={selected as typeof selected & ParamparaRelatedContent} labels={labels} />
                 </div>
               </div>
+
+              {(previousGuru || nextGuru) && (
+                <nav
+                  aria-label={labels.guru_navigation}
+                  className="mx-auto mt-10 max-w-4xl grid gap-3 border-t border-[var(--color-line)] pt-6 sm:grid-cols-2"
+                >
+                  {previousGuru ? (
+                    <button
+                      type="button"
+                      onClick={() => openGuru(previousGuru)}
+                      className="flex min-h-14 items-center gap-2 rounded-[8px] border border-[var(--color-line)] px-4 font-body text-sm font-semibold text-[var(--color-text-secondary)] hover:border-[var(--color-saffron-400)] hover:text-[var(--color-text-brand)] transition-colors text-left"
+                    >
+                      <ChevronLeft size={18} aria-hidden="true" className="shrink-0" />
+                      <span className="min-w-0 truncate">
+                        <span className="block text-meta text-[var(--color-text-muted)]">{labels.previous}</span>
+                        {previousGuru.name}
+                      </span>
+                    </button>
+                  ) : <span />}
+                  {nextGuru && (
+                    <button
+                      type="button"
+                      onClick={() => openGuru(nextGuru)}
+                      className="flex min-h-14 items-center justify-end gap-2 rounded-[8px] border border-[var(--color-line)] px-4 text-right font-body text-sm font-semibold text-[var(--color-text-secondary)] hover:border-[var(--color-saffron-400)] hover:text-[var(--color-text-brand)] transition-colors"
+                    >
+                      <span className="min-w-0 truncate">
+                        <span className="block text-meta text-[var(--color-text-muted)]">{labels.next}</span>
+                        {nextGuru.name}
+                      </span>
+                      <ChevronRight size={18} aria-hidden="true" className="shrink-0" />
+                    </button>
+                  )}
+                </nav>
+              )}
             </div>
           </div>
         </div>
