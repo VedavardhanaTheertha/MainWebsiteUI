@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import ContentImage from "@/components/presentation/ContentImage";
