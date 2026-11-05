@@ -39,7 +39,8 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
         {labels.back_to_lineage}
       </Link>
 
-      <article className="mx-auto max-w-5xl">
+      <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
+        <article className="mx-auto max-w-5xl">
         <header className="mb-8 border-b border-[var(--color-line)] pb-7 lg:mb-10 lg:pb-9">
           <p className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
             {positionLabel}
@@ -112,6 +113,7 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
           </nav>
         )}
       </article>
+      </div>
     </div>
   );
 }
