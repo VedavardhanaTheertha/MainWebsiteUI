@@ -12,7 +12,6 @@ import {
   alternateDeities,
 } from "@/gen/story/data";
 import { useDialog } from "@/hooks/useDialog";
-import { useMiniSearch } from "@/hooks/useMiniSearch";
 import ParamparaBrowser from "@/components/ParamparaBrowser";
 
 export type StoryTabKey = "mathas" | "parampara" | "deities";
@@ -31,16 +30,14 @@ export default function StoryBrowser() {
     return "mathas";
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
 
   const mathas = contentMode !== defaultContentMode && alternateMathas ? alternateMathas : defaultMathas;
   const deities = contentMode !== defaultContentMode && alternateDeities ? alternateDeities : defaultDeities;
 
-  const localizedList = useMemo(() => {
+  const visibleItems = useMemo(() => {
     const currentList = activeTab === "mathas" ? mathas : activeTab === "deities" ? deities : [];
     return currentList.map((item) => ({
       ...item,
-      searchName: item.title[lang] ?? item.title[defaultLang] ?? "",
       displayTitle: item.title[lang] ?? item.title[defaultLang] ?? "",
       displaySubtitle: item.subtitle ? (item.subtitle[lang] ?? item.subtitle[defaultLang] ?? "") : "",
       displaySummary: item.summary[lang] ?? item.summary[defaultLang] ?? "",
@@ -53,15 +50,9 @@ export default function StoryBrowser() {
     }));
   }, [activeTab, deities, lang, mathas]);
 
-  const matches = useMiniSearch(localizedList, query, { fields: ["searchName", "displaySummary"] });
-  const visibleItems = useMemo(() => {
-    const ids = new Set(matches.map((item) => item.id));
-    return localizedList.filter((item) => ids.has(item.id));
-  }, [localizedList, matches]);
-
   const selected = useMemo(() => {
-    return localizedList.find((item) => item.id === selectedId) ?? null;
-  }, [localizedList, selectedId]);
+    return visibleItems.find((item) => item.id === selectedId) ?? null;
+  }, [visibleItems, selectedId]);
 
   const modalBodyRef = useRef<HTMLDivElement>(null);
 
@@ -87,7 +78,6 @@ export default function StoryBrowser() {
 
   const switchTab = (tab: StoryTabKey) => {
     setActiveTab(tab);
-    setQuery("");
     setSelectedId(null);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -159,40 +149,13 @@ export default function StoryBrowser() {
         {/* Tab 2: Embedded Parampara Browser */}
         {activeTab === "parampara" && (
           <div className="story-tab-parampara">
-            <ParamparaBrowser />
+            <ParamparaBrowser showSearch={false} showViewSwitch={false} initialView="timeline" />
           </div>
         )}
 
         {/* Tab 1 & Tab 3: List / Article View */}
         {(activeTab === "mathas" || activeTab === "deities") && (
           <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
-            <div className="mb-6 flex items-end gap-2 sm:max-w-md">
-              <label className="flex min-w-0 flex-1 flex-col gap-2 font-body text-sm">
-                {activeTab === "mathas" ? storyCopy.search_mathas : storyCopy.search_deities}
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  className="min-h-11 min-w-0 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] px-3"
-                />
-              </label>
-            </div>
-
-            {!visibleItems.length && (
-              <div role="status" className="py-8 text-center sm:text-left">
-                <p className="text-[var(--color-text-secondary)]">{storyCopy.no_results}</p>
-                {query && (
-                  <button
-                    type="button"
-                    onClick={() => setQuery("")}
-                    className="mt-3 min-h-11 text-[var(--color-text-brand)] underline"
-                  >
-                    {storyCopy.clear_search}
-                  </button>
-                )}
-              </div>
-            )}
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
               {visibleItems.map((item) => (
                 <button

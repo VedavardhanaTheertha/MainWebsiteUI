@@ -15,7 +15,17 @@ import { useDialog } from "@/hooks/useDialog";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
 import ParamparaRelatedLinks, { type ParamparaRelatedContent } from "@/components/ParamparaRelatedLinks";
 
-export default function ParamparaBrowser() {
+export interface ParamparaBrowserProps {
+  showSearch?: boolean;
+  showViewSwitch?: boolean;
+  initialView?: "timeline" | "list";
+}
+
+export default function ParamparaBrowser({
+  showSearch = true,
+  showViewSwitch = true,
+  initialView,
+}: ParamparaBrowserProps = {}) {
   const { lang, tr, contentMode } = useLang();
   const { browserDefaults } = useUiSettings();
   const parampara = contentMode !== defaultContentMode && alternateParamparaByLanguage
@@ -25,7 +35,7 @@ export default function ParamparaBrowser() {
   const lineage = useMemo(() => parampara[lang] ?? parampara[defaultLang] ?? [], [parampara, lang]);
   const founder = lineage.find((guru) => guru.officialPosition === null) ?? null;
   const gurus = useMemo(() => lineage.filter((guru) => guru.officialPosition !== null), [lineage]);
-  const [view, setView] = useState<"timeline" | "list">(browserDefaults.lineageView);
+  const [view, setView] = useState<"timeline" | "list">(initialView ?? browserDefaults.lineageView);
   const [query, setQuery] = useState("");
   const matches = useMiniSearch(gurus, query, { fields: ["name"] });
   const visibleGurus = useMemo(() => {
@@ -128,23 +138,29 @@ export default function ParamparaBrowser() {
           <h2 className="mb-4 font-display text-xl font-bold text-[var(--color-text-primary)] lg:text-2xl">
             {labels.lineage}
           </h2>
-          <div className="mb-6 flex items-end gap-2 sm:max-w-md">
-            <label className="flex min-w-0 flex-1 flex-col gap-2 font-body text-sm">
-              {labels.search}
-              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} className="min-h-11 min-w-0 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] px-3" />
-            </label>
-            <button
-              type="button"
-              aria-label={view === "list" ? labels.show_timeline : labels.show_list}
-              title={view === "list" ? labels.show_timeline : labels.show_list}
-              aria-pressed={view === "timeline"}
-              onClick={() => setView((current) => current === "list" ? "timeline" : "list")}
-              className="grid size-11 shrink-0 place-items-center rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] text-[var(--color-text-brand)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
-            >
-              {view === "list" ? <GitBranch size={20} aria-hidden="true" /> : <List size={20} aria-hidden="true" />}
-            </button>
-          </div>
-          {!visibleGurus.length && <div role="status" className="py-8"><p>{labels.no_results}</p>{query && <button type="button" onClick={() => setQuery("")} className="mt-3 min-h-11 text-[var(--color-text-brand)] underline">{labels.clear_search}</button>}</div>}
+          {(showSearch || showViewSwitch) && (
+            <div className="mb-6 flex items-end gap-2 sm:max-w-md">
+              {showSearch && (
+                <label className="flex min-w-0 flex-1 flex-col gap-2 font-body text-sm">
+                  {labels.search}
+                  <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} className="min-h-11 min-w-0 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] px-3" />
+                </label>
+              )}
+              {showViewSwitch && (
+                <button
+                  type="button"
+                  aria-label={view === "list" ? labels.show_timeline : labels.show_list}
+                  title={view === "list" ? labels.show_timeline : labels.show_list}
+                  aria-pressed={view === "timeline"}
+                  onClick={() => setView((current) => current === "list" ? "timeline" : "list")}
+                  className="grid size-11 shrink-0 place-items-center rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] text-[var(--color-text-brand)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+                >
+                  {view === "list" ? <GitBranch size={20} aria-hidden="true" /> : <List size={20} aria-hidden="true" />}
+                </button>
+              )}
+            </div>
+          )}
+          {showSearch && !visibleGurus.length && <div role="status" className="py-8"><p>{labels.no_results}</p>{query && <button type="button" onClick={() => setQuery("")} className="mt-3 min-h-11 text-[var(--color-text-brand)] underline">{labels.clear_search}</button>}</div>}
           <ol className={view === "timeline" ? "ml-3 space-y-4 border-l-2 border-[var(--color-saffron-400)] pl-5" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"}>
           {visibleGurus.map((guru) => (
             <li key={guru.id} className={view === "timeline" ? "relative before:absolute before:-left-[27px] before:top-6 before:size-3 before:rounded-full before:bg-[var(--color-saffron-600)]" : ""}>

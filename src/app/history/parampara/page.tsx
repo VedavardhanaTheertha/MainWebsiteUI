@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ParamparaBrowser />;
+  return <ParamparaBrowser showSearch={false} showViewSwitch={false} initialView="timeline" />;
 }
