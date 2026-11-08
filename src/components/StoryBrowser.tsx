@@ -1,0 +1,344 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import ContentImage from "@/components/presentation/ContentImage";
+import { UserRound, X } from "lucide-react";
+import { useLang } from "@/context/LanguageContext";
+import { defaultContentMode, defaultLang } from "@/gen/content";
+import {
+  mathas as defaultMathas,
+  deities as defaultDeities,
+  alternateMathas,
+  alternateDeities,
+} from "@/gen/story/data";
+import { useDialog } from "@/hooks/useDialog";
+import { useMiniSearch } from "@/hooks/useMiniSearch";
+import ParamparaBrowser from "@/components/ParamparaBrowser";
+
+export type StoryTabKey = "mathas" | "parampara" | "deities";
+
+export default function StoryBrowser() {
+  const { lang, tr, contentMode } = useLang();
+  const storyCopy = tr.pages.story;
+
+  const [activeTab, setActiveTab] = useState<StoryTabKey>(() => {
+    if (typeof window !== "undefined") {
+      const tabParam = new URLSearchParams(window.location.search).get("tab");
+      if (tabParam === "mathas" || tabParam === "parampara" || tabParam === "deities") {
+        return tabParam;
+      }
+    }
+    return "mathas";
+  });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+
+  const mathas = contentMode !== defaultContentMode && alternateMathas ? alternateMathas : defaultMathas;
+  const deities = contentMode !== defaultContentMode && alternateDeities ? alternateDeities : defaultDeities;
+
+  const localizedList = useMemo(() => {
+    const currentList = activeTab === "mathas" ? mathas : activeTab === "deities" ? deities : [];
+    return currentList.map((item) => ({
+      ...item,
+      searchName: item.title[lang] ?? item.title[defaultLang] ?? "",
+      displayTitle: item.title[lang] ?? item.title[defaultLang] ?? "",
+      displaySubtitle: item.subtitle ? (item.subtitle[lang] ?? item.subtitle[defaultLang] ?? "") : "",
+      displaySummary: item.summary[lang] ?? item.summary[defaultLang] ?? "",
+      displayEra: item.era ? (item.era[lang] ?? item.era[defaultLang] ?? "") : "",
+      displayDeity: item.deity ? (item.deity[lang] ?? item.deity[defaultLang] ?? "") : "",
+      displayEstablishedBy: item.establishedBy ? (item.establishedBy[lang] ?? item.establishedBy[defaultLang] ?? "") : "",
+      displayAttributes: item.attributes ? (item.attributes[lang] ?? item.attributes[defaultLang] ?? "") : "",
+      displaySanctum: item.sanctum ? (item.sanctum[lang] ?? item.sanctum[defaultLang] ?? "") : "",
+      detailsHtmlContent: item.detailsHtml[lang] ?? item.detailsHtml[defaultLang] ?? "",
+    }));
+  }, [activeTab, deities, lang, mathas]);
+
+  const matches = useMiniSearch(localizedList, query, { fields: ["searchName", "displaySummary"] });
+  const visibleItems = useMemo(() => {
+    const ids = new Set(matches.map((item) => item.id));
+    return localizedList.filter((item) => ids.has(item.id));
+  }, [localizedList, matches]);
+
+  const selected = useMemo(() => {
+    return localizedList.find((item) => item.id === selectedId) ?? null;
+  }, [localizedList, selectedId]);
+
+  const modalBodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedId && modalBodyRef.current) {
+      modalBodyRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [selectedId]);
+
+  // Sync tab with URL search parameter on browser navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const tabParam = new URLSearchParams(window.location.search).get("tab");
+      if (tabParam === "mathas" || tabParam === "parampara" || tabParam === "deities") {
+        setActiveTab(tabParam);
+      } else {
+        setActiveTab("mathas");
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const switchTab = (tab: StoryTabKey) => {
+    setActiveTab(tab);
+    setQuery("");
+    setSelectedId(null);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", tab);
+      window.history.replaceState(null, "", url.pathname + url.search);
+    }
+  };
+
+  const closeDetails = () => {
+    setSelectedId(null);
+  };
+
+  const dialogRef = useDialog(Boolean(selected), closeDetails);
+
+  return (
+    <>
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
+        <header className="max-w-2xl mb-7 lg:mb-10 text-center sm:text-left">
+          <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
+            {storyCopy.title}
+          </h1>
+          <p className="font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+            {storyCopy.intro}
+          </p>
+        </header>
+
+        {/* 3 Tabs Navigation */}
+        <div className="mb-8 border-b border-[var(--color-line-strong)]">
+          <nav className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto" aria-label={storyCopy.title}>
+            <button
+              type="button"
+              onClick={() => switchTab("mathas")}
+              aria-current={activeTab === "mathas" ? "page" : undefined}
+              className={`whitespace-nowrap border-b-2 py-3 px-3 sm:px-4 font-body text-sm font-semibold transition-colors ${
+                activeTab === "mathas"
+                  ? "border-[var(--color-saffron-600)] text-[var(--color-text-brand)]"
+                  : "border-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-line)] hover:text-[var(--color-text-primary)]"
+              }`}
+            >
+              {storyCopy.tabs.mathas}
+            </button>
+            <button
+              type="button"
+              onClick={() => switchTab("parampara")}
+              aria-current={activeTab === "parampara" ? "page" : undefined}
+              className={`whitespace-nowrap border-b-2 py-3 px-3 sm:px-4 font-body text-sm font-semibold transition-colors ${
+                activeTab === "parampara"
+                  ? "border-[var(--color-saffron-600)] text-[var(--color-text-brand)]"
+                  : "border-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-line)] hover:text-[var(--color-text-primary)]"
+              }`}
+            >
+              {storyCopy.tabs.parampara}
+            </button>
+            <button
+              type="button"
+              onClick={() => switchTab("deities")}
+              aria-current={activeTab === "deities" ? "page" : undefined}
+              className={`whitespace-nowrap border-b-2 py-3 px-3 sm:px-4 font-body text-sm font-semibold transition-colors ${
+                activeTab === "deities"
+                  ? "border-[var(--color-saffron-600)] text-[var(--color-text-brand)]"
+                  : "border-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-line)] hover:text-[var(--color-text-primary)]"
+              }`}
+            >
+              {storyCopy.tabs.deities}
+            </button>
+          </nav>
+        </div>
+
+        {/* Tab 2: Embedded Parampara Browser */}
+        {activeTab === "parampara" && (
+          <div className="story-tab-parampara">
+            <ParamparaBrowser />
+          </div>
+        )}
+
+        {/* Tab 1 & Tab 3: List / Article View */}
+        {(activeTab === "mathas" || activeTab === "deities") && (
+          <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
+            <div className="mb-6 flex items-end gap-2 sm:max-w-md">
+              <label className="flex min-w-0 flex-1 flex-col gap-2 font-body text-sm">
+                {activeTab === "mathas" ? storyCopy.search_mathas : storyCopy.search_deities}
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  className="min-h-11 min-w-0 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] px-3"
+                />
+              </label>
+            </div>
+
+            {!visibleItems.length && (
+              <div role="status" className="py-8 text-center sm:text-left">
+                <p className="text-[var(--color-text-secondary)]">{storyCopy.no_results}</p>
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="mt-3 min-h-11 text-[var(--color-text-brand)] underline"
+                  >
+                    {storyCopy.clear_search}
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+              {visibleItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setSelectedId(item.id)}
+                  aria-pressed={selected?.id === item.id}
+                  className="visual-tile group flex flex-col sm:flex-row overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[12px] shadow-[var(--shadow-xs)] hover:border-[var(--color-saffron-400)] hover:shadow-[var(--shadow-md)] aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-[border-color,box-shadow,background-color]"
+                >
+                  <span className="visual-tile-art relative block h-48 sm:h-full sm:min-h-48 w-full sm:w-44 shrink-0 overflow-hidden bg-[var(--color-saffron-50)]">
+                    {item.image ? (
+                      <ContentImage
+                        src={item.image}
+                        alt={item.displayTitle}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 176px"
+                      />
+                    ) : (
+                      <span className="grid h-full place-items-center text-[var(--color-saffron-400)]">
+                        <UserRound size={34} strokeWidth={1.4} aria-hidden="true" />
+                      </span>
+                    )}
+                  </span>
+                  <span className="visual-tile-body flex min-w-0 flex-col p-4 flex-1">
+                    {item.displaySubtitle && (
+                      <span className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)] mb-1">
+                        {item.displaySubtitle}
+                      </span>
+                    )}
+                    <span className="font-display text-[18px] lg:text-[20px] font-bold leading-tight text-[var(--color-text-primary)] group-hover:text-[var(--color-text-brand)] transition-colors">
+                      {item.displayTitle}
+                    </span>
+                    {item.displayEra && (
+                      <span className="font-body text-meta text-[var(--color-text-muted)] mt-1">
+                        {item.displayEra}
+                      </span>
+                    )}
+                    {item.displayAttributes && (
+                      <span className="font-body text-meta text-[var(--color-text-muted)] mt-1">
+                        {item.displayAttributes}
+                      </span>
+                    )}
+                    <span className="mt-3 font-body text-caption leading-[1.55] text-[var(--color-text-secondary)] line-clamp-3">
+                      {item.displaySummary}
+                    </span>
+                    <span className="mt-auto pt-3 text-xs font-semibold text-[var(--color-text-brand)] group-hover:underline">
+                      {storyCopy.view_details} →
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Details Modal */}
+      {selected && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="story-dialog-title"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4 backdrop-blur-xs"
+        >
+          <div
+            ref={dialogRef}
+            className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl bg-[var(--color-paper)] shadow-2xl sm:max-h-[88vh] sm:rounded-2xl border border-[var(--color-line-strong)]"
+          >
+            <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-line)] px-5 py-4 sm:px-6">
+              <span className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
+                {selected.displaySubtitle || storyCopy.details}
+              </span>
+              <button
+                type="button"
+                onClick={closeDetails}
+                aria-label={storyCopy.close}
+                className="grid size-10 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-cream-soft)] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+              >
+                <X size={20} aria-hidden="true" />
+              </button>
+            </div>
+
+            <div ref={modalBodyRef} className="overflow-y-auto px-5 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
+                {selected.image && (
+                  <div className="relative aspect-[4/3] w-full sm:w-56 overflow-hidden rounded-xl bg-[var(--color-saffron-50)] shrink-0">
+                    <ContentImage
+                      src={selected.image}
+                      alt={selected.displayTitle}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 224px"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h2 id="story-dialog-title" className="font-display text-2xl lg:text-3xl font-bold text-[var(--color-text-primary)]">
+                    {selected.displayTitle}
+                  </h2>
+                  {selected.displaySubtitle && (
+                    <p className="mt-1 font-body text-sm font-semibold text-[var(--color-text-brand)]">
+                      {selected.displaySubtitle}
+                    </p>
+                  )}
+                  {selected.displayEra && (
+                    <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                      <strong>{storyCopy.era}:</strong> {selected.displayEra}
+                    </p>
+                  )}
+                  {selected.displayEstablishedBy && (
+                    <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                      <strong>{storyCopy.established_by}:</strong> {selected.displayEstablishedBy}
+                    </p>
+                  )}
+                  {selected.displayDeity && (
+                    <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                      <strong>{storyCopy.deity}:</strong> {selected.displayDeity}
+                    </p>
+                  )}
+                  {selected.displaySanctum && (
+                    <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                      <strong>{storyCopy.sanctum}:</strong> {selected.displaySanctum}
+                    </p>
+                  )}
+                  {selected.displayAttributes && (
+                    <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                      <strong>{storyCopy.attributes}:</strong> {selected.displayAttributes}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="border-t border-[var(--color-line-soft)] pt-5">
+                <p className="font-body text-[15px] leading-relaxed text-[var(--color-text-secondary)] mb-6 font-medium">
+                  {selected.displaySummary}
+                </p>
+                {selected.detailsHtmlContent && (
+                  <div
+                    className="prose prose-sm max-w-none text-[var(--color-text-secondary)] space-y-4"
+                    dangerouslySetInnerHTML={{ __html: selected.detailsHtmlContent }}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

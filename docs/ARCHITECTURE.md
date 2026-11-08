@@ -143,6 +143,7 @@ and language JSON. Active shared control and editorial namespaces are `ui` and
 | Material enquiries | `library/donations/pages/donation.md`; one localized catalog preserving the selected material names and prices |
 | Events | `library/events/`; validated calendar dates and metadata drive catalog/detail pages; malformed records fail generation |
 | Guru Parampara | `library/parampara/`; numeric filename prefixes determine order; metadata supports bilingual fields (`position`, `name-en`, `name-kn`, `summary-en`, `summary-kn`, `timePeriod-en`, `timePeriod-kn`, `shaka`, `samvatsara`, `aradhana`, `vrindavanaKshetra`) and localized details; translations inherit missing optional facts |
+| Mathas & Deities | `library/mathas/` and `library/deities/`; numeric filename prefixes determine order; metadata supports bilingual titles, subtitles, eras/attributes, and markdown details for the Know the Story tabs |
 | Learn | `library/learn/index.md` and subject Markdown; collection order, page labels, suggested paths, and subject metadata live together |
 | Branches and official channels | `library/branches/` and `library/connect/`; generated data supplies locations and shared official destinations |
 | Institutional and policy pages | Corresponding topic Markdown, including `library/general/` |

@@ -27,8 +27,8 @@ function loadModule(relativePath, dependencies) {
 const sections = [
   { id: "mantra", route: "/library/mantra", items: [{ id: "first-chant" }, { id: "second-chant" }] },
   { id: "jnana", route: "/library/jnana", items: [{ id: "first-term" }] },
-  { id: "articles", route: "/history/articles", items: [{ id: "first-article" }, { id: "second-article" }] },
-  { id: "pilgrim", route: "/history/pilgrim-guide", items: [{ id: "first-guide" }] },
+  { id: "articles", route: "/library/articles", items: [{ id: "first-article" }, { id: "second-article" }] },
+  { id: "pilgrim", route: "/library/pilgrim-guide", items: [{ id: "first-guide" }] },
   { id: "projects", route: "/projects", items: [{ id: "first-project" }] },
 ];
 const routing = loadModule("../../src/lib/knowledge-routing.ts", {
@@ -38,26 +38,24 @@ const routing = loadModule("../../src/lib/knowledge-routing.ts", {
   "./knowledge": {},
 });
 
-for (const prefix of ["library", "history"]) {
-  test(`${prefix} article pages generate both dynamic segments without inherited layout params`, () => {
-    const page = loadModule(`../../src/app/${prefix}/[section]/[article]/page.tsx`, {
-      "@/lib/knowledge-routing": routing,
-      "@/components/library/KnowledgeArticlePage": {},
-      "@/gen/library/loaders": { libraryContentLoaders: {} },
-      "react/jsx-runtime": {},
-    });
-    const expected = sections
-      .filter(({ route }) => route.startsWith(`/${prefix}/`))
-      .flatMap(({ route, items }) => items.map(({ id }) => ({
-        section: route.slice(prefix.length + 2),
-        article: id,
-      })));
-    // A sibling collection page is not an ancestor layout, so Next passes no section.
-    const actual = page.generateStaticParams({ params: {} });
-    assert.ok(actual.length > 0, "Static export must not receive an empty article parameter list.");
-    assert.equal(JSON.stringify(actual), JSON.stringify(expected));
-    assert.equal(JSON.stringify(page.generateStaticParams()), JSON.stringify(expected));
-    assert.equal(page.dynamicParams, false);
-    assert.equal(new Set(actual.map(({ section, article }) => `${section}/${article}`)).size, actual.length);
+test("library article pages generate both dynamic segments without inherited layout params", () => {
+  const page = loadModule("../../src/app/library/[section]/[article]/page.tsx", {
+    "@/lib/knowledge-routing": routing,
+    "@/components/library/KnowledgeArticlePage": {},
+    "@/gen/library/loaders": { libraryContentLoaders: {} },
+    "react/jsx-runtime": {},
   });
-}
+  const expected = sections
+    .filter(({ route }) => route.startsWith("/library/"))
+    .flatMap(({ route, items }) => items.map(({ id }) => ({
+      section: route.slice("/library/".length),
+      article: id,
+    })));
+  // A sibling collection page is not an ancestor layout, so Next passes no section.
+  const actual = page.generateStaticParams({ params: {} });
+  assert.ok(actual.length > 0, "Static export must not receive an empty article parameter list.");
+  assert.equal(JSON.stringify(actual), JSON.stringify(expected));
+  assert.equal(JSON.stringify(page.generateStaticParams()), JSON.stringify(expected));
+  assert.equal(page.dynamicParams, false);
+  assert.equal(new Set(actual.map(({ section, article }) => `${section}/${article}`)).size, actual.length);
+});

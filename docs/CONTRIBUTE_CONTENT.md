@@ -39,6 +39,8 @@ Common owners:
   suggested paths. Do not create a separate Learn settings file.
 - `parampara/` owns guru facts and portraits; numeric filename prefixes determine
   order. Preserve optional facts and translation fallback.
+- `mathas/` and `deities/` own Mathas and Deities stories featured in the Story page tabs; numeric
+  filename prefixes determine order.
 - `branches/` owns verified branch details. Use an empty phone only where no verified
   number is available; do not invent contact data.
 - `connect/` owns official channels used by Connect, footer, and public actions.

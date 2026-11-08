@@ -5,9 +5,9 @@
  *   /events/mantra-yajna -> /events
  *   /library/mantra/dvadasha-stotra -> /library/mantra
  *   /history/parampara/madhwacharyaru -> /history/parampara
- *   /history/stories/annadana-as-sadhana -> /history/stories
+ *   /library/stories/annadana-as-sadhana -> /library/stories
  *   /history/parampara -> /story
- *   /history/stories -> /story
+ *   /library/stories -> /library
  *   /library/mantra -> /library
  *   /albums/daily-worship -> /albums
  *   /events -> /
@@ -21,7 +21,7 @@ export function getParentPath(pathname: string): string {
   if (segments.length <= 1) {
     return "/";
   }
-  // History collections and lineage hub belong under the Know the Story hub (/story)
+  // Lineage hub belongs under the Know the Story hub (/story)
   if (segments[0] === "history" && segments.length === 2) {
     return "/story";
   }

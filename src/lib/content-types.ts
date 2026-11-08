@@ -460,6 +460,27 @@ export interface PagesShape {
     related_places: string;
     related_works: string;
   };
+  story: {
+    title: string;
+    intro: string;
+    tabs: {
+      mathas: string;
+      parampara: string;
+      deities: string;
+    };
+    search_mathas: string;
+    search_deities: string;
+    no_results: string;
+    clear_search: string;
+    details: string;
+    close: string;
+    view_details: string;
+    established_by: string;
+    era: string;
+    sanctum: string;
+    deity: string;
+    attributes: string;
+  };
   detected: Record<string, string>;
   contact: {
     reach_title: string;
