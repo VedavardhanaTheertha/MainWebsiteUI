@@ -9,7 +9,6 @@ import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import { useDialog } from "@/hooks/useDialog";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import RailMotionControl from "@/components/RailMotionControl";
-import RailNavigation from "@/components/RailNavigation";
 import AdvancedFilters from "@/components/AdvancedFilters";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
@@ -109,15 +108,15 @@ export function ArticleTile({
   onOpen: () => void;
 }) {
   const { tr } = useLang();
-  const { readingTimeSettings } = useUiSettings();
+  const { readingSettings } = useUiSettings();
   const copy = tr.library_browser;
   const projectStatus = article.knowledge?.project?.status;
-  const readingTime = sectionId === "stories" || article.knowledge?.readMinutes ? knowledgeReadingTime(article, readingTimeSettings) : undefined;
+  const readingTime = sectionId === "stories" || article.knowledge?.readMinutes ? knowledgeReadingTime(article, readingSettings) : undefined;
   return (
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} layout-info-tile ${featured ? "" : "layout-compact-card"} ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
@@ -146,7 +145,7 @@ export function ArticleTile({
 
 export default function LibrarySectionBrowser({ sectionId }: { sectionId: string }) {
   const { lang, contentMode, tr } = useLang();
-  const { bhaktiReaderSettings, collectionPagination } = useUiSettings();
+  const { readingSettings, collectionPagination } = useUiSettings();
   const reducedMotion = useReducedMotion();
   const copy = tr.library_browser;
   const sections = contentMode === "placeholder"
@@ -158,7 +157,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
   const [query, setQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
-  const [readingSize, setReadingSize] = useState<number>(bhaktiReaderSettings.initialSize);
+  const [readingSize, setReadingSize] = useState<number>(readingSettings.initialSize);
   const [linkStatus, setLinkStatus] = useState("");
   const [expanded, setExpanded] = useState(true);
   const deferredQuery = useDeferredValue(query);
@@ -493,9 +492,9 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                 {tr.bhakti_controls.reading_size}
                 <input
                   type="range"
-                  min={bhaktiReaderSettings.minSize}
-                  max={bhaktiReaderSettings.maxSize}
-                  step={bhaktiReaderSettings.step}
+                  min={readingSettings.minSize}
+                  max={readingSettings.maxSize}
+                  step={readingSettings.step}
                   value={readingSize}
                   onChange={(event) => setReadingSize(Number(event.target.value))}
                   className="min-h-11 w-28"
@@ -623,7 +622,6 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
           </div>
           <div className="relative mt-5">
             {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((current) => !current)} />}
-            {featured.length > 1 && <RailNavigation scrollRef={featuredScrollRef} />}
             <div
               ref={featuredScrollRef}
               className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
@@ -688,7 +686,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
           </p>
 
           {visible.length > 0 ? (
-            <div className="layout-compact-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((article) => (
                 <ArticleTile
                   key={article.id}

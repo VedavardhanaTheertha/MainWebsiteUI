@@ -17,7 +17,7 @@ import ParamparaRelatedLinks, { type ParamparaRelatedContent } from "@/component
 
 export default function ParamparaBrowser() {
   const { lang, tr, contentMode } = useLang();
-  const { browserDefaults, presentationSettings } = useUiSettings();
+  const { browserDefaults } = useUiSettings();
   const parampara = contentMode !== defaultContentMode && alternateParamparaByLanguage
     ? alternateParamparaByLanguage
     : paramparaByLanguage;
@@ -160,9 +160,7 @@ export default function ParamparaBrowser() {
                     src={guru.thumbnailImage}
                     alt={guru.name}
                     fill
-                    sizes={presentationSettings.imageBackedTiles
-                      ? view === "timeline" ? "(max-width: 1280px) 100vw, 1152px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      : "80px"}
+                    sizes={view === "timeline" ? "(max-width: 1280px) 100vw, 1152px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
                   />
                 ) : (
                   <span className="grid h-full place-items-center text-[var(--color-saffron-400)]">

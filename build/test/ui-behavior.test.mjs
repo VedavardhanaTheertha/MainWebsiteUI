@@ -111,7 +111,7 @@ async function mountComponent(file, options = {}) {
       if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({
         heroSettings: options.hero ?? heroDefaults,
         interactionSettings: options.interaction ?? { dropdownCloseDelayMs: 120 },
-      }), presentationSettings: { imageTreatment: false } }) };
+      }), presentationSettings: { tileOverlayOpacity: 40, tileCornerRadius: 20, tileMinHeight: 360 } }) };
       if (name === "@/gen/settings/ui-elements") return {
         heroSettings: options.hero ?? heroDefaults,
         interactionSettings: options.interaction ?? { dropdownCloseDelayMs: 120 },

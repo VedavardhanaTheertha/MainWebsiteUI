@@ -20,19 +20,12 @@ function validSettings(value: string | null): value is string {
   }
 }
 
-type FlagOverride = "on" | "off" | "default";
-const flag = (key: string) => createPreferenceStore<FlagOverride>(
-  key, "default", (value): value is "on" | "off" => value === "on" || value === "off",
-);
-
 export const uiPreferences = createPreferenceStore(
   developerOptions.uiSettingsStorageKey, JSON.stringify(uiElementDefaults), validSettings,
 );
-export const imagePreference = flag(developerOptions.imageStorageKey);
 
 export function applyUiSettings(value: UiElements) {
   const validated = validateUiElements(value);
   uiPreferences.setValue(JSON.stringify(validated));
-  imagePreference.setValue("default");
-  return [uiPreferences, imagePreference].every((store) => store.isPersistent());
+  return uiPreferences.isPersistent();
 }

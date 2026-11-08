@@ -17,7 +17,7 @@ export default function ImageListCards({ contentKey }: { contentKey: "learn" | "
           const href = learningDestination(item);
           const enrollmentUrl = approvedLearningUrl(item.enrollmentUrl);
           return (
-            <article key={item.id ?? item.title} className="layout-info-tile visual-tile relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)]">
+            <article key={item.id ?? item.title} className="visual-tile relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)]">
               <div className="visual-tile-art relative h-44">
                 <ContentImage src={item.img} alt="" fill sizes="(max-width: 640px) 100vw, 50vw" />
               </div>

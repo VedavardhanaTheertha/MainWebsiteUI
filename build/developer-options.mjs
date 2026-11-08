@@ -1,12 +1,10 @@
 export const developerOptionsRoute = "/developer-options";
-export const imageTreatmentStorageKey = "site-image-treatment";
 export const uiSettingsStorageKey = "site-ui-settings";
 
 export function developerOptionsForEnvironment(environment) {
   return {
     enabled: environment === "local" || environment === "dev",
     route: developerOptionsRoute,
-    imageStorageKey: imageTreatmentStorageKey,
     uiSettingsStorageKey,
   };
 }

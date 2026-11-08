@@ -11,10 +11,10 @@ const prose = "mt-6 max-w-none space-y-5 text-base leading-8 text-[var(--color-t
 
 export default function KnowledgeBody({ article, sectionId }: { article: DisplayArticle; sectionId: string }) {
   const { lang, tr } = useLang();
-  const { readingTimeSettings } = useUiSettings();
+  const { readingSettings } = useUiSettings();
   const copy = tr.library_browser;
   const details = article.knowledge;
-  const readingTime = sectionId === "stories" || details?.readMinutes ? knowledgeReadingTime(article, readingTimeSettings) : undefined;
+  const readingTime = sectionId === "stories" || details?.readMinutes ? knowledgeReadingTime(article, readingSettings) : undefined;
   const [active, setActive] = useState<number | null>(null);
   const annotationId = useId();
   const text = (value: KnowledgeText) => knowledgeText(value, lang);

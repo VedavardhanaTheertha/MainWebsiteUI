@@ -13,8 +13,8 @@ const exports = {};
 runInNewContext(compiled, {
   exports,
   require: (name) => {
-    if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({ readingTimeSettings: { wordsPerMinute: 200 } }) }) };
-    if (name === "@/gen/settings/ui-elements") return { readingTimeSettings: { wordsPerMinute: 200 } };
+    if (name === "@/context/UiSettingsContext") return { useUiSettings: () => ({ ...testUiSettings, ...({ readingSettings: { wordsPerMinute: 200 } }) }) };
+    if (name === "@/gen/settings/ui-elements") return { readingSettings: { wordsPerMinute: 200 } };
     assert.equal(name, "@/gen/content");
     return { defaultLang: "en" };
   },

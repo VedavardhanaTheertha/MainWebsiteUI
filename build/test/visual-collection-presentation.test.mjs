@@ -93,8 +93,8 @@ test("image-backed tiles are explicitly eligible without changing default or pos
 
 test("overlay text has a light translucent base, room to grow, and no hover-only disclosure", () => {
   const css = readFileSync(new URL("../../src/app/globals.css", import.meta.url), "utf8");
-  const root = css.match(/:root\[data-image-backed-tiles="on"\] \.visual-tile\s*\{([^}]+)\}/)[1];
-  const body = css.match(/:root\[data-image-backed-tiles="on"\] \.visual-tile > \.visual-tile-body\s*\{([^}]+)\}/)[1];
+  const root = css.match(/\.visual-tile\s*\{([^}]+)\}/)[1];
+  const body = css.match(/\.visual-tile > \.visual-tile-body\s*\{([^}]+)\}/)[1];
   assert.match(root, /height:\s*auto/);
   assert.match(body, /position:\s*static/);
   assert.match(body, /padding:\s*3rem 1rem 1rem/);
@@ -105,10 +105,7 @@ test("overlay text has a light translucent base, room to grow, and no hover-only
   assert.doesNotMatch(css, /visual-tile[^{]*:hover/);
   const hero = css.match(/\.hero-text-overlay\s*\{([^}]+)\}/)[1];
   assert.doesNotMatch(hero, /background/);
-  assert.match(css, /:root\[data-image-backed-tiles="on"\] \.visual-tile > \.visual-tile-art \.content-image-foreground\s*\{\s*object-position: center top;/);
-  for (const rule of css.matchAll(/:root\[data-image-backed-tiles="on"\]([^{}]+)\{/g)) {
-    assert.match(rule[1], /\.visual-tile(?:\s|$)/, "tile styling must not leak to event poster layers");
-  }
+  assert.match(css, /\.visual-tile > \.visual-tile-art :is\(\.content-image-foreground, \.content-image-backdrop\)\s*\{\s*object-position: center top;/);
 });
 
 test("learning overlay tiles preserve separate detail and enrollment destinations", () => {
@@ -149,7 +146,7 @@ test("empty shell renders supplied rich content without adding display copy", ()
   assert.match(html, /<button type="button">Provided action<\/button>/);
 });
 
-test("homepage icons use five shrinkable columns with complete wrapping labels", () => {
+test("homepage icons use five shrinkable columns with accessible icon links without text", () => {
   const items = Array.from({ length: 5 }, (_, index) => ({
     id: `page-${index}`,
     url: `/page-${index}`,
@@ -165,11 +162,10 @@ test("homepage icons use five shrinkable columns with complete wrapping labels",
   assert.match(html, /data-carousel="icon_carousel" class="grid grid-cols-5 /);
   assert.equal((html.match(/<a /g) ?? []).length, 5);
   assert.equal((html.match(/min-w-0 min-h-11/g) ?? []).length, 5);
-  assert.equal((html.match(/\[overflow-wrap:anywhere\]/g) ?? []).length, 5);
   assert.match(html, /size-11 .*min-\[360px\]:size-12 sm:size-\[54px\]/);
-  assert.doesNotMatch(html, /overflow-x-auto|min-w-24|truncate|line-clamp/);
+  assert.doesNotMatch(html, /overflow-x-auto|min-w-24|truncate|line-clamp|\[overflow-wrap:anywhere\]/);
   for (const { title, url } of items) {
-    assert.ok(html.includes(title));
+    assert.ok(html.includes(`aria-label="${title}"`));
     assert.ok(html.includes(`href="${url}"`));
   }
 });
@@ -236,17 +232,14 @@ test("image request options match while priority and error callbacks stay on the
   assert.equal(imageLayers({ src: "/lazy.png", alt: "" }).background.props.loading, "lazy");
 });
 
-test("images default to cover; the opt-in treatment contains artwork and reveals only a blurred decorative layer", () => {
+test("images apply contain/blur presentation permanently", () => {
   const css = readFileSync(new URL("../../src/app/globals.css", import.meta.url), "utf8");
   const foreground = css.match(/\.content-image-foreground\s*\{([^}]+)\}/)?.[1];
   const background = css.match(/\.content-image-backdrop\s*\{([^}]+)\}/)?.[1];
   assert.ok(foreground);
-  assert.match(foreground, /object-fit:\s*cover/);
-  assert.match(foreground, /padding:\s*0/);
-  assert.match(background, /display:\s*none/);
-  assert.match(css, /:root\[data-image-treatment="on"\] \.content-image-backdrop\s*\{[^}]*display:\s*block/);
-  assert.match(css, /:root\[data-image-treatment="on"\] \.content-image-foreground\s*\{[^}]*object-fit:\s*contain/);
-  assert.match(css, /:root\[data-image-treatment="on"\] \.content-image-frame > \.content-image-foreground\s*\{[^}]*padding:\s*8px/);
+  assert.match(foreground, /object-fit:\s*contain/);
+  assert.match(background, /display:\s*block/);
+  assert.match(css, /\.content-image-frame > \.content-image-foreground\s*\{[^}]*padding:\s*8px/);
   assert.doesNotMatch(foreground, /filter|transform|transition/);
   assert.match(background, /object-fit:\s*cover/);
   assert.match(background, /blur\(14px\)/);
@@ -326,9 +319,20 @@ test("standalone hero keeps complete foreground images with readable text over t
   const source = readFileSync(new URL("../../scripts/generate-content.mjs", import.meta.url), "utf8");
   assert.match(source, /class="hero-backdrop"[^>]*alt="" aria-hidden="true" loading="lazy"/);
   assert.match(source, /class="hero-foreground"/);
-  assert.match(source, /\.hero-foreground \{ object-fit: cover; padding: 0; \}/);
-  assert.match(source, /:root\[data-image-treatment="on"\] \.hero-foreground \{ object-fit: contain; padding: 8px; \}/);
+  assert.match(source, /\.hero-foreground \{ object-fit: contain; padding: 8px; \}/);
   assert.match(source, /\.hero-content \{ position: absolute; inset: auto 0 0;/);
   assert.match(source, /\.hero-title \{[^}]*color: #fff8ed/);
   assert.doesNotMatch(source, /class="hero-overlay"|\.hero-image\.is-active img/);
+});
+
+test("tile rounding is shared by collection cards and only the hero's bottom corners", () => {
+  const source = (file) => readFileSync(new URL(`../../src/${file}`, import.meta.url), "utf8");
+  assert.match(cards.collectionCardClassName("collection"), /collection-tile/);
+  assert.match(cards.collectionCardClassName("featured", true), /collection-tile/);
+  assert.match(source("app/globals.css"), /\.collection-tile\s*\{\s*border-radius: var\(--tile-corner-radius, var\(--radius-xl\)\);/);
+  assert.match(source("components/home/HeroCarousel.tsx"), /className="hero-rounded-frame /);
+  assert.match(source("app/globals.css"), /\.hero-rounded-frame\s*\{\s*border-bottom-left-radius: var\(--tile-corner-radius, 22px\);\s*border-bottom-right-radius: var\(--tile-corner-radius, 22px\);/);
+  for (const file of ["components/home/HeroCarousel.tsx", "components/home/HomeTiles.tsx", "components/media/MediaViewer.tsx"]) {
+    assert.doesNotMatch(source(file), /collection-tile/);
+  }
 });

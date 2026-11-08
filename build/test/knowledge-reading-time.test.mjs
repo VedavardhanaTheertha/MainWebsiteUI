@@ -30,7 +30,7 @@ function loadModule(relativePath, dependencies) {
   return exports;
 }
 
-const settings = { readingTimeSettings: { wordsPerMinute: 200 } };
+const settings = { readingSettings: { wordsPerMinute: 200 } };
 const knowledge = loadModule("../../src/lib/knowledge.ts", {
   "@/gen/content": { defaultLang: "en" }, "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...(settings) }) },
   "@/gen/settings/ui-elements": settings,
@@ -62,12 +62,12 @@ test("explicit source readMinutes overrides derived estimates without being labe
 });
 
 test("story estimates use configured reading speed while explicit minutes still win", () => {
-  settings.readingTimeSettings.wordsPerMinute = 100;
+  settings.readingSettings.wordsPerMinute = 100;
   try {
     assert.equal(knowledgeReadingTime(article(200)).minutes, 3);
     assert.equal(knowledgeReadingTime({ ...article(800), knowledge: { readMinutes: 2 } }).minutes, 2);
   } finally {
-    settings.readingTimeSettings.wordsPerMinute = 200;
+    settings.readingSettings.wordsPerMinute = 200;
   }
 });
 

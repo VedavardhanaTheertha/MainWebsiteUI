@@ -103,54 +103,31 @@ them throughout the site, including initial pagination, reader size, sorting, an
 filter/view defaults. The page also provides an interactive social share card previewer
 to inspect Open Graph and Twitter cards across WhatsApp, Twitter/X, and Facebook.
 
-The image treatment and image-backed tiles default to false in `presentation` in that JSON
-file. Copy-preview defaults remain defined by the environment, not UI settings.
-With image treatment off, images cover their frames, potentially cropping edges.
-Turning it on shows
-the complete image over a blurred copy. By default, captions remain outside images and portrait
-frames remain rectangular in either mode. The full-screen album viewer, logos,
-QR codes, functional icons, and fallback icons are unaffected.
-
-Enable **Image-backed tiles with readable text panels**, then Apply, to put
-photographic card text over a lightly darkened, semi-transparent bottom panel on its full-tile
-image. The two image options are independent: test tile overlays with both
-cover-fit and complete-image/blur modes. Seva and learning previews retain detail,
-booking, and enrollment behavior. Event posters and full-screen album playback
-remain unchanged.
-Foreground images align top-centre only in image-backed tile mode; turning it
-off restores the ordinary image-above-text layout and its existing alignment.
+Photographic cards use an image-backed presentation with full-tile images and text
+over a lightly darkened, semi-transparent bottom panel. Images display in full with
+blurred backdrop fill and top-centre foreground alignment.
+Captions remain outside images and portrait frames remain rectangular.
+The full-screen album viewer, logos, QR codes, functional icons, and fallback icons are unaffected.
+Seva and learning previews retain detail, booking, and enrollment behavior. Event posters and full-screen album playback remain unchanged.
 Titles can wrap and cards grow rather than clip translated text. Text/actions
 remain visible without hovering; test keyboard focus, separate action links,
-narrow screens, both languages, and forced-color mode when changing this treatment.
-Older complete saved UI configurations inherit new tile fields and a missing
-layout group while preserving their existing preferences; other missing fields,
-including incomplete original layout fields, remain invalid.
-The hero title stays over its image in both tile modes, without a background
-panel; the standalone generated hero follows the same layout. **Tile text panel
-opacity (%)** controls the tile background from transparent (0) to opaque (100),
+narrow screens, both languages, and forced-color mode.
+Older complete saved UI configurations inherit new tile fields and clean up
+obsolete options while preserving their existing preferences; other missing fields
+remain invalid.
+The hero title stays over its image without a background panel; the standalone generated hero follows the same layout.
+**Tile text panel opacity (%)** controls the tile background from transparent (0) to opaque (100),
 defaulting to 40 in `presentation.tileOverlayOpacity`. Apply and reload to save
 it. Text shadows aid readability, but contrast depends on the photograph and opacity.
 
-The **Layout experiments** group contains six independent, default-off checkboxes:
-featured homepage tiles, consistent section headers,
-standardized widths/spacing, compact seva/library results, tile information
-placement, and carousel navigation. Apply and reload after changing a comparison;
-turn it off to compare with the existing layout. The homepage shortcut order does
-not change. Try each option separately before testing combinations.
-
-Check compact results with both photographic tile modes: thumbnail rows override
-full-tile images only in ordinary seva/library results, not featured rails.
-Check narrow reading widths separately from dialogs and full-screen playback.
-For carousel navigation, test first/last positions, no-overflow tracks, keyboard
-buttons, resized windows, reduced motion, and automatic scrolling disabled.
-Previous/next controls sit at the left/right edges, vertically centered alongside
-the rail, without adding a control row above or below it.
-The adaptive-height setting also applies to the generated standalone hero.
 **Tile and hero corner radius (px)** accepts 0–48, defaults to 20px, and uses 0
 for square corners. It applies to photographic and collection cards, including
 event card frames, plus the hero's bottom corners (including the standalone hero).
 The hero's top corners remain square. Shortcut icons, dialogs, and full-screen
-images are unchanged. Older saved settings inherit the radius default without losing layout choices.
+images are unchanged. **Tile minimum height (px)** accepts 100–1000 and defaults
+to 360px (`presentation.tileMinHeight`), ensuring consistent tile heights while
+allowing cards to expand for longer translated copy. Older saved settings inherit
+these defaults without losing preferences.
 Event posters, album playback, and the background-free hero title remain exceptions
 to photographic tile styling. Section links must use real collection destinations,
 not arbitrary routes for mixed navigation groups.
@@ -179,26 +156,12 @@ Partial objects, unknown fields, invalid ranges, and invalid reader-size
 relationships are rejected with a console warning and configured-default fallback.
 Remove that key and reload to restore configured defaults.
 
-For individual presentation flags, the compatibility key
-`site-image-treatment` accepts `on`
-or `off` and takes precedence over the JSON configuration. Apply or Reset on the
-Developer page replaces it with `default` so stale flags cannot defeat its
-choices. For example, to enable only the image effect in production:
-
-```js
-localStorage.setItem("site-image-treatment", "on");
-location.reload();
-```
-
-To disable it, use `localStorage.setItem("site-image-treatment", "off"); location.reload();`.
-To restore the default, use `localStorage.removeItem("site-image-treatment"); location.reload();`.
-Invalid or absent legacy values inherit the JSON override or configured default.
 These are public browser preferences,
 not mutable build environment variables or a security boundary. Same-tab manual
 storage edits require a reload; Developer page UI edits apply only through Apply,
 copy changes immediately, and other open documents follow storage events.
-The standalone generated hero honors the same image override plus configured
-autoplay, interval, and fade settings. Reduced-motion preferences remain respected.
+The standalone generated hero honors configured autoplay, interval, and fade settings.
+Reduced-motion preferences remain respected.
 
 Preview-only utility pages use `page.preview.tsx`. The shared developer-options
 build helper enables that extension in local/dev only; keep standard pages on
@@ -267,7 +230,7 @@ keep at least four eligible articles and do not add that generated list to setti
 Keep hero slide selection separate from card curation.
 
 Keep all five `icon_carousel` links visible together, without horizontal scrolling,
-at widths of 320px and above. Use equal-width grid columns, wrapping labels, and
+at widths of 320px and above. Use equal-width grid columns, accessible labels, and
 touch targets of at least 44px. Check both supported languages at phone, tablet,
 touch-laptop, and desktop widths; this strip is distinct from `bottom_carousel`.
 

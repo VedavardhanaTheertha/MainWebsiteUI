@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
+import { useUiSettings } from "@/context/UiSettingsContext";
 import { placeholderLibrarySections, realLibrarySections } from "@/gen/library/data";
 import { libraryContentLoaders } from "@/gen/library/loaders";
 import { articleHref, localizeArticle, relatedArticles } from "@/lib/knowledge";
+import { copyReaderLink } from "@/lib/reader-utils";
 import KnowledgeBody from "./KnowledgeBody";
 
 export default function KnowledgeArticlePage({
@@ -18,11 +20,14 @@ export default function KnowledgeArticlePage({
   initialHtml?: Record<string, string>;
 }) {
   const { contentMode, lang, tr } = useLang();
+  const { readingSettings } = useUiSettings();
   const copy = tr.library_browser;
   const section = (contentMode === "placeholder" ? placeholderLibrarySections : realLibrarySections).find((entry) => entry.id === sectionId);
   const item = section?.items.find((entry) => entry.id === articleId);
 
   const [loadedHtml, setLoadedHtml] = useState<Record<string, string> | null>(initialHtml ?? item?.html ?? null);
+  const [readingSize, setReadingSize] = useState<number>(readingSettings.initialSize);
+  const [linkStatus, setLinkStatus] = useState("");
 
   useEffect(() => {
     if (loadedHtml || item?.html) return;
@@ -42,7 +47,40 @@ export default function KnowledgeArticlePage({
     <div className="layout-reading layout-section mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
       <Link href={section.route} className="mb-6 inline-flex min-h-11 items-center text-base font-semibold text-[var(--color-text-brand)] underline underline-offset-4">{copy.back_collection}</Link>
       <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
-        <article>
+        <div className="library-reading-controls flex flex-wrap items-center gap-3 border-b border-[var(--color-line-soft)] py-3 mb-5 text-sm">
+          <label className="flex min-h-11 items-center gap-2">
+            {tr.bhakti_controls?.reading_size}
+            <input
+              type="range"
+              min={readingSettings.minSize}
+              max={readingSettings.maxSize}
+              step={readingSettings.step}
+              value={readingSize}
+              onChange={(event) => setReadingSize(Number(event.target.value))}
+              className="min-h-11 w-28"
+            />
+            <output>{readingSize}%</output>
+          </label>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="min-h-11 rounded border border-[var(--color-line)] px-3"
+          >
+            {copy.print}
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              const copied = await copyReaderLink(window.location.href);
+              setLinkStatus(copied ? (tr.bhakti_controls?.copied ?? "") : (tr.bhakti_controls?.copy_failed ?? ""));
+            }}
+            className="min-h-11 rounded border border-[var(--color-line)] px-3"
+          >
+            {tr.bhakti_controls?.copy_link}
+          </button>
+          <p role="status">{linkStatus}</p>
+        </div>
+        <article style={{ fontSize: `${0.95 * readingSize / 100}rem` }}>
           <header className="border-b border-[var(--color-line)] pb-6">
             <p className="mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{article.status}</p>
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">{article.title}</h1>

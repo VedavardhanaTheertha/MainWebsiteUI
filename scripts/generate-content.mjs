@@ -30,7 +30,7 @@ import { parseMarkdownFrontmatter } from "../build/content-utils.mjs";
 import { resolveHeroTitles } from "../build/hero-content.mjs";
 import { holdWorkspaceLock } from "../build/workspace-lock.mjs";
 import { createLanguageDescriptor } from "../build/language-content.mjs";
-import { appendDeveloperNavigation, developerOptionsForEnvironment, imageTreatmentStorageKey, uiSettingsStorageKey } from "../build/developer-options.mjs";
+import { appendDeveloperNavigation, developerOptionsForEnvironment, uiSettingsStorageKey } from "../build/developer-options.mjs";
 import { uiFieldDefinitions } from "../build/ui-settings-schema.mjs";
 
 holdWorkspaceLock("website content generation");
@@ -664,10 +664,8 @@ function writeHeroImages(hero, content, lang, basePath) {
     :root[data-adaptive-hero="on"] .hero-images { height: clamp(20rem, 65svh, 28.875rem); }
     .hero-image { position: absolute; inset: 0; opacity: 0; transition: opacity var(--hero-fade-duration, ${heroSettings.fadeDurationMs}ms) ease; }
     .hero-image img { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .hero-backdrop { display: none; object-fit: cover; filter: blur(14px) brightness(.65); transform: scale(1.12); pointer-events: none; }
-    .hero-foreground { object-fit: cover; padding: 0; }
-    :root[data-image-treatment="on"] .hero-backdrop { display: block; }
-    :root[data-image-treatment="on"] .hero-foreground { object-fit: contain; padding: 8px; }
+    .hero-backdrop { display: block; object-fit: cover; filter: blur(14px) brightness(.65); transform: scale(1.12); pointer-events: none; }
+    .hero-foreground { object-fit: contain; padding: 8px; }
     .hero-image.is-active { opacity: 1; }
     .hero-content { position: absolute; inset: auto 0 0; padding: 48px 24px 24px; text-align: center; }
     .hero-title { margin: 0 0 20px; color: #fff8ed; text-shadow: 0 1px 4px rgb(0 0 0 / 70%); font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.25; white-space: pre-line; }
@@ -712,7 +710,7 @@ function writeHeroImages(hero, content, lang, basePath) {
           return null;
         }
       };
-      const applyImageTreatment = () => {
+      const applyPresentationPreferences = () => {
         const stored = readPreference(${JSON.stringify(uiSettingsStorageKey)});
         try {
           settings = parseUiSettings(validateUiPreferences(stored === null ? ${JSON.stringify(uiDefaults)} : JSON.parse(stored), ${JSON.stringify(uiDefaults)}));
@@ -721,13 +719,10 @@ function writeHeroImages(hero, content, lang, basePath) {
           console.warn("[preferences] Invalid saved UI settings; using configured defaults.", error);
           settings = parseUiSettings(${JSON.stringify(uiDefaults)});
         }
-        const legacy = readPreference(${JSON.stringify(imageTreatmentStorageKey)});
-        const enabled = legacy === "on" || legacy !== "off" && settings.presentationSettings.imageTreatment;
-        document.documentElement.dataset.imageTreatment = enabled ? "on" : "off";
         document.documentElement.style.setProperty("--tile-corner-radius", settings.presentationSettings.tileCornerRadius + "px");
         document.documentElement.style.setProperty("--hero-fade-duration", settings.heroSettings.fadeDurationMs + "ms");
       };
-      applyImageTreatment();
+      applyPresentationPreferences();
       const applyLanguage = (lang) => {
         if (lang !== "en" && lang !== "kn") return;
         document.documentElement.lang = lang;
@@ -737,8 +732,8 @@ function writeHeroImages(hero, content, lang, basePath) {
       };
       applyLanguage(new URLSearchParams(location.search).get("lang") || readPreference("shiroor-lang") || "${escapeHtml(lang)}");
       window.addEventListener("storage", (event) => {
-        if (event.key === null || event.key === ${JSON.stringify(imageTreatmentStorageKey)} || event.key === ${JSON.stringify(uiSettingsStorageKey)}) {
-          applyImageTreatment();
+        if (event.key === null || event.key === ${JSON.stringify(uiSettingsStorageKey)}) {
+          applyPresentationPreferences();
           startHero();
         }
         if (event.key === "shiroor-lang") applyLanguage(event.newValue);

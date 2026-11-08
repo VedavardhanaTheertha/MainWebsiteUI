@@ -33,7 +33,7 @@ interface SongContent {
 
 export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const { lang, tr } = useLang();
-  const { bhaktiReaderSettings, collectionPagination } = useUiSettings();
+  const { readingSettings, collectionPagination } = useUiSettings();
   const reducedMotion = useReducedMotion();
   const returnToId = useRef<string | null>(null);
   const focusFrame = useRef<number | null>(null);
@@ -57,7 +57,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   const [composer, setComposer] = useState("");
   const [ankita, setAnkita] = useState("");
   const [compositionType, setCompositionType] = useState("");
-  const [readingSize, setReadingSize] = useState<number>(bhaktiReaderSettings.initialSize);
+  const [readingSize, setReadingSize] = useState<number>(readingSettings.initialSize);
   const [linkStatus, setLinkStatus] = useState("");
   const [loadFailures, setLoadFailures] = useState<Record<string, boolean>>({});
   const pendingLoads = useRef(new Map<string, Promise<void>>());
@@ -296,7 +296,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
           <div className="bhakti-reading-controls flex flex-wrap items-center gap-3 border-b border-[var(--color-line-soft)] py-3 mb-5 text-sm">
             <label className="flex min-h-11 items-center gap-2">
               {controls.reading_size}
-              <input type="range" min={bhaktiReaderSettings.minSize} max={bhaktiReaderSettings.maxSize} step={bhaktiReaderSettings.step} value={readingSize}
+              <input type="range" min={readingSettings.minSize} max={readingSettings.maxSize} step={readingSettings.step} value={readingSize}
                 onChange={(event) => setReadingSize(Number(event.target.value))} className="min-h-11 w-28" />
               <output>{readingSize}%</output>
             </label>
