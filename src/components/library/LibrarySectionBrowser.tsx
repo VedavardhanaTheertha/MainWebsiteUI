@@ -601,7 +601,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
   return (
     <>
-      <header className="bg-transparent px-5 py-7 text-center lg:py-10">
+      <header className="bg-transparent px-5 pt-6 pb-2 text-center sm:pt-8 sm:pb-3">
         <p className="text-badge font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {sectionCopy.eyebrow}
         </p>
@@ -613,7 +613,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
         </p>
       </header>
 
-      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-library-title">
+      <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="featured-library-title">
         <div className="layout-wide mx-auto max-w-7xl">
           <div className="flex items-center justify-between gap-4">
             <h2 id="featured-library-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
@@ -645,7 +645,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
         </div>
       </section>
 
-      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:pb-12">
         <section aria-labelledby="library-collection-heading">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <h2 id="library-collection-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">

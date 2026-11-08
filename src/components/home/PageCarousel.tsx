@@ -96,8 +96,8 @@ export default function PageCarousel({
               <span
                 className={`block h-2 transition-all duration-300 rounded-full ${
                   idx === activeIndex
-                    ? "w-6 bg-[var(--color-saffron-600)] shadow-xs"
-                    : "w-2 bg-[var(--color-line-strong)] hover:bg-[var(--color-saffron-400)]"
+                    ? "w-6 bg-[var(--color-saffron-600)] border border-[var(--color-saffron-700)] shadow-xs"
+                    : "w-2 bg-[var(--color-saffron-100)] border border-[var(--color-saffron-600)] shadow-2xs hover:bg-[var(--color-saffron-300)]"
                 }`}
               />
             </button>

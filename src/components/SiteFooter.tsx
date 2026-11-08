@@ -27,7 +27,7 @@ export default function SiteFooter() {
   return (
     <footer className="w-full" style={{ margin: 0 }}>
       {/* Mobile: centered ceremonial block, matching the design reference's .m-foot */}
-      <div className="lg:hidden text-center px-6 pt-9 pb-[30px] bg-transparent border-t border-[var(--color-line)] mt-6">
+      <div className="lg:hidden text-center px-6 pt-9 pb-[30px] bg-transparent border-t border-[var(--color-line)]">
         <Image src={`${siteConfig.basePath}/main-logo.png`} alt="" width={50} height={50} className="object-contain mx-auto mb-2 opacity-95" />
         <p className="font-display text-[19px] text-[var(--color-text-primary)]">{tr.site_name}</p>
         <p className="text-xs text-[var(--color-text-brand)] mt-1.5" style={{ fontFamily: "var(--font-kannada)" }}>

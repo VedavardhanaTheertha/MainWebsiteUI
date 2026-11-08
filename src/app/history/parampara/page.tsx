@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ParamparaBrowser from "@/components/ParamparaBrowser";
+import StoryBrowser from "@/components/StoryBrowser";
 import { content, defaultLang } from "@/gen/content";
 
 export const metadata: Metadata = {
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ParamparaBrowser showSearch={false} showViewSwitch={false} initialView="timeline" />;
+  return <StoryBrowser initialTab="parampara" />;
 }

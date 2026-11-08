@@ -19,12 +19,14 @@ export interface ParamparaBrowserProps {
   showSearch?: boolean;
   showViewSwitch?: boolean;
   initialView?: "timeline" | "list";
+  embedded?: boolean;
 }
 
 export default function ParamparaBrowser({
   showSearch = true,
   showViewSwitch = true,
   initialView,
+  embedded = false,
 }: ParamparaBrowserProps = {}) {
   const { lang, tr, contentMode } = useLang();
   const { browserDefaults } = useUiSettings();
@@ -84,18 +86,18 @@ export default function ParamparaBrowser({
     ? labels.founder
     : `${labels.position} ${guru.officialPosition}`;
 
-  return (
-    <>
-      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
-        <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
-          <header className="max-w-2xl mb-7 lg:mb-10">
-            <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
-              {labels.title}
-            </h1>
-            <p className="font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
-              {labels.intro}
-            </p>
-          </header>
+  const innerContent = (
+    <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
+      {!embedded && (
+        <header className="max-w-2xl mb-7 lg:mb-10">
+          <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
+            {labels.title}
+          </h1>
+          <p className="font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+            {labels.intro}
+          </p>
+        </header>
+      )}
 
         {founder && (
           <section className="mb-10 border-y border-[var(--color-line-strong)] py-7 lg:mb-14 lg:py-9">
@@ -205,8 +207,16 @@ export default function ParamparaBrowser({
           ))}
           </ol>
         </section>
-        </div>
       </div>
+  );
+
+  return (
+    <>
+      {embedded ? innerContent : (
+        <div className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
+          {innerContent}
+        </div>
+      )}
 
       {selected && (
         <div

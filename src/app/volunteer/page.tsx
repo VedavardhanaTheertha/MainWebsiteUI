@@ -25,9 +25,9 @@ export default function VolunteerPage() {
         </p>
       </div>
 
-      <div className="max-w-5xl mx-auto px-5 lg:px-8 py-12 lg:py-16">
+      <div className="max-w-5xl mx-auto px-5 lg:px-8 py-6 lg:py-10">
         {/* Why volunteer */}
-        <section aria-labelledby="why-heading" className="mb-14">
+        <section aria-labelledby="why-heading" className="mb-8 sm:mb-10">
           <h2
             id="why-heading"
             className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-8 text-center"

@@ -16,7 +16,7 @@ import ParamparaBrowser from "@/components/ParamparaBrowser";
 
 export type StoryTabKey = "mathas" | "parampara" | "deities";
 
-export default function StoryBrowser() {
+export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: StoryTabKey } = {}) {
   const { lang, tr, contentMode } = useLang();
   const storyCopy = tr.pages.story;
 
@@ -27,9 +27,25 @@ export default function StoryBrowser() {
         return tabParam;
       }
     }
-    return "mathas";
+    return initialTab;
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const mathasTabRef = useRef<HTMLButtonElement>(null);
+  const paramparaTabRef = useRef<HTMLButtonElement>(null);
+  const deitiesTabRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const activeRef =
+      activeTab === "parampara"
+        ? paramparaTabRef.current
+        : activeTab === "deities"
+        ? deitiesTabRef.current
+        : mathasTabRef.current;
+    if (activeRef) {
+      activeRef.scrollIntoView({ block: "nearest", inline: "center" });
+    }
+  }, [activeTab]);
 
   const mathas = contentMode !== defaultContentMode && alternateMathas ? alternateMathas : defaultMathas;
   const deities = contentMode !== defaultContentMode && alternateDeities ? alternateDeities : defaultDeities;
@@ -69,18 +85,19 @@ export default function StoryBrowser() {
       if (tabParam === "mathas" || tabParam === "parampara" || tabParam === "deities") {
         setActiveTab(tabParam);
       } else {
-        setActiveTab("mathas");
+        setActiveTab(initialTab);
       }
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [initialTab]);
 
   const switchTab = (tab: StoryTabKey) => {
     setActiveTab(tab);
     setSelectedId(null);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
+      url.pathname = "/story";
       url.searchParams.set("tab", tab);
       window.history.replaceState(null, "", url.pathname + url.search);
     }
@@ -94,8 +111,8 @@ export default function StoryBrowser() {
 
   return (
     <>
-      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-7 lg:py-12">
-        <header className="max-w-2xl mb-7 lg:mb-10 text-center sm:text-left">
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-5 lg:py-8">
+        <header className="max-w-2xl mb-5 lg:mb-6 text-center sm:text-left">
           <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
             {storyCopy.title}
           </h1>
@@ -105,9 +122,14 @@ export default function StoryBrowser() {
         </header>
 
         {/* 3 Tabs Navigation */}
-        <div className="mb-8 border-b border-[var(--color-line-strong)]">
-          <nav className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto" aria-label={storyCopy.title}>
+        <div className="mb-6 border-b border-[var(--color-line-strong)]">
+          <nav role="tablist" className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto" aria-label={storyCopy.title}>
             <button
+              ref={mathasTabRef}
+              role="tab"
+              id="story-tab-mathas"
+              aria-controls="story-panel-mathas"
+              aria-selected={activeTab === "mathas"}
               type="button"
               onClick={() => switchTab("mathas")}
               aria-current={activeTab === "mathas" ? "page" : undefined}
@@ -120,6 +142,11 @@ export default function StoryBrowser() {
               {storyCopy.tabs.mathas}
             </button>
             <button
+              ref={paramparaTabRef}
+              role="tab"
+              id="story-tab-parampara"
+              aria-controls="story-panel-parampara"
+              aria-selected={activeTab === "parampara"}
               type="button"
               onClick={() => switchTab("parampara")}
               aria-current={activeTab === "parampara" ? "page" : undefined}
@@ -132,6 +159,11 @@ export default function StoryBrowser() {
               {storyCopy.tabs.parampara}
             </button>
             <button
+              ref={deitiesTabRef}
+              role="tab"
+              id="story-tab-deities"
+              aria-controls="story-panel-deities"
+              aria-selected={activeTab === "deities"}
               type="button"
               onClick={() => switchTab("deities")}
               aria-current={activeTab === "deities" ? "page" : undefined}
@@ -148,14 +180,19 @@ export default function StoryBrowser() {
 
         {/* Tab 2: Embedded Parampara Browser */}
         {activeTab === "parampara" && (
-          <div className="story-tab-parampara">
-            <ParamparaBrowser showSearch={false} showViewSwitch={false} initialView="timeline" />
+          <div role="tabpanel" id="story-panel-parampara" aria-labelledby="story-tab-parampara" className="story-tab-parampara">
+            <ParamparaBrowser showSearch={false} showViewSwitch={false} initialView="timeline" embedded={true} />
           </div>
         )}
 
         {/* Tab 1 & Tab 3: List / Article View */}
         {(activeTab === "mathas" || activeTab === "deities") && (
-          <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
+          <div
+            role="tabpanel"
+            id={`story-panel-${activeTab}`}
+            aria-labelledby={`story-tab-${activeTab}`}
+            className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10"
+          >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
               {visibleItems.map((item) => (
                 <button
