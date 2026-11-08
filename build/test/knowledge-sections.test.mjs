@@ -16,7 +16,7 @@ test("knowledge settings preserve default presentation and code-owned routes", (
     "articles", "symbolism", "remedies", "science", "pilgrim",
   ]);
   assert.deepEqual(librarySections.map(({ order }) => order), Array.from({ length: 11 }, (_, i) => i + 1));
-  assert.equal(librarySections.find(({ id }) => id === "pilgrim").route, "/history/pilgrim-guide");
+  assert.equal(librarySections.find(({ id }) => id === "pilgrim").route, "/library/pilgrim-guide");
   assert.equal(librarySections.find(({ id }) => id === "science").image, "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/vedic-science-philosophy.avif");
 });
 

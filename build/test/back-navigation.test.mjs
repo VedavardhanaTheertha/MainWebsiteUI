@@ -38,15 +38,17 @@ test("getParentPath calculates correct parent for app and generated routes", () 
   assert.equal(getParentPath("/library/mantra"), "/library");
   assert.equal(getParentPath("/library/mantra/dvadasha-stotra"), "/library/mantra");
 
-  // History routes map to /story hub
+  // Lineage route maps to /story hub
   assert.equal(getParentPath("/history/parampara"), "/story");
-  assert.equal(getParentPath("/history/stories"), "/story");
-  assert.equal(getParentPath("/history/articles"), "/story");
-  assert.equal(getParentPath("/history/symbolism"), "/story");
 
-  // History detail pages map to their specific history section
+  // Lineage detail page maps to lineage section
   assert.equal(getParentPath("/history/parampara/madhwacharyaru"), "/history/parampara");
-  assert.equal(getParentPath("/history/stories/annadana-as-sadhana"), "/history/stories");
+
+  // Library sections and detail pages map to /library and their section
+  assert.equal(getParentPath("/library/stories"), "/library");
+  assert.equal(getParentPath("/library/stories/annadana-as-sadhana"), "/library/stories");
+  assert.equal(getParentPath("/library/articles"), "/library");
+  assert.equal(getParentPath("/library/symbolism"), "/library");
 
   // Normalization with trailing slash
   assert.equal(getParentPath("/events/"), "/");

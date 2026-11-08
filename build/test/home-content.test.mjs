@@ -158,7 +158,7 @@ test("remedies are three distinct generated detail links with the same selection
     selected = ids;
     for (const card of cards) {
       assert.deepEqual(card, candidates.get(card.id));
-      assert.match(card.url, new RegExp(`^/history/remedies/${card.id}$`));
+      assert.match(card.url, new RegExp(`^/library/remedies/${card.id}$`));
       assert.ok(card.footnote);
     }
     assert.deepEqual(loadHomeContent(repository, code).home.remidies_carousel, cards);

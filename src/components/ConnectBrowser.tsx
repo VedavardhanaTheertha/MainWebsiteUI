@@ -41,8 +41,8 @@ export default function ConnectBrowser() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-10 lg:py-14">
-      <header className="mx-auto mb-10 max-w-3xl text-center">
+    <div className="mx-auto max-w-7xl px-4 py-5 lg:px-10 lg:py-8">
+      <header className="mx-auto mb-6 sm:mb-8 max-w-3xl text-center">
         <h1 className="font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           {copy.title}
         </h1>

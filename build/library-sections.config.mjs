@@ -9,12 +9,12 @@ const sectionDefinitions = [
   { id: "jnana", route: "/library/jnana" },
   { id: "dharma", route: "/library/dharma" },
   { id: "projects", route: "/projects" },
-  { id: "stories", route: "/history/stories" },
-  { id: "articles", route: "/history/articles" },
-  { id: "symbolism", route: "/history/symbolism" },
-  { id: "remedies", route: "/history/remedies" },
-  { id: "science", route: "/history/science" },
-  { id: "pilgrim", route: "/history/pilgrim-guide" },
+  { id: "stories", route: "/library/stories" },
+  { id: "articles", route: "/library/articles" },
+  { id: "symbolism", route: "/library/symbolism" },
+  { id: "remedies", route: "/library/remedies" },
+  { id: "science", route: "/library/science" },
+  { id: "pilgrim", route: "/library/pilgrim-guide" },
 ];
 
 export function loadSectionImages(pagesDir = new URL("../library/pages", import.meta.url)) {

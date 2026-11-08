@@ -10,12 +10,12 @@ export default function LearnPage() {
   const labels = tr.pages.learn;
   return (
     <div>
-      <header className="bg-transparent px-4 py-10 text-center">
+      <header className="bg-transparent px-4 pt-6 pb-2 text-center sm:pt-8 sm:pb-3">
         <p className="font-body text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">{labels.eyebrow}</p>
         <h1 className="mt-3 font-display text-3xl font-bold lg:text-5xl">{labels.title}</h1>
         <p className="mx-auto mt-4 max-w-2xl text-[var(--color-text-secondary)]">{labels.intro}</p>
       </header>
-      <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="mx-auto max-w-5xl px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:pb-12">
         <ImageListCards contentKey="learn" />
         {!!labels.suggested_paths.length && (
           <section className="mt-12" aria-labelledby="learning-paths">

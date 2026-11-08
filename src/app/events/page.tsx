@@ -10,7 +10,7 @@ export const metadata: Metadata = content[defaultLang].page_metadata.events;
 export default function EventsPage() {
   return (
     <>
-      <header className="bg-transparent px-5 py-7 text-center lg:py-10">
+      <header className="bg-transparent px-5 pt-6 pb-2 text-center sm:pt-8 sm:pb-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           <LocalizedCopy path={["events_label"]} />
         </p>
@@ -22,7 +22,7 @@ export default function EventsPage() {
         </p>
       </header>
 
-      <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 lg:space-y-12 lg:px-8 lg:py-12">
+      <div className="mx-auto max-w-7xl space-y-8 px-4 pt-4 pb-8 lg:space-y-10 lg:px-8 lg:pt-6 lg:pb-12">
         <section aria-labelledby="upcoming-events-heading">
           <h2 id="upcoming-events-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             <LocalizedCopy path={["events_upcoming"]} />

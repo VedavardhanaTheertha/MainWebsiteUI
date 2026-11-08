@@ -116,7 +116,7 @@ export default function MediaAlbumsBrowser() {
 
   return (
     <>
-      <header className="bg-transparent px-5 py-7 text-center lg:py-10">
+      <header className="bg-transparent px-5 pt-6 pb-2 text-center sm:pt-8 sm:pb-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {copy.eyebrow}
         </p>
@@ -128,7 +128,7 @@ export default function MediaAlbumsBrowser() {
         </p>
       </header>
 
-      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="top-albums-heading">
+      <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="top-albums-heading">
         <div className="layout-wide mx-auto max-w-7xl">
           <h2 id="top-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.top_title}
@@ -155,7 +155,7 @@ export default function MediaAlbumsBrowser() {
         </div>
       </section>
 
-      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="recent-albums-heading">
+      <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="recent-albums-heading">
         <div className="layout-wide mx-auto max-w-7xl">
           <h2 id="recent-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
             {copy.recent_title}
@@ -182,7 +182,7 @@ export default function MediaAlbumsBrowser() {
         </div>
       </section>
 
-      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12">
+      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:pb-12">
         <section aria-labelledby="all-albums-heading">
           <AdvancedFilters
             active={Boolean(filters.from || filters.to || filters.event || filters.type || filters.sort !== defaultFilters.sort)}

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import LocalizedCopy from "@/components/LocalizedCopy";
 import { content, defaultLang } from "@/gen/content";
 
@@ -7,11 +7,11 @@ export const metadata: Metadata = content[defaultLang].page_metadata.privacy;
 export default function PrivacyPage() {
   return (
     <>
-      <div className="max-w-3xl mx-auto px-5 lg:px-8 py-14 lg:py-20">
+      <div className="max-w-3xl mx-auto px-5 lg:px-8 py-8 lg:py-12">
         <h1 className="font-display font-bold text-[var(--color-text-primary)] text-3xl sm:text-4xl mb-2">
           <LocalizedCopy path={["pages", "local_copy", "privacy_title"]} />
         </h1>
-        <p className="font-body text-sm text-[var(--color-text-secondary)]/60 mb-10">
+        <p className="font-body text-sm text-[var(--color-text-secondary)]/60 mb-6">
           <LocalizedCopy path={["pages", "local_copy", "legal_updated"]} />
         </p>
 

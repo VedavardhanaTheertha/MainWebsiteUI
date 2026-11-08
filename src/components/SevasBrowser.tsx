@@ -267,7 +267,7 @@ export default function SevasBrowser() {
 
   return (
     <>
-      <section className="layout-section bg-transparent px-5 py-7 lg:px-8 lg:py-10" aria-labelledby="featured-sevas-title">
+      <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="featured-sevas-title">
         <div className="layout-wide mx-auto max-w-7xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="featured-sevas-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">{tr.sevas_featured_title}</h2>
@@ -309,7 +309,7 @@ export default function SevasBrowser() {
         </div>
       </section>
 
-      <section className="layout-collection layout-section mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-12" aria-labelledby="all-sevas-title">
+      <section className="layout-collection layout-section mx-auto max-w-7xl px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:pb-12" aria-labelledby="all-sevas-title">
         <AdvancedFilters
           active={Boolean(categoryFilter || deityFilter || minimum || maximum || amountOrder)}
           heading={
