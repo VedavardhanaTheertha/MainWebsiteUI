@@ -12,8 +12,8 @@ export const uiFieldDefinitions = [
   number("autoScroll", "returnDurationMs"), number("autoScroll", "resumeDelayMs", 0, timerMaximum),
   flag("hero", "autoplay"), number("hero", "intervalMs", 1, timerMaximum), number("hero", "fadeDurationMs", 0),
   number("upcomingEvents", "lookAheadDays", 0, 365000), number("upcomingEvents", "maxCards"),
-  number("readingTime", "wordsPerMinute"),
-  ...["initialSize", "minSize", "maxSize", "step"].map((key) => number("bhaktiReader", key)),
+  number("reading", "wordsPerMinute"),
+  ...["initialSize", "minSize", "maxSize", "step"].map((key) => number("reading", key)),
   number("mediaViewer", "swipeThresholdPx"), number("mediaViewer", "videoControlExclusionPx", 0),
   flag("mediaViewer", "wrap"), flag("browserDefaults", "advancedFiltersOpen"),
   choice("browserDefaults", "lineageView", ["list", "timeline"]),
@@ -21,10 +21,9 @@ export const uiFieldDefinitions = [
   choice("browserDefaults", "eventsPastSort", ["earliest", "latest"]),
   choice("browserDefaults", "albumsSort", ["newest", "oldest"]),
   ...["dropdownCloseDelayMs", "modalResetDelayMs", "searchPreloadDelayMs"].map((key) => number("interaction", key, 0, timerMaximum)),
-  ...["imageTreatment", "imageBackedTiles"].map((key) => flag("presentation", key)),
   number("presentation", "tileOverlayOpacity", 0, 100),
   number("presentation", "tileCornerRadius", 0, 48),
-  ...["featuredTiles", "sectionHeaders", "layoutProfiles", "compactCollections", "tileInformation", "carouselNavigation"].map((key) => flag("layout", key)),
+  number("presentation", "tileMinHeight", 100, 1000),
 ];
 
 export class UiSettingsError extends Error {}
@@ -74,12 +73,12 @@ export function validateUiElements(value) {
       result[group][field.key] = current;
     }
   }
-  const reader = result.bhaktiReader;
+  const reader = result.reading;
   if (reader.minSize > reader.maxSize || reader.initialSize < reader.minSize || reader.initialSize > reader.maxSize) {
-    fail("bhaktiReader", "requires minSize <= initialSize <= maxSize.");
+    fail("reading", "requires minSize <= initialSize <= maxSize.");
   }
   if ((reader.maxSize - reader.minSize) % reader.step || (reader.initialSize - reader.minSize) % reader.step) {
-    fail("bhaktiReader", "initialSize and maxSize must align with step from minSize.");
+    fail("reading", "initialSize and maxSize must align with step from minSize.");
   }
   return result;
 }
@@ -92,18 +91,39 @@ export function parseUiSettings(value) {
     railAutoScroll: raw.autoScroll,
     heroSettings: raw.hero,
     upcomingEventSettings: raw.upcomingEvents,
-    readingTimeSettings: raw.readingTime,
-    bhaktiReaderSettings: raw.bhaktiReader,
+    readingSettings: raw.reading,
     mediaViewerSettings: raw.mediaViewer,
     browserDefaults: raw.browserDefaults,
     interactionSettings: raw.interaction,
     presentationSettings: raw.presentation,
-    layoutSettings: raw.layout,
   };
 }
 
 /** @returns {import("../src/lib/ui-settings-types").UiElements} */
 export function validateUiPreferences(value, defaults) {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    if (Object.hasOwn(value, "layout")) {
+      const migrated = { ...value };
+      delete migrated.layout;
+      value = migrated;
+    }
+    if (Object.hasOwn(value, "readingTime") || Object.hasOwn(value, "bhaktiReader")) {
+      const migrated = { ...value };
+      const reading = { ...(migrated.reading ?? {}) };
+      if (migrated.readingTime?.wordsPerMinute && !reading.wordsPerMinute) {
+        reading.wordsPerMinute = migrated.readingTime.wordsPerMinute;
+      }
+      for (const k of ["initialSize", "minSize", "maxSize", "step"]) {
+        if (migrated.bhaktiReader?.[k] && !reading[k]) {
+          reading[k] = migrated.bhaktiReader[k];
+        }
+      }
+      migrated.reading = reading;
+      delete migrated.readingTime;
+      delete migrated.bhaktiReader;
+      value = migrated;
+    }
+  }
   const autoScroll = value?.autoScroll;
   if (autoScroll && typeof autoScroll === "object" && !Array.isArray(autoScroll)) {
     const migrated = { ...autoScroll };
@@ -111,20 +131,20 @@ export function validateUiPreferences(value, defaults) {
     delete migrated.slideDurationMs;
     value = { ...value, autoScroll: migrated };
   }
-  if (value && typeof value === "object" && !Array.isArray(value) && !Object.hasOwn(value, "layout")) {
-    value = { ...value, layout: defaults.layout };
-  }
-  const layout = value?.layout;
-  if (layout && typeof layout === "object" && !Array.isArray(layout) && Object.hasOwn(layout, "centeredCarousel")) {
-    const migrated = { ...layout };
-    delete migrated.centeredCarousel;
-    value = { ...value, layout: migrated };
+  const reading = value?.reading;
+  if (reading && typeof reading === "object" && !Array.isArray(reading)) {
+    const migrated = { ...reading };
+    for (const key of ["wordsPerMinute", "initialSize", "minSize", "maxSize", "step"]) {
+      if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.reading[key];
+    }
+    value = { ...value, reading: migrated };
   }
   const presentation = value?.presentation;
-  if (presentation && typeof presentation === "object" && !Array.isArray(presentation) &&
-      (!Object.hasOwn(presentation, "imageBackedTiles") || !Object.hasOwn(presentation, "tileOverlayOpacity") || !Object.hasOwn(presentation, "tileCornerRadius"))) {
+  if (presentation && typeof presentation === "object" && !Array.isArray(presentation)) {
     const migrated = { ...presentation };
-    for (const key of ["imageBackedTiles", "tileOverlayOpacity", "tileCornerRadius"]) {
+    delete migrated.imageTreatment;
+    delete migrated.imageBackedTiles;
+    for (const key of ["tileOverlayOpacity", "tileCornerRadius", "tileMinHeight"]) {
       if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.presentation[key];
     }
     return validateUiElements({

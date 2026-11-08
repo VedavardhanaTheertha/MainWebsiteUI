@@ -34,7 +34,7 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`${collectionCardClassName("collection", true)} layout-info-tile h-full flex flex-col`}
+              className={`${collectionCardClassName("collection", true)} h-full flex flex-col`}
             >
               <div className={collectionCardImageClassName}>
                 <ContentImage

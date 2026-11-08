@@ -9,7 +9,6 @@ import { topAlbumIds, recentAlbumIds } from "@/gen/media/albums";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import RailMotionControl from "@/components/RailMotionControl";
-import RailNavigation from "@/components/RailNavigation";
 import AdvancedFilters from "@/components/AdvancedFilters";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
@@ -35,7 +34,7 @@ function AlbumTile({
   return (
     <Link
       href={`/albums/${album.id}`}
-      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} layout-info-tile ${
+      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} ${
         featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
       }`}
     >
@@ -136,7 +135,6 @@ export default function MediaAlbumsBrowser() {
           </h2>
           <div className="relative mt-5">
           {topAlbums.length > 1 && <RailMotionControl paused={topPaused} onToggle={() => setTopPaused((paused) => !paused)} />}
-          {topAlbums.length > 1 && <RailNavigation scrollRef={topScrollRef} />}
           <div
             ref={topScrollRef}
             className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
@@ -164,7 +162,6 @@ export default function MediaAlbumsBrowser() {
           </h2>
           <div className="relative mt-5">
           {recentAlbums.length > 1 && <RailMotionControl paused={recentPaused} onToggle={() => setRecentPaused((paused) => !paused)} />}
-          {recentAlbums.length > 1 && <RailNavigation scrollRef={recentScrollRef} />}
           <div
             ref={recentScrollRef}
             className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"

@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
-import { appendDeveloperNavigation, developerOptionsForEnvironment, imageTreatmentStorageKey, pageExtensionsForEnvironment, uiSettingsStorageKey, validateDeveloperOptionsOutput } from "../developer-options.mjs";
+import { appendDeveloperNavigation, developerOptionsForEnvironment, pageExtensionsForEnvironment, uiSettingsStorageKey, validateDeveloperOptionsOutput } from "../developer-options.mjs";
 import { isPreservedContentField } from "../content-values.mjs";
 import * as schema from "../ui-settings-schema.mjs";
 import { loadUiElements } from "../ui-settings.mjs";
@@ -45,7 +45,6 @@ test("developer controls are local/dev-only and presentation defaults belong onl
     const options = developerOptionsForEnvironment(environment);
     assert.equal(options.enabled, ["local", "dev"].includes(environment));
     assert.equal(Object.hasOwn(options, "defaultImageTreatment"), false);
-    assert.equal(options.imageStorageKey, imageTreatmentStorageKey);
     assert.equal(options.uiSettingsStorageKey, uiSettingsStorageKey);
   }
 });
@@ -162,7 +161,7 @@ function preferencesFixture({ denied = false } = {}) {
 test("every UI setting has a typed editor definition and localized labels", () => {
   const actual = Object.entries(uiDefaults).flatMap(([group, fields]) => Object.keys(fields).map((key) => `${group}.${key}`));
   const defined = schema.uiFieldDefinitions.map(({ group, key }) => `${group}.${key}`);
-  assert.equal(defined.length, 37);
+  assert.equal(defined.length, 30);
   assert.deepEqual(defined.toSorted(), actual.toSorted());
   assert.equal(new Set(defined).size, defined.length);
   for (const language of ["en", "kn"]) {
@@ -181,44 +180,20 @@ test("runtime UI settings persist all field types, remount initial-state consume
   const custom = structuredClone(uiDefaults);
   custom.collections = { initialVisible: 3, loadIncrement: 2 };
   custom.hero = { autoplay: false, intervalMs: 12000, fadeDurationMs: 0 };
-  custom.bhaktiReader = { minSize: 90, initialSize: 110, maxSize: 170, step: 10 };
+  custom.reading = { wordsPerMinute: 200, minSize: 90, initialSize: 110, maxSize: 170, step: 10 };
   custom.browserDefaults.lineageView = "timeline";
-  custom.presentation = { ...custom.presentation, imageTreatment: true, imageBackedTiles: true, tileOverlayOpacity: 40 };
+  custom.presentation = { ...custom.presentation, tileOverlayOpacity: 40, tileCornerRadius: 20, tileMinHeight: 360 };
   assert.equal(fixture.preferences.applyUiSettings(custom), true);
   assert.equal(fixture.stored.get(uiSettingsStorageKey), JSON.stringify(schema.validateUiElements(custom)));
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 3);
   assert.equal(fixture.render().settings.heroSettings.autoplay, false);
   assert.equal(fixture.render().settings.browserDefaults.lineageView, "timeline");
-  assert.equal(fixture.render().settings.bhaktiReaderSettings.initialSize, 110);
+  assert.equal(fixture.render().settings.readingSettings.initialSize, 110);
   assert.notEqual(fixture.render().key, defaults.key);
   assert.equal(fixture.render(true).key, defaults.key);
-  assert.equal(fixture.render(true).settings.presentationSettings.imageTreatment, uiDefaults.presentation.imageTreatment);
+  assert.equal(fixture.render(true).settings.presentationSettings.tileOverlayOpacity, uiDefaults.presentation.tileOverlayOpacity);
   fixture.render().reset();
   assert.equal(fixture.render().key, defaults.key);
-});
-
-test("legacy production flags override file values, and applying settings clears their precedence", () => {
-  const fixture = preferencesFixture();
-  for (const [key, setting] of [
-    [imageTreatmentStorageKey, "imageTreatment"],
-  ]) {
-    fixture.stored.set(key, "on");
-    assert.equal(fixture.render().settings.presentationSettings[setting], true);
-    assert.equal(fixture.render(true).settings.presentationSettings[setting], uiDefaults.presentation[setting]);
-    fixture.stored.set(key, "off");
-    assert.equal(fixture.render().settings.presentationSettings[setting], false);
-    fixture.stored.delete(key);
-  }
-  fixture.stored.set(imageTreatmentStorageKey, "on");
-  fixture.preferences.applyUiSettings(uiDefaults);
-  assert.equal(fixture.render().settings.presentationSettings.imageTreatment, uiDefaults.presentation.imageTreatment);
-  const image = load("hooks/useImageTreatment.ts", {
-    "@/context/UiSettingsContext": fixture.context, "@/lib/ui-settings-preferences": fixture.preferences,
-  }).useImageTreatment;
-  fixture.render();
-  image().setImageTreatmentEnabled(true);
-  fixture.render();
-  assert.equal(image().imageTreatmentEnabled, true);
 });
 
 test("invalid saved settings are rejected explicitly without enabling copy overrides", () => {
@@ -235,24 +210,22 @@ test("invalid saved settings are rejected explicitly without enabling copy overr
 test("existing complete saved preferences inherit the new tile default without losing overrides", () => {
   const fixture = preferencesFixture();
   const previous = structuredClone(uiDefaults);
-  delete previous.presentation.imageBackedTiles;
   delete previous.presentation.tileOverlayOpacity;
   delete previous.presentation.tileCornerRadius;
+  delete previous.presentation.tileMinHeight;
   delete previous.layout;
   previous.collections.initialVisible = 3;
   previous.presentation.imageTreatment = true;
+  previous.presentation.imageBackedTiles = true;
   fixture.stored.set(uiSettingsStorageKey, JSON.stringify(previous));
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 3);
-  assert.equal(fixture.render().settings.presentationSettings.imageTreatment, true);
-  assert.equal(fixture.render().settings.presentationSettings.imageBackedTiles, false);
   assert.equal(fixture.render().settings.presentationSettings.tileOverlayOpacity, 40);
   assert.equal(fixture.render().settings.presentationSettings.tileCornerRadius, 20);
-  assert.equal(Object.values(fixture.render().settings.layoutSettings).every((value) => value === false), true);
+  assert.equal(fixture.render().settings.presentationSettings.tileMinHeight, 360);
   assert.equal(fixture.warnings.length, 0);
   assert.throws(() => schema.validateUiElements(previous), schema.UiSettingsError);
-  previous.presentation.imageBackedTiles = true;
   assert.equal(schema.validateUiPreferences(previous, uiDefaults).presentation.tileOverlayOpacity, 40);
-  assert.equal(schema.validateUiPreferences(previous, uiDefaults).presentation.imageBackedTiles, true);
+  assert.equal(schema.validateUiPreferences(previous, uiDefaults).presentation.imageBackedTiles, undefined);
   delete previous.collections.loadIncrement;
   assert.throws(() => schema.validateUiPreferences(previous, uiDefaults), schema.UiSettingsError);
 });
@@ -281,42 +254,14 @@ test("tile corner radius preserves the default, supports square corners, and val
     assert.throws(() => schema.validateUiElements(values), schema.UiSettingsError);
   }
   delete values.presentation.tileCornerRadius;
-  values.layout.compactCollections = true;
   assert.equal(schema.validateUiPreferences(values, uiDefaults).presentation.tileCornerRadius, 20);
-  assert.equal(schema.validateUiPreferences(values, uiDefaults).layout.compactCollections, true);
 });
 
-test("layout comparisons are independent default-off flags with strict validation and persistence", () => {
-  const keys = Object.keys(uiDefaults.layout);
-  assert.equal(keys.length, 6);
-  assert.equal(Object.values(uiDefaults.layout).every((value) => value === false), true);
-  for (const key of keys) {
-    const fixture = preferencesFixture();
-    const custom = structuredClone(uiDefaults);
-    custom.layout[key] = true;
-    fixture.preferences.applyUiSettings(custom);
-    assert.deepEqual(JSON.parse(JSON.stringify(fixture.render().settings.layoutSettings)), custom.layout);
-    assert.equal(fixture.render(true).settings.layoutSettings[key], false);
-    for (const invalid of [null, 1, "true", undefined]) {
-      custom.layout[key] = invalid;
-      assert.throws(() => schema.validateUiPreferences(custom, uiDefaults), schema.UiSettingsError);
-    }
-  }
+test("saved preferences with obsolete layout group clean up cleanly", () => {
   const previous = structuredClone(uiDefaults);
-  delete previous.layout;
-  previous.presentation.imageBackedTiles = true;
+  previous.layout = { featuredTiles: true, centeredCarousel: true };
   const migrated = schema.validateUiPreferences(previous, uiDefaults);
-  assert.deepEqual(migrated.layout, uiDefaults.layout);
-  assert.equal(migrated.presentation.imageBackedTiles, true);
-  assert.equal(Object.hasOwn(previous, "layout"), false);
-  const priorLayout = structuredClone(uiDefaults);
-  priorLayout.layout.featuredTiles = true;
-  priorLayout.layout.centeredCarousel = true;
-  assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.centeredCarousel, undefined);
-  assert.equal(schema.validateUiPreferences(priorLayout, uiDefaults).layout.featuredTiles, true);
-  assert.throws(() => schema.validateUiElements(priorLayout), schema.UiSettingsError);
-  assert.throws(() => schema.validateUiPreferences({ ...uiDefaults, layout: {} }, uiDefaults), schema.UiSettingsError);
-  assert.throws(() => schema.validateUiPreferences({ ...uiDefaults, layout: { ...uiDefaults.layout, unknown: true } }, uiDefaults), schema.UiSettingsError);
+  assert.equal(migrated.layout, undefined);
 });
 
 test("denied browser storage retains UI choices in memory and reports non-persistence", () => {
@@ -327,27 +272,23 @@ test("denied browser storage retains UI choices in memory and reports non-persis
   assert.equal(fixture.preferences.applyUiSettings(custom), false);
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 2);
   assert.equal(fixture.render().persistent, false);
-  assert.equal(fixture.warnings.length, 2);
+  assert.equal(fixture.warnings.length, 1);
 });
 
-test("the root preference applier gates images without mounting a global copy toolbar", () => {
-  let enabled = false;
-  let tiles = false;
+test("the root preference applier sets custom properties without mounting a global copy toolbar", () => {
   let opacity = 40;
   let radius = 20;
-  const layoutSettings = structuredClone(uiDefaults.layout);
+  let minHeight = 360;
   const styles = new Map();
-  const document = { documentElement: { dataset: {}, style: { setProperty: (name, value) => styles.set(name, value) } } };
+  const document = { documentElement: { style: { setProperty: (name, value) => styles.set(name, value) } } };
   const Preferences = load("components/DeveloperPreferences.tsx", {
     react: { useEffect: (effect) => effect() },
-    "@/hooks/useImageTreatment": { useImageTreatment: () => ({ imageTreatmentEnabled: enabled }) },
-    "@/context/UiSettingsContext": { useUiSettings: () => ({ presentationSettings: { imageBackedTiles: tiles, tileOverlayOpacity: opacity, tileCornerRadius: radius }, layoutSettings }) },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ presentationSettings: { tileOverlayOpacity: opacity, tileCornerRadius: radius, tileMinHeight: minHeight } }) },
   }, { document }).default;
   assert.equal(Preferences(), null);
-  assert.equal(document.documentElement.dataset.imageTreatment, "off");
-  assert.equal(document.documentElement.dataset.imageBackedTiles, "off");
   assert.equal(styles.get("--tile-overlay-opacity"), "0.4");
   assert.equal(styles.get("--tile-corner-radius"), "20px");
+  assert.equal(styles.get("--tile-min-height"), "360px");
   for (const value of [0, 48]) {
     radius = value;
     Preferences();
@@ -357,22 +298,6 @@ test("the root preference applier gates images without mounting a global copy to
     opacity = percent;
     Preferences();
     assert.equal(styles.get("--tile-overlay-opacity"), alpha);
-  }
-  tiles = true;
-  Preferences();
-  assert.equal(document.documentElement.dataset.imageBackedTiles, "on");
-  assert.equal(document.documentElement.dataset.imageTreatment, "off");
-  enabled = true;
-  Preferences();
-  assert.equal(document.documentElement.dataset.imageTreatment, "on");
-  for (const name of Object.keys(layoutSettings)) {
-    assert.equal(document.documentElement.dataset[name], "off");
-    layoutSettings[name] = true;
-    Preferences();
-    assert.equal(document.documentElement.dataset[name], "on");
-    layoutSettings[name] = false;
-    Preferences();
-    assert.equal(document.documentElement.dataset[name], "off");
   }
   const layout = source("src/app/layout.tsx");
   assert.match(layout, /<DeveloperPreferences \/>/);
@@ -422,22 +347,20 @@ function pageFixture(defaultMode = "real", persistent = true) {
 
 test("the editor covers every setting, keeps edits as drafts and applies typed values only on submit", () => {
   const page = pageFixture();
-  assert.equal(page.controls().filter((node) => node.props.name).length, 37);
+  assert.equal(page.controls().filter((node) => node.props.name).length, 30);
   page.field("collections.initialVisible").props.onChange({ target: { value: "3", valueAsNumber: 3 } });
   page.field("browserDefaults.lineageView").props.onChange({ target: { value: "timeline" } });
-  page.field("presentation.imageBackedTiles").props.onChange({ target: { checked: true } });
   page.field("presentation.tileOverlayOpacity").props.onChange({ target: { value: "75", valueAsNumber: 75 } });
-  page.field("layout.featuredTiles").props.onChange({ target: { checked: true } });
   page.field("presentation.tileCornerRadius").props.onChange({ target: { value: "0", valueAsNumber: 0 } });
+  page.field("presentation.tileMinHeight").props.onChange({ target: { value: "400", valueAsNumber: 400 } });
   assert.equal(page.applied, undefined);
   assert.equal(page.reloads, 0);
   page.submit();
   assert.equal(page.applied.collections.initialVisible, 3);
   assert.equal(page.applied.browserDefaults.lineageView, "timeline");
-  assert.equal(page.applied.presentation.imageBackedTiles, true);
   assert.equal(page.applied.presentation.tileOverlayOpacity, 75);
-  assert.equal(page.applied.layout.featuredTiles, true);
   assert.equal(page.applied.presentation.tileCornerRadius, 0);
+  assert.equal(page.applied.presentation.tileMinHeight, 400);
   assert.equal(page.reloads, 1);
 });
 
@@ -464,7 +387,7 @@ test("copy remains an immediate checkbox with environment defaults, independent 
 
 test("invalid cross-field values show localized feedback without saving or reloading", () => {
   const page = pageFixture();
-  page.field("bhaktiReader.maxSize").props.onChange({ target: { value: "90", valueAsNumber: 90 } });
+  page.field("reading.maxSize").props.onChange({ target: { value: "90", valueAsNumber: 90 } });
   page.submit();
   assert.equal(page.applied, undefined);
   assert.equal(page.reloads, 0);
@@ -533,20 +456,19 @@ test("hero script extraction accepts HTML tag casing without altering JavaScript
   assert.throws(() => inlineHeroScript("<html></html>"), /must include an inline script/);
 });
 
-function standaloneHero(storedValue, denied = false, uiValue = null, reduced = true) {
+function standaloneHero(denied = false, uiValue = null, reduced = true) {
   const generator = source("scripts/generate-content.mjs");
   const start = generator.indexOf("function writeHeroImages(");
   const end = generator.indexOf("// ── Build", start);
   assert.ok(start >= 0 && end > start);
   let html;
   const writeHero = vm.runInNewContext(`${generator.slice(start, end)}\nwriteHeroImages;`, {
-    rootDir: ".", path, imageTreatmentStorageKey, uiSettingsStorageKey, loadUiElements, readFileSync,
+    rootDir: ".", path, uiSettingsStorageKey, loadUiElements, readFileSync,
     escapeHtml: (value) => value, resolveHeroHref: (value) => value,
     heroSettings: { fadeDurationMs: 100, autoplay: false, intervalMs: 1000 },
     mkdirSync() {}, writeFileSync: (_file, value) => { html = value; },
   });
   writeHero({ title_en: "Provided title", title_kn: "Provided title", href: "/", images: ["/provided.png"] }, {}, "en", "");
-  const dataset = {};
   const styles = new Map();
   const listeners = new Map();
   const warnings = [];
@@ -554,19 +476,18 @@ function standaloneHero(storedValue, denied = false, uiValue = null, reduced = t
     [".hero", { dataset: { titleEn: "Provided title", ctaEn: "Provided action" } }],
     [".hero-title", {}], [".hero-cta", {}],
   ]);
-  let stored = storedValue;
   let storedUi = uiValue;
   let interval;
   vm.runInNewContext(inlineHeroScript(html), {
     document: {
-      documentElement: { dataset, style: { setProperty: (key, value) => styles.set(key, value) } },
+      documentElement: { style: { setProperty: (key, value) => styles.set(key, value) } },
       querySelector: (selector) => elements.get(selector),
       querySelectorAll: () => Array.from({ length: 2 }, () => ({ classList: { add() {}, remove() {} }, setAttribute() {} })),
     },
     location: { search: "" }, URLSearchParams,
     localStorage: { getItem: (key) => {
       if (denied) throw new Error("Provided storage denial");
-      return key === imageTreatmentStorageKey ? stored : key === uiSettingsStorageKey ? storedUi : null;
+      return key === uiSettingsStorageKey ? storedUi : null;
     } },
     console: { warn: (...args) => warnings.push(args) },
     window: {
@@ -575,35 +496,19 @@ function standaloneHero(storedValue, denied = false, uiValue = null, reduced = t
       clearInterval: () => { interval = undefined; },
     },
   });
-  return { dataset, warnings, styles, get interval() { return interval; },
+  return { warnings, styles, get interval() { return interval; },
     changeSettings(value) {
       storedUi = value;
       listeners.get("storage")({ key: uiSettingsStorageKey });
     },
-    change(value, key = imageTreatmentStorageKey) {
-    stored = value;
-    listeners.get("storage")({ key });
-  } };
+  };
 }
-
-test("the standalone hero honors default, stored, cross-document and cleared image choices", () => {
-  for (const value of [null, "invalid", "off", "on"]) {
-    const hero = standaloneHero(value);
-    assert.equal(hero.dataset.imageTreatment, value === "on" ? "on" : "off");
-    hero.change("on");
-    assert.equal(hero.dataset.imageTreatment, "on");
-    hero.change(null, null);
-    assert.equal(hero.dataset.imageTreatment, "off");
-  }
-});
 
 test("the standalone hero applies validated UI overrides for fitting, fades, interval and autoplay", () => {
   const custom = structuredClone(uiDefaults);
-  custom.presentation.imageTreatment = true;
   custom.hero = { autoplay: true, intervalMs: 1234, fadeDurationMs: 42 };
   custom.presentation.tileCornerRadius = 0;
-  const hero = standaloneHero(null, false, JSON.stringify(custom), false);
-  assert.equal(hero.dataset.imageTreatment, "on");
+  const hero = standaloneHero(false, JSON.stringify(custom), false);
   assert.equal(hero.styles.get("--hero-fade-duration"), "42ms");
   assert.equal(hero.interval, 1234);
   assert.equal(hero.styles.get("--tile-corner-radius"), "0px");
@@ -613,14 +518,12 @@ test("the standalone hero applies validated UI overrides for fitting, fades, int
   assert.equal(hero.interval, undefined);
   assert.equal(hero.styles.get("--tile-corner-radius"), "48px");
   hero.changeSettings("{");
-  assert.equal(hero.dataset.imageTreatment, uiDefaults.presentation.imageTreatment ? "on" : "off");
   assert.equal(hero.styles.get("--tile-corner-radius"), "20px");
   assert.equal(hero.warnings.length, 1);
 });
 
 test("the standalone hero defaults safely and reports denied storage only once", () => {
-  const hero = standaloneHero("on", true);
-  assert.equal(hero.dataset.imageTreatment, "off");
+  const hero = standaloneHero(true);
   assert.equal(hero.warnings.length, 1);
   assert.match(hero.warnings[0][0], /preferences.*localStorage unavailable/);
 });

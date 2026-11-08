@@ -15,27 +15,24 @@ const defaults = {
   hero: { autoplay: true, intervalMs: 4500, fadeDurationMs: 900 },
   upcomingEvents: { lookAheadDays: 30, maxCards: 6 },
   interaction: { dropdownCloseDelayMs: 120, modalResetDelayMs: 400, searchPreloadDelayMs: 300 },
-  readingTime: { wordsPerMinute: 200 },
-  bhaktiReader: { initialSize: 100, minSize: 85, maxSize: 150, step: 5 },
+  reading: { wordsPerMinute: 200, initialSize: 100, minSize: 85, maxSize: 150, step: 5 },
   mediaViewer: { swipeThresholdPx: 50, videoControlExclusionPx: 56, wrap: true },
   browserDefaults: { advancedFiltersOpen: false, lineageView: "list", eventsUpcomingSort: "earliest", eventsPastSort: "latest", albumsSort: "newest" },
-  presentation: { imageTreatment: false, imageBackedTiles: false, tileOverlayOpacity: 40, tileCornerRadius: 20 },
-  layout: { featuredTiles: false, sectionHeaders: false, layoutProfiles: false, compactCollections: false, tileInformation: false, carouselNavigation: false },
+  presentation: { tileOverlayOpacity: 40, tileCornerRadius: 20, tileMinHeight: 360 },
 };
 
 test("reader, viewer and browser defaults validate explicit configurable contracts", () => {
   const configured = parseUiSettings({
     ...defaults,
-    readingTime: { wordsPerMinute: 125 },
-    bhaktiReader: { initialSize: 110, minSize: 90, maxSize: 170, step: 10 },
+    reading: { wordsPerMinute: 125, initialSize: 110, minSize: 90, maxSize: 170, step: 10 },
     mediaViewer: { swipeThresholdPx: 70, videoControlExclusionPx: 0, wrap: false },
     browserDefaults: { advancedFiltersOpen: true, lineageView: "timeline", eventsUpcomingSort: "latest", eventsPastSort: "earliest", albumsSort: "oldest" },
   });
-  assert.equal(configured.readingTimeSettings.wordsPerMinute, 125);
-  assert.equal(configured.bhaktiReaderSettings.initialSize, 110);
+  assert.equal(configured.readingSettings.wordsPerMinute, 125);
+  assert.equal(configured.readingSettings.initialSize, 110);
   assert.equal(configured.mediaViewerSettings.wrap, false);
   assert.equal(configured.browserDefaults.albumsSort, "oldest");
-  for (const section of ["readingTime", "bhaktiReader", "mediaViewer", "browserDefaults"]) {
+  for (const section of ["reading", "mediaViewer", "browserDefaults"]) {
     for (const missing of [undefined, null, []]) {
       assert.throws(() => parseUiSettings({ ...defaults, [section]: missing }), new RegExp(section));
     }
@@ -47,10 +44,10 @@ test("reader, viewer and browser defaults validate explicit configurable contrac
       }
     }
   }
-  for (const bhaktiReader of [
+  for (const reading of [
     { initialSize: 80 }, { minSize: 160 }, { maxSize: 90 }, { step: 3 }, { initialSize: 101 },
   ]) {
-    assert.throws(() => parseUiSettings({ ...defaults, bhaktiReader: { ...defaults.bhaktiReader, ...bhaktiReader } }), /bhaktiReader/);
+    assert.throws(() => parseUiSettings({ ...defaults, reading: { ...defaults.reading, ...reading } }), /reading/);
   }
 });
 
@@ -89,7 +86,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   assert.match(generated, /heroSettings = \{"autoplay":true,"intervalMs":4500,"fadeDurationMs":900\}/);
   assert.match(generated, /interactionSettings = \{"dropdownCloseDelayMs":120,"modalResetDelayMs":400,"searchPreloadDelayMs":300\}/);
   assert.match(generated, /upcomingEventSettings = \{"lookAheadDays":30,"maxCards":6\}/);
-  for (const name of ["readingTimeSettings", "bhaktiReaderSettings", "mediaViewerSettings", "browserDefaults"]) {
+  for (const name of ["readingSettings", "mediaViewerSettings", "browserDefaults"]) {
     assert.match(generated, new RegExp(`export const ${name} = `));
   }
   assert.match(await readFile(path.join(root, "src", "gen", "settings", "announcements.ts"), "utf8"), /AnnouncementSettings/);
@@ -291,10 +288,10 @@ test("saved preferences inherit only missing fields and clean up obsolete option
   old.autoScroll.pixelsPerSecond = 12;
   old.autoScroll.holdDurationMs = 3000;
   old.autoScroll.slideDurationMs = 800;
-  old.layout.centeredCarousel = true;
+  old.layout = { centeredCarousel: true };
   const migrated = validateUiPreferences(old, defaults);
   assert.deepEqual(migrated.autoScroll, { ...defaults.autoScroll, pixelsPerSecond: 12 });
-  assert.equal(migrated.layout.centeredCarousel, undefined);
+  assert.equal(migrated.layout, undefined);
   assert.equal(migrated.autoScroll.holdDurationMs, undefined);
   assert.equal(migrated.autoScroll.slideDurationMs, undefined);
   for (const value of [0, -1, 1.5, null, "800"]) {

@@ -1,5 +1,5 @@
 import { defaultLang } from "@/gen/content";
-import { readingTimeSettings } from "@/gen/settings/ui-elements";
+import { readingSettings } from "@/gen/settings/ui-elements";
 import type { LibraryArticle, LibrarySection } from "@/gen/library/data";
 import type { KnowledgeDetails, KnowledgeText } from "./knowledge-types";
 
@@ -29,7 +29,7 @@ export function localizeArticle(item: KnowledgeArticle, lang: string): DisplayAr
 
 export function knowledgeReadingTime(
   article: Pick<DisplayArticle, "title" | "html" | "knowledge">,
-  settings: { wordsPerMinute: number } = readingTimeSettings,
+  settings: { wordsPerMinute: number } = readingSettings,
 ): { minutes: number; estimated: boolean } {
   const supplied = article.knowledge?.readMinutes;
   if (typeof supplied === "number" && Number.isSafeInteger(supplied) && supplied > 0) {

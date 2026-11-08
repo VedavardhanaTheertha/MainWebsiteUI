@@ -31,7 +31,6 @@ function render(file, props, tr) {
     "@/hooks/useMiniSearch": { useMiniSearch: (items) => items, useLazyMiniSearch: (items) => ({ results: items, ensureLoaded: () => {} }) },
     "@/lib/search": { getSearchProfile: () => ({}) },
     "@/components/RailMotionControl": { default: "motion-control" },
-    "@/components/RailNavigation": { default: () => null },
     "@/lib/reader-utils": { copyReaderLink: async () => true },
     "./bhakti-print.css": {},
     "@/gen/library/data": { placeholderLibrarySections: [section], realLibrarySections: [section] },

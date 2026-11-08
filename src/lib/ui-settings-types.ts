@@ -12,8 +12,7 @@ export interface UiSettings {
   railAutoScroll: { enabled: boolean; pixelsPerSecond: number; returnDurationMs: number; resumeDelayMs: number };
   heroSettings: { autoplay: boolean; intervalMs: number; fadeDurationMs: number };
   upcomingEventSettings: { lookAheadDays: number; maxCards: number };
-  readingTimeSettings: { wordsPerMinute: number };
-  bhaktiReaderSettings: { initialSize: number; minSize: number; maxSize: number; step: number };
+  readingSettings: { wordsPerMinute: number; initialSize: number; minSize: number; maxSize: number; step: number };
   mediaViewerSettings: { swipeThresholdPx: number; videoControlExclusionPx: number; wrap: boolean };
   browserDefaults: {
     advancedFiltersOpen: boolean;
@@ -23,13 +22,5 @@ export interface UiSettings {
     albumsSort: "newest" | "oldest";
   };
   interactionSettings: { dropdownCloseDelayMs: number; modalResetDelayMs: number; searchPreloadDelayMs: number };
-  presentationSettings: { imageTreatment: boolean; imageBackedTiles: boolean; tileOverlayOpacity: number; tileCornerRadius: number };
-  layoutSettings: {
-    featuredTiles: boolean;
-    sectionHeaders: boolean;
-    layoutProfiles: boolean;
-    compactCollections: boolean;
-    tileInformation: boolean;
-    carouselNavigation: boolean;
-  };
+  presentationSettings: { tileOverlayOpacity: number; tileCornerRadius: number; tileMinHeight: number };
 }

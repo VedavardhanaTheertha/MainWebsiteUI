@@ -21,7 +21,6 @@ import { useUiSettings } from "@/context/UiSettingsContext";
 import { useDialog } from "@/hooks/useDialog";
 import { filterAndSortSevas } from "@/lib/seva-filtering";
 import RailMotionControl from "./RailMotionControl";
-import RailNavigation from "./RailNavigation";
 import AdvancedFilters from "./AdvancedFilters";
 import CollectionEmptyState from "./presentation/CollectionEmptyState";
 import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/collection-presentation";
@@ -88,7 +87,7 @@ function SevaCard({
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName("collection", true)} layout-info-tile layout-compact-card w-full !h-auto min-h-0`}
+      className={`${collectionCardClassName("collection", true)} w-full !h-auto min-h-0`}
     >
       <SevaImage title={title} image={seva.image} featured />
       <div className={collectionCardBodyClassName}>
@@ -275,7 +274,6 @@ export default function SevasBrowser() {
           </div>
           <div className="relative mt-5">
           {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((value) => !value)} />}
-          {featured.length > 1 && <RailNavigation scrollRef={featuredScrollRef} />}
           <div
             ref={featuredScrollRef}
             className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
@@ -293,7 +291,7 @@ export default function SevasBrowser() {
                   type="button"
                   key={seva.id}
                   onClick={() => setSelectedSeva(seva)}
-                  className={`${collectionCardClassName("featured", true)} layout-info-tile w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none !h-auto min-h-0`}
+                  className={`${collectionCardClassName("featured", true)} w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none !h-auto min-h-0`}
                 >
                   <SevaImage title={title} image={seva.image} featured />
                   <div className={collectionCardBodyClassName}>
@@ -392,7 +390,7 @@ export default function SevasBrowser() {
         </p>
         {visibleSevas.length > 0 ? (
           <>
-            <div className="layout-compact-grid mt-3 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-3 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {displayedSevas.map((seva) => (
                 <SevaCard
                   key={seva.id}

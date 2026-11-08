@@ -10,7 +10,7 @@ export default function HomePageGrid({ items, showFootnotes = true }: { items: H
         <Link
           key={item.id}
           href={item.url}
-          className={`${collectionCardClassName("collection", true)} layout-info-tile h-full flex flex-col`}
+          className={`${collectionCardClassName("collection", true)} h-full flex flex-col`}
         >
           <div className={collectionCardImageClassName}>
             <ContentImage src={item.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />

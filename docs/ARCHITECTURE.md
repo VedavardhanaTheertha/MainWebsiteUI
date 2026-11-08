@@ -73,8 +73,8 @@ without changing the selected language. If storage is unavailable, Apply and Res
 apply settings in memory and show a warning instead of reloading away those changes.
 
 `build/developer-options.mjs` owns the technical route and storage keys;
-`settings/ui_elements.json` owns all UI defaults, including the image treatment and
-image-backed tiles (both initially false).
+`settings/ui_elements.json` owns all UI defaults, including presentation settings
+(`tileOverlayOpacity`, `tileCornerRadius`, and `tileMinHeight`).
 Copy-preview defaults remain environment-owned.
 The page uses `page.preview.tsx`; Next configuration recognizes the `preview.tsx`
 extension only in local/dev while retaining all standard page extensions.
@@ -96,52 +96,20 @@ pagination, sort/view/filter state, and reader size from those settings.
 The browser stores a complete validated raw configuration as JSON in
 `site-ui-settings` in per-origin `localStorage`. Invalid saved data produces a
 warning and falls back to configured defaults. The browser-only compatibility
-validator accepts older complete configurations missing `imageBackedTiles`,
-`tileOverlayOpacity`, `tileCornerRadius`, and/or the entire `layout` group, inheriting those values
-from current defaults without losing existing choices. A present but incomplete
-layout group is invalid.
-Build-time settings remain strict. Legacy `site-image-treatment` values of `on` or `off` override the
-corresponding presentation field; absent or other values inherit the configuration.
-Apply and Reset clear its precedence with `default`. Legacy-only changes do not
-remount the site. The root image subscriber updates `data-image-treatment` after
-hydration. The standalone generated hero embeds the same validator and defaults,
-applies image/autoplay/interval/fade settings, and follows cross-document storage
+validator accepts older complete configurations missing `tileOverlayOpacity`,
+`tileCornerRadius`, `tileMinHeight`, and/or obsolete keys, inheriting those values
+from current defaults without losing existing choices.
+Build-time settings remain strict.
+The standalone generated hero embeds the same validator and defaults,
+applies presentation/autoplay/interval/fade settings, and follows cross-document storage
 events. Production supports all browser-local UI overrides without exposing a
 developer page or enabling placeholder catalogs. These preferences are not runtime
 environment variables, secrets, or an authorization mechanism.
 
-### Optional layout comparisons
-
-Six independent booleans in `settings/ui_elements.json`'s `layout` group
-normalize to `layoutSettings`; all default to false. The root preference
-subscriber sets corresponding `data-*` attributes after hydration. Experiment CSS
-is loaded after the baseline stylesheet and affects only explicitly marked
-components. Existing layouts and homepage shortcut order remain the default.
-
-- `featuredTiles`: a larger first configured item in the featured homepage grid,
-  without changing content order or collection grids.
-- `sectionHeaders`: consistent homepage headings and introductions. Mixed
-  navigation groups do not invent a "view all" destination.
-- `layoutProfiles`: wide visual, contained collection, and narrow reading wrappers
-  with consistent gutters and section spacing; dialog and full-screen sizing stay independent.
-- `compactCollections`: thumbnail rows for ordinary seva and library results,
-  retaining details, booking, filters, and pagination. Compact rows take precedence
-  over image-backed presentation; featured rails keep their photographic layout.
-- `tileInformation`: stable category/title/summary/metadata placement in eligible
-  cards, without removing independent actions or styling event posters.
-- `carouselNavigation`: accessible previous/next buttons at the left/right
-  edges, vertically centered alongside each rail, and a mobile next-card
-  preview on opted-in rails. Scroll position and overflow determine disabled
-  controls; manual navigation works independently of autoplay and honors reduced motion.
-  Where a rail also has a pause control, it sits below Next with an 8px gap.
-  Rails without the optional navigation retain their existing pause placement.
-
-Control and navigation copy comes from language JSON. These switches share the
-existing validated Apply/reset, denied-storage, and production browser-local
-override behavior; none enables the production Developer page.
-
 The final homepage guidance group omits the temporary-content footer and its
 separator in every layout mode; other homepage grids retain configured footnotes.
+`presentation.tileMinHeight` controls the minimum height of collection tiles through
+`--tile-min-height`, defaulting to 360px.
 `presentation.tileCornerRadius` independently controls shared collection-card and
 homepage photographic-card corners through `--tile-corner-radius`. Its default
 20px preserves the existing shape; integers from 0 to 48 are accepted, with 0
@@ -215,9 +183,8 @@ in those multilingual Markdown records, not repeated in settings.
 
 The five `icon_carousel` links use equal-width grid columns without horizontal
 scrolling, fixed at the bottom of the home screen to remain consistently visible.
-Icons scale from 44px on narrow phones to 54px on larger screens, and
-localized labels wrap within their columns without truncation. The six-card
-`bottom_carousel` is a separate collection.
+Icons scale from 44px on narrow phones to 54px on larger screens, with accessible
+labels and touch-friendly targets. The six-card `bottom_carousel` is a separate collection.
 
 The generated `remidies_carousel` contains three distinct remedies drawn from
 `library/remedies/` per content generation. Selection is shared by all languages and
@@ -289,14 +256,10 @@ Shared featured/collection presentation variants preserve their distinct layouts
 while keeping spacing, controls, focus, and result states consistent. Policy text
 uses a readable shared size; utility controls have touch-friendly targets.
 
-The independent, default-off `presentation.imageBackedTiles` flag sets
-`data-image-backed-tiles` on the root after hydration. Eligible cards explicitly
-opt in with `visual-tile`, `visual-tile-art`, and `visual-tile-body` hooks. Their
-images fill the tile behind a lightly darkened text panel with a
-fade above the text. The shared CSS honors either cover or contain/blur image
-treatment without changing its renderer. In image-backed tile mode, eligible
-foregrounds align top-centre with either image-fit setting. The ordinary
-image-above-text layout and blurred backdrops retain their centred alignment.
+Photographic cards use an image-backed presentation with `visual-tile`,
+`visual-tile-art`, and `visual-tile-body` hooks. Their images fill the tile behind a
+lightly darkened text panel with a fade above the text, using the complete-image
+contain/blur treatment. Foreground images align top-centre.
 Text shadows aid readability, but contrast remains image-dependent with this
 deliberately translucent treatment.
 `presentation.tileOverlayOpacity` controls panel opacity from 0 to 100 percent
@@ -307,7 +270,7 @@ retain their original positioning and keyboard behavior.
 Home photo tiles, section hubs, library previews, seva and learning cards,
 album covers/items, and illustrated lineage entries participate. Event poster
 surfaces, detail views, full-screen album playback, and icon-only tiles do not.
-The hero's overlay is always enabled rather than controlled by this flag.
+The hero's overlay is always enabled.
 Forced-color mode uses system text/panel colors.
 
 Media albums are built from language catalog data. Use stable explicit IDs

@@ -108,6 +108,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .collection-tile {
   border-radius: var(--tile-corner-radius, var(--radius-xl));
+  min-height: var(--tile-min-height, 360px);
 }
 
 .hero-rounded-frame {
@@ -122,7 +123,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .content-image-backdrop {
-  display: none;
+  display: block;
   z-index: 0;
   object-fit: cover;
   filter: blur(14px) brightness(0.65);
@@ -133,19 +134,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .content-image-foreground {
   z-index: 1;
-  object-fit: cover;
+  object-fit: contain;
   padding: 0;
 }
 
-:root[data-image-treatment="on"] .content-image-backdrop {
-  display: block;
-}
-
-:root[data-image-treatment="on"] .content-image-foreground {
-  object-fit: contain;
-}
-
-:root[data-image-treatment="on"] .content-image-frame > .content-image-foreground {
+.content-image-frame > .content-image-foreground {
   padding: 8px;
 }
 
@@ -193,48 +186,18 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--color-line);
   }
 }
-/* Hero Aspect-Ratio & Visual Presentation Modes */
-:root[data-hero-aspect="focal"] .home-hero-viewport .content-image-foreground {
-  object-position: center 25%;
-}
 
-:root[data-hero-aspect="dual"] .home-hero-viewport .content-image-foreground {
-  object-position: center top;
-}
-
-@media (min-width: 768px) {
-  :root[data-hero-aspect="dual"] .home-hero-viewport .content-image-foreground {
-    object-position: center center;
-  }
-}
-
-:root[data-hero-aspect="fluid"] .home-hero-viewport {
-  height: clamp(22rem, 58vw, 38rem);
-}
-
-@media (max-width: 640px) {
-  :root[data-hero-aspect="fluid"] .home-hero-viewport {
-    height: auto;
-    aspect-ratio: 4 / 3;
-  }
-}
-
-:root[data-hero-scrim="ambient"] .hero-text-overlay {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 50%, transparent 100%);
-  padding-top: 5rem;
-}
-
-:root[data-image-backed-tiles="on"] .visual-tile {
+.visual-tile {
   position: relative;
   isolation: isolate;
   display: flex;
   flex-direction: column;
   height: auto;
-  min-height: 22.5rem;
+  min-height: var(--tile-min-height, 360px);
   padding: 6rem 0 0;
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-art {
+.visual-tile > .visual-tile-art {
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -244,7 +207,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 0;
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body {
+.visual-tile > .visual-tile-body {
   position: static;
   flex: 0 0 auto;
   min-width: 0;
@@ -256,41 +219,41 @@ h1, h2, h3, h4, h5, h6 {
   overflow-wrap: anywhere;
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-art .content-image-foreground {
+.visual-tile > .visual-tile-art :is(.content-image-foreground, .content-image-backdrop) {
   object-position: center top;
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
+.visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
   color: #fff8ed;
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(h2, h3) {
+.visual-tile > .visual-tile-body :where(h2, h3) {
   display: block;
   overflow: visible;
   -webkit-line-clamp: unset;
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body .visual-tile-badge {
+.visual-tile > .visual-tile-body .visual-tile-badge {
   background: rgb(20 12 4 / calc(var(--tile-overlay-opacity, 0.4) * 0.625));
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body a {
+.visual-tile > .visual-tile-body a {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-:root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(a, button):focus-visible {
+.visual-tile > .visual-tile-body :where(a, button):focus-visible {
   outline-color: #fff8ed;
 }
 
 @media (forced-colors: active) {
-  :root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body {
+  .visual-tile > .visual-tile-body {
     background: Canvas;
   }
-  :root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
+  .visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
     color: CanvasText;
   }
-  :root[data-image-backed-tiles="on"] .visual-tile > .visual-tile-body .visual-tile-badge {
+  .visual-tile > .visual-tile-body .visual-tile-badge {
     background: Canvas;
   }
 }
@@ -306,21 +269,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Ken Burns animation */
-@keyframes kenburns {
-  0%   { transform: scale(1) translate(0, 0); }
-  50%  { transform: scale(1.08) translate(-1%, 1%); }
-  100% { transform: scale(1) translate(0, 0); }
-}
-
-.animate-kenburns {
-  animation: kenburns 20s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .animate-kenburns {
-    animation: none;
-  }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -483,8 +432,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Fixed bottom icon_carousel spacing for footer and floating widgets on homepage */
 body:has([data-carousel="icon_carousel"]) footer {
-  padding-bottom: clamp(5.5rem, 12vh, 6.5rem);
+  padding-bottom: clamp(4rem, 8vh, 4.75rem);
 }
 body:has([data-carousel="icon_carousel"]) .yajna-card {
-  bottom: calc(5.5rem + 1rem);
+  bottom: calc(4rem + 1rem);
 }
