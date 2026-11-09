@@ -178,8 +178,12 @@ async function mountEvents(options = {}) {
         collectionPagination: { initialVisible: 2, loadIncrement: 2 },
         browserDefaults: { eventsUpcomingSort: "earliest", eventsPastSort: "latest", ...options.defaults },
       };
-      if (name === "next/image" || name === "./EventDetailModal" || name === "./AdvancedFilters") return { default: name, __esModule: true };
+      if (name === "next/image" || name === "./EventDetailModal" || name === "./AdvancedFilters" || name === "./presentation/CategoryBadge") return { default: name, __esModule: true };
       if (name === "@/components/presentation/ContentImage") return { default: "image", __esModule: true };
+      if (name === "@/lib/collection-presentation") return {
+        collectionCardClassName: (variant) => `collection-tile ${variant}`,
+        collectionCardBodyClassName: "visual-tile-body",
+      };
       if (name === "lucide-react") return {};
       throw new Error(`Unexpected import: ${name}`);
     },

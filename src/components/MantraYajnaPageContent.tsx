@@ -14,17 +14,19 @@ export default function MantraYajnaPageContent() {
       <div className="relative h-[180px] lg:h-[280px]">
         <ContentImage src={copy.yajna_image} alt="" fill sizes="100vw" />
       </div>
-      <header className="bg-transparent px-4 py-5 lg:px-8">
+      <header className="bg-transparent px-16 pt-3.5 pb-2 text-center sm:px-20 sm:pt-4 sm:pb-3 lg:px-8">
         <p className="text-micro font-bold tracking-[.16em] uppercase text-[var(--color-text-brand)]">
           <LocalizedCopy path={["pages", "detected", "yajna_eyebrow"]} />
         </p>
-        <h1 className="font-display text-[30px] lg:text-5xl text-[var(--color-text-primary)] leading-tight mt-1">{copy.yajna_title}</h1>
+        <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl leading-tight">
+          {copy.yajna_title}
+        </h1>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 lg:px-8 py-8">
+      <div className="max-w-3xl mx-auto px-4 lg:px-8 pt-2 pb-8 sm:pt-3">
 
         {/* What is it */}
-        <div className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-2xl p-6 mb-6">
+        <div className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-[18px] p-6 mb-6 shadow-sm">
           <h2 className="font-display font-bold text-[var(--color-text-primary)] text-xl mb-3">{copy.yajna_what}</h2>
           <p className="font-body text-[var(--color-text-secondary)] text-base leading-relaxed mb-3">
             <LocalizedCopy path={["pages", "detected", "yajna_intro"]} />
@@ -35,7 +37,7 @@ export default function MantraYajnaPageContent() {
         </div>
 
         {/* How to participate */}
-        <div className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-2xl p-6 mb-6">
+        <div className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-[18px] p-6 mb-6 shadow-sm">
           <h2 className="font-display font-bold text-[var(--color-text-primary)] text-xl mb-4">{copy.yajna_how}</h2>
           <ol className="space-y-4">
             {[1, 2, 3, 4].map((step) => (

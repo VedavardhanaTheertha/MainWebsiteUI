@@ -26,14 +26,14 @@ export default function SiteFooter() {
 
   return (
     <footer className="w-full" style={{ margin: 0 }}>
-      {/* Mobile: centered ceremonial block, matching the design reference's .m-foot */}
-      <div className="lg:hidden text-center px-6 pt-9 pb-[30px] bg-transparent border-t border-[var(--color-line)]">
-        <Image src={`${siteConfig.basePath}/main-logo.png`} alt="" width={50} height={50} className="object-contain mx-auto mb-2 opacity-95" />
-        <p className="font-display text-[19px] text-[var(--color-text-primary)]">{tr.site_name}</p>
-        <p className="text-xs text-[var(--color-text-brand)] mt-1.5" style={{ fontFamily: "var(--font-kannada)" }}>
+      {/* Mobile: centered ceremonial block */}
+      <div className="lg:hidden text-center px-4 pt-4 pb-4 bg-transparent border-t border-[var(--color-line)]">
+        <Image src={`${siteConfig.basePath}/main-logo.png`} alt="" width={40} height={40} className="object-contain mx-auto mb-1 opacity-95" />
+        <p className="font-display text-base text-[var(--color-text-primary)]">{tr.site_name}</p>
+        <p className="text-xs text-[var(--color-text-brand)] mt-0.5" style={{ fontFamily: "var(--font-kannada)" }}>
           {tr.editorial.site_chrome.chant}
         </p>
-        <div className="flex justify-center gap-3 mt-[18px] mb-4">
+        <div className="flex justify-center gap-2.5 mt-2.5 mb-2">
           {footer.social.map((s) => (
             <a key={s.label} href={s.href} aria-label={s.label}
               className="touch-target rounded-full bg-[var(--color-paper)] border border-[var(--color-line)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-brand)] hover:border-[var(--color-saffron-300)] transition-colors">
@@ -41,10 +41,7 @@ export default function SiteFooter() {
             </a>
           ))}
         </div>
-        <p className="text-policy text-[var(--color-text-secondary)] leading-relaxed">
-          © {new Date().getFullYear()} {footer.copyright_text}<br />{footer.address}
-        </p>
-        <div className="flex items-center justify-center gap-4 flex-wrap mt-4">
+        <div className="flex items-center justify-center gap-3.5 flex-wrap mt-1.5">
           {footer.policies.map((p) => (
             <Link key={p.href} href={p.href} className="touch-target inline-flex items-center justify-center font-body text-policy text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
               {p.label}

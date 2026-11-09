@@ -29,7 +29,7 @@ export default function MediaAlbumView({ albumId }: { albumId: string }) {
       <header className="sticky top-0 z-20 border-b border-[var(--color-line)] bg-[var(--color-parchment)]/95 backdrop-blur-md px-4 py-2.5 sm:px-6 lg:px-8 shadow-xs">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2.5">
           {/* Album title */}
-          <div className="flex min-w-0 flex-1 items-center">
+          <div className="flex min-w-0 flex-1 items-center pl-20 sm:pl-24">
             <h1 className="truncate font-display text-nav sm:text-body lg:text-xl font-bold text-[var(--color-text-primary)]">
               {album.title}
             </h1>

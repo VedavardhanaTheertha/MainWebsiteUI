@@ -116,71 +116,75 @@ export default function MediaAlbumsBrowser() {
 
   return (
     <>
-      <header className="bg-transparent px-5 pt-6 pb-2 text-center sm:pt-8 sm:pb-3">
+      <header className="bg-transparent px-16 pt-3.5 pb-2 text-center sm:px-20 sm:pt-4 sm:pb-3 lg:px-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {copy.eyebrow}
         </p>
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           {copy.title}
         </h1>
-        <p className="mx-auto mt-3 flex min-h-10 max-w-2xl items-center justify-center text-sm text-[var(--color-text-brand)]/75 lg:min-h-12 lg:text-base">
+        <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-[var(--color-text-brand)]/75 lg:text-base">
           {copy.description}
         </p>
       </header>
 
-      <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="top-albums-heading">
-        <div className="layout-wide mx-auto max-w-7xl">
-          <h2 id="top-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-            {copy.top_title}
-          </h2>
-          <div className="relative mt-5">
-          {topAlbums.length > 1 && <RailMotionControl paused={topPaused} onToggle={() => setTopPaused((paused) => !paused)} />}
-          <div
-            ref={topScrollRef}
-            className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
-            style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {topAlbums.map((album) => (
-              <AlbumTile
-                key={album.id}
-                album={album}
-                photoLabel={copy.photos_label}
-                videoLabel={copy.videos_label}
-                unknownDate={copy.date_unknown}
-                featured
-              />
-            ))}
+      {topAlbums.length > 0 && (
+        <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="top-albums-heading">
+          <div className="layout-wide mx-auto max-w-7xl">
+            <h2 id="top-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+              {copy.top_title}
+            </h2>
+            <div className="relative mt-5">
+            {topAlbums.length > 1 && <RailMotionControl paused={topPaused} onToggle={() => setTopPaused((paused) => !paused)} />}
+            <div
+              ref={topScrollRef}
+              className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+              style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {topAlbums.map((album) => (
+                <AlbumTile
+                  key={album.id}
+                  album={album}
+                  photoLabel={copy.photos_label}
+                  videoLabel={copy.videos_label}
+                  unknownDate={copy.date_unknown}
+                  featured
+                />
+              ))}
+            </div>
+            </div>
           </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="recent-albums-heading">
-        <div className="layout-wide mx-auto max-w-7xl">
-          <h2 id="recent-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-            {copy.recent_title}
-          </h2>
-          <div className="relative mt-5">
-          {recentAlbums.length > 1 && <RailMotionControl paused={recentPaused} onToggle={() => setRecentPaused((paused) => !paused)} />}
-          <div
-            ref={recentScrollRef}
-            className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
-            style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {recentAlbums.map((album) => (
-              <AlbumTile
-                key={album.id}
-                album={album}
-                photoLabel={copy.photos_label}
-                videoLabel={copy.videos_label}
-                unknownDate={copy.date_unknown}
-                featured
-              />
-            ))}
+      {recentAlbums.length > 0 && (
+        <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="recent-albums-heading">
+          <div className="layout-wide mx-auto max-w-7xl">
+            <h2 id="recent-albums-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+              {copy.recent_title}
+            </h2>
+            <div className="relative mt-5">
+            {recentAlbums.length > 1 && <RailMotionControl paused={recentPaused} onToggle={() => setRecentPaused((paused) => !paused)} />}
+            <div
+              ref={recentScrollRef}
+              className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+              style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {recentAlbums.map((album) => (
+                <AlbumTile
+                  key={album.id}
+                  album={album}
+                  photoLabel={copy.photos_label}
+                  videoLabel={copy.videos_label}
+                  unknownDate={copy.date_unknown}
+                  featured
+                />
+              ))}
+            </div>
+            </div>
           </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <div className="layout-collection layout-section mx-auto max-w-7xl px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:pb-12">
         <section aria-labelledby="all-albums-heading">

@@ -16,14 +16,14 @@ export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
 
   return (
     <>
-      <header className="bg-transparent px-5 pt-6 pb-2 text-center sm:pt-8 sm:pb-3">
+      <header className="bg-transparent px-16 pt-3.5 pb-2 text-center sm:px-20 sm:pt-4 sm:pb-3 lg:px-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {hub.eyebrow}
         </p>
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           {hub.title}
         </h1>
-        <p className="mx-auto mt-3 flex min-h-10 max-w-2xl items-center justify-center text-sm text-[var(--color-text-brand)]/75 lg:min-h-12 lg:text-base">
+        <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-[var(--color-text-brand)]/75 lg:text-base">
           {hub.description}
         </p>
       </header>

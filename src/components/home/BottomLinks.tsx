@@ -7,8 +7,8 @@ export default function BottomLinks() {
   const { tr } = useLang();
   const home = tr.home;
   return (
-    <div className="w-full bg-transparent px-4 lg:px-8 pt-4 pb-6 sm:pb-8">
-      <div className="layout-wide max-w-7xl mx-auto">
+    <div className="w-full bg-transparent pt-3 pb-6 sm:pb-8">
+      <div className="layout-wide max-w-7xl mx-auto px-4 lg:px-8">
         <section data-carousel="explore_carousel" aria-labelledby="home-explore-title" className="layout-section mb-6 sm:mb-8">
           <header className="layout-section-header text-center mb-4">
             <p className="font-body text-micro tracking-[.2em] uppercase text-[var(--color-text-brand)] font-bold mb-1">{home.explore_label}</p>

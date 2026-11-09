@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import ContentImage from "@/components/presentation/ContentImage";
 import { useLang } from "@/context/LanguageContext";
 import { approvedLearningUrl } from "@/lib/learn";
@@ -11,8 +10,7 @@ export default function LearningDetailPage({ id }: { id: string }) {
   const item = tr.learn.find((entry) => entry.id === id);
   const enrollmentUrl = approvedLearningUrl(item?.enrollmentUrl);
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-12">
-      <Link href="/learn" className="mb-6 inline-flex min-h-11 items-center text-[var(--color-text-brand)] underline underline-offset-4">{labels.back}</Link>
+    <div className="mx-auto max-w-4xl px-4 pt-3.5 pb-8 lg:px-8 lg:pt-4 lg:pb-12">
       {item ? <article>
         <h1 className="font-display text-3xl font-bold lg:text-5xl">{item.title}</h1>
         <p className="mt-4 text-lg text-[var(--color-text-secondary)]">{item.description || item.sub}</p>

@@ -41,8 +41,8 @@ export default function ConnectBrowser() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-5 lg:px-10 lg:py-8">
-      <header className="mx-auto mb-6 sm:mb-8 max-w-3xl text-center">
+    <div className="mx-auto max-w-7xl px-4 pt-3.5 pb-5 sm:pt-4 lg:px-10 lg:py-8">
+      <header className="mx-auto mb-6 sm:mb-8 max-w-3xl px-16 text-center sm:px-20 lg:px-8">
         <h1 className="font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           {copy.title}
         </h1>
@@ -66,7 +66,7 @@ export default function ConnectBrowser() {
               key={branch.id}
               type="button"
               onClick={() => setSelectedId(branch.id)}
-              className="group flex min-h-64 flex-col rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper)] p-5 text-left shadow-[var(--shadow-xs)] transition hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-[var(--shadow-md)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+              className="group flex min-h-64 flex-col rounded-[18px] border border-[var(--color-line)] bg-[var(--color-paper)] p-5 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
               aria-label={`${copy.view_details}: ${localized(branch.title, lang)}`}
             >
               <span className="mb-4 grid size-11 place-items-center rounded-full bg-[var(--color-saffron-100)] text-[var(--color-saffron-800)]">
@@ -93,8 +93,8 @@ export default function ConnectBrowser() {
         </div>
       </section>
 
-      <section aria-labelledby="connect-heading" className="mt-14">
-        <div className="mx-auto mb-7 max-w-2xl text-center">
+      <section aria-labelledby="connect-heading" className="mt-8 sm:mt-10">
+        <div className="mx-auto mb-5 max-w-2xl text-center">
           <h2 id="connect-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)]">
             {copy.connect_title}
           </h2>
@@ -109,7 +109,7 @@ export default function ConnectBrowser() {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-52 flex-col items-center justify-center rounded-2xl border border-[var(--color-line)] bg-white p-5 text-center shadow-[var(--shadow-xs)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+              className="flex min-h-52 flex-col items-center justify-center rounded-[18px] border border-[var(--color-line)] bg-[var(--color-paper)] p-5 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
             >
               <Image
                 src={link.icon}

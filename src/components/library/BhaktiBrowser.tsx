@@ -164,8 +164,8 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
   };
 
   return (
-    <div className="bhakti-reader-page bg-transparent px-4 py-4 text-[var(--color-text-primary)] sm:px-6">
-      <section className="mx-auto max-w-[820px] text-center">
+    <div className="bhakti-reader-page bg-transparent px-4 pt-3.5 pb-4 text-[var(--color-text-primary)] sm:px-6 sm:pt-4">
+      <section className="mx-auto max-w-[820px] px-16 text-center sm:px-20 lg:px-8">
         <p className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.eyebrow}</p>
         <h1 className="mt-1 font-display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight">{copy.title}</h1>
         <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{copy.description}</p>
@@ -288,7 +288,7 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
       </section>
 
       {selected && (
-        <section id="bhakti-reading" tabIndex={-1} aria-label={display(selected).title} className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
+        <section id="bhakti-reading" tabIndex={-1} aria-label={display(selected).title} className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
           <div className="bhakti-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)] pb-3">
             <button type="button" onClick={backToResults} className="min-h-11 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
             <span className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>
