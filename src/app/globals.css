@@ -437,3 +437,17 @@ body:has([data-carousel="icon_carousel"]) footer {
 body:has([data-carousel="icon_carousel"]) .yajna-card {
   bottom: calc(4rem + 1rem);
 }
+
+/* Kaavi Divider subtle pulse animation */
+.kaavi-line-wrap {
+  animation: kaaviPulse 6.5s ease-in-out infinite;
+}
+@keyframes kaaviPulse {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kaavi-line-wrap {
+    animation: none;
+  }
+}

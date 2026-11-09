@@ -22,7 +22,9 @@ import { eventDetailUrl, matchesEventDates } from "@/lib/event-tools";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import EventDetailModal from "./EventDetailModal";
 import AdvancedFilters from "./AdvancedFilters";
+import CategoryBadge from "./presentation/CategoryBadge";
 import { categoryToneClassName } from "@/lib/category-tones";
+import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/collection-presentation";
 
 export default function EventsExact() {
   const { lang, contentMode, tr } = useLang();
@@ -347,7 +349,7 @@ export default function EventsExact() {
             return (
               <article
                 key={item.slug}
-                className="h-[360px] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-[var(--color-saffron-600)] hover:shadow-lg cursor-pointer"
+                className={`${collectionCardClassName("collection")} cursor-pointer`}
               >
                 <a
                   href={`?event=${encodeURIComponent(item.slug)}`}
@@ -359,7 +361,7 @@ export default function EventsExact() {
                   className="flex h-full flex-col focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                 >
                   {/* Event Thumbnail */}
-                  <div className="relative h-40 w-full shrink-0 overflow-hidden bg-[var(--color-cream-soft)]">
+                  <div className="relative h-40 w-full shrink-0 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105">
                     <ContentImage
                       src={imgUrl}
                       alt=""
@@ -369,10 +371,10 @@ export default function EventsExact() {
                   </div>
 
                   {/* Main Event Info */}
-                  <div className="flex min-h-0 min-w-0 flex-1 flex-col p-4">
+                  <div className={collectionCardBodyClassName}>
                     {item.categories?.[0] && (
-                      <span className={`mb-1.5 w-fit max-w-full truncate text-badge font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryToneClassName(item.categories[0].code)}`}>
-                        {localizedText(item.categories[0], lang)}
+                      <span className="mb-1.5 block">
+                        <CategoryBadge category={localizedText(item.categories[0], lang)} code={item.categories[0].code} />
                       </span>
                     )}
                     <div>
@@ -397,7 +399,7 @@ export default function EventsExact() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="mb-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">
+                      <h3 className="mb-1 line-clamp-2 font-display text-base sm:text-lg font-bold leading-snug text-[var(--color-text-primary)]">
                         {title}
                       </h3>
 
@@ -410,7 +412,7 @@ export default function EventsExact() {
                       )}
 
                       {/* Short Description */}
-                      <p className="font-body text-sm text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
+                      <p className="font-body text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
                         {description}
                       </p>
                     </div>

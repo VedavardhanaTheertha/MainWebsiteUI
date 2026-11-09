@@ -111,19 +111,19 @@ export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: S
 
   return (
     <>
-      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-5 lg:py-8">
-        <header className="max-w-2xl mb-5 lg:mb-6 text-center sm:text-left">
+      <div className="max-w-6xl mx-auto px-4 pt-3.5 pb-5 sm:pt-4 lg:px-8 lg:py-8">
+        <header className="mx-auto max-w-3xl mb-6 px-16 text-center sm:px-20 lg:px-8">
           <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
             {storyCopy.title}
           </h1>
-          <p className="font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+          <p className="mx-auto max-w-2xl font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
             {storyCopy.intro}
           </p>
         </header>
 
         {/* 3 Tabs Navigation */}
         <div className="mb-6 border-b border-[var(--color-line-strong)]">
-          <nav role="tablist" className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto" aria-label={storyCopy.title}>
+          <nav role="tablist" className="-mb-px flex justify-center space-x-2 sm:space-x-8 overflow-x-auto" aria-label={storyCopy.title}>
             <button
               ref={mathasTabRef}
               role="tab"
@@ -191,7 +191,7 @@ export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: S
             role="tabpanel"
             id={`story-panel-${activeTab}`}
             aria-labelledby={`story-tab-${activeTab}`}
-            className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10"
+            className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-4 shadow-sm backdrop-blur-md sm:p-6 lg:p-8"
           >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
               {visibleItems.map((item) => (
@@ -200,9 +200,9 @@ export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: S
                   type="button"
                   onClick={() => setSelectedId(item.id)}
                   aria-pressed={selected?.id === item.id}
-                  className="visual-tile group flex flex-col sm:flex-row overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[12px] shadow-[var(--shadow-xs)] hover:border-[var(--color-saffron-400)] hover:shadow-[var(--shadow-md)] aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-[border-color,box-shadow,background-color]"
+                  className="visual-tile group flex flex-col sm:flex-row overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[16px] shadow-sm hover:-translate-y-0.5 hover:border-[var(--color-saffron-400)] hover:shadow-md aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-all duration-300"
                 >
-                  <span className="visual-tile-art relative block h-48 sm:h-full sm:min-h-48 w-full sm:w-44 shrink-0 overflow-hidden bg-[var(--color-saffron-50)]">
+                  <span className="visual-tile-art relative block h-48 sm:h-full sm:min-h-48 w-full sm:w-44 shrink-0 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105">
                     {item.image ? (
                       <ContentImage
                         src={item.image}

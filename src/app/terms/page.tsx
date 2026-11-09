@@ -8,13 +8,15 @@ export const metadata: Metadata = content[defaultLang].page_metadata.terms;
 export default function TermsPage() {
   return (
     <>
-      <div className="max-w-3xl mx-auto px-5 lg:px-8 py-8 lg:py-12">
-        <h1 className="font-display font-bold text-[var(--color-text-primary)] text-3xl sm:text-4xl mb-2">
-          <LocalizedCopy path={["pages", "local_copy", "terms_title"]} />
-        </h1>
-        <p className="font-body text-sm text-[var(--color-text-secondary)]/60 mb-6">
-          <LocalizedCopy path={["pages", "local_copy", "legal_updated"]} />
-        </p>
+      <div className="max-w-3xl mx-auto px-4 pt-3.5 pb-8 sm:pt-4 sm:pb-12 lg:px-8">
+        <header className="mx-auto max-w-2xl px-12 text-center sm:px-16 lg:px-0 mb-6 sm:mb-8">
+          <h1 className="font-display font-bold text-[var(--color-text-primary)] text-3xl sm:text-4xl mb-2">
+            <LocalizedCopy path={["pages", "local_copy", "terms_title"]} />
+          </h1>
+          <p className="font-body text-sm text-[var(--color-text-secondary)]/60">
+            <LocalizedCopy path={["pages", "local_copy", "legal_updated"]} />
+          </p>
+        </header>
 
         <div className="prose prose-sm max-w-none font-body text-[var(--color-text-secondary)] leading-relaxed space-y-6">
           <section>

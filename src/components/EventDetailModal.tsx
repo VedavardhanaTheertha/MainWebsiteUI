@@ -68,11 +68,11 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-4 bg-[rgba(26,17,8,0.7)] backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-4 bg-[var(--color-ink-900)]/70 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[calc(100dvh-2rem)] bg-white rounded-2xl shadow-2xl border border-[var(--color-line)] flex flex-col overflow-y-auto"
+        className="relative w-full max-w-2xl max-h-[calc(100dvh-2rem)] bg-[var(--color-paper)] rounded-2xl shadow-2xl border border-[var(--color-line-strong)] flex flex-col overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex shrink-0 items-start gap-4 border-b border-[var(--color-line)] p-4 sm:px-6">

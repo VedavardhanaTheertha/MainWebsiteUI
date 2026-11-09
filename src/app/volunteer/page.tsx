@@ -13,8 +13,8 @@ export default function VolunteerPage() {
   return (
     <div>
       {/* Page hero */}
-      <div className="bg-transparent pt-4 pb-3 lg:pt-7 lg:pb-6 text-center px-5">
-        <p className="font-body text-micro tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-3">
+      <div className="bg-transparent px-16 pt-3.5 pb-2 text-center sm:px-20 sm:pt-4 sm:pb-3 lg:px-8">
+        <p className="font-body text-micro tracking-widest uppercase text-[var(--color-text-brand)] font-semibold mb-2">
           <LocalizedCopy path={["pages", "local_copy", "volunteer_eyebrow"]} />
         </p>
         <h1 className="font-display font-bold text-[var(--color-text-primary)] text-4xl sm:text-5xl lg:text-6xl mb-3">
@@ -38,7 +38,7 @@ export default function VolunteerPage() {
             {whyVolunteer.map((item, index) => (
               <div
                 key={index}
-                className="bg-white rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.08)] text-center"
+                className="bg-[var(--color-paper)] rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-sm hover:shadow-md transition-all duration-300 text-center"
               >
                 <span className="text-4xl block mb-3" aria-hidden="true">{item}</span>
                 <h3 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-2"><LocalizedCopy path={["pages", "local_copy", `volunteer_reason_${index}_title`]} /></h3>
@@ -53,18 +53,18 @@ export default function VolunteerPage() {
         </section>
 
         {/* Volunteer Opportunities — matches the design reference's VolunteerScreen list */}
-        <section aria-labelledby="opportunities-heading" className="mb-14">
-          <h2 id="opportunities-heading" className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-8">
+        <section aria-labelledby="opportunities-heading" className="mb-8 sm:mb-10">
+          <h2 id="opportunities-heading" className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-4 sm:mb-5">
             <LocalizedCopy path={["pages", "local_copy", "volunteer_opportunities"]} />
           </h2>
           <ImageListCards contentKey="volunteer_ops" />
         </section>
 
         {/* Roles */}
-        <section aria-labelledby="roles-heading" className="mb-14">
+        <section aria-labelledby="roles-heading" className="mb-8 sm:mb-10">
           <h2
             id="roles-heading"
-            className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-8"
+            className="font-display font-bold text-[var(--color-text-primary)] text-xl lg:text-3xl mb-4 sm:mb-5"
           >
             <LocalizedCopy path={["pages", "local_copy", "volunteer_roles"]} />
           </h2>
@@ -72,7 +72,7 @@ export default function VolunteerPage() {
             {roles.map((role, index) => (
               <article
                 key={index}
-                className="bg-white rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-[0_4px_18px_rgba(60,7,83,0.08)] flex gap-4"
+                className="bg-[var(--color-paper)] rounded-[18px] p-6 border border-[var(--color-saffron-600)] shadow-sm hover:shadow-md transition-all duration-300 flex gap-4"
                 aria-labelledby={`role-${index}`}
               >
                 <span className="text-3xl shrink-0 mt-0.5" aria-hidden="true">{role}</span>
@@ -100,7 +100,7 @@ export default function VolunteerPage() {
         {/* Sign-up CTA */}
         <section
           aria-labelledby="signup-heading"
-          className="bg-[var(--color-paper)] rounded-[20px] p-8 lg:p-12 text-center"
+          className="bg-[var(--color-paper)] rounded-2xl border border-[var(--color-line)] p-8 lg:p-12 text-center shadow-xs"
         >
           <h2
             id="signup-heading"

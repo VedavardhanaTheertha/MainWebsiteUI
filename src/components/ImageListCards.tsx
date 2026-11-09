@@ -17,13 +17,13 @@ export default function ImageListCards({ contentKey }: { contentKey: "learn" | "
           const href = learningDestination(item);
           const enrollmentUrl = approvedLearningUrl(item.enrollmentUrl);
           return (
-            <article key={item.id ?? item.title} className="visual-tile relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)]">
-              <div className="visual-tile-art relative h-44">
+            <article key={item.id ?? item.title} className="visual-tile relative overflow-hidden rounded-[18px] border border-[var(--color-line)] bg-[var(--color-paper)] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md">
+              <div className="visual-tile-art relative h-44 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105">
                 <ContentImage src={item.img} alt="" fill sizes="(max-width: 640px) 100vw, 50vw" />
               </div>
               <div className="visual-tile-body p-5">
                 <h2 className="layout-tile-title font-display text-xl font-bold">
-                  {href ? <Link href={href} className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-[var(--color-saffron-600)]">{item.title}</Link> : item.title}
+                  {href ? <Link href={href} className="after:absolute after:inset-0 after:rounded-[18px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-[var(--color-saffron-600)]">{item.title}</Link> : item.title}
                 </h2>
                 <p className="layout-tile-summary mt-2 text-sm text-[var(--color-text-secondary)]">{item.sub}</p>
                 <dl className="layout-tile-footer mt-4 grid grid-cols-2 gap-3 text-sm">
@@ -46,8 +46,8 @@ export default function ImageListCards({ contentKey }: { contentKey: "learn" | "
   return (
     <div className="flex flex-col gap-2.5 max-w-xl">
       {items.map((it) => (
-        <div key={it.title} className="flex items-center gap-3.5 bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] p-2.5 shadow-[var(--shadow-xs)]">
-          <div className="relative w-[62px] h-[62px] shrink-0 rounded-[4px] overflow-hidden">
+        <div key={it.title} className="flex items-center gap-3.5 bg-[var(--color-paper)] border border-[var(--color-line)] rounded-xl p-3 shadow-2xs hover:border-[var(--color-saffron-500)] transition-colors">
+          <div className="relative w-[62px] h-[62px] shrink-0 rounded-lg overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))]">
             <ContentImage src={it.img} alt="" fill sizes="62px" />
           </div>
           <div className="flex-1 min-w-0">

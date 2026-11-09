@@ -43,13 +43,13 @@ export default function BackNavigation() {
   return (
     <nav
       aria-label={tr.ui.back}
-      className="back-navigation w-full border-b border-[var(--color-line)]/60 bg-transparent"
+      className="back-navigation pointer-events-none absolute inset-x-0 top-0 z-20"
     >
-      <div className="mx-auto flex max-w-7xl items-center px-4 py-2 sm:px-6 sm:py-2.5 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center px-4 pt-3.5 sm:px-6 sm:pt-4 lg:px-8">
         <Link
           href={parentHref}
           onClick={handleBack}
-          className="inline-flex min-h-9 items-center gap-2 rounded-md font-body text-ui font-semibold text-[var(--color-text-brand)] transition-colors hover:text-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+          className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-[var(--color-line-strong)]/60 bg-[var(--color-paper)]/80 px-2.5 py-1 font-body text-ui font-semibold text-[var(--color-text-brand)] backdrop-blur-xs shadow-2xs transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           <span>{tr.ui.back}</span>

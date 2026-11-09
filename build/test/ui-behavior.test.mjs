@@ -185,26 +185,13 @@ test("hero uses configured interval/fade and respects autoplay and reduced motio
   }
 });
 
-test("hero pause is a separate localized toggle and reduced motion disables its animation", async () => {
+test("hero renders as a clean banner link without nested or floating buttons", async () => {
   const options = {};
   const hero = await mountComponent("../../src/components/home/HeroCarousel.tsx", options);
   let tree = hero.render();
-  let toggle = findNode(tree, (node) => node.type === "button");
-  assert.equal(toggle.props["aria-pressed"], false);
-  assert.equal(toggle.props["aria-label"], authoredCopy.page_controls.pause_motion);
-  const link = findNode(tree, (node) => node.type === "next/link");
-  assert.equal(findNode(link, (node) => node.type === "button"), undefined);
-  toggle.props.onClick();
-  tree = hero.render();
-  toggle = findNode(tree, (node) => node.type === "button");
-  assert.equal(toggle.props["aria-pressed"], true);
-  assert.equal(toggle.props["aria-label"], authoredCopy.page_controls.resume_motion);
-  assert.ok(findNode(tree, (node) => node.props?.style?.transitionDuration === "0ms"));
-  toggle.props.onClick();
-  options.reducedMotion = true;
-  tree = hero.render();
   assert.equal(findNode(tree, (node) => node.type === "button"), undefined);
-  assert.ok(findNode(tree, (node) => node.props?.style?.transitionDuration === "0ms"));
+  const link = findNode(tree, (node) => node.type === "next/link");
+  assert.ok(link);
   hero.cleanup();
 });
 

@@ -315,8 +315,8 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
   if (isLiterature) {
     return (
-      <div className="library-reader-page bg-transparent px-4 py-4 text-[var(--color-text-primary)] sm:px-6">
-        <section className="mx-auto max-w-[820px] text-center">
+      <div className="library-reader-page bg-transparent px-4 pt-3.5 pb-4 text-[var(--color-text-primary)] sm:px-6 sm:pt-4">
+        <section className="mx-auto max-w-[820px] px-16 text-center sm:px-20 lg:px-8">
           <p className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">
             {sectionCopy.eyebrow}
           </p>
@@ -473,7 +473,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
             id="library-reading"
             tabIndex={-1}
             aria-label={selectedArticle.title}
-            className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
+            className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
           >
             <div className="library-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)] pb-3">
               <button
@@ -563,7 +563,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
         {sectionId === "jnana" && (
           <section
-            className="layout-reading layout-section mx-auto mt-8 max-w-4xl rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
+            className="layout-reading layout-section mx-auto mt-8 max-w-4xl rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
             aria-labelledby="knowledge-glossary-heading"
           >
             <h2
@@ -601,49 +601,51 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
   return (
     <>
-      <header className="bg-transparent px-5 pt-6 pb-2 text-center sm:pt-8 sm:pb-3">
+      <header className="bg-transparent px-16 pt-3.5 pb-2 text-center sm:px-20 sm:pt-4 sm:pb-3 lg:px-8">
         <p className="text-badge font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
           {sectionCopy.eyebrow}
         </p>
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
           {sectionCopy.title}
         </h1>
-        <p className="mx-auto mt-3 flex min-h-10 max-w-2xl items-center justify-center text-sm text-[var(--color-text-brand)]/75 lg:min-h-12 lg:text-base">
+        <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-[var(--color-text-brand)]/75 lg:text-base">
           {sectionCopy.description}
         </p>
       </header>
 
-      <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="featured-library-title">
-        <div className="layout-wide mx-auto max-w-7xl">
-          <div className="flex items-center justify-between gap-4">
-            <h2 id="featured-library-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-              {copy.featured_title}
-            </h2>
-          </div>
-          <div className="relative mt-5">
-            {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((current) => !current)} />}
-            <div
-              ref={featuredScrollRef}
-              className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
-              style={{
-                WebkitOverflowScrolling: "touch",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              {featured.map((article) => (
-                <ArticleTile
-                  key={article.id}
-                  article={article}
-                  sectionId={sectionId}
-                  featured
-                  onOpen={() => setSelectedArticleId(article.id)}
-                />
-              ))}
+      {featured.length > 0 && (
+        <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="featured-library-title">
+          <div className="layout-wide mx-auto max-w-7xl">
+            <div className="flex items-center justify-between gap-4">
+              <h2 id="featured-library-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+                {copy.featured_title}
+              </h2>
+            </div>
+            <div className="relative mt-5">
+              {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((current) => !current)} />}
+              <div
+                ref={featuredScrollRef}
+                className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
+                style={{
+                  WebkitOverflowScrolling: "touch",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
+                {featured.map((article) => (
+                  <ArticleTile
+                    key={article.id}
+                    article={article}
+                    sectionId={sectionId}
+                    featured
+                    onOpen={() => setSelectedArticleId(article.id)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <div className="layout-collection layout-section mx-auto max-w-7xl px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:pb-12">
         <section aria-labelledby="library-collection-heading">

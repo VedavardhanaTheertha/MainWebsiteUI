@@ -2,7 +2,7 @@
 
 import ContentImage from "@/components/presentation/ContentImage";
 import Link from "next/link";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { defaultContentMode, defaultLang } from "@/gen/content";
 import {
@@ -30,16 +30,8 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
   const nextGuru = gurus[index + 1];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-7 lg:px-8 lg:py-12">
-      <Link
-        href="/history/parampara#parampara-lineage"
-        className="mb-8 inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-brand)] hover:text-[var(--color-saffron-700)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-saffron-600)]"
-      >
-        <ArrowLeft size={17} aria-hidden="true" />
-        {labels.back_to_lineage}
-      </Link>
-
-      <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
+    <div className="mx-auto max-w-6xl px-4 pt-3.5 pb-7 lg:px-8 lg:pt-4 lg:pb-12">
+      <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-4 shadow-sm backdrop-blur-md sm:p-6 lg:p-8">
         <article className="mx-auto max-w-5xl">
         <header className="mb-8 border-b border-[var(--color-line)] pb-7 lg:mb-10 lg:pb-9">
           <p className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">

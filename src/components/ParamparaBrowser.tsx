@@ -87,20 +87,20 @@ export default function ParamparaBrowser({
     : `${labels.position} ${guru.officialPosition}`;
 
   const innerContent = (
-    <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8 lg:p-10">
+    <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-4 shadow-sm backdrop-blur-md sm:p-6 lg:p-8">
       {!embedded && (
-        <header className="max-w-2xl mb-7 lg:mb-10">
+        <header className="mx-auto max-w-3xl mb-7 lg:mb-10 text-center">
           <h1 className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-3">
             {labels.title}
           </h1>
-          <p className="font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+          <p className="mx-auto max-w-2xl font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
             {labels.intro}
           </p>
         </header>
       )}
 
         {founder && (
-          <section className="mb-10 border-y border-[var(--color-line-strong)] py-7 lg:mb-14 lg:py-9">
+          <section className="mb-6 border-y border-[var(--color-line-strong)] py-5 lg:mb-8 lg:py-7">
             <div className="grid items-center gap-6 sm:grid-cols-[160px_1fr] lg:grid-cols-[210px_1fr] lg:gap-10">
               {founder.fullImage && (
                 <div className="relative aspect-[4/5] w-36 overflow-hidden rounded-2xl bg-[var(--color-saffron-50)] sm:w-40 lg:w-[210px]">
@@ -170,9 +170,9 @@ export default function ParamparaBrowser({
               type="button"
               onClick={() => openGuru(guru)}
               aria-pressed={selected?.id === guru.id}
-              className={`${guru.thumbnailImage ? "visual-tile " : ""}group grid min-h-36 w-full grid-cols-[80px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[8px] shadow-[var(--shadow-xs)] hover:border-[var(--color-saffron-400)] hover:shadow-[var(--shadow-md)] aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-[border-color,box-shadow,background-color]`}
+              className={`${guru.thumbnailImage ? "visual-tile " : ""}group grid min-h-36 w-full grid-cols-[80px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[16px] shadow-sm hover:-translate-y-0.5 hover:border-[var(--color-saffron-400)] hover:shadow-md aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-all duration-300`}
             >
-              <span className="visual-tile-art relative block h-full min-h-36 w-20 overflow-hidden bg-[var(--color-saffron-50)]">
+              <span className="visual-tile-art relative block h-full min-h-36 w-20 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105">
                 {guru.thumbnailImage ? (
                   <ContentImage
                     src={guru.thumbnailImage}

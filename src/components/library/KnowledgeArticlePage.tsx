@@ -44,9 +44,8 @@ export default function KnowledgeArticlePage({
   const article = localizeArticle({ ...item, html: activeHtmlMap }, lang);
   const related = relatedArticles(section, item);
   return (
-    <div className="layout-reading layout-section mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
-      <Link href={section.route} className="mb-6 inline-flex min-h-11 items-center text-base font-semibold text-[var(--color-text-brand)] underline underline-offset-4">{copy.back_collection}</Link>
-      <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
+    <div className="layout-reading layout-section mx-auto max-w-4xl px-4 pt-3.5 pb-8 sm:px-6 sm:pt-4 sm:pb-12">
+      <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
         <div className="library-reading-controls flex flex-wrap items-center gap-3 border-b border-[var(--color-line-soft)] py-3 mb-5 text-sm">
           <label className="flex min-h-11 items-center gap-2">
             {tr.bhakti_controls?.reading_size}
@@ -89,7 +88,7 @@ export default function KnowledgeArticlePage({
           <KnowledgeBody article={article} sectionId={sectionId} />
         </article>
       </div>
-      {related.length > 0 && <section className="mt-8 rounded-2xl border border-[var(--color-line-strong)] bg-[#fceedb]/92 p-5 shadow-sm backdrop-blur-md sm:p-8" aria-labelledby="knowledge-related-heading">
+      {related.length > 0 && <section className="mt-8 rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8" aria-labelledby="knowledge-related-heading">
         <h2 id="knowledge-related-heading" className="font-display text-2xl font-bold">{copy.related_articles}</h2>
         <ul className="mt-4 space-y-3">{related.map((entry) => {
           const relatedArticle = localizeArticle(entry, lang);
