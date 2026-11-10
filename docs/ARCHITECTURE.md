@@ -192,8 +192,8 @@ The generated `remidies_carousel` contains three distinct remedies drawn from
 content variants for that generation; keep at least four eligible remedy articles.
 The existing key spelling is part of the data contract.
 
-Hero configuration lives in `library/hero/default.hero.md`.
-Preserve its image resolution and controls.
+Hero carousel slides live in individual Markdown files under `library/hero/*.md`, with presentation order defined by `settings/hero.json`.
+Preserve image resolution and controls.
 
 `settings/navigation.json` owns menus, route destinations, footer policy links, and
 official social `connectId` references. Labels are localized separately. Only concrete

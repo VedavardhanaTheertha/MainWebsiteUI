@@ -18,7 +18,7 @@ topic Markdown under `library/`: About/policies/legal in `general/`, announcemen
 `announcement/`, all Learn content and configuration in `learn/`, and multilingual
 articles in their owning knowledge-topic folders. Page copy and its metadata share
 one Markdown source. Homepage content and configuration live in `settings/`
-JSON; hero configuration lives in `library/hero/default.hero.md`.
+JSON; hero presentation order lives in `settings/hero.json` referencing slides in `library/hero/*.md`.
 Lineage order comes from guru Markdown numeric filename prefixes, with no settings index.
 Other presentation and navigation configuration
 also belongs in `settings/`. Keep `config/site.yml` as the central YAML environment
