@@ -667,7 +667,7 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-/** Discovers hero groups and selects default.hero.md. */
+/** Discovers hero groups from settings/hero.json or default.hero.md. */
 function loadDefaultHero(imageLookup) {
   const relativeHeroDir = path.join("library", "hero");
   const heroDir = path.join(rootDir, relativeHeroDir);
@@ -675,12 +675,116 @@ function loadDefaultHero(imageLookup) {
     throw new Error(`${relativeHeroDir} is missing — initialize the library submodule and add a hero group.`);
   }
 
+  const heroSettingsPath = path.join(rootDir, "settings", "hero.json");
+  if (existsSync(heroSettingsPath)) {
+    let heroConfig;
+    try {
+      heroConfig = JSON.parse(readFileSync(heroSettingsPath, "utf8"));
+    } catch (err) {
+      throw new Error(`settings/hero.json is not valid JSON — ${err.message}`);
+    }
+
+    let references;
+    if (Array.isArray(heroConfig)) {
+      references = heroConfig;
+    } else if (heroConfig && typeof heroConfig === "object") {
+      const today = new Date().toISOString().slice(0, 10);
+      let matchedOverride = null;
+      if (Array.isArray(heroConfig.overrides)) {
+        for (const override of heroConfig.overrides) {
+          if (!override || typeof override !== "object" || !Array.isArray(override.slides)) continue;
+          const { startsOn, endsOn, date } = override;
+          if (date && date === today) {
+            matchedOverride = override.slides;
+            break;
+          }
+          if (startsOn && endsOn && today >= startsOn && today <= endsOn) {
+            matchedOverride = override.slides;
+            break;
+          }
+          if (startsOn && !endsOn && today >= startsOn) {
+            matchedOverride = override.slides;
+            break;
+          }
+        }
+      }
+      if (!matchedOverride && Array.isArray(heroConfig[today])) {
+        matchedOverride = heroConfig[today];
+      }
+      references = matchedOverride ?? heroConfig.default;
+    }
+
+    if (!Array.isArray(references) || !references.length) {
+      throw new Error(`settings/hero.json must configure a non-empty array of hero markdown file references under "default".`);
+    }
+
+    const slides = references.map((ref, index) => {
+      if (typeof ref !== "string" || !ref.trim()) {
+        throw new Error(`settings/hero.json entry [${index}] must be a non-empty string.`);
+      }
+      const filename = path.basename(ref).endsWith(".md") ? path.basename(ref) : `${path.basename(ref)}.md`;
+      const filePath = path.join(heroDir, filename);
+      if (!existsSync(filePath)) {
+        throw new Error(`settings/hero.json entry [${index}] references "${ref}", but ${path.join(relativeHeroDir, filename)} does not exist.`);
+      }
+      const raw = readFileSync(filePath, "utf8");
+      const parsed = parseMarkdownFrontmatter(raw, path.join(relativeHeroDir, filename));
+      const hero = parsed.metadata;
+
+      const titles = resolveHeroTitles(hero, languageCodes, defaultLang, path.join(relativeHeroDir, filename));
+      if (typeof hero.href !== "string" || !hero.href.trim()) {
+        throw new Error(`${path.join(relativeHeroDir, filename)} needs a non-empty "href" string.`);
+      }
+
+      let imageObj;
+      if (typeof hero.image === "string") {
+        imageObj = { landscape: hero.image, portrait: hero.image };
+      } else if (hero.image && typeof hero.image === "object") {
+        const landscape = hero.image.landscape ?? hero.image.portrait;
+        const portrait = hero.image.portrait ?? hero.image.landscape;
+        imageObj = { landscape, portrait };
+      } else if (Array.isArray(hero.images) && hero.images.length) {
+        imageObj = { landscape: hero.images[0], portrait: hero.images[0] };
+      }
+
+      for (const variant of ["landscape", "portrait"]) {
+        const img = imageObj?.[variant];
+        if (typeof img !== "string" || (!img.startsWith("http://") && !img.startsWith("https://") && !img.startsWith("@image."))) {
+          throw new Error(`${path.join(relativeHeroDir, filename)} image.${variant} must be an HTTP URL or @image reference.`);
+        }
+        if (img.startsWith("@image.") && !imageLookup.has(img)) {
+          throw new Error(`${path.join(relativeHeroDir, filename)} image.${variant} references unknown image "${img}".`);
+        }
+      }
+
+      return {
+        titles,
+        title_en: titles.en ?? titles[defaultLang],
+        title_kn: titles.kn ?? titles[defaultLang],
+        href: hero.href,
+        image: imageObj,
+        images: [imageObj.landscape],
+      };
+    });
+
+    console.log(`[content] hero slides=${slides.length} configured in settings/hero.json`);
+    const firstSlide = slides[0];
+    return {
+      slides,
+      images: slides.map((s) => s.image.landscape),
+      href: firstSlide.href,
+      titles: firstSlide.titles,
+      title_en: firstSlide.title_en,
+      title_kn: firstSlide.title_kn,
+    };
+  }
+
   const groupFiles = readdirSync(heroDir).filter((file) => file.endsWith(".hero.md") || file.endsWith(".hero.json")).sort();
   const defaultFile = existsSync(path.join(heroDir, "default.hero.md"))
     ? "default.hero.md"
     : "default.hero.json";
   if (!existsSync(path.join(heroDir, defaultFile))) {
-    throw new Error(`${path.join(relativeHeroDir, defaultFile)} is missing — it selects the default hero group.`);
+    throw new Error(`${path.join(relativeHeroDir, defaultFile)} or settings/hero.json is required — it configures the hero carousel.`);
   }
 
   const file = path.join(heroDir, defaultFile);
@@ -717,9 +821,18 @@ function loadDefaultHero(imageLookup) {
     return image;
   });
 
+  const slides = images.map((image) => ({
+    titles,
+    title_en: titles.en ?? titles[defaultLang],
+    title_kn: titles.kn ?? titles[defaultLang],
+    href: hero.href,
+    image,
+    images: [image],
+  }));
+
   console.log(`[content] hero groups=[${groupFiles.map((name) => name.replace(/\.hero\.(md|json)$/, "")).join(", ")}] selected=default`);
   return {
-    ...hero, images,
+    ...hero, images, slides,
     title_en: titles.en ?? titles[defaultLang],
     title_kn: titles.kn ?? titles[defaultLang],
   };
@@ -740,11 +853,20 @@ function writeHeroImages(hero, content, lang, basePath) {
   const ctaEn = escapeHtml(content.en?.home?.hero_intro?.cta_label ?? "");
   const ctaKn = escapeHtml(content.kn?.home?.hero_intro?.cta_label ?? ctaEn);
   const activeCta = lang === "kn" ? ctaKn : ctaEn;
-  const slides = hero.images.map((src, index) => `
-      <div class="hero-image${index === 0 ? " is-active" : ""}" aria-hidden="${index === 0 ? "false" : "true"}">
-        <img class="hero-backdrop" src="${escapeHtml(src)}" alt="" aria-hidden="true" loading="lazy">
-        <img class="hero-foreground" src="${escapeHtml(src)}" alt=""${index === 0 ? ' fetchpriority="high"' : ' loading="lazy"'}>
-      </div>`).join("");
+  const slides = hero.images.map((src, index) => {
+    const slide = hero.slides?.[index];
+    const sTitleEn = slide ? escapeHtml(slide.title_en) : titleEn;
+    const sTitleKn = slide ? escapeHtml(slide.title_kn) : titleKn;
+    const sHref = slide ? escapeHtml(resolveHeroHref(slide.href, basePath)) : escapeHtml(resolveHeroHref(hero.href, basePath));
+    const rawImg = slide?.image;
+    const landscapeSrc = typeof rawImg === "string" ? rawImg : (rawImg?.landscape ?? src);
+    const portraitSrc = typeof rawImg === "string" ? rawImg : (rawImg?.portrait ?? src);
+    return `
+      <div class="hero-image${index === 0 ? " is-active" : ""}" aria-hidden="${index === 0 ? "false" : "true"}" data-title-en="${sTitleEn}" data-title-kn="${sTitleKn}" data-href="${sHref}" data-landscape="${escapeHtml(landscapeSrc)}" data-portrait="${escapeHtml(portraitSrc)}">
+        <img class="hero-backdrop" src="${escapeHtml(landscapeSrc)}" alt="" aria-hidden="true" loading="lazy">
+        <img class="hero-foreground" src="${escapeHtml(landscapeSrc)}" alt=""${index === 0 ? ' fetchpriority="high"' : ' loading="lazy"'}>
+      </div>`;
+  }).join("");
 
   const html = `<!doctype html>
 <html lang="${escapeHtml(lang)}">
@@ -822,9 +944,17 @@ function writeHeroImages(hero, content, lang, basePath) {
       const applyLanguage = (lang) => {
         if (lang !== "en" && lang !== "kn") return;
         document.documentElement.lang = lang;
-        document.title = hero.dataset[lang === "kn" ? "titleKn" : "titleEn"];
-        document.querySelector(".hero-title").textContent = document.title;
-        document.querySelector(".hero-cta").textContent = hero.dataset[lang === "kn" ? "ctaKn" : "ctaEn"];
+        const curSlide = slides[active];
+        const slideTitle = curSlide?.dataset?.[lang === "kn" ? "titleKn" : "titleEn"] || hero.dataset[lang === "kn" ? "titleKn" : "titleEn"];
+        document.title = slideTitle;
+        const titleEl = document.querySelector(".hero-title");
+        if (titleEl) titleEl.textContent = slideTitle;
+        const ctaEl = document.querySelector(".hero-cta");
+        if (ctaEl) {
+          ctaEl.textContent = hero.dataset[lang === "kn" ? "ctaKn" : "ctaEn"];
+          const curHref = curSlide?.dataset?.href;
+          if (curHref) ctaEl.setAttribute("href", curHref);
+        }
       };
       applyLanguage(new URLSearchParams(location.search).get("lang") || readPreference("shiroor-lang") || "${escapeHtml(lang)}");
       window.addEventListener("storage", (event) => {
@@ -845,6 +975,18 @@ function writeHeroImages(hero, content, lang, basePath) {
           active = (active + 1) % slides.length;
           slides[active].classList.add("is-active");
           slides[active].setAttribute("aria-hidden", "false");
+          const curLang = document.documentElement.lang || "en";
+          const nextTitle = slides[active]?.dataset?.[curLang === "kn" ? "titleKn" : "titleEn"];
+          if (nextTitle) {
+            document.title = nextTitle;
+            const titleEl = document.querySelector(".hero-title");
+            if (titleEl) titleEl.textContent = nextTitle;
+          }
+          const nextHref = slides[active]?.dataset?.href;
+          if (nextHref) {
+            const ctaEl = document.querySelector(".hero-cta");
+            if (ctaEl) ctaEl.setAttribute("href", nextHref);
+          }
         }, settings.heroSettings.intervalMs);
       }
       startHero();
@@ -929,8 +1071,20 @@ const realHeroTitles = resolveHeroTitles(defaultHero, languageCodes, defaultLang
 const placeholderHeroTitles = Object.fromEntries(languageCodes.map((code) => [
   code, makePlaceholder("hero.default.title", realHeroTitles[code], code),
 ]));
+const placeholderSlides = (defaultHero.slides ?? []).map((slide, index) => {
+  const slideTitles = Object.fromEntries(languageCodes.map((code) => [
+    code, makePlaceholder(`hero.${index}.title`, slide.titles[code] ?? slide.title_en, code),
+  ]));
+  return {
+    ...slide,
+    titles: slideTitles,
+    title_en: slideTitles.en ?? slideTitles[defaultLang],
+    title_kn: slideTitles.kn ?? slideTitles[defaultLang],
+  };
+});
 const placeholderHero = {
   ...defaultHero,
+  slides: placeholderSlides,
   title_en: makePlaceholder("hero.default.title", defaultHero.title_en, "en"),
   title_kn: makePlaceholder("hero.default.title", defaultHero.title_kn, "kn"),
 };
@@ -938,11 +1092,30 @@ const hero = mode.defaultVariant === "real" ? defaultHero : placeholderHero;
 const alternateHero = mode.switchable
   ? mode.defaultVariant === "real" ? placeholderHero : defaultHero
   : null;
-const toHomeHero = (heroData) => ({
-  titles: heroData === placeholderHero ? placeholderHeroTitles : realHeroTitles,
-  href: heroData.href,
-  images: heroData.images.map((image) => imageLookup.get(image) ?? image),
-});
+const toHomeHero = (heroData) => {
+  const slides = (heroData.slides ?? []).map((slide) => {
+    const rawImg = slide.image;
+    const imgObj = typeof rawImg === "string"
+      ? { landscape: imageLookup.get(rawImg) ?? rawImg, portrait: imageLookup.get(rawImg) ?? rawImg }
+      : {
+          landscape: imageLookup.get(rawImg.landscape) ?? rawImg.landscape,
+          portrait: imageLookup.get(rawImg.portrait) ?? rawImg.portrait,
+        };
+    return {
+      titles: slide.titles,
+      title_en: slide.title_en,
+      title_kn: slide.title_kn,
+      href: slide.href,
+      image: imgObj,
+    };
+  });
+  return {
+    slides,
+    titles: heroData === placeholderHero ? placeholderHeroTitles : realHeroTitles,
+    href: heroData.href,
+    images: (heroData.images ?? slides.map((s) => s.image.landscape)).map((image) => imageLookup.get(image) ?? image),
+  };
+};
 const homeHero = toHomeHero(hero);
 const alternateHomeHero = alternateHero ? toHomeHero(alternateHero) : null;
 
@@ -1043,7 +1216,21 @@ export const navigationRoutes = ${JSON.stringify(navigation.routes, null, 2)} as
 export const languages: LanguageDescriptor[] = ${JSON.stringify(descriptors, null, 2)};
 
 /** Home hero selected from the configured default copy mode. */
+export interface HeroSlideImage {
+  landscape: string;
+  portrait: string;
+}
+
+export interface HomeHeroSlide {
+  titles: Record<Lang, string>;
+  title_en: string;
+  title_kn: string;
+  href: string;
+  image: HeroSlideImage;
+}
+
 export interface HomeHeroData {
+  slides: HomeHeroSlide[];
   titles: Record<Lang, string>;
   href: string;
   images: string[];

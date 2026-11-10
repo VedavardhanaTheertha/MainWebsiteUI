@@ -186,7 +186,7 @@ segment-prefetch URLs from the matching nested export files.
 | Short UI labels or a language descriptor | `content/languages/<code>.json` |
 | Topic prose, page metadata, learning content, or an article | Canonical `library/<topic>/` Markdown |
 | Homepage copy and card selection | `settings/home.json` and referenced `library/pages/*.md` |
-| Hero slides and configuration | `library/hero/default.hero.md` |
+| Hero slides and configuration | `settings/hero.json` and referenced `library/hero/*.md` |
 | Menus/footer destinations | `settings/navigation.json` |
 | Official channels and verified contact data | `library/connect/` and `library/branches/` |
 | Public action routing | `settings/public_actions.json` and the owning topic source |
