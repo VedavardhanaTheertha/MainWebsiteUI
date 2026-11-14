@@ -18,55 +18,97 @@ export default function PrivacyPage() {
         </header>
 
         <div className="font-body text-[var(--color-text-secondary)] leading-relaxed space-y-6">
+          <p>
+            <LocalizedCopy path={["pages", "local_copy", "privacy_intro"]} />
+          </p>
+
           <section>
-            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "privacy_heading_1"]} /></h2>
-            <p>
-              <LocalizedCopy path={["pages", "local_copy", "privacy_collect"]} />
-            </p>
+            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
+              <LocalizedCopy path={["pages", "local_copy", "privacy_heading_1"]} />
+            </h2>
+            <div className="space-y-3">
+              <p>
+                <strong className="text-[var(--color-text-primary)]">
+                  <LocalizedCopy path={["pages", "local_copy", "privacy_collect_personal_label"]} />
+                </strong>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_collect_personal"]} />
+              </p>
+              <p>
+                <strong className="text-[var(--color-text-primary)]">
+                  <LocalizedCopy path={["pages", "local_copy", "privacy_collect_transaction_label"]} />
+                </strong>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_collect_transaction"]} />
+              </p>
+              <p>
+                <strong className="text-[var(--color-text-primary)]">
+                  <LocalizedCopy path={["pages", "local_copy", "privacy_collect_technical_label"]} />
+                </strong>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_collect_technical"]} />
+              </p>
+            </div>
           </section>
 
           <section>
-            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "privacy_heading_2"]} /></h2>
+            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
+              <LocalizedCopy path={["pages", "local_copy", "privacy_heading_2"]} />
+            </h2>
             <ul className="list-disc pl-5 space-y-1.5">
-              <li><LocalizedCopy path={["pages", "local_copy", "privacy_process"]} /></li>
-              <li><LocalizedCopy path={["pages", "detected", "privacy_updates"]} /></li>
-              <li><LocalizedCopy path={["pages", "local_copy", "privacy_obligations"]} /></li>
+              <li>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_use_1"]} />
+              </li>
+              <li>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_use_2"]} />
+              </li>
+              <li>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_use_3"]} />
+              </li>
             </ul>
           </section>
 
           <section>
-            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "privacy_heading_3"]} /></h2>
-            <p>
-              <LocalizedCopy path={["pages", "local_copy", "privacy_sharing"]} />
-            </p>
+            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
+              <LocalizedCopy path={["pages", "local_copy", "privacy_heading_3"]} />
+            </h2>
+            <div className="space-y-3">
+              <p>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_security_1"]} />
+              </p>
+              <p>
+                <LocalizedCopy path={["pages", "local_copy", "privacy_security_2"]} />
+              </p>
+            </div>
           </section>
 
           <section>
-            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "privacy_heading_4"]} /></h2>
+            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
+              <LocalizedCopy path={["pages", "local_copy", "privacy_heading_4"]} />
+            </h2>
             <p>
-              <LocalizedCopy path={["pages", "local_copy", "privacy_cookies"]} />
+              <LocalizedCopy path={["pages", "local_copy", "privacy_localization"]} />
             </p>
           </section>
 
-          <section>
-            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "privacy_heading_5"]} /></h2>
-            <p>
-              <LocalizedCopy path={["pages", "local_copy", "privacy_rights_before"]} />{" "}
-              <a href="mailto:info@shiroormatha.org" className="text-[var(--color-text-brand)] hover:underline">
-                <LocalizedCopy path={["pages", "local_copy", "legal_info_email"]} />
-              </a>{" "}
-              <LocalizedCopy path={["pages", "local_copy", "privacy_rights_after"]} />
+          <section className="pt-4 border-t border-[var(--color-border-subtle)]">
+            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3">
+              <LocalizedCopy path={["pages", "local_copy", "legal_contact_heading"]} />
+            </h2>
+            <p className="mb-2">
+              <LocalizedCopy path={["pages", "local_copy", "legal_contact_intro"]} />
             </p>
-          </section>
-
-          <section>
-            <h2 className="font-display font-semibold text-[var(--color-text-primary)] text-xl mb-3"><LocalizedCopy path={["pages", "local_copy", "privacy_heading_6"]} /></h2>
-            <p>
-              <LocalizedCopy path={["pages", "local_copy", "privacy_contact"]} />{" "}
-              <a href="mailto:privacy@shiroormatha.org" className="text-[var(--color-text-brand)] hover:underline">
-                <LocalizedCopy path={["pages", "local_copy", "privacy_email"]} />
-              </a>{" "}
-            </p>
+            <div className="text-sm space-y-1 text-[var(--color-text-secondary)]">
+              <p className="font-medium text-[var(--color-text-primary)]">
+                <LocalizedCopy path={["pages", "local_copy", "legal_contact_name"]} />
+              </p>
+              <p>
+                <LocalizedCopy path={["pages", "local_copy", "legal_contact_address"]} />
+              </p>
+              <p>
+                <LocalizedCopy path={["pages", "local_copy", "legal_contact_email_label"]} />
+                <a href="mailto:support@shiroormatha.org" className="text-[var(--color-text-brand)] hover:underline">
+                  <LocalizedCopy path={["pages", "local_copy", "legal_support_email"]} />
+                </a>
+              </p>
+            </div>
           </section>
         </div>
       </div>
