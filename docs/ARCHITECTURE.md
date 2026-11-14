@@ -183,7 +183,8 @@ cards. Card titles, descriptions, images, types, destinations, and footnotes bel
 in those multilingual Markdown records, not repeated in settings.
 
 The five `icon_carousel` links use equal-width grid columns without horizontal
-scrolling, fixed at the bottom of the home screen to remain consistently visible.
+scrolling, fixed at the bottom of the home screen on mobile and tablet viewports
+(hidden on desktop at `80rem` and above where the full top navigation bar is active).
 Icons scale from 44px on narrow phones to 54px on larger screens, with accessible
 labels and touch-friendly targets. The six-card `bottom_carousel` is a separate collection.
 

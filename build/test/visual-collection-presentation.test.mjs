@@ -159,6 +159,7 @@ test("homepage icons use five shrinkable columns with accessible icon links with
     "next/link": { default: ({ href, ...props }) => createElement("a", { href, ...props }) },
   }).default;
   const html = renderToStaticMarkup(createElement(HomeTiles));
+  assert.match(html, /class="xl:hidden fixed bottom-0/);
   assert.match(html, /data-carousel="icon_carousel" class="grid grid-cols-5 /);
   assert.equal((html.match(/<a /g) ?? []).length, 5);
   assert.equal((html.match(/min-w-0 min-h-11/g) ?? []).length, 5);
