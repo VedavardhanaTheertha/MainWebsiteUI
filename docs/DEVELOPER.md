@@ -115,7 +115,7 @@ narrow screens, both languages, and forced-color mode.
 Older complete saved UI configurations inherit new tile fields and clean up
 obsolete options while preserving their existing preferences; other missing fields
 remain invalid.
-The hero title stays over its image without a background panel; the standalone generated hero follows the same layout.
+The hero title stays over its image with text shadow and an upward gradient shadow from the bottom for contrast over bright photos, without a solid background panel; the standalone generated hero follows the same layout.
 **Tile text panel opacity (%)** controls the tile background from transparent (0) to opaque (100),
 defaulting to 40 in `presentation.tileOverlayOpacity`. Apply and reload to save
 it. Text shadows aid readability, but contrast depends on the photograph and opacity.

@@ -143,7 +143,7 @@ h6 {
   padding: 0;
 }
 
-.content-image-frame>.content-image-foreground {
+.content-image-frame > .content-image-foreground {
   padding: 8px;
 }
 
@@ -157,7 +157,7 @@ h6 {
   z-index: 1;
 }
 
-.content-image-artwork>.content-image-foreground {
+.content-image-artwork > .content-image-foreground {
   display: block;
   width: 100%;
   height: auto;
@@ -166,7 +166,7 @@ h6 {
 
 .hero-text-overlay {
   color: #fff8ed;
-  text-shadow: 0 1px 4px rgb(0 0 0 / 70%);
+  text-shadow: 0 1px 4px rgb(0 0 0 / 70%), 0 2px 10px rgb(0 0 0 / 60%);
 }
 
 /* Skeleton Shimmer Loading States */
@@ -203,7 +203,7 @@ h6 {
   padding: 6rem 0 0;
 }
 
-.visual-tile>.visual-tile-art {
+.visual-tile > .visual-tile-art {
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -213,7 +213,7 @@ h6 {
   border-radius: 0;
 }
 
-.visual-tile>.visual-tile-body {
+.visual-tile > .visual-tile-body {
   position: static;
   flex: 0 0 auto;
   min-width: 0;
@@ -225,43 +225,43 @@ h6 {
   overflow-wrap: anywhere;
 }
 
-.visual-tile>.visual-tile-art :is(.content-image-foreground, .content-image-backdrop) {
+.visual-tile > .visual-tile-art :is(.content-image-foreground, .content-image-backdrop) {
   object-position: center top;
 }
 
-.visual-tile>.visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
+.visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
   color: #fff8ed;
 }
 
-.visual-tile>.visual-tile-body :where(h2, h3) {
+.visual-tile > .visual-tile-body :where(h2, h3) {
   display: block;
   overflow: visible;
   -webkit-line-clamp: unset;
 }
 
-.visual-tile>.visual-tile-body .visual-tile-badge {
+.visual-tile > .visual-tile-body .visual-tile-badge {
   background: rgb(20 12 4 / calc(var(--tile-overlay-opacity, 0.4) * 0.625));
 }
 
-.visual-tile>.visual-tile-body a {
+.visual-tile > .visual-tile-body a {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-.visual-tile>.visual-tile-body :where(a, button):focus-visible {
+.visual-tile > .visual-tile-body :where(a, button):focus-visible {
   outline-color: #fff8ed;
 }
 
 @media (forced-colors: active) {
-  .visual-tile>.visual-tile-body {
+  .visual-tile > .visual-tile-body {
     background: Canvas;
   }
 
-  .visual-tile>.visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
+  .visual-tile > .visual-tile-body :where(h2, h3, p, span, strong, dt, dd, a) {
     color: CanvasText;
   }
 
-  .visual-tile>.visual-tile-body .visual-tile-badge {
+  .visual-tile > .visual-tile-body .visual-tile-badge {
     background: Canvas;
   }
 }

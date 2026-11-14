@@ -112,7 +112,7 @@ export default function HeroCarousel() {
           })}
         </div>
 
-        <div className="hero-text-overlay pointer-events-none absolute inset-x-0 bottom-0 px-6 pb-6 sm:pb-8 pt-8 text-center">
+        <div className="hero-text-overlay pointer-events-none absolute inset-x-0 bottom-0 px-6 pb-6 sm:pb-8 pt-16 sm:pt-20 text-center bg-gradient-to-t from-black/75 via-black/35 to-transparent">
           <h1
             className="font-display text-[26px] lg:text-4xl leading-tight whitespace-pre-line text-[#fff8ed] drop-shadow-md pointer-events-auto"
           >
