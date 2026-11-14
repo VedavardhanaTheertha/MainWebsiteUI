@@ -252,7 +252,8 @@ illustrations retain their image-relative annotation coordinates. Logos, QR code
 functional icons (including failed-image placeholders), and full-screen album playback
 retain their own presentation.
 The hero title is always overlaid on its image, independently of the tile option,
-using warm-white text with a subtle text shadow and no background panel. The standalone
+using warm-white text with text shadow and an upward gradient shadow from the bottom
+for high-contrast legibility over light artwork (without a solid background panel). The standalone
 generated hero mirrors that overlay and the preference-gated two-layer image treatment.
 Shared featured/collection presentation variants preserve their distinct layouts
 while keeping spacing, controls, focus, and result states consistent. Policy text
