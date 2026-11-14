@@ -183,7 +183,9 @@ cards. Card titles, descriptions, images, types, destinations, and footnotes bel
 in those multilingual Markdown records, not repeated in settings.
 
 The five `icon_carousel` links use equal-width grid columns without horizontal
-scrolling, fixed at the bottom of the home screen to remain consistently visible.
+scrolling, fixed at the bottom of the home screen on mobile and tablet viewports
+(hidden on desktop at `80rem` and above where the full top navigation bar is active).
+Each item displays a rounded icon tile with its localized title label below.
 Icons scale from 44px on narrow phones to 54px on larger screens, with accessible
 labels and touch-friendly targets. The six-card `bottom_carousel` is a separate collection.
 
@@ -251,7 +253,8 @@ illustrations retain their image-relative annotation coordinates. Logos, QR code
 functional icons (including failed-image placeholders), and full-screen album playback
 retain their own presentation.
 The hero title is always overlaid on its image, independently of the tile option,
-using warm-white text with a subtle text shadow and no background panel. The standalone
+using warm-white text with text shadow and an upward gradient shadow from the bottom
+for high-contrast legibility over light artwork (without a solid background panel). The standalone
 generated hero mirrors that overlay and the preference-gated two-layer image treatment.
 Shared featured/collection presentation variants preserve their distinct layouts
 while keeping spacing, controls, focus, and result states consistent. Policy text
