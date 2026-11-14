@@ -26,30 +26,30 @@ const TONES: Record<HomeIconCard["tone"], { bg: string; color: string }> = {
 export default function HomeTiles() {
   const { tr } = useLang();
   return (
-    <div className="fixed bottom-0 inset-x-0 z-30 bg-[var(--color-cream)]/80 backdrop-blur-md border-t border-[var(--color-line)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-      <div className="max-w-7xl mx-auto">
-        <section data-carousel="icon_carousel" className="grid grid-cols-5 gap-1.5 px-3 py-2 sm:gap-3 sm:px-3.5">
-          {tr.home.icon_carousel.map((t) => {
-            const Icon = ICONS[t.icon];
-            const tone = TONES[t.tone];
-            return (
-              <Link
-                key={t.id}
-                href={t.url}
-                aria-label={t.title}
-                className="min-w-0 min-h-11 flex items-center justify-center rounded-[17px] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
-              >
-                <span
-                  className="size-11 shrink-0 rounded-[17px] flex items-center justify-center transition-transform active:scale-[.93] min-[360px]:size-12 sm:size-[54px]"
-                  style={{ background: tone.bg, color: tone.color }}
+      <div className="xl:hidden fixed bottom-0 inset-x-0 z-30 bg-[var(--color-cream)]/80 backdrop-blur-md border-t border-[var(--color-line)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <div className="max-w-7xl mx-auto">
+          <section data-carousel="icon_carousel" className="grid grid-cols-5 gap-1.5 px-3 py-2 sm:gap-3 sm:px-3.5">
+            {tr.home.icon_carousel.map((t) => {
+              const Icon = ICONS[t.icon];
+              const tone = TONES[t.tone];
+              return (
+                <Link
+                  key={t.id}
+                  href={t.url}
+                  aria-label={t.title}
+                  className="min-w-0 min-h-11 flex items-center justify-center rounded-[17px] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                 >
-                  <Icon size={22} />
-                </span>
-              </Link>
-            );
-          })}
-        </section>
+                  <span
+                    className="size-11 shrink-0 rounded-[17px] flex items-center justify-center transition-transform active:scale-[.93] min-[360px]:size-12 sm:size-[54px]"
+                    style={{ background: tone.bg, color: tone.color }}
+                  >
+                    <Icon size={22} />
+                  </span>
+                </Link>
+              );
+            })}
+          </section>
+        </div>
       </div>
-    </div>
-  );
+      );
 }
