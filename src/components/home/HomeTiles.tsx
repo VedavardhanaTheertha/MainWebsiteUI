@@ -17,10 +17,10 @@ const ICONS: Record<HomeIconCard["icon"], LucideIcon> = {
 
 const TONES: Record<HomeIconCard["tone"], { bg: string; color: string }> = {
   saffron: { bg: "var(--color-saffron-50)", color: "var(--color-saffron-600)" },
-  green: { bg: "var(--color-success-50)", color: "var(--color-success-500)" },
-  amber: { bg: "var(--color-warning-50)", color: "var(--color-warning-500)" },
-  rose: { bg: "var(--color-danger-50)", color: "var(--color-danger-500)" },
-  plum: { bg: "var(--color-plum-50)", color: "var(--color-plum-500)" },
+  green: { bg: "var(--color-saffron-50)", color: "var(--color-saffron-600)" },
+  amber: { bg: "var(--color-saffron-50)", color: "var(--color-saffron-600)" },
+  rose: { bg: "var(--color-saffron-50)", color: "var(--color-saffron-600)" },
+  plum: { bg: "var(--color-saffron-50)", color: "var(--color-saffron-600)" },
 };
 
 export default function HomeTiles() {
@@ -37,13 +37,16 @@ export default function HomeTiles() {
                   key={t.id}
                   href={t.url}
                   aria-label={t.title}
-                  className="min-w-0 min-h-11 flex items-center justify-center rounded-[17px] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
+                  className="min-w-0 min-h-11 flex flex-col items-center justify-center rounded-[17px] focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)]"
                 >
                   <span
                     className="size-11 shrink-0 rounded-[17px] flex items-center justify-center transition-transform active:scale-[.93] min-[360px]:size-12 sm:size-[54px]"
                     style={{ background: tone.bg, color: tone.color }}
                   >
                     <Icon size={22} />
+                  </span>
+                  <span className="mt-1 text-center font-body text-[10px] min-[360px]:text-[11px] sm:text-xs text-[var(--color-text-primary)] font-medium leading-tight whitespace-nowrap max-w-full">
+                    {t.title}
                   </span>
                 </Link>
               );

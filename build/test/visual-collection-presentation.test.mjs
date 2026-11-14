@@ -146,7 +146,7 @@ test("empty shell renders supplied rich content without adding display copy", ()
   assert.match(html, /<button type="button">Provided action<\/button>/);
 });
 
-test("homepage icons use five shrinkable columns with accessible icon links without text", () => {
+test("homepage icons use five shrinkable columns with accessible icon links and labels", () => {
   const items = Array.from({ length: 5 }, (_, index) => ({
     id: `page-${index}`,
     url: `/page-${index}`,
@@ -168,6 +168,7 @@ test("homepage icons use five shrinkable columns with accessible icon links with
   for (const { title, url } of items) {
     assert.ok(html.includes(`aria-label="${title}"`));
     assert.ok(html.includes(`href="${url}"`));
+    assert.ok(html.includes(title));
   }
 });
 
