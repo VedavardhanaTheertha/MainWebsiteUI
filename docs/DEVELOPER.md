@@ -231,9 +231,9 @@ Keep hero slide selection separate from card curation.
 
 Keep all five `icon_carousel` links visible together, without horizontal scrolling,
 at widths of 320px and above on mobile and tablet viewports (hidden at desktop widths
-of `80rem` and above). Use equal-width grid columns, accessible labels, and
-touch targets of at least 44px. Check both supported languages at phone, tablet,
-and touch-laptop widths; this strip is distinct from `bottom_carousel`.
+of `80rem` and above), displaying their icon and respective label text below.
+Use equal-width grid columns, accessible labels, and touch targets of at least 44px.
+Check both supported languages at phone, tablet, and touch-laptop widths; this strip is distinct from `bottom_carousel`.
 
 For Yajna figures, update the count and required `pages.local_copy.yajna_as_of_date`
 together in the announcement Markdown. All
