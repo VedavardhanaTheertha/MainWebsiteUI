@@ -23,9 +23,6 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
 
   if (!guru) return <div className="mx-auto max-w-4xl px-4 py-12"><h1 className="font-display text-2xl">{labels.not_found}</h1><Link href="/history/parampara" className="mt-4 inline-flex min-h-11 items-center text-[var(--color-text-brand)]">{labels.back_to_lineage}</Link></div>;
 
-  const positionLabel = guru.officialPosition === null
-    ? labels.founder
-    : `${labels.position} ${guru.officialPosition}`;
   const previousGuru = gurus[index - 1];
   const nextGuru = gurus[index + 1];
 
@@ -34,9 +31,6 @@ export default function ParamparaDetailPage({ id }: { id: string }) {
       <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-4 shadow-sm backdrop-blur-md sm:p-6 lg:p-8">
         <article className="mx-auto max-w-5xl">
         <header className="mb-8 border-b border-[var(--color-line)] pb-7 lg:mb-10 lg:pb-9">
-          <p className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
-            {positionLabel}
-          </p>
           <h1 className="mt-2 font-display text-3xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-4xl lg:text-5xl">
             {guru.name}
           </h1>

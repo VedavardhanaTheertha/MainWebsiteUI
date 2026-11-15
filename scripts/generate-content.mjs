@@ -22,7 +22,7 @@ import { loadUiElements, loadUiSettings } from "../build/ui-settings.mjs";
 import { loadActionSettings, resolveActionSettings, validateActionCopy } from "../build/action-settings.mjs";
 import { resolveFooterLinks } from "../build/footer-links.mjs";
 import { resolveImageUrl } from "../build/image-resolution.mjs";
-import { discoverParampara as discoverMarkdownParampara } from "../build/parampara-content.mjs";
+import { discoverParampara as discoverMarkdownParampara, loadParamparaIntro } from "../build/parampara-content.mjs";
 import { loadAuthoredLanguage } from "../build/authored-content.mjs";
 import { applyNavigation, loadNavigation } from "../build/navigation-content.mjs";
 import { isMachineContentValue as isMachineValue, isPreservedContentField } from "../build/content-values.mjs";
@@ -282,9 +282,30 @@ function placeholderParampara(parampara) {
   ]));
 }
 
-function writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang) {
+function placeholderParamparaIntro(intro) {
+  if (!intro) return null;
+  const placeholderLocalized = (value, key) => Object.fromEntries(
+    Object.entries(value).map(([code, text]) => [code, makePlaceholder(`${key}.${code}`, text, code)])
+  );
+  return {
+    title: placeholderLocalized(intro.title, "parampara.intro.title"),
+    detailsMarkdown: placeholderLocalized(intro.detailsMarkdown, "parampara.intro.details"),
+  };
+}
+
+function writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang, paramparaIntro, alternateParamparaIntro) {
   const dir = path.join(rootDir, "src", "gen", "parampara");
   mkdirSync(dir, { recursive: true });
+
+  const renderIntro = (intro) => intro ? {
+    title: intro.title,
+    detailsHtml: {
+      en: renderMarkdown(intro.detailsMarkdown.en),
+      kn: renderMarkdown(intro.detailsMarkdown.kn),
+    },
+  } : null;
+  const renderedIntro = renderIntro(paramparaIntro);
+  const renderedAlternateIntro = alternateParamparaIntro ? renderIntro(alternateParamparaIntro) : null;
 
   const renderParampara = (itemsByLanguage) => Object.fromEntries(Object.entries(itemsByLanguage).map(([code, items]) => [
     code,
@@ -309,16 +330,22 @@ function writeParamparaArtifacts(parampara, alternateParampara, content, default
     `  references?: Array<{ label: string; href: string }>;\n` +
     `  relatedPlaces?: Array<{ label: string; href: string }>;\n` +
     `  relatedWorks?: Array<{ label: string; href: string }>;\n` +
+    `}\n` +
+    `export interface ParamparaIntroRecord {\n` +
+    `  title: { en: string; kn: string; [language: string]: string };\n` +
+    `  detailsHtml: { en: string; kn: string; [language: string]: string };\n` +
     `}\n\n` +
     `export const paramparaByLanguage = ${JSON.stringify(rendered, null, 2)} as unknown as Record<string, ParamparaGuru[]>;\n` +
-    `export const alternateParamparaByLanguage = ${JSON.stringify(renderedAlternate, null, 2)} as unknown as Record<string, ParamparaGuru[]> | null;\n`;
+    `export const alternateParamparaByLanguage = ${JSON.stringify(renderedAlternate, null, 2)} as unknown as Record<string, ParamparaGuru[]> | null;\n` +
+    `export const paramparaIntro = ${JSON.stringify(renderedIntro, null, 2)} as unknown as ParamparaIntroRecord | null;\n` +
+    `export const alternateParamparaIntro = ${JSON.stringify(renderedAlternateIntro, null, 2)} as unknown as ParamparaIntroRecord | null;\n`;
   writeFileSync(path.join(dir, "data.ts"), generated, "utf8");
 
   const labels = content[defaultLang].pages.parampara;
   const gurus = rendered[defaultLang];
   const cards = gurus.map((guru) => `
       <button class="guru" data-id="${escapeHtml(guru.id)}">
-        <span class="position">${escapeHtml(guru.officialPosition === null ? labels.founder : `${labels.position} ${guru.officialPosition}`)}</span>
+        ${guru.officialPosition === null ? `<span class="position">${escapeHtml(labels.founder)}</span>` : ""}
         <strong>${escapeHtml(guru.name)}</strong>
         ${guru.timePeriod ? `<small>${escapeHtml(guru.timePeriod)}</small>` : ""}
         <span class="summary">${escapeHtml(guru.summary)}</span>
@@ -334,7 +361,7 @@ function writeParamparaArtifacts(parampara, alternateParampara, content, default
 </style></head><body><main class="wrap"><header><h1>${escapeHtml(labels.title)}</h1><p class="intro">${escapeHtml(labels.intro)}</p></header><div class="grid">${cards}
 </div></main><div class="modal" role="dialog" aria-modal="true"><div class="panel"><button class="close" aria-label="${escapeHtml(labels.close)}">&times;</button><p class="position modal-position"></p><h2></h2><p class="details modal-summary"></p><div class="details modal-details" hidden></div><button class="action">${escapeHtml(labels.see_more)}</button></div></div><script>
 const byLanguage=${payload};const labelsByLanguage=${labelPayload};const modal=document.querySelector('.modal');const grid=document.querySelector('.grid');const title=modal.querySelector('h2');const position=modal.querySelector('.modal-position');const summary=modal.querySelector('.modal-summary');const details=modal.querySelector('.modal-details');const action=modal.querySelector('.action');let gurus;let labels;let selected;
-const positionText=guru=>guru.officialPosition===null?labels.founder:labels.position+' '+guru.officialPosition;const openGuru=guru=>{selected=guru;title.textContent=guru.name;position.textContent=positionText(guru);summary.textContent=guru.summary;summary.hidden=false;details.hidden=true;details.innerHTML=guru.detailsHtml||'<p>'+labels.details_placeholder+'</p>';action.hidden=false;action.textContent=labels.see_more;modal.classList.add('open')};const render=lang=>{if(!byLanguage[lang])lang='${escapeHtml(defaultLang)}';gurus=byLanguage[lang];labels=labelsByLanguage[lang];document.documentElement.lang=lang;document.title=labels.title;document.querySelector('h1').textContent=labels.title;document.querySelector('.intro').textContent=labels.intro;modal.querySelector('.close').setAttribute('aria-label',labels.close);grid.replaceChildren(...gurus.map(guru=>{const card=document.createElement('button');card.className='guru';card.dataset.id=guru.id;const pos=document.createElement('span');pos.className='position';pos.textContent=positionText(guru);const name=document.createElement('strong');name.textContent=guru.name;card.append(pos,name);if(guru.timePeriod){const time=document.createElement('small');time.textContent=guru.timePeriod;card.append(time)}const text=document.createElement('span');text.className='summary';text.textContent=guru.summary;card.append(text);card.addEventListener('click',()=>openGuru(guru));return card}))};
+const positionText=guru=>guru.officialPosition===null?labels.founder:'';const openGuru=guru=>{selected=guru;title.textContent=guru.name;position.textContent=positionText(guru);summary.textContent=guru.summary;summary.hidden=false;details.hidden=true;details.innerHTML=guru.detailsHtml||'<p>'+labels.details_placeholder+'</p>';action.hidden=false;action.textContent=labels.see_more;modal.classList.add('open')};const render=lang=>{if(!byLanguage[lang])lang='${escapeHtml(defaultLang)}';gurus=byLanguage[lang];labels=labelsByLanguage[lang];document.documentElement.lang=lang;document.title=labels.title;document.querySelector('h1').textContent=labels.title;document.querySelector('.intro').textContent=labels.intro;modal.querySelector('.close').setAttribute('aria-label',labels.close);grid.replaceChildren(...gurus.map(guru=>{const card=document.createElement('button');card.className='guru';card.dataset.id=guru.id;const pos=document.createElement('span');pos.className='position';pos.textContent=positionText(guru);const name=document.createElement('strong');name.textContent=guru.name;card.append(pos,name);if(guru.timePeriod){const time=document.createElement('small');time.textContent=guru.timePeriod;card.append(time)}const text=document.createElement('span');text.className='summary';text.textContent=guru.summary;card.append(text);card.addEventListener('click',()=>openGuru(guru));return card}))};
 render(localStorage.getItem('shiroor-lang')||'${escapeHtml(defaultLang)}');addEventListener('storage',event=>{if(event.key==='shiroor-lang')render(event.newValue)});addEventListener('site-language-change',()=>render(localStorage.getItem('shiroor-lang')));action.addEventListener('click',()=>{summary.hidden=true;details.hidden=false;action.hidden=true});const close=()=>modal.classList.remove('open');modal.querySelector('.close').addEventListener('click',close);modal.addEventListener('click',event=>{if(event.target===modal)close()});addEventListener('keydown',event=>{if(event.key==='Escape')close()});
 </script></body></html>\n`;
   writeFileSync(path.join(dir, "index.html"), html, "utf8");
@@ -510,11 +537,25 @@ function placeholderConnectContent(connectContent) {
 }
 
 function discoverStoryContent() {
+  const parseIntro = (folderName) => {
+    const filePath = path.join(rootDir, "library", folderName, "index.md");
+    if (!existsSync(filePath)) return null;
+    const { metadata, body } = parseLibraryFrontmatter(filePath);
+    const [englishDetails, kannadaDetails = englishDetails] = body.split(/^\s*---\s*$/mu, 2);
+    return {
+      title: requireLocalized(metadata.title, "title", filePath),
+      detailsMarkdown: {
+        en: englishDetails?.trim() || "",
+        kn: kannadaDetails?.trim() || englishDetails?.trim() || "",
+      },
+    };
+  };
+
   const parseFolder = (folderName) => {
     const dir = path.join(rootDir, "library", folderName);
     if (!existsSync(dir)) return [];
     return readdirSync(dir)
-      .filter((file) => file.endsWith(".md") && file !== "_index.md")
+      .filter((file) => file.endsWith(".md") && !file.startsWith("index.") && file !== "index.md" && !file.startsWith("_index"))
       .sort()
       .map((file) => {
         const filePath = path.join(dir, file);
@@ -545,6 +586,8 @@ function discoverStoryContent() {
   return {
     mathas: parseFolder("mathas"),
     deities: parseFolder("deities"),
+    mathasIntro: parseIntro("mathas"),
+    deitiesIntro: parseIntro("deities"),
   };
 }
 
@@ -552,6 +595,10 @@ function placeholderStoryContent(storyContent) {
   const placeholderLocalized = (value, key) => Object.fromEntries(
     Object.entries(value).map(([code, text]) => [code, makePlaceholder(`${key}.${code}`, text, code)])
   );
+  const transformIntro = (intro, prefix) => intro ? {
+    title: placeholderLocalized(intro.title, `${prefix}.title`),
+    detailsMarkdown: placeholderLocalized(intro.detailsMarkdown, `${prefix}.details`),
+  } : null;
   const transformList = (list, prefix) => list.map((item, index) => ({
     ...item,
     title: placeholderLocalized(item.title, `${prefix}.${index}.title`),
@@ -567,12 +614,21 @@ function placeholderStoryContent(storyContent) {
   return {
     mathas: transformList(storyContent.mathas, "story.mathas"),
     deities: transformList(storyContent.deities, "story.deities"),
+    mathasIntro: transformIntro(storyContent.mathasIntro, "story.mathas.intro"),
+    deitiesIntro: transformIntro(storyContent.deitiesIntro, "story.deities.intro"),
   };
 }
 
 function writeStoryArtifacts(storyContent, alternateStoryContent) {
   const dir = path.join(rootDir, "src", "gen", "story");
   mkdirSync(dir, { recursive: true });
+  const renderIntro = (intro) => intro ? {
+    title: intro.title,
+    detailsHtml: {
+      en: renderMarkdown(intro.detailsMarkdown.en),
+      kn: renderMarkdown(intro.detailsMarkdown.kn),
+    },
+  } : null;
   const renderContent = (source) => ({
     mathas: source.mathas.map(({ detailsMarkdown, ...item }) => ({
       ...item,
@@ -588,6 +644,8 @@ function writeStoryArtifacts(storyContent, alternateStoryContent) {
         kn: renderMarkdown(detailsMarkdown.kn),
       },
     })),
+    mathasIntro: renderIntro(source.mathasIntro),
+    deitiesIntro: renderIntro(source.deitiesIntro),
   });
   const rendered = renderContent(storyContent);
   const alternate = alternateStoryContent ? renderContent(alternateStoryContent) : null;
@@ -597,11 +655,18 @@ function writeStoryArtifacts(storyContent, alternateStoryContent) {
     `  id: string; title: LocalizedText; subtitle?: LocalizedText; summary: LocalizedText;\n` +
     `  image: string; era?: LocalizedText; deity?: LocalizedText; establishedBy?: LocalizedText;\n` +
     `  attributes?: LocalizedText; sanctum?: LocalizedText; detailsHtml: LocalizedText;\n` +
+    `}\n` +
+    `export interface StoryIntroRecord {\n` +
+    `  title: LocalizedText; detailsHtml: LocalizedText;\n` +
     `}\n\n` +
     `export const mathas = ${JSON.stringify(rendered.mathas, null, 2)} as unknown as StoryItemRecord[];\n` +
     `export const deities = ${JSON.stringify(rendered.deities, null, 2)} as unknown as StoryItemRecord[];\n` +
+    `export const mathasIntro = ${JSON.stringify(rendered.mathasIntro, null, 2)} as unknown as StoryIntroRecord | null;\n` +
+    `export const deitiesIntro = ${JSON.stringify(rendered.deitiesIntro, null, 2)} as unknown as StoryIntroRecord | null;\n` +
     `export const alternateMathas = ${JSON.stringify(alternate?.mathas ?? null, null, 2)} as unknown as StoryItemRecord[] | null;\n` +
-    `export const alternateDeities = ${JSON.stringify(alternate?.deities ?? null, null, 2)} as unknown as StoryItemRecord[] | null;\n`;
+    `export const alternateDeities = ${JSON.stringify(alternate?.deities ?? null, null, 2)} as unknown as StoryItemRecord[] | null;\n` +
+    `export const alternateMathasIntro = ${JSON.stringify(alternate?.mathasIntro ?? null, null, 2)} as unknown as StoryIntroRecord | null;\n` +
+    `export const alternateDeitiesIntro = ${JSON.stringify(alternate?.deitiesIntro ?? null, null, 2)} as unknown as StoryIntroRecord | null;\n`;
   writeFileSync(path.join(dir, "data.ts"), generated, "utf8");
 }
 
@@ -1133,8 +1198,15 @@ writeFileSync(
     `export const paymentQrDataUrl = ${JSON.stringify(paymentQrDataUrl)};\n`,
   "utf8",
 );
+const discoveredParamparaIntro = loadParamparaIntro(rootDir);
+const placeholderParamparaIntroContent = placeholderParamparaIntro(discoveredParamparaIntro);
+const paramparaIntro = mode.defaultVariant === "real" ? discoveredParamparaIntro : placeholderParamparaIntroContent;
+const alternateParamparaIntro = mode.switchable
+  ? mode.defaultVariant === "real" ? placeholderParamparaIntroContent : discoveredParamparaIntro
+  : null;
+
 writeHeroImages(hero, content, defaultLang, env.base_path ?? "");
-writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang);
+writeParamparaArtifacts(parampara, alternateParampara, content, defaultLang, paramparaIntro, alternateParamparaIntro);
 writeConnectArtifacts(connectContent, alternateConnectContent);
 
 const discoveredStoryContent = discoverStoryContent();
