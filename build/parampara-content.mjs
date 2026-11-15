@@ -231,7 +231,7 @@ export function discoverParampara(rootDir, languageCodes, defaultLang) {
   }
   const directory = path.join(rootDir, "library", "parampara");
   if (!existsSync(directory)) throw new Error(`${directory}: initialize the library submodule.`);
-  const files = readdirSync(directory).filter((name) => name.endsWith(".md"));
+  const files = readdirSync(directory).filter((name) => name.endsWith(".md") && !name.startsWith("index.") && name !== "index.md" && !name.startsWith("_index"));
   const items = [];
   const prefixes = new Set();
   for (const contentFile of files) {
@@ -266,4 +266,21 @@ export function discoverParampara(rootDir, languageCodes, defaultLang) {
       return localizeGuru(base[index], code);
     }),
   ]));
+}
+
+export function loadParamparaIntro(rootDir) {
+  const filePath = path.join(rootDir, "library", "parampara", "index.md");
+  if (!existsSync(filePath)) return null;
+  const { metadata, body } = parseMarkdownFrontmatter(readFileSync(filePath, "utf8"), filePath);
+  const [englishDetails, kannadaDetails = englishDetails] = body.split(/^\s*---\s*$/mu, 2);
+  return {
+    title: {
+      en: (typeof metadata.title === "object" ? metadata.title?.en : metadata["title-en"]) || "",
+      kn: (typeof metadata.title === "object" ? metadata.title?.kn : metadata["title-kn"]) || "",
+    },
+    detailsMarkdown: {
+      en: englishDetails?.trim() || "",
+      kn: kannadaDetails?.trim() || englishDetails?.trim() || "",
+    },
+  };
 }

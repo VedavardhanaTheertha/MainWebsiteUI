@@ -8,8 +8,12 @@ import { defaultContentMode, defaultLang } from "@/gen/content";
 import {
   mathas as defaultMathas,
   deities as defaultDeities,
+  mathasIntro as defaultMathasIntro,
+  deitiesIntro as defaultDeitiesIntro,
   alternateMathas,
   alternateDeities,
+  alternateMathasIntro,
+  alternateDeitiesIntro,
 } from "@/gen/story/data";
 import { useDialog } from "@/hooks/useDialog";
 import ParamparaBrowser from "@/components/ParamparaBrowser";
@@ -49,6 +53,17 @@ export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: S
 
   const mathas = contentMode !== defaultContentMode && alternateMathas ? alternateMathas : defaultMathas;
   const deities = contentMode !== defaultContentMode && alternateDeities ? alternateDeities : defaultDeities;
+  const mathasIntro = contentMode !== defaultContentMode && alternateMathasIntro ? alternateMathasIntro : defaultMathasIntro;
+  const deitiesIntro = contentMode !== defaultContentMode && alternateDeitiesIntro ? alternateDeitiesIntro : defaultDeitiesIntro;
+
+  const activeIntro = useMemo(() => {
+    const introRecord = activeTab === "mathas" ? mathasIntro : activeTab === "deities" ? deitiesIntro : null;
+    if (!introRecord) return null;
+    return {
+      title: introRecord.title[lang] ?? introRecord.title[defaultLang] ?? "",
+      html: introRecord.detailsHtml[lang] ?? introRecord.detailsHtml[defaultLang] ?? "",
+    };
+  }, [activeTab, deitiesIntro, lang, mathasIntro]);
 
   const visibleItems = useMemo(() => {
     const currentList = activeTab === "mathas" ? mathas : activeTab === "deities" ? deities : [];
@@ -193,6 +208,20 @@ export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: S
             aria-labelledby={`story-tab-${activeTab}`}
             className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-4 shadow-sm backdrop-blur-md sm:p-6 lg:p-8"
           >
+            {activeIntro && (
+              <section className="mb-6 lg:mb-8">
+                {activeIntro.title && (
+                  <h2 className="font-display text-xl font-bold text-[var(--color-text-primary)] lg:text-2xl mb-3">
+                    {activeIntro.title}
+                  </h2>
+                )}
+                <div
+                  className="space-y-3 font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)] [&>p]:mb-3 last:[&>p]:mb-0"
+                  dangerouslySetInnerHTML={{ __html: activeIntro.html }}
+                />
+              </section>
+            )}
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
               {visibleItems.map((item) => (
                 <button
@@ -237,9 +266,6 @@ export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: S
                     )}
                     <span className="mt-3 font-body text-caption leading-[1.55] text-[var(--color-text-secondary)] line-clamp-3">
                       {item.displaySummary}
-                    </span>
-                    <span className="mt-auto pt-3 text-xs font-semibold text-[var(--color-text-brand)] group-hover:underline">
-                      {storyCopy.view_details} →
                     </span>
                   </span>
                 </button>

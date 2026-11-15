@@ -7,7 +7,9 @@ import { ChevronLeft, ChevronRight, GitBranch, List, UserRound, X } from "lucide
 import { useLang } from "@/context/LanguageContext";
 import {
   alternateParamparaByLanguage,
+  alternateParamparaIntro,
   paramparaByLanguage,
+  paramparaIntro,
   type ParamparaGuru,
 } from "@/gen/parampara/data";
 import { defaultContentMode, defaultLang } from "@/gen/content";
@@ -33,10 +35,20 @@ export default function ParamparaBrowser({
   const parampara = contentMode !== defaultContentMode && alternateParamparaByLanguage
     ? alternateParamparaByLanguage
     : paramparaByLanguage;
+  const rawIntro = contentMode !== defaultContentMode && alternateParamparaIntro
+    ? alternateParamparaIntro
+    : paramparaIntro;
+
+  const activeIntro = useMemo(() => {
+    if (!rawIntro) return null;
+    return {
+      title: rawIntro.title[lang] ?? rawIntro.title[defaultLang] ?? "",
+      html: rawIntro.detailsHtml[lang] ?? rawIntro.detailsHtml[defaultLang] ?? "",
+    };
+  }, [rawIntro, lang]);
   const labels = tr.pages.parampara;
   const lineage = useMemo(() => parampara[lang] ?? parampara[defaultLang] ?? [], [parampara, lang]);
-  const founder = lineage.find((guru) => guru.officialPosition === null) ?? null;
-  const gurus = useMemo(() => lineage.filter((guru) => guru.officialPosition !== null), [lineage]);
+  const gurus = lineage;
   const [view, setView] = useState<"timeline" | "list">(initialView ?? browserDefaults.lineageView);
   const [query, setQuery] = useState("");
   const matches = useMiniSearch(gurus, query, { fields: ["name"] });
@@ -82,9 +94,6 @@ export default function ParamparaBrowser({
 
   const dialogRef = useDialog(Boolean(selected), closeGuru);
 
-  const positionLabel = (guru: ParamparaGuru) => guru.officialPosition === null
-    ? labels.founder
-    : `${labels.position} ${guru.officialPosition}`;
 
   const innerContent = (
     <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-4 shadow-sm backdrop-blur-md sm:p-6 lg:p-8">
@@ -99,40 +108,17 @@ export default function ParamparaBrowser({
         </header>
       )}
 
-        {founder && (
-          <section className="mb-6 border-y border-[var(--color-line-strong)] py-5 lg:mb-8 lg:py-7">
-            <div className="grid items-center gap-6 sm:grid-cols-[160px_1fr] lg:grid-cols-[210px_1fr] lg:gap-10">
-              {founder.fullImage && (
-                <div className="relative aspect-[4/5] w-36 overflow-hidden rounded-2xl bg-[var(--color-saffron-50)] sm:w-40 lg:w-[210px]">
-                  <ContentImage
-                    src={founder.fullImage}
-                    alt={founder.name}
-                    fill
-                    sizes="(max-width: 640px) 144px, (max-width: 1024px) 160px, 210px"
-                  />
-                </div>
-              )}
-              <div>
-                <p className="font-body text-badge font-bold uppercase tracking-[0.18em] text-[var(--color-text-brand)]">
-                  {labels.founder}
-                </p>
-                <h2 className="mt-2 font-display text-2xl font-bold leading-tight text-[var(--color-text-primary)] lg:text-4xl">
-                  {founder.name}
-                </h2>
-                {founder.timePeriod && (
-                  <p className="mt-1 font-body text-xs text-[var(--color-text-muted)]">{founder.timePeriod}</p>
-                )}
-                <p className="mt-4 max-w-3xl font-body text-[14px] leading-[1.75] text-[var(--color-text-secondary)] lg:text-[15px]">
-                  {founder.summary}
-                </p>
-                {founder.detailsHtml && (
-                  <div
-                    className="mt-4 max-w-3xl space-y-4 font-body text-[14px] leading-[1.75] text-[var(--color-text-secondary)] lg:text-[15px]"
-                    dangerouslySetInnerHTML={{ __html: founder.detailsHtml }}
-                  />
-                )}
-              </div>
-            </div>
+        {activeIntro && (
+          <section className="mb-6 lg:mb-8">
+            {activeIntro.title && (
+              <h2 className="font-display text-xl font-bold text-[var(--color-text-primary)] lg:text-2xl mb-3">
+                {activeIntro.title}
+              </h2>
+            )}
+            <div
+              className="space-y-3 font-body text-[14px] lg:text-[15px] leading-relaxed text-[var(--color-text-secondary)] [&>p]:mb-3 last:[&>p]:mb-0"
+              dangerouslySetInnerHTML={{ __html: activeIntro.html }}
+            />
           </section>
         )}
 
@@ -163,16 +149,16 @@ export default function ParamparaBrowser({
             </div>
           )}
           {showSearch && !visibleGurus.length && <div role="status" className="py-8"><p>{labels.no_results}</p>{query && <button type="button" onClick={() => setQuery("")} className="mt-3 min-h-11 text-[var(--color-text-brand)] underline">{labels.clear_search}</button>}</div>}
-          <ol className={view === "timeline" ? "ml-3 space-y-4 border-l-2 border-[var(--color-saffron-400)] pl-5" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"}>
+          <ol className={view === "timeline" ? "ml-3 space-y-2 sm:space-y-2.5 border-l-2 border-[var(--color-saffron-400)] pl-4 sm:pl-5" : "grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 sm:gap-2.5"}>
           {visibleGurus.map((guru) => (
-            <li key={guru.id} className={view === "timeline" ? "relative before:absolute before:-left-[27px] before:top-6 before:size-3 before:rounded-full before:bg-[var(--color-saffron-600)]" : ""}>
+            <li key={guru.id} className={view === "timeline" ? "relative before:absolute before:-left-[23px] sm:before:-left-[27px] before:top-4 sm:before:top-4.5 before:size-3 before:rounded-full before:bg-[var(--color-saffron-600)]" : ""}>
             <button
               type="button"
               onClick={() => openGuru(guru)}
               aria-pressed={selected?.id === guru.id}
-              className={`${guru.thumbnailImage ? "visual-tile " : ""}group grid min-h-36 w-full grid-cols-[80px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-[16px] shadow-sm hover:-translate-y-0.5 hover:border-[var(--color-saffron-400)] hover:shadow-md aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-all duration-300`}
+              className="group grid min-h-[72px] sm:min-h-[80px] w-full grid-cols-[64px_1fr] sm:grid-cols-[76px_1fr] overflow-hidden text-left bg-[var(--color-paper)] border border-[var(--color-line)] rounded-xl shadow-xs hover:-translate-y-0.5 hover:border-[var(--color-saffron-400)] hover:shadow-md aria-pressed:border-[var(--color-saffron-600)] aria-pressed:bg-[var(--color-saffron-50)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)] transition-all duration-200"
             >
-              <span className="visual-tile-art relative block h-full min-h-36 w-20 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105">
+              <span className="relative block h-full min-h-[72px] sm:min-h-[80px] w-16 sm:w-[76px] shrink-0 overflow-hidden bg-[radial-gradient(ellipse_at_top,var(--color-gold-100),var(--color-cream-soft))] [&_.content-image-foreground]:transition-transform [&_.content-image-foreground]:duration-500 [&_.content-image-foreground]:ease-out group-hover:[&_.content-image-foreground]:scale-105">
                 {guru.thumbnailImage ? (
                   <ContentImage
                     src={guru.thumbnailImage}
@@ -182,23 +168,22 @@ export default function ParamparaBrowser({
                   />
                 ) : (
                   <span className="grid h-full place-items-center text-[var(--color-saffron-400)]">
-                    <UserRound size={34} strokeWidth={1.4} aria-hidden="true" />
+                    <UserRound size={26} strokeWidth={1.4} aria-hidden="true" />
                   </span>
                 )}
               </span>
-              <span className="visual-tile-body flex min-w-0 flex-col p-3.5">
-                <span className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)] mb-2">
-                  {positionLabel(guru)}
-                </span>
-                <span className="font-display text-[17px] lg:text-[18px] font-bold leading-tight text-[var(--color-text-primary)] group-hover:text-[var(--color-text-brand)] transition-colors">
-                  {guru.name}
-                </span>
-                {guru.timePeriod && (
-                  <span className="font-body text-meta text-[var(--color-text-muted)] mt-1">
-                    {guru.timePeriod}
+              <span className="flex min-w-0 flex-col justify-center px-3 py-2 sm:px-3.5 sm:py-2.5">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                  <span className="font-display text-[15px] sm:text-[16px] lg:text-[17px] font-bold leading-snug text-[var(--color-text-primary)] group-hover:text-[var(--color-text-brand)] transition-colors truncate">
+                    {guru.name}
                   </span>
-                )}
-                <span className="mt-auto pt-3 font-body text-caption leading-[1.5] text-[var(--color-text-secondary)] line-clamp-2">
+                  {guru.timePeriod && (
+                    <span className="font-body text-xs text-[var(--color-text-muted)] shrink-0">
+                      {guru.timePeriod}
+                    </span>
+                  )}
+                </div>
+                <span className="mt-1 font-body text-caption sm:text-xs leading-[1.4] sm:leading-[1.45] text-[var(--color-text-secondary)] line-clamp-1 sm:line-clamp-2">
                   {guru.summary}
                 </span>
               </span>
@@ -233,9 +218,6 @@ export default function ParamparaBrowser({
             <header className="shrink-0 border-b border-[var(--color-line)] px-4 pb-3 pt-4 sm:px-6 sm:pt-5 lg:px-8">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="font-body text-badge font-bold uppercase tracking-[0.16em] text-[var(--color-text-brand)]">
-                    {positionLabel(selected)}
-                  </p>
                   <h2 id="parampara-dialog-title" className="mt-1 font-display text-xl font-bold leading-tight text-[var(--color-text-primary)] sm:text-2xl lg:text-3xl">
                     {selected.name}
                   </h2>
