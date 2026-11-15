@@ -851,8 +851,8 @@ function writeHeroImages(hero, content, lang, basePath) {
   const titleEn = escapeHtml(hero.title_en);
   const titleKn = escapeHtml(hero.title_kn);
   const activeTitle = lang === "kn" ? titleKn : titleEn;
-  const ctaEn = escapeHtml(content.en?.home?.hero_intro?.cta_label ?? "");
-  const ctaKn = escapeHtml(content.kn?.home?.hero_intro?.cta_label ?? ctaEn);
+  const ctaEn = escapeHtml(hero.cta_label_en ?? hero.cta_label ?? "");
+  const ctaKn = escapeHtml(hero.cta_label_kn ?? ctaEn);
   const activeCta = lang === "kn" ? ctaKn : ctaEn;
   const slides = hero.images.map((src, index) => {
     const slide = hero.slides?.[index];

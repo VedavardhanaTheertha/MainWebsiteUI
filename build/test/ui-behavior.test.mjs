@@ -99,7 +99,7 @@ async function mountComponent(file, options = {}) {
           nav: [{ key: "resources", label: "Resources", children: [{ key: "events", label: "Events", href: "/events" }] }],
           public_actions: { ...authoredCopy.public_actions, whatsapp_label: "WhatsApp" },
           announcement: { label: "notice", dismiss: "close", eyebrow: "open", title: "title", body: "body", cta: "go", href: "/events" },
-          home: { hero_intro: { cta_label: "go" } },
+          home: {},
         },
       }) };
       if (name === "@/gen/content") return {

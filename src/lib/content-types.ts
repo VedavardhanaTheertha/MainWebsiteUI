@@ -33,16 +33,7 @@ export interface FooterShape {
   social: (LinkRef & { connectId: string })[];
 }
 
-export interface HeroIntro {
-  title: string;
-  cta_label: string;
-  cta_href: string;
-  images: string[];
-}
-
 export interface HomeShape {
-  hero: { invocation: string; title: string; subtitle: string; body: string };
-  hero_intro: HeroIntro;
   top_carousel: HomePageCard[];
   icon_carousel: HomeIconCard[];
   bottom_carousel: HomePageCard[];
@@ -66,27 +57,14 @@ export interface FlatCopyKeys {
   meta_description: string;
   /** Search keywords. Held in content so they are placeholder-substituted outside production. */
   meta_keywords: string[];
-  nav_home: string;
-  nav_sevas: string;
-  nav_events: string;
-  nav_contact: string;
-  header_tagline: string;
-  donate: string;
-  scan_qr: string;
   offer_seva: string;
   qr_title: string;
   qr_subtitle: string;
-  footer_explore: string;
-  footer_policies: string;
-  footer_tagline: string;
-  footer_built: string;
-  footer_touch: string;
   sevas_label: string;
   sevas_title: string;
   sevas_subtitle: string;
   sevas_search: string;
   sevas_clear_search: string;
-  sevas_showing_template: string;
   sevas_empty_title: string;
   sevas_empty_sub: string;
   sevas_featured_title: string;
@@ -110,7 +88,6 @@ export interface FlatCopyKeys {
   sevas_description: string;
   sevas_significance: string;
   sevas_offer: string;
-  sevas_view_details: string;
   sevas_close: string;
   sevas_show_more?: string;
   show_more?: string;
@@ -118,25 +95,8 @@ export interface FlatCopyKeys {
   events_title: string;
   events_subtitle: string;
   events_upcoming: string;
-  events_milestones: string;
-  events_placeholder: string;
-  vol_label: string;
-  vol_title: string;
   vol_subtitle: string;
-  vol_why: string;
-  vol_roles: string;
-  vol_ready: string;
   vol_ready_body: string;
-  vol_register: string;
-  contact_label: string;
-  contact_title: string;
-  contact_subtitle: string;
-  contact_locations: string;
-  contact_map: string;
-  contact_enquiry: string;
-  contact_enquiry_sub: string;
-  contact_email_btn: string;
-  contact_call_btn: string;
 }
 
 export interface BhaktiPageContent {
@@ -598,7 +558,6 @@ export interface ContentShape extends FlatCopyKeys {
   events_exact: EventsExactShape;
   events_sections?: EventsSectionsShape;
   events_recurring?: string;
-  events_this_week?: string;
   events_all?: string;
   media: MediaShape;
   learn: LearnItem[];

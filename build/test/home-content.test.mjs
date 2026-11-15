@@ -67,13 +67,6 @@ test("home settings reject unknown fields and missing default language content",
   assert.throws(() => loadHomeContent(root, language), /default language .* is required/);
 });
 
-test("home settings reject unsafe navigation destinations", (t) => {
-  const { root, settings, save } = fixture(t);
-  settings.home[language].hero_intro.cta_href = "javascript:alert(1)";
-  save();
-  assert.throws(() => loadHomeContent(root, language), /expected a safe/);
-});
-
 test("page cards use canonical translated metadata, shared URLs/images and intentionally empty footnotes", () => {
   const pages = loadPageReferences(repository, language);
   for (const code of Object.keys(original.home)) {
