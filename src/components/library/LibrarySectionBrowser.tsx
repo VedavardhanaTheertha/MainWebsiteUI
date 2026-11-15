@@ -144,7 +144,7 @@ export function ArticleTile({
 }
 
 export default function LibrarySectionBrowser({ sectionId }: { sectionId: string }) {
-  const { lang, contentMode, tr } = useLang();
+  const { lang, contentMode, tr, isSectionPageEnabled, isSectionItemsEnabled } = useLang();
   const { readingSettings, collectionPagination } = useUiSettings();
   const reducedMotion = useReducedMotion();
   const copy = tr.library_browser;
@@ -154,6 +154,8 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
   const section = sections.find((entry) => entry.id === sectionId);
   const sectionCopy = tr.library_sections[sectionId];
   const isLiterature = ["mantra", "shastra", "jnana", "dharma"].includes(sectionId);
+  const pageEnabled = isSectionPageEnabled ? isSectionPageEnabled(sectionId, section?.enabled ?? false) : true;
+  const itemsEnabled = isSectionItemsEnabled ? isSectionItemsEnabled(sectionId, section?.enabled ?? false) : true;
 
   const [query, setQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
@@ -192,10 +194,13 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
   const localizedItems = useMemo(
     () => {
-      const items = section?.items.map((item) => localizeArticle(item, lang)) ?? [];
+      if (!pageEnabled || !itemsEnabled) return [];
+      const items = (section?.items ?? [])
+        .filter((item) => item.enabled || itemsEnabled)
+        .map((item) => localizeArticle(item, lang));
       return sectionId === "jnana" ? items.sort((a, b) => a.title.localeCompare(b.title, lang)) : items;
     },
-    [lang, section, sectionId],
+    [lang, section, sectionId, pageEnabled, itemsEnabled],
   );
 
   const allTags = useMemo(

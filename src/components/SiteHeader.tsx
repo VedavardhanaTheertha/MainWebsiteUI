@@ -15,8 +15,11 @@ type DropKey = string | null;
 export default function SiteHeader() {
   const pathname = usePathname();
   const { interactionSettings } = useUiSettings();
-  const { tr } = useLang();
+  const { tr, isRouteEnabled } = useLang();
   const NAV = tr.nav as unknown as NavItem[];
+  const visibleNav = isRouteEnabled
+    ? NAV.filter((item) => !item.href || isRouteEnabled(item.href))
+    : NAV;
   const [open, setOpen] = useState<DropKey>(null);
   const dialogsOpen = useDialogsOpen();
   const activeOpen = dialogsOpen ? null : open;
@@ -66,7 +69,7 @@ export default function SiteHeader() {
         {/* Nav */}
         <nav aria-label={tr.ui.primary_navigation} className="min-w-0 flex-1 flex justify-center">
           <ul className="flex flex-wrap items-center justify-center gap-0">
-            {NAV.map((item) => {
+            {visibleNav.map((item) => {
               const hasDropdown = !!(item.children && item.children.length > 0);
               const active = item.href ? isActive(item.href) : item.children?.some(i => isActive(i.href));
               return (

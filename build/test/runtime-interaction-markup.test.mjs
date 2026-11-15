@@ -145,6 +145,13 @@ test("language changes apply descriptor fonts and remove them for languages with
           { code: "fixture-b" },
         ],
       };
+      if (name === "@/lib/content-overrides") return {
+        useContentOverrides: () => ({
+          isSectionPageEnabled: () => true,
+          isSectionItemsEnabled: () => true,
+          isRouteEnabled: () => true,
+        }),
+      };
       throw new Error(`Unexpected import: ${name}`);
     },
   });

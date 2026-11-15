@@ -10,7 +10,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useDialogsOpen } from "@/hooks/useDialog";
 
 export default function HeroCarousel() {
-  const { lang, contentMode } = useLang();
+  const { lang, contentMode, isRouteEnabled } = useLang();
   const { heroSettings } = useUiSettings();
   const reducedMotion = useReducedMotion();
   const dialogsOpen = useDialogsOpen();
@@ -19,7 +19,12 @@ export default function HeroCarousel() {
   const hero = contentMode !== defaultContentMode && alternateHomeHero
     ? alternateHomeHero
     : homeHero;
-  const slides = hero.slides ?? [];
+  const allSlides = hero.slides ?? [];
+  const slides = allSlides.filter((slide) => {
+    if (slide.enabled === false && !isRouteEnabled) return false;
+    if (slide.href && isRouteEnabled && !isRouteEnabled(slide.href)) return false;
+    return true;
+  });
   const [i, setI] = useState(0);
   const [maxVisited, setMaxVisited] = useState(1);
   const [focused, setFocused] = useState(false);

@@ -20,8 +20,11 @@ export default function MobileHeader() {
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const navId = useId();
-  const { lang, setLang, tr, languages } = useLang();
+  const { lang, setLang, tr, languages, isRouteEnabled } = useLang();
   const NAV = tr.nav as unknown as NavItem[];
+  const visibleNav = isRouteEnabled
+    ? NAV.filter((item) => !item.href || isRouteEnabled(item.href))
+    : NAV;
 
   // The compact header has room for one button, so it cycles to the next
   // language rather than listing them all. With two languages this behaves
@@ -110,7 +113,7 @@ export default function MobileHeader() {
         <nav id="mobile-nav" aria-label={tr.ui.mobile_navigation}
           className="absolute top-full right-3 left-auto mt-1.5 w-max min-w-[11rem] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-[var(--color-saffron-600)] bg-[var(--color-paper)] shadow-2xl max-h-[calc(100dvh-5rem)] overflow-y-auto z-50 py-1.5 text-right whitespace-nowrap">
           <ul className="space-y-0.5 px-1.5">
-            {NAV.map((item) => {
+            {visibleNav.map((item) => {
               const hasChildren = !!(item.children && item.children.length > 0);
               const isActive = item.href ? pathname === item.href : false;
               return (

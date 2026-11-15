@@ -4,25 +4,33 @@ import { useLang } from "@/context/LanguageContext";
 import HomePageGrid from "./HomePageGrid";
 
 export default function BottomLinks() {
-  const { tr } = useLang();
+  const { tr, isRouteEnabled } = useLang();
   const home = tr.home;
+  const exploreItems = isRouteEnabled
+    ? home.explore_carousel.filter((item) => (item.enabled !== false) && isRouteEnabled(item.url))
+    : home.explore_carousel;
+  const remediesItems = isRouteEnabled
+    ? (home.remidies_carousel ?? []).filter((item) => (item.enabled !== false) && isRouteEnabled(item.url))
+    : (home.remidies_carousel ?? []);
   return (
     <div className="w-full bg-transparent pt-3 pb-6 sm:pb-8">
       <div className="layout-wide max-w-7xl mx-auto px-4 lg:px-8">
-        <section data-carousel="explore_carousel" aria-labelledby="home-explore-title" className="layout-section mb-6 sm:mb-8">
-          <header className="layout-section-header text-center mb-4">
-            <p className="font-body text-micro tracking-[.2em] uppercase text-[var(--color-text-brand)] font-bold mb-1">{home.explore_label}</p>
-            <h2 id="home-explore-title" className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-3xl leading-tight">{home.explore_title}</h2>
-          </header>
-          <HomePageGrid items={home.explore_carousel} />
-        </section>
-        {home.remidies_carousel && home.remidies_carousel.length > 0 && (
+        {exploreItems.length > 0 && (
+          <section data-carousel="explore_carousel" aria-labelledby="home-explore-title" className="layout-section mb-6 sm:mb-8">
+            <header className="layout-section-header text-center mb-4">
+              <p className="font-body text-micro tracking-[.2em] uppercase text-[var(--color-text-brand)] font-bold mb-1">{home.explore_label}</p>
+              <h2 id="home-explore-title" className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-3xl leading-tight">{home.explore_title}</h2>
+            </header>
+            <HomePageGrid items={exploreItems} />
+          </section>
+        )}
+        {remediesItems.length > 0 && (
           <section data-carousel="remidies_carousel" aria-labelledby="home-remedies-title" className="layout-section">
             <header className="layout-section-header text-center mb-4">
               <p className="font-body text-micro tracking-[.2em] uppercase text-[var(--color-text-brand)] font-bold mb-1">{home.guidance_label}</p>
               <h2 id="home-remedies-title" className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-3xl leading-tight">{home.guidance_title}</h2>
             </header>
-            <HomePageGrid items={home.remidies_carousel} showFootnotes={false} />
+            <HomePageGrid items={remediesItems} showFootnotes={false} />
           </section>
         )}
       </div>

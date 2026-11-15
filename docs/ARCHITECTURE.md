@@ -68,8 +68,12 @@ checkboxes, numeric inputs, and choice controls. Edits remain drafts until **App
 and reload** validates and saves them. The separate copy checkbox selects
 placeholders when checked and real copy when unchecked. Local copy defaults to
 real; development copy defaults to placeholders, and copy changes apply immediately.
-Reset restores the configured UI values and environment-default copy, then reloads,
-without changing the selected language. If storage is unavailable, Apply and Reset
+The page also provides content overrides with two checkboxes per section (one for the
+section page & navigation route, and one for section content items), allowing developers
+to toggle individual sections and their items independently. Content overrides are stored
+under `site-content-overrides`.
+Reset restores the configured UI values, content overrides, and environment-default copy,
+then reloads, without changing the selected language. If storage is unavailable, Apply and Reset
 apply settings in memory and show a warning instead of reloading away those changes.
 
 `build/developer-options.mjs` owns the technical route and storage keys;
@@ -153,8 +157,14 @@ and language JSON. Active shared control and editorial namespaces are `ui` and
 
 Knowledge section routes and supported IDs are defined in
 `build/library-sections.config.mjs`. Display order comes from
-`settings/knowledge_sections.json`, while section cover images are configured in
-their corresponding page-reference records in `library/pages/*.md`. Section-specific schemas validate
+`settings/knowledge_sections.json`, while section cover images, titles, and introductory
+copy are consolidated directly into their corresponding page-reference records in
+`library/pages/*.md` (merging previous section metadata into page references).
+All Markdown documents across `library/` support an explicit `enabled: boolean`
+frontmatter flag (defaults to `false` if omitted; set to `true` to enable). In `dev`
+and `local` builds, section definitions and their child articles export with an `enabled`
+flag into `src/gen/library/data.ts`, with section routes and navigation conditionally
+honoring content availability. Section-specific schemas validate
 metadata such as project status or verified outcomes; use existing records and
 `build/knowledge-schema.mjs` as the field reference. Collection index documents are
 not ordinary articles.
@@ -181,6 +191,10 @@ cards retain authored status, and homepage remedy footnotes expose it too.
 homepage has six top cards, five icon cards, six bottom cards, and three explore
 cards. Card titles, descriptions, images, types, destinations, and footnotes belong
 in those multilingual Markdown records, not repeated in settings.
+If a referenced page is disabled (either via authored `enabled: false` or via Developer Options),
+its corresponding tile across `top_carousel`, `icon_carousel`, `bottom_carousel`, `explore_carousel`,
+`remidies_carousel`, or hero slides is disabled/hidden. Enabling the section in Developer Options
+dynamically re-enables its tiles.
 
 The five `icon_carousel` links use equal-width grid columns without horizontal
 scrolling, fixed at the bottom of the home screen on mobile and tablet viewports
@@ -192,10 +206,12 @@ labels and touch-friendly targets. The six-card `bottom_carousel` is a separate 
 The generated `remidies_carousel` contains three distinct remedies drawn from
 `library/remedies/` per content generation. Selection is shared by all languages and
 content variants for that generation; keep at least four eligible remedy articles.
-The existing key spelling is part of the data contract.
+The existing key spelling is part of the data contract. When remedies or its items are
+disabled, the remedies section and its tiles are hidden.
 
 Hero carousel slides live in individual Markdown files under `library/hero/*.md`, with presentation order defined by `settings/hero.json`.
-Preserve image resolution and controls.
+Slides whose target destinations point to disabled pages/routes are conditionally hidden,
+reappearing when the target section is enabled in Developer Options. Preserve image resolution and controls.
 
 `settings/navigation.json` owns menus, route destinations, footer policy links, and
 official social `connectId` references. Labels are localized separately. Only concrete

@@ -132,7 +132,7 @@ function loadGuru(directory, reference, index, inherited) {
   const { metadata, body } = parseMarkdownFrontmatter(readFileSync(file, "utf8"), file);
   keys(metadata, [
     "id", "name", "summary", "timePeriod",
-    "thumbnailImage", "fullImage", ...linkFields,
+    "thumbnailImage", "fullImage", "enabled", ...linkFields,
     ...localizedMetadataFields,
   ], `${file} front matter`);
   if (typeof metadata.id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(metadata.id) ||

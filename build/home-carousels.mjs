@@ -49,14 +49,14 @@ export function loadPageReferences(rootDir, defaultLanguage) {
     const { metadata, body } = parseMarkdownFrontmatter(readFileSync(path.join(directory, file), "utf8"), source);
     if (metadata.kind !== "page-reference" || body) fail(source, "expected a metadata-only page-reference record");
     for (const key of Object.keys(metadata)) {
-      if (!["kind", ...textFields, "image", "url"].includes(key)) fail(source, `unknown field ${key}`);
+      if (!["kind", "enabled", "fields", ...textFields, "image", "url"].includes(key)) fail(source, `unknown field ${key}`);
     }
     for (const field of textFields) languageMap(metadata[field], `${source}.${field}`, defaultLanguage, field === "footnote");
     safeLocation(metadata.image, `${source}.image`, true);
     safeLocation(metadata.url, `${source}.url`);
     if (urls.has(metadata.url)) fail(source, `duplicate page URL ${metadata.url}`);
     urls.add(metadata.url);
-    pages.set(file, { ...metadata, id: file.slice(0, -3) });
+    pages.set(file, { ...metadata, id: file.slice(0, -3), enabled: metadata.enabled ?? false });
   }
   return pages;
 }
@@ -67,6 +67,7 @@ function localizedCard(record, language, defaultLanguage) {
     ...Object.fromEntries(textFields.map((field) => [field, record[field][language] ?? record[field][defaultLanguage]])),
     image: record.image,
     url: record.url,
+    enabled: record.enabled ?? false,
   };
 }
 
@@ -106,6 +107,7 @@ export function loadRemedyCarouselCandidates(rootDir, language, defaultLanguage,
       id: metadata.id, title: metadata.title, description: metadata.summary,
       page_type: collection.title, footnote: metadata.status,
       image: metadata.image, url: `${section.route}/${metadata.id}`,
+      enabled: (section?.enabled ?? false) && (metadata.enabled ?? false),
     }, language, defaultLanguage);
   });
 }

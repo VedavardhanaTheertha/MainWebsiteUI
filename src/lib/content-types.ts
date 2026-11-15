@@ -17,6 +17,7 @@ export interface HomePageCard {
   page_type: string;
   url: string;
   footnote: string;
+  enabled?: boolean;
 }
 
 export interface HomeIconCard extends HomePageCard {
@@ -575,6 +576,15 @@ export interface ContentShape extends FlatCopyKeys {
     storage_warning: string;
     copy_description: string;
     reset: string;
+    content_overrides?: {
+      title: string;
+      description: string;
+      page_checkbox: string;
+      items_checkbox: string;
+      default_enabled: string;
+      default_disabled: string;
+      overridden: string;
+    };
   };
   nav: NavItem[];
   footer: FooterShape;

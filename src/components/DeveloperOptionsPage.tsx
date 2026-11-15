@@ -8,6 +8,8 @@ import { useUiSettingsEditor } from "@/context/UiSettingsContext";
 import { UiSettingsError, validateUiElements } from "../../build/ui-settings-schema.mjs";
 import type { UiElements, UiValue } from "@/lib/ui-settings-types";
 import LocalContentToggle from "@/components/LocalContentToggle";
+import DeveloperContentOverrides from "@/components/DeveloperContentOverrides";
+import { resetContentOverrides } from "@/lib/content-overrides";
 
 function SocialPreviewSection() {
   const { tr } = useLang();
@@ -132,12 +134,14 @@ export default function DeveloperOptionsPage() {
           <button type="submit" className="min-h-11 rounded-full bg-[var(--color-saffron-600)] px-5 py-2 font-semibold text-white">{copy.apply}</button>
         </form>
         <LocalContentToggle />
+        <DeveloperContentOverrides />
         <SocialPreviewSection />
         <button
           type="button"
           onClick={() => {
             const persistent = editor.reset();
             setContentMode(defaultContentMode);
+            resetContentOverrides();
             if (persistent) window.location.reload();
             else setStorageWarning(true);
           }}
