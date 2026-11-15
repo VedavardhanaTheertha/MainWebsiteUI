@@ -205,21 +205,10 @@
     "cta": "Register & Know More"
   },
   "logo_alt": "Shri Shiroor Matha",
-  "nav_home": "Home",
-  "nav_sevas": "Sevas",
-  "nav_events": "Events",
-  "nav_contact": "Contact",
-  "donate": "Donate",
-  "scan_qr": "Scan QR",
   "offer_seva": "Offer Seva",
   "qr_title": "Scan to Donate",
-  "footer_explore": "Explore",
-  "footer_policies": "Policies",
-  "footer_built": "Built with reverence",
-  "footer_touch": "Get in touch",
   "sevas_search": "Search sevas…",
   "sevas_clear_search": "Clear seva search",
-  "sevas_showing_template": "Showing {n} of {total} sevas",
   "sevas_empty_title": "No sevas found",
   "sevas_empty_sub": "Try a different category or clear your search.",
   "sevas_filter_category": "Category",
@@ -241,18 +230,10 @@
   "sevas_description": "Description",
   "sevas_significance": "Significance and spiritual benefits",
   "sevas_offer": "Offer this Seva",
-  "sevas_view_details": "View details",
   "sevas_close": "Close Seva details",
   "sevas_show_more": "Show more",
   "show_more": "Show more",
   "events_upcoming": "Upcoming Events",
-  "events_milestones": "Recent Milestones",
-  "vol_register": "Register as Volunteer",
-  "contact_locations": "Our Locations",
-  "contact_map": "View on Map",
-  "contact_enquiry": "Send Us a Message",
-  "contact_email_btn": "Email Us",
-  "contact_call_btn": "Call Us",
   "nav": {
     "home": {
       "label": "Home"
@@ -465,7 +446,6 @@
     "pooja_rituals": "Pooja & Sacred Rituals"
   },
   "events_recurring": "Recurring Events",
-  "events_this_week": "This Week",
   "events_all": "All Events",
   "media": {
     "eyebrow": "Divine Darshan",

@@ -4,8 +4,6 @@ import yaml from "js-yaml";
 import { resolveHomeCarousels } from "./home-carousels.mjs";
 
 const homeSchema = {
-  hero: { invocation: "string", title: "string", subtitle: "string", body: "string" },
-  hero_intro: { title: "string", cta_label: "string", cta_href: "string", images: ["string"] },
   explore_label: "string", explore_title: "string", guidance_label: "string", guidance_title: "string",
 };
 const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -20,10 +18,6 @@ function validate(value, schema, source, partial = false) {
     if (typeof value !== schema) fail(source, `expected ${schema}`);
     if (/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(value)) fail(source, "control characters are not allowed");
     if (value.startsWith("@image") && !/^@image\.[A-Za-z0-9_-]+$/.test(value)) fail(source, "invalid image reference");
-    if (source.endsWith(".cta_href") &&
-        (!/^(?:\/(?!\/)|#|https?:\/\/|mailto:|tel:)/.test(value) || /[\\\s]/.test(value))) {
-      fail(source, "expected a safe site-relative, fragment, HTTP(S), mail or telephone destination");
-    }
     return;
   }
   if (Array.isArray(schema)) {

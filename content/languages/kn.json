@@ -187,7 +187,6 @@
       "items_checkbox": "ವಿಷಯಗಳು / ಲೇಖನಗಳು"
     }
   },
-  "nav_home": "ಮನೆ",
   "logo_alt": "ಶ್ರೀ ಶಿರೂರು ಮಠ",
   "public_actions": {
     "whatsapp_label": "WhatsApp",
@@ -207,20 +206,10 @@
     "dismiss": "ಮುಚ್ಚಿ",
     "cta": "ನೋಂದಣಿ ಮತ್ತು ಹೆಚ್ಚಿನ ಮಾಹಿತಿ"
   },
-  "nav_sevas": "ಸೇವೆಗಳು",
-  "nav_events": "ಕಾರ್ಯಕ್ರಮಗಳು",
-  "nav_contact": "ಸಂಪರ್ಕ",
-  "donate": "ದೇಣಿಗೆ",
-  "scan_qr": "QR ಸ್ಕ್ಯಾನ್",
   "offer_seva": "ಸೇವೆ ಅರ್ಪಿಸಿ",
   "qr_title": "ದೇಣಿಗೆ ನೀಡಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
-  "footer_explore": "ಅನ್ವೇಷಿಸಿ",
-  "footer_policies": "ನೀತಿಗಳು",
-  "footer_built": "ಭಕ್ತಿಯಿಂದ ನಿರ್ಮಿಸಲಾಗಿದೆ",
-  "footer_touch": "ಸಂಪರ್ಕಿಸಿ",
   "sevas_search": "ಸೇವೆ ಹುಡುಕಿ…",
   "sevas_clear_search": "ಸೇವಾ ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿಸಿ",
-  "sevas_showing_template": "{total}ರಲ್ಲಿ {n} ಸೇವೆಗಳು ತೋರಿಸಲಾಗುತ್ತಿದೆ",
   "sevas_empty_title": "ಯಾವ ಸೇವೆಯೂ ಕಂಡುಬಂದಿಲ್ಲ",
   "sevas_empty_sub": "ಬೇರೆ ವರ್ಗ ಆಯ್ಕೆ ಮಾಡಿ ಅಥವಾ ಹುಡುಕಾಟ ತೆರವು ಮಾಡಿ.",
   "sevas_filter_category": "ವರ್ಗ",
@@ -242,18 +231,10 @@
   "sevas_description": "ವಿವರಣೆ",
   "sevas_significance": "ಧಾರ್ಮಿಕ ಮಹತ್ವ ಮತ್ತು ಫಲಶ್ರುತಿ",
   "sevas_offer": "ಈ ಸೇವೆಯನ್ನು ಸಮರ್ಪಿಸಿ",
-  "sevas_view_details": "ವಿವರಗಳನ್ನು ನೋಡಿ",
   "sevas_close": "ಸೇವೆಯ ವಿವರಗಳನ್ನು ಮುಚ್ಚಿ",
   "sevas_show_more": "ಇನ್ನಷ್ಟು ತೋರಿಸಿ",
   "show_more": "ಇನ್ನಷ್ಟು ತೋರಿಸಿ",
   "events_upcoming": "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳು",
-  "events_milestones": "ಇತ್ತೀಚಿನ ಮೈಲಿಗಲ್ಲುಗಳು",
-  "vol_register": "ಸ್ವಯಂಸೇವಕರಾಗಿ ನೋಂದಣಿ",
-  "contact_locations": "ನಮ್ಮ ಸ್ಥಳಗಳು",
-  "contact_map": "ನಕ್ಷೆಯಲ್ಲಿ ನೋಡಿ",
-  "contact_enquiry": "ನಮಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿ",
-  "contact_email_btn": "ಇಮೇಲ್ ಮಾಡಿ",
-  "contact_call_btn": "ಕರೆ ಮಾಡಿ",
   "nav": {
     "home": {
       "label": "ಮನೆ"
@@ -466,7 +447,6 @@
     "pooja_rituals": "ಪೂಜೆ ಮತ್ತು ಧಾರ್ಮಿಕ ವಿಧಿಗಳು"
   },
   "events_recurring": "ಮರುಕಳಿಸುವ ಕಾರ್ಯಕ್ರಮಗಳು",
-  "events_this_week": "ಈ ವಾರ",
   "events_all": "ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳು",
   "media": {
     "eyebrow": "ದಿವ್ಯ ದರ್ಶನ",
