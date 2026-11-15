@@ -57,11 +57,16 @@ export function parseOverrides(raw: string | null): ContentOverrides {
 }
 
 export function isSectionPageEnabled(sectionId: string, defaultPage = false, overrides: ContentOverrides = {}): boolean {
-  return overrides[sectionId]?.page ?? defaultPage;
+  if (defaultPage) return true;
+  return overrides[sectionId]?.page ?? false;
 }
 
 export function isSectionItemsEnabled(sectionId: string, defaultItems = false, overrides: ContentOverrides = {}): boolean {
-  return overrides[sectionId]?.items ?? defaultItems;
+  if (defaultItems) return true;
+  if (!isSectionPageEnabled(sectionId, defaultItems, overrides)) {
+    return false;
+  }
+  return overrides[sectionId]?.items ?? false;
 }
 
 export function isRouteEnabled(route: string, overrides: ContentOverrides = {}): boolean {
@@ -80,6 +85,7 @@ export function isRouteEnabled(route: string, overrides: ContentOverrides = {}):
     return false;
   });
   if (section) {
+    if (section.defaultPage) return true;
     return isSectionPageEnabled(section.id, section.defaultPage, overrides);
   }
   return true;
@@ -90,6 +96,20 @@ const overridesPreference = createPreferenceStore<string>(
   "{}",
   (value): value is string => typeof value === "string",
 );
+
+export function getStoredContentOverrides(): ContentOverrides {
+  if (typeof window === "undefined") return {};
+  return parseOverrides(overridesPreference.getSnapshot());
+}
+
+export function saveContentOverrides(overrides: ContentOverrides): boolean {
+  try {
+    overridesPreference.setValue(JSON.stringify(overrides));
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export function useContentOverrides() {
   const snapshot = useSyncExternalStore(
@@ -112,7 +132,7 @@ export function useContentOverrides() {
   }, []);
 
   const resetOverrides = useCallback(() => {
-    overridesPreference.setValue("{}");
+    resetContentOverrides();
   }, []);
 
   return {
@@ -125,6 +145,11 @@ export function useContentOverrides() {
   };
 }
 
-export function resetContentOverrides() {
-  overridesPreference.setValue("{}");
+export function resetContentOverrides(): boolean {
+  try {
+    overridesPreference.setValue("{}");
+    return true;
+  } catch {
+    return false;
+  }
 }

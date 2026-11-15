@@ -579,11 +579,12 @@ export interface ContentShape extends FlatCopyKeys {
     content_overrides?: {
       title: string;
       description: string;
+      section_header?: string;
       page_checkbox: string;
       items_checkbox: string;
-      default_enabled: string;
-      default_disabled: string;
-      overridden: string;
+      default_enabled?: string;
+      default_disabled?: string;
+      overridden?: string;
     };
   };
   nav: NavItem[];

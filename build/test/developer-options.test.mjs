@@ -335,7 +335,11 @@ function pageFixture(defaultMode = "real", persistent = true) {
       "../../build/ui-settings-schema.mjs": schema,
       "@/components/LocalContentToggle": LocalContentToggle,
       "@/components/DeveloperContentOverrides": () => null,
-      "@/lib/content-overrides": { resetContentOverrides: () => {} },
+      "@/lib/content-overrides": {
+        getStoredContentOverrides: () => ({}),
+        saveContentOverrides: () => true,
+        resetContentOverrides: () => {},
+      },
     }, { window: { location: { reload: () => reloads++ } }, console: { warn() {} } }).default;
     const controls = () => { cursor = 0; return nodes(Page()); };
     return {

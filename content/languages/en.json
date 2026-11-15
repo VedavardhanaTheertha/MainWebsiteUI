@@ -180,12 +180,10 @@
     "reset": "Reset and reload",
     "content_overrides": {
       "title": "Section and Content Overrides",
-      "description": "Enable or disable individual sections and their content items. Overrides apply in this browser session and reload with the site.",
+      "description": "Enable individual sections and their content items. Overrides apply when you click Apply and reload.",
+      "section_header": "Section",
       "page_checkbox": "Page and menu route",
-      "items_checkbox": "Content items",
-      "default_enabled": "Default: Enabled",
-      "default_disabled": "Default: Disabled",
-      "overridden": "Overridden"
+      "items_checkbox": "Content items"
     }
   },
   "public_actions": {
