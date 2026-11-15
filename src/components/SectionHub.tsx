@@ -10,9 +10,11 @@ import { collectionCardBodyClassName, collectionCardClassName, collectionCardIma
 type HubKey = "library" | "story";
 
 export default function SectionHub({ hubKey }: { hubKey: HubKey }) {
-  const { tr } = useLang();
+  const { tr, isRouteEnabled } = useLang();
   const hub = tr.section_hubs[hubKey];
-  const items = applySectionPresentation(hub.items, knowledgeSections);
+  const items = applySectionPresentation(hub.items, knowledgeSections).filter((item) =>
+    isRouteEnabled ? isRouteEnabled(item.href) : true,
+  );
 
   return (
     <>

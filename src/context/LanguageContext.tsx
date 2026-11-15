@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { createPreferenceStore } from "@/lib/browser-preferences";
+import { useContentOverrides } from "@/lib/content-overrides";
 import {
   content,
   alternateContent,
@@ -23,6 +24,9 @@ interface LangCtx {
   setContentMode: (mode: ContentMode) => void;
   /** Languages discovered at build time — drives the switcher UI. */
   languages: typeof languages;
+  isSectionPageEnabled?: (id: string, defaultPage?: boolean) => boolean;
+  isSectionItemsEnabled?: (id: string, defaultItems?: boolean) => boolean;
+  isRouteEnabled?: (route: string) => boolean;
 }
 
 const LanguageContext = createContext<LangCtx>({
@@ -93,6 +97,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     ? alternateContent
     : content;
 
+  const { isSectionPageEnabled, isSectionItemsEnabled, isRouteEnabled } = useContentOverrides();
+
   return (
     <LanguageContext.Provider value={{
       lang,
@@ -101,6 +107,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       languages,
       contentMode,
       setContentMode,
+      isSectionPageEnabled,
+      isSectionItemsEnabled,
+      isRouteEnabled,
     }}>
       {children}
     </LanguageContext.Provider>

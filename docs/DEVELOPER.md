@@ -96,7 +96,24 @@ Open the final navigation entry, **Developer options**, in local or development
 builds (`/developer-options`, under the configured base path). Copy-preview controls
 live on this page rather than in a global toolbar. The copy checkbox is checked for
 placeholder copy and unchecked for real copy (local defaults to unchecked; development
-defaults to checked) and changes immediately. All 40 supported settings from
+defaults to checked) and changes immediately.
+
+**Content overrides**: Below the copy toggle, the page provides 2 checkboxes per section
+(one for Section Page & Navigation Route, and one for Section Content Items). This allows
+developers to preview disabled sections (such as knowledge sections or events) and test
+navigation filtering locally without editing Markdown files. Any tiles referencing disabled pages
+in `top_carousel`, `icon_carousel`, `bottom_carousel`, `explore_carousel`, `remidies_carousel`, or hero
+slides are automatically disabled/hidden, and re-appear immediately when the corresponding section is
+enabled in Developer Options. The Reset button restores both
+UI element preferences and content overrides to their default states.
+
+**Content enablement in Markdown**: Every content Markdown document in `library/` supports
+an `enabled: boolean` frontmatter key. If omitted, `enabled` defaults to `false`. Explicitly set
+`enabled: true` to enable a collection or article, or `enabled: false` to disable it. Section
+metadata previously under `library/sections/` is now consolidated directly into corresponding
+`library/pages/*.md` files.
+
+All 40 supported settings from
 `settings/ui_elements.json` also appear as grouped checkboxes, numeric inputs, and
 selectors. Edit these as drafts, then use **Apply and reload** to validate and use
 them throughout the site, including initial pagination, reader size, sorting, and

@@ -8,6 +8,13 @@ import { useUiSettingsEditor } from "@/context/UiSettingsContext";
 import { UiSettingsError, validateUiElements } from "../../build/ui-settings-schema.mjs";
 import type { UiElements, UiValue } from "@/lib/ui-settings-types";
 import LocalContentToggle from "@/components/LocalContentToggle";
+import DeveloperContentOverrides from "@/components/DeveloperContentOverrides";
+import {
+  getStoredContentOverrides,
+  saveContentOverrides,
+  resetContentOverrides,
+  type ContentOverrides,
+} from "@/lib/content-overrides";
 
 function SocialPreviewSection() {
   const { tr } = useLang();
@@ -72,6 +79,7 @@ export default function DeveloperOptionsPage() {
   const { tr, setContentMode } = useLang();
   const editor = useUiSettingsEditor();
   const [draft, setDraft] = useState<UiElements>(() => editor.values);
+  const [overridesDraft, setOverridesDraft] = useState<ContentOverrides>(() => getStoredContentOverrides());
   const [invalid, setInvalid] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
   const formId = useId();
@@ -82,11 +90,31 @@ export default function DeveloperOptionsPage() {
     setDraft((current) => ({ ...current, [group]: { ...current[group], [key]: value } }));
     setInvalid(false);
   };
+  const handlePageChange = (sectionId: string, checked: boolean) => {
+    setOverridesDraft((prev) => ({
+      ...prev,
+      [sectionId]: {
+        ...prev[sectionId],
+        page: checked,
+        items: checked ? (prev[sectionId]?.items ?? false) : false,
+      },
+    }));
+  };
+  const handleItemsChange = (sectionId: string, checked: boolean) => {
+    setOverridesDraft((prev) => ({
+      ...prev,
+      [sectionId]: {
+        ...prev[sectionId],
+        items: checked,
+      },
+    }));
+  };
   const apply = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const persistent = editor.apply(validateUiElements(draft));
-      if (persistent) window.location.reload();
+      const persistentUi = editor.apply(validateUiElements(draft));
+      const persistentOverrides = saveContentOverrides(overridesDraft);
+      if (persistentUi && persistentOverrides) window.location.reload();
       else setStorageWarning(true);
     } catch (error) {
       if (!(error instanceof UiSettingsError)) throw error;
@@ -128,6 +156,11 @@ export default function DeveloperOptionsPage() {
               </div>
             </fieldset>
           ))}
+          <DeveloperContentOverrides
+            overrides={overridesDraft}
+            onPageChange={handlePageChange}
+            onItemsChange={handleItemsChange}
+          />
           {invalid && <p role="alert" className="text-sm font-semibold text-[var(--color-text-primary)]">{copy.invalid_settings}</p>}
           <button type="submit" className="min-h-11 rounded-full bg-[var(--color-saffron-600)] px-5 py-2 font-semibold text-white">{copy.apply}</button>
         </form>
@@ -138,6 +171,8 @@ export default function DeveloperOptionsPage() {
           onClick={() => {
             const persistent = editor.reset();
             setContentMode(defaultContentMode);
+            resetContentOverrides();
+            setOverridesDraft({});
             if (persistent) window.location.reload();
             else setStorageWarning(true);
           }}

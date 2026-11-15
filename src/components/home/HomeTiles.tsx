@@ -24,12 +24,16 @@ const TONES: Record<HomeIconCard["tone"], { bg: string; color: string }> = {
 };
 
 export default function HomeTiles() {
-  const { tr } = useLang();
+  const { tr, isRouteEnabled } = useLang();
+  const items = isRouteEnabled
+    ? tr.home.icon_carousel.filter((t) => (t.enabled !== false) && isRouteEnabled(t.url))
+    : tr.home.icon_carousel.filter((t) => t.enabled !== false);
+  if (!items.length) return null;
   return (
       <div className="xl:hidden fixed bottom-0 inset-x-0 z-30 bg-[var(--color-cream)]/80 backdrop-blur-md border-t border-[var(--color-line)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
         <div className="max-w-7xl mx-auto">
           <section data-carousel="icon_carousel" className="grid grid-cols-5 gap-1.5 px-3 py-2 sm:gap-3 sm:px-3.5">
-            {tr.home.icon_carousel.map((t) => {
+            {items.map((t) => {
               const Icon = ICONS[t.icon];
               const tone = TONES[t.tone];
               return (

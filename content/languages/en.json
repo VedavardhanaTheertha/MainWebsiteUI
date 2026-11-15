@@ -71,33 +71,87 @@
       "presentation": "These defaults are configured in the UI settings file. Turning options on here saves browser-local overrides."
     },
     "fields": {
-      "collections.initialVisible": { "label": "Initially visible items" },
-      "collections.loadIncrement": { "label": "Items per load" },
-      "autoScroll.enabled": { "label": "Enable automatic rail scrolling" },
-      "autoScroll.pixelsPerSecond": { "label": "Scroll speed (pixels per second)" },
-      "autoScroll.returnDurationMs": { "label": "Return animation duration (ms)" },
-      "autoScroll.resumeDelayMs": { "label": "Resume delay after interaction (ms)" },
-      "hero.autoplay": { "label": "Enable hero autoplay" },
-      "hero.intervalMs": { "label": "Slide interval (ms)" },
-      "hero.fadeDurationMs": { "label": "Fade duration (ms)" },
-      "upcomingEvents.lookAheadDays": { "label": "Look ahead (days)" },
-      "upcomingEvents.maxCards": { "label": "Maximum upcoming cards" },
-      "reading.wordsPerMinute": { "label": "Estimated words per minute" },
-      "reading.initialSize": { "label": "Initial reading size (%)" },
-      "reading.minSize": { "label": "Minimum reading size (%)" },
-      "reading.maxSize": { "label": "Maximum reading size (%)" },
-      "reading.step": { "label": "Reading size step (%)" },
-      "mediaViewer.swipeThresholdPx": { "label": "Swipe threshold (pixels)" },
-      "mediaViewer.videoControlExclusionPx": { "label": "Native video-control exclusion (pixels)" },
-      "mediaViewer.wrap": { "label": "Wrap album navigation" },
-      "browserDefaults.advancedFiltersOpen": { "label": "Open advanced filters by default" },
-      "browserDefaults.lineageView": { "label": "Default lineage view" },
-      "browserDefaults.eventsUpcomingSort": { "label": "Default upcoming-event order" },
-      "browserDefaults.eventsPastSort": { "label": "Default past-event order" },
-      "browserDefaults.albumsSort": { "label": "Default album order" },
-      "interaction.dropdownCloseDelayMs": { "label": "Dropdown close delay (ms)" },
-      "interaction.modalResetDelayMs": { "label": "Modal reset delay (ms)" },
-      "interaction.searchPreloadDelayMs": { "label": "Search preload delay (ms)" },
+      "collections.initialVisible": {
+        "label": "Initially visible items"
+      },
+      "collections.loadIncrement": {
+        "label": "Items per load"
+      },
+      "autoScroll.enabled": {
+        "label": "Enable automatic rail scrolling"
+      },
+      "autoScroll.pixelsPerSecond": {
+        "label": "Scroll speed (pixels per second)"
+      },
+      "autoScroll.returnDurationMs": {
+        "label": "Return animation duration (ms)"
+      },
+      "autoScroll.resumeDelayMs": {
+        "label": "Resume delay after interaction (ms)"
+      },
+      "hero.autoplay": {
+        "label": "Enable hero autoplay"
+      },
+      "hero.intervalMs": {
+        "label": "Slide interval (ms)"
+      },
+      "hero.fadeDurationMs": {
+        "label": "Fade duration (ms)"
+      },
+      "upcomingEvents.lookAheadDays": {
+        "label": "Look ahead (days)"
+      },
+      "upcomingEvents.maxCards": {
+        "label": "Maximum upcoming cards"
+      },
+      "reading.wordsPerMinute": {
+        "label": "Estimated words per minute"
+      },
+      "reading.initialSize": {
+        "label": "Initial reading size (%)"
+      },
+      "reading.minSize": {
+        "label": "Minimum reading size (%)"
+      },
+      "reading.maxSize": {
+        "label": "Maximum reading size (%)"
+      },
+      "reading.step": {
+        "label": "Reading size step (%)"
+      },
+      "mediaViewer.swipeThresholdPx": {
+        "label": "Swipe threshold (pixels)"
+      },
+      "mediaViewer.videoControlExclusionPx": {
+        "label": "Native video-control exclusion (pixels)"
+      },
+      "mediaViewer.wrap": {
+        "label": "Wrap album navigation"
+      },
+      "browserDefaults.advancedFiltersOpen": {
+        "label": "Open advanced filters by default"
+      },
+      "browserDefaults.lineageView": {
+        "label": "Default lineage view"
+      },
+      "browserDefaults.eventsUpcomingSort": {
+        "label": "Default upcoming-event order"
+      },
+      "browserDefaults.eventsPastSort": {
+        "label": "Default past-event order"
+      },
+      "browserDefaults.albumsSort": {
+        "label": "Default album order"
+      },
+      "interaction.dropdownCloseDelayMs": {
+        "label": "Dropdown close delay (ms)"
+      },
+      "interaction.modalResetDelayMs": {
+        "label": "Modal reset delay (ms)"
+      },
+      "interaction.searchPreloadDelayMs": {
+        "label": "Search preload delay (ms)"
+      },
       "presentation.tileOverlayOpacity": {
         "label": "Tile text panel opacity (%)",
         "description": "Use 0 for transparent or 100 for fully opaque. Lower opacity shows more of the image but can reduce text contrast. The hero is unaffected."
@@ -123,7 +177,14 @@
     "invalid_settings": "Settings were not applied. Check the numbers and the reading-size minimum, maximum, initial value, and step.",
     "storage_warning": "Browser storage is unavailable. Changes apply only to this page session; reloading restores the configured defaults.",
     "copy_description": "Enable placeholder copy for this preview. Leave unchecked to use real copy. Production always uses real copy.",
-    "reset": "Reset and reload"
+    "reset": "Reset and reload",
+    "content_overrides": {
+      "title": "Section and Content Overrides",
+      "description": "Enable individual sections and their content items. Overrides apply when you click Apply and reload.",
+      "section_header": "Section",
+      "page_checkbox": "Page and menu route",
+      "items_checkbox": "Content items"
+    }
   },
   "public_actions": {
     "whatsapp_label": "Join WhatsApp",

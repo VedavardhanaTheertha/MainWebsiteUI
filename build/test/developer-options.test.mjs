@@ -334,6 +334,12 @@ function pageFixture(defaultMode = "real", persistent = true) {
       }) },
       "../../build/ui-settings-schema.mjs": schema,
       "@/components/LocalContentToggle": LocalContentToggle,
+      "@/components/DeveloperContentOverrides": () => null,
+      "@/lib/content-overrides": {
+        getStoredContentOverrides: () => ({}),
+        saveContentOverrides: () => true,
+        resetContentOverrides: () => {},
+      },
     }, { window: { location: { reload: () => reloads++ } }, console: { warn() {} } }).default;
     const controls = () => { cursor = 0; return nodes(Page()); };
     return {
@@ -431,6 +437,13 @@ test("production copy ignores a browser placeholder preference and refuses copy 
       defaultLang: "fixture", languages: [{ code: "fixture" }],
       defaultContentMode: "real", isContentSwitchable: false,
       content: { fixture: copy }, alternateContent: null,
+    },
+    "@/lib/content-overrides": {
+      useContentOverrides: () => ({
+        isSectionPageEnabled: () => true,
+        isSectionItemsEnabled: () => true,
+        isRouteEnabled: () => true,
+      }),
     },
   }).LanguageProvider;
   const context = Provider({ children: null }).props.value;

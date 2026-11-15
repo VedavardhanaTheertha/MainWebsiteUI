@@ -19,7 +19,7 @@ export default function KnowledgeArticlePage({
   articleId: string;
   initialHtml?: Record<string, string>;
 }) {
-  const { contentMode, lang, tr } = useLang();
+  const { contentMode, lang, tr, isSectionPageEnabled, isSectionItemsEnabled } = useLang();
   const { readingSettings } = useUiSettings();
   const copy = tr.library_browser;
   const section = (contentMode === "placeholder" ? placeholderLibrarySections : realLibrarySections).find((entry) => entry.id === sectionId);
@@ -39,7 +39,12 @@ export default function KnowledgeArticlePage({
     }).catch(() => {});
   }, [sectionId, articleId, contentMode, loadedHtml, item]);
 
-  if (!section || !item) return <p role="status" className="mx-auto max-w-3xl px-5 py-10">{copy.unavailable}</p>;
+  const pageEnabled = isSectionPageEnabled ? isSectionPageEnabled(sectionId, section?.enabled ?? false) : true;
+  const itemsEnabled = isSectionItemsEnabled ? isSectionItemsEnabled(sectionId, section?.enabled ?? false) : true;
+
+  if (!section || !item || !pageEnabled || (!item.enabled && !itemsEnabled)) {
+    return <p role="status" className="mx-auto max-w-3xl px-5 py-10">{copy.unavailable}</p>;
+  }
   const activeHtmlMap = loadedHtml ?? item.html;
   const article = localizeArticle({ ...item, html: activeHtmlMap }, lang);
   const related = relatedArticles(section, item);

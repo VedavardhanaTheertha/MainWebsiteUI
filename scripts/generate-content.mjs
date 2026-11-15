@@ -764,6 +764,7 @@ function loadDefaultHero(imageLookup) {
         href: hero.href,
         image: imageObj,
         images: [imageObj.landscape],
+        enabled: hero.enabled ?? false,
       };
     });
 
@@ -1107,6 +1108,7 @@ const toHomeHero = (heroData) => {
       title_kn: slide.title_kn,
       href: slide.href,
       image: imgObj,
+      enabled: slide.enabled ?? false,
     };
   });
   return {
@@ -1227,6 +1229,7 @@ export interface HomeHeroSlide {
   title_kn: string;
   href: string;
   image: HeroSlideImage;
+  enabled?: boolean;
 }
 
 export interface HomeHeroData {

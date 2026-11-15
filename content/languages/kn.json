@@ -72,33 +72,87 @@
       "presentation": "ಈ ಆರಂಭಿಕ ಮೌಲ್ಯಗಳು ಯುಐ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಕಡತದಲ್ಲಿವೆ. ಇಲ್ಲಿ ಆಯ್ಕೆಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿದರೆ ಬದಲಾವಣೆಗಳು ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಮಾತ್ರ ಉಳಿಯುತ್ತವೆ."
     },
     "fields": {
-      "collections.initialVisible": { "label": "ಆರಂಭದಲ್ಲಿ ಕಾಣುವ ಅಂಶಗಳು" },
-      "collections.loadIncrement": { "label": "ಪ್ರತಿ ಬಾರಿ ಲೋಡ್ ಮಾಡುವ ಅಂಶಗಳು" },
-      "autoScroll.enabled": { "label": "ಪಟ್ಟಿಯ ಸ್ವಯಂಚಾಲಿತ ಸ್ಕ್ರೋಲ್ ಸಕ್ರಿಯಗೊಳಿಸಿ" },
-      "autoScroll.pixelsPerSecond": { "label": "ಸ್ಕ್ರೋಲ್ ವೇಗ (ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಪಿಕ್ಸೆಲ್‌ಗಳು)" },
-      "autoScroll.returnDurationMs": { "label": "ಹಿಂತಿರುಗುವ ಚಲನೆಯ ಅವಧಿ (ಮಿ.ಸೆ.)" },
-      "autoScroll.resumeDelayMs": { "label": "ಬಳಕೆಯ ನಂತರ ಮರುಪ್ರಾರಂಭದ ವಿಳಂಬ (ಮಿ.ಸೆ.)" },
-      "hero.autoplay": { "label": "ಮುಖ್ಯ ಚಿತ್ರಗಳ ಸ್ವಯಂಚಾಲಿತ ಪ್ರದರ್ಶನ ಸಕ್ರಿಯಗೊಳಿಸಿ" },
-      "hero.intervalMs": { "label": "ಚಿತ್ರಗಳ ನಡುವಿನ ಅಂತರ (ಮಿ.ಸೆ.)" },
-      "hero.fadeDurationMs": { "label": "ಚಿತ್ರ ಬದಲಾವಣೆಯ ಅವಧಿ (ಮಿ.ಸೆ.)" },
-      "upcomingEvents.lookAheadDays": { "label": "ಮುಂದಿನ ದಿನಗಳ ವ್ಯಾಪ್ತಿ" },
-      "upcomingEvents.maxCards": { "label": "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳ ಗರಿಷ್ಠ ಕಾರ್ಡ್‌ಗಳು" },
-      "reading.wordsPerMinute": { "label": "ಪ್ರತಿ ನಿಮಿಷಕ್ಕೆ ಅಂದಾಜು ಪದಗಳು" },
-      "reading.initialSize": { "label": "ಆರಂಭಿಕ ಓದುವ ಗಾತ್ರ (%)" },
-      "reading.minSize": { "label": "ಕನಿಷ್ಠ ಓದುವ ಗಾತ್ರ (%)" },
-      "reading.maxSize": { "label": "ಗರಿಷ್ಠ ಓದುವ ಗಾತ್ರ (%)" },
-      "reading.step": { "label": "ಓದುವ ಗಾತ್ರದ ಹಂತ (%)" },
-      "mediaViewer.swipeThresholdPx": { "label": "ಸ್ವೈಪ್ ಮಿತಿ (ಪಿಕ್ಸೆಲ್‌ಗಳು)" },
-      "mediaViewer.videoControlExclusionPx": { "label": "ವಿಡಿಯೋ ನಿಯಂತ್ರಣಗಳ ಪ್ರತ್ಯೇಕ ವ್ಯಾಪ್ತಿ (ಪಿಕ್ಸೆಲ್‌ಗಳು)" },
-      "mediaViewer.wrap": { "label": "ಕೊನೆಯ ಆಲ್ಬಮ್ ಅಂಶದಿಂದ ಮೊದಲನೆಯದಕ್ಕೆ ಹೋಗಿ" },
-      "browserDefaults.advancedFiltersOpen": { "label": "ಆರಂಭದಲ್ಲೇ ಸುಧಾರಿತ ಶೋಧಕಗಳನ್ನು ತೆರೆಯಿರಿ" },
-      "browserDefaults.lineageView": { "label": "ಗುರುಪರಂಪರೆಯ ಆರಂಭಿಕ ನೋಟ" },
-      "browserDefaults.eventsUpcomingSort": { "label": "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳ ಆರಂಭಿಕ ಕ್ರಮ" },
-      "browserDefaults.eventsPastSort": { "label": "ಹಿಂದಿನ ಕಾರ್ಯಕ್ರಮಗಳ ಆರಂಭಿಕ ಕ್ರಮ" },
-      "browserDefaults.albumsSort": { "label": "ಆಲ್ಬಮ್‌ಗಳ ಆರಂಭಿಕ ಕ್ರಮ" },
-      "interaction.dropdownCloseDelayMs": { "label": "ಡ್ರಾಪ್‌ಡೌನ್ ಮುಚ್ಚುವ ವಿಳಂಬ (ಮಿ.ಸೆ.)" },
-      "interaction.modalResetDelayMs": { "label": "ಸಂವಾದ ಮರುಹೊಂದಿಸುವ ವಿಳಂಬ (ಮಿ.ಸೆ.)" },
-      "interaction.searchPreloadDelayMs": { "label": "ಹುಡುಕಾಟ ಪೂರ್ವಲೋಡ್ ವಿಳಂಬ (ಮಿ.ಸೆ.)" },
+      "collections.initialVisible": {
+        "label": "ಆರಂಭದಲ್ಲಿ ಕಾಣುವ ಅಂಶಗಳು"
+      },
+      "collections.loadIncrement": {
+        "label": "ಪ್ರತಿ ಬಾರಿ ಲೋಡ್ ಮಾಡುವ ಅಂಶಗಳು"
+      },
+      "autoScroll.enabled": {
+        "label": "ಪಟ್ಟಿಯ ಸ್ವಯಂಚಾಲಿತ ಸ್ಕ್ರೋಲ್ ಸಕ್ರಿಯಗೊಳಿಸಿ"
+      },
+      "autoScroll.pixelsPerSecond": {
+        "label": "ಸ್ಕ್ರೋಲ್ ವೇಗ (ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಪಿಕ್ಸೆಲ್‌ಗಳು)"
+      },
+      "autoScroll.returnDurationMs": {
+        "label": "ಹಿಂತಿರುಗುವ ಚಲನೆಯ ಅವಧಿ (ಮಿ.ಸೆ.)"
+      },
+      "autoScroll.resumeDelayMs": {
+        "label": "ಬಳಕೆಯ ನಂತರ ಮರುಪ್ರಾರಂಭದ ವಿಳಂಬ (ಮಿ.ಸೆ.)"
+      },
+      "hero.autoplay": {
+        "label": "ಮುಖ್ಯ ಚಿತ್ರಗಳ ಸ್ವಯಂಚಾಲಿತ ಪ್ರದರ್ಶನ ಸಕ್ರಿಯಗೊಳಿಸಿ"
+      },
+      "hero.intervalMs": {
+        "label": "ಚಿತ್ರಗಳ ನಡುವಿನ ಅಂತರ (ಮಿ.ಸೆ.)"
+      },
+      "hero.fadeDurationMs": {
+        "label": "ಚಿತ್ರ ಬದಲಾವಣೆಯ ಅವಧಿ (ಮಿ.ಸೆ.)"
+      },
+      "upcomingEvents.lookAheadDays": {
+        "label": "ಮುಂದಿನ ದಿನಗಳ ವ್ಯಾಪ್ತಿ"
+      },
+      "upcomingEvents.maxCards": {
+        "label": "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳ ಗರಿಷ್ಠ ಕಾರ್ಡ್‌ಗಳು"
+      },
+      "reading.wordsPerMinute": {
+        "label": "ಪ್ರತಿ ನಿಮಿಷಕ್ಕೆ ಅಂದಾಜು ಪದಗಳು"
+      },
+      "reading.initialSize": {
+        "label": "ಆರಂಭಿಕ ಓದುವ ಗಾತ್ರ (%)"
+      },
+      "reading.minSize": {
+        "label": "ಕನಿಷ್ಠ ಓದುವ ಗಾತ್ರ (%)"
+      },
+      "reading.maxSize": {
+        "label": "ಗರಿಷ್ಠ ಓದುವ ಗಾತ್ರ (%)"
+      },
+      "reading.step": {
+        "label": "ಓದುವ ಗಾತ್ರದ ಹಂತ (%)"
+      },
+      "mediaViewer.swipeThresholdPx": {
+        "label": "ಸ್ವೈಪ್ ಮಿತಿ (ಪಿಕ್ಸೆಲ್‌ಗಳು)"
+      },
+      "mediaViewer.videoControlExclusionPx": {
+        "label": "ವಿಡಿಯೋ ನಿಯಂತ್ರಣಗಳ ಪ್ರತ್ಯೇಕ ವ್ಯಾಪ್ತಿ (ಪಿಕ್ಸೆಲ್‌ಗಳು)"
+      },
+      "mediaViewer.wrap": {
+        "label": "ಕೊನೆಯ ಆಲ್ಬಮ್ ಅಂಶದಿಂದ ಮೊದಲನೆಯದಕ್ಕೆ ಹೋಗಿ"
+      },
+      "browserDefaults.advancedFiltersOpen": {
+        "label": "ಆರಂಭದಲ್ಲೇ ಸುಧಾರಿತ ಶೋಧಕಗಳನ್ನು ತೆರೆಯಿರಿ"
+      },
+      "browserDefaults.lineageView": {
+        "label": "ಗುರುಪರಂಪರೆಯ ಆರಂಭಿಕ ನೋಟ"
+      },
+      "browserDefaults.eventsUpcomingSort": {
+        "label": "ಮುಂಬರುವ ಕಾರ್ಯಕ್ರಮಗಳ ಆರಂಭಿಕ ಕ್ರಮ"
+      },
+      "browserDefaults.eventsPastSort": {
+        "label": "ಹಿಂದಿನ ಕಾರ್ಯಕ್ರಮಗಳ ಆರಂಭಿಕ ಕ್ರಮ"
+      },
+      "browserDefaults.albumsSort": {
+        "label": "ಆಲ್ಬಮ್‌ಗಳ ಆರಂಭಿಕ ಕ್ರಮ"
+      },
+      "interaction.dropdownCloseDelayMs": {
+        "label": "ಡ್ರಾಪ್‌ಡೌನ್ ಮುಚ್ಚುವ ವಿಳಂಬ (ಮಿ.ಸೆ.)"
+      },
+      "interaction.modalResetDelayMs": {
+        "label": "ಸಂವಾದ ಮರುಹೊಂದಿಸುವ ವಿಳಂಬ (ಮಿ.ಸೆ.)"
+      },
+      "interaction.searchPreloadDelayMs": {
+        "label": "ಹುಡುಕಾಟ ಪೂರ್ವಲೋಡ್ ವಿಳಂಬ (ಮಿ.ಸೆ.)"
+      },
       "presentation.tileOverlayOpacity": {
         "label": "ಕಾರ್ಡ್ ಪಠ್ಯ ಫಲಕದ ಅಪಾರದರ್ಶಕತೆ (%)",
         "description": "ಪಾರದರ್ಶಕತೆಗೆ 0 ಅಥವಾ ಸಂಪೂರ್ಣ ಅಪಾರದರ್ಶಕತೆಗೆ 100 ಬಳಸಿ. ಕಡಿಮೆ ಮೌಲ್ಯದಲ್ಲಿ ಚಿತ್ರ ಹೆಚ್ಚು ಕಾಣುತ್ತದೆ, ಆದರೆ ಪಠ್ಯದ ಸ್ಪಷ್ಟತೆ ಕಡಿಮೆಯಾಗಬಹುದು. ಹೀರೋ ಚಿತ್ರಕ್ಕೆ ಅನ್ವಯಿಸುವುದಿಲ್ಲ."
@@ -124,7 +178,14 @@
     "invalid_settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗಿಲ್ಲ. ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಓದುವ ಗಾತ್ರದ ಕನಿಷ್ಠ, ಗರಿಷ್ಠ, ಆರಂಭಿಕ ಮೌಲ್ಯ ಹಾಗೂ ಹಂತವನ್ನು ಪರಿಶೀಲಿಸಿ.",
     "storage_warning": "ಬ್ರೌಸರ್ ಸಂಗ್ರಹ ಲಭ್ಯವಿಲ್ಲ. ಬದಲಾವಣೆಗಳು ಈ ಪುಟದ ಅವಧಿಗೆ ಮಾತ್ರ ಅನ್ವಯಿಸುತ್ತವೆ; ಮರುಲೋಡ್ ಮಾಡಿದಾಗ ಕಡತದಲ್ಲಿನ ಆರಂಭಿಕ ಮೌಲ್ಯಗಳು ಮರಳುತ್ತವೆ.",
     "copy_description": "ಈ ಮುನ್ನೋಟಕ್ಕಾಗಿ ಮಾದರಿ ಪಠ್ಯವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ. ನೈಜ ಪಠ್ಯಕ್ಕಾಗಿ ಈ ಆಯ್ಕೆಯನ್ನು ಗುರುತಿಸದೆ ಬಿಡಿ. ಪ್ರೊಡಕ್ಷನ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ ನೈಜ ಪಠ್ಯವನ್ನೇ ಬಳಸಲಾಗುತ್ತದೆ.",
-    "reset": "ಮರುಹೊಂದಿಸಿ ಮರುಲೋಡ್ ಮಾಡಿ"
+    "reset": "ಮರುಹೊಂದಿಸಿ ಮರುಲೋಡ್ ಮಾಡಿ",
+    "content_overrides": {
+      "title": "ವಿಭಾಗ ಮತ್ತು ವಿಷಯಗಳ ನಿಯಂತ್ರಣ",
+      "description": "ಪ್ರತ್ಯೇಕ ವಿಭಾಗಗಳು ಮತ್ತು ಅವುಗಳ ವಿಷಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ. ಅನ್ವಯಿಸಿ ಮತ್ತು ಮರುಲೋಡ್ ಮಾಡಿ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಬದಲಾವಣೆಗಳು ಅನ್ವಯಿಸುತ್ತವೆ.",
+      "section_header": "ವಿಭಾಗ",
+      "page_checkbox": "ಪುಟ ಮತ್ತು ಮೆನು ಲಿಂಕ್",
+      "items_checkbox": "ವಿಷಯಗಳು / ಲೇಖನಗಳು"
+    }
   },
   "nav_home": "ಮನೆ",
   "logo_alt": "ಶ್ರೀ ಶಿರೂರು ಮಠ",

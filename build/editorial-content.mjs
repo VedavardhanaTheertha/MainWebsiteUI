@@ -56,9 +56,13 @@ export function loadEditorialContent(rootDir, languageCode) {
   for (const file of markdownFiles(path.join(rootDir, "library"))) {
     const markdown = readFileSync(file, "utf8");
     const frontmatter = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
-    if (!frontmatter || !/^kind:\s*(?:localized-copy|learning-collection)\s*$/m.test(frontmatter)) continue;
+    if (!frontmatter) continue;
+    const isEditorialKind = /^kind:\s*(?:localized-copy|learning-collection)\s*$/m.test(frontmatter);
+    const isPageRef = /^kind:\s*page-reference\s*$/m.test(frontmatter);
+    if (!isEditorialKind && !isPageRef) continue;
     const source = path.relative(rootDir, file);
     const { metadata, body } = parseMarkdownFrontmatter(markdown, source);
+    if (metadata.kind === "page-reference" && (!metadata.fields || !Object.keys(metadata.fields).length)) continue;
     if (!plainObject(metadata.fields) || !Object.keys(metadata.fields).length) {
       throw new Error(`${source}: localized-copy needs a non-empty fields map.`);
     }
