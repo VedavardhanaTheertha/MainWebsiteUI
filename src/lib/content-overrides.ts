@@ -25,7 +25,7 @@ export const allSectionDefinitions: SectionDefinition[] = [
   { id: "mantra", name: "Mantra Nāda", route: "/library/mantra", defaultPage: false, defaultItems: false },
   { id: "shastra", name: "Shāstra Vidya", route: "/library/shastra", defaultPage: false, defaultItems: false },
   { id: "jnana", name: "Jnāna Kosha", route: "/library/jnana", defaultPage: false, defaultItems: false },
-  { id: "dharma", name: "Dharma Vidhi", route: "/library/dharma", defaultPage: false, defaultItems: false },
+  { id: "dharma", name: "Dharma Vidhi", route: "/library/dharma", defaultPage: true, defaultItems: true },
   { id: "projects", name: "Projects", route: "/projects", defaultPage: false, defaultItems: false },
   { id: "stories", name: "Stories & Chronicles", route: "/library/stories", defaultPage: false, defaultItems: false },
   { id: "articles", name: "Articles & Reflections", route: "/library/articles", defaultPage: false, defaultItems: false },
