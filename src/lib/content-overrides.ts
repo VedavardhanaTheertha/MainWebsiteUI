@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { createPreferenceStore } from "@/lib/browser-preferences";
+import { authoredPageEnablement } from "@/gen/library/presentation";
 
 export const contentOverridesStorageKey = "site-content-overrides";
 
@@ -20,31 +21,40 @@ export interface SectionDefinition {
   defaultItems: boolean;
 }
 
-export const allSectionDefinitions: SectionDefinition[] = [
+const baseSectionDefinitions = [
   // 11 Knowledge sections
-  { id: "mantra", name: "Mantra Nāda", route: "/library/mantra", defaultPage: false, defaultItems: false },
-  { id: "shastra", name: "Shāstra Vidya", route: "/library/shastra", defaultPage: false, defaultItems: false },
-  { id: "jnana", name: "Jnāna Kosha", route: "/library/jnana", defaultPage: false, defaultItems: false },
-  { id: "dharma", name: "Dharma Vidhi", route: "/library/dharma", defaultPage: true, defaultItems: true },
-  { id: "projects", name: "Projects", route: "/projects", defaultPage: false, defaultItems: false },
-  { id: "stories", name: "Stories & Chronicles", route: "/library/stories", defaultPage: false, defaultItems: false },
-  { id: "articles", name: "Articles & Reflections", route: "/library/articles", defaultPage: false, defaultItems: false },
-  { id: "symbolism", name: "Symbolism & Deities", route: "/library/symbolism", defaultPage: false, defaultItems: false },
-  { id: "remedies", name: "Remedies & Mantras", route: "/library/remedies", defaultPage: false, defaultItems: false },
-  { id: "science", name: "Hindu Science & Philosophy", route: "/library/science", defaultPage: false, defaultItems: false },
-  { id: "pilgrim", name: "Pilgrim Site Guide", route: "/library/pilgrim-guide", defaultPage: false, defaultItems: false },
+  { id: "mantra", name: "Mantra Nāda", route: "/library/mantra" },
+  { id: "shastra", name: "Shāstra Vidya", route: "/library/shastra" },
+  { id: "jnana", name: "Jnāna Kosha", route: "/library/jnana" },
+  { id: "dharma", name: "Dharma Vidhi", route: "/library/dharma" },
+  { id: "projects", name: "Projects", route: "/projects" },
+  { id: "stories", name: "Stories & Chronicles", route: "/library/stories" },
+  { id: "articles", name: "Articles & Reflections", route: "/library/articles" },
+  { id: "symbolism", name: "Symbolism & Deities", route: "/library/symbolism" },
+  { id: "remedies", name: "Remedies & Mantras", route: "/library/remedies" },
+  { id: "science", name: "Hindu Science & Philosophy", route: "/library/science" },
+  { id: "pilgrim", name: "Pilgrim Site Guide", route: "/library/pilgrim-guide" },
 
   // Other collections
-  { id: "events", name: "Events", route: "/events", defaultPage: false, defaultItems: false },
-  { id: "learn", name: "Learn", route: "/learn", defaultPage: false, defaultItems: false },
-  { id: "panchanga", name: "Panchanga", route: "/panchanga", defaultPage: false, defaultItems: false },
-  { id: "sevas", name: "Sevas", route: "/sevas", defaultPage: true, defaultItems: true },
-  { id: "albums", name: "Albums & Media", route: "/albums", defaultPage: true, defaultItems: true },
-  { id: "bhakti", name: "Bhakti Gāna", route: "/library/bhakti", defaultPage: true, defaultItems: true },
-  { id: "parampara", name: "Guru Parampara", route: "/story/parampara", defaultPage: true, defaultItems: true },
-  { id: "connect", name: "Connect", route: "/connect", defaultPage: true, defaultItems: true },
-  { id: "volunteer", name: "Volunteer", route: "/volunteer", defaultPage: true, defaultItems: true },
+  { id: "events", name: "Events", route: "/events" },
+  { id: "learn", name: "Learn", route: "/learn" },
+  { id: "panchanga", name: "Panchanga", route: "/panchanga" },
+  { id: "sevas", name: "Sevas", route: "/sevas" },
+  { id: "albums", name: "Albums & Media", route: "/albums" },
+  { id: "bhakti", name: "Bhakti Gāna", route: "/library/bhakti" },
+  { id: "parampara", name: "Guru Parampara", route: "/story/parampara" },
+  { id: "connect", name: "Connect", route: "/connect" },
+  { id: "volunteer", name: "Volunteer", route: "/volunteer" },
 ];
+
+export const allSectionDefinitions: SectionDefinition[] = baseSectionDefinitions.map((def) => {
+  const authored = authoredPageEnablement[def.route] ?? false;
+  return {
+    ...def,
+    defaultPage: authored,
+    defaultItems: authored,
+  };
+});
 
 export function parseOverrides(raw: string | null): ContentOverrides {
   if (!raw) return {};
