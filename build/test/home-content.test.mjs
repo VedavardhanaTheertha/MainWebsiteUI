@@ -29,12 +29,10 @@ function fixture(t) {
   return { root, settings, save };
 }
 
-test("home settings include only active homepage copy and carousels", () => {
+test("home settings include only carousels", () => {
   const content = loadHomeContent(repository, language);
   assert.equal(content.pages, undefined);
   assert.equal(content.legacy_home, undefined);
-  assert.equal(original.legacy_home, undefined);
-  for (const [key, value] of Object.entries(original.home[language])) assert.deepEqual(content.home[key], value);
   assert.deepEqual(Object.fromEntries(Object.entries(content.home).filter(([key]) => key.endsWith("_carousel")).map(([key, cards]) => [key, cards.length])), {
     top_carousel: 6, icon_carousel: 5, bottom_carousel: 6, explore_carousel: 3, remidies_carousel: 3,
   });
@@ -44,32 +42,16 @@ test("home settings include only active homepage copy and carousels", () => {
   }
 });
 
-test("partial home languages leave fallback to the generator", (t) => {
+test("carousel settings reject unknown fields", (t) => {
   const { root, settings, save } = fixture(t);
-  settings.home.zz = { guidance_title: "Translated guidance" };
+  settings.typo = "unexpected";
   save();
-  const content = loadHomeContent(root, "zz");
-  assert.equal(content.home.guidance_title, "Translated guidance");
-  assert.equal(content.home.hero, undefined);
-  assert.deepEqual(content.home.top_carousel, loadHomeContent(root, language).home.top_carousel);
-  assert.equal(content.hero_title, undefined);
-  assert.equal(content.pages, undefined);
-});
-
-test("home settings reject unknown fields and missing default language content", (t) => {
-  const { root, settings, save } = fixture(t);
-  settings.home[language].typo = "unexpected";
-  save();
-  assert.throws(() => loadHomeContent(root, language), /unknown homepage field/);
-  delete settings.home[language].typo;
-  delete settings.home[language];
-  save();
-  assert.throws(() => loadHomeContent(root, language), /default language .* is required/);
+  assert.throws(() => loadHomeContent(root, language), /unknown homepage field|expected the four configured page-reference carousels/);
 });
 
 test("page cards use canonical translated metadata, shared URLs/images and intentionally empty footnotes", () => {
   const pages = loadPageReferences(repository, language);
-  for (const code of Object.keys(original.home)) {
+  for (const code of ["en", "kn"]) {
     const home = loadHomeContent(repository, code).home;
     for (const key of ["top_carousel", "icon_carousel", "bottom_carousel", "explore_carousel"]) {
       for (const [index, card] of home[key].entries()) {
@@ -142,7 +124,7 @@ test("page-reference metadata rejects malformed maps, unsafe destinations, dupli
 
 test("remedies are three distinct generated detail links with the same selection across languages and repeated loads", () => {
   let selected;
-  for (const code of Object.keys(original.home)) {
+  for (const code of ["en", "kn"]) {
     const cards = loadHomeContent(repository, code).home.remidies_carousel;
     const candidates = new Map(loadRemedyCarouselCandidates(repository, code, language).map((card) => [card.id, card]));
     const ids = cards.map(({ id }) => id);

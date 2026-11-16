@@ -37,7 +37,7 @@ function validate(value, schema, source, partial = false) {
   }
 }
 
-/** Load only active homepage copy; translations inherit through the main generator. */
+/** Load home carousels from settings and resolve against page references. */
 export function loadHomeContent(rootDir, languageCode) {
   const source = "settings/home.json";
   if (typeof languageCode !== "string" || !languageCodePattern.test(languageCode)) fail(source, "invalid language code");
@@ -48,19 +48,11 @@ export function loadHomeContent(rootDir, languageCode) {
     fail("config/site.yml", "site.default_language must be a valid language code");
   }
   if (!object(settings) || Object.keys(settings).some((key) =>
-    !["home", "top_carousel", "icon_carousel", "bottom_carousel", "explore_carousel"].includes(key))) {
-    fail(source, "expected language maps and the four configured page-reference carousels only");
-  }
-  if (!object(settings.home) || !object(settings.home[defaultLanguage])) {
-    fail(`${source}.home`, `default language ${defaultLanguage} is required`);
-  }
-  for (const [code, content] of Object.entries(settings.home)) {
-    if (!languageCodePattern.test(code)) fail(`${source}.home.${code}`, "invalid language code");
-    validate(content, homeSchema, `${source}.home.${code}`, code !== defaultLanguage);
+    !["top_carousel", "icon_carousel", "bottom_carousel", "explore_carousel"].includes(key))) {
+    fail(source, "expected the four configured page-reference carousels only");
   }
   return {
     home: {
-      ...settings.home[languageCode],
       ...resolveHomeCarousels(rootDir, settings, languageCode, defaultLanguage),
     },
   };
