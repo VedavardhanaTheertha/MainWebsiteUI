@@ -21,6 +21,27 @@ export function mediaDate(value?: string): number | null {
     ? date : null;
 }
 
+const enMonths = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+
+const knMonths = [
+  "ಜನವರಿ", "ಫೆಬ್ರವರಿ", "ಮಾರ್ಚ್", "ಏಪ್ರಿಲ್", "ಮೇ", "ಜೂನ್",
+  "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂಬರ್", "ಅಕ್ಟೋಬರ್", "ನವೆಂಬರ್", "ಡಿಸೆಂಬರ್",
+];
+
+export function mediaSearchDateTerms(value?: string): string {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return value ?? "";
+  const [year, month, day] = value.split("-");
+  const monthIndex = parseInt(month, 10) - 1;
+  const enMonth = enMonths[monthIndex] ?? "";
+  const enShort = enMonth.slice(0, 3);
+  const knMonth = knMonths[monthIndex] ?? "";
+  const dayNum = String(parseInt(day, 10));
+  return [value, year, month, day, dayNum, enMonth, enShort, knMonth].filter(Boolean).join(" ");
+}
+
 export function filterMediaAlbums(albums: MediaAlbum[], filters: MediaFilters): MediaAlbum[] {
   const from = mediaDate(filters.from);
   const to = mediaDate(filters.to);

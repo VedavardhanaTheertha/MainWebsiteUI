@@ -1,7 +1,6 @@
 "use client";
 
 import ContentImage from "@/components/presentation/ContentImage";
-import LocalizedCopy from "@/components/LocalizedCopy";
 import { useLang } from "@/context/LanguageContext";
 import { actionDestinations } from "@/gen/settings/actions";
 import { formatArticleDate } from "@/lib/reader-utils";
@@ -16,7 +15,7 @@ export default function MantraYajnaPageContent() {
       </div>
       <header className="bg-transparent px-16 pt-3.5 pb-2 text-center sm:px-20 sm:pt-4 sm:pb-3 lg:px-8">
         <p className="text-micro font-bold tracking-[.16em] uppercase text-[var(--color-text-brand)]">
-          <LocalizedCopy path={["pages", "detected", "yajna_eyebrow"]} />
+          {copy.yajna_eyebrow}
         </p>
         <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl leading-tight">
           {copy.yajna_title}
@@ -29,7 +28,7 @@ export default function MantraYajnaPageContent() {
         <div className="bg-[var(--color-paper)] border border-[var(--color-saffron-600)] rounded-[18px] p-6 mb-6 shadow-sm">
           <h2 className="font-display font-bold text-[var(--color-text-primary)] text-xl mb-3">{copy.yajna_what}</h2>
           <p className="font-body text-[var(--color-text-secondary)] text-base leading-relaxed mb-3">
-            <LocalizedCopy path={["pages", "detected", "yajna_intro"]} />
+            {copy.yajna_intro}
           </p>
           <p className="font-body text-[var(--color-text-secondary)] text-base leading-relaxed">
             {copy.yajna_practice}
@@ -46,7 +45,7 @@ export default function MantraYajnaPageContent() {
                 <div>
                   <p className="font-body font-semibold text-[var(--color-text-primary)] text-[15px]">{copy[`yajna_step_${step}_title`]}</p>
                   <p className="font-body text-[var(--color-text-secondary)] text-sm leading-relaxed">
-                    {step === 4 ? <LocalizedCopy path={["pages", "detected", "yajna_step4"]} /> : copy[`yajna_step_${step}_description`]}
+                    {copy[`yajna_step_${step}_description`]}
                   </p>
                 </div>
               </li>

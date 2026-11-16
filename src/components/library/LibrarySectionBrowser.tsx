@@ -78,7 +78,7 @@ function ArticleModal({
           </div>
 
           <div className="p-5 sm:p-7">
-            <p className="mb-3 text-badge font-bold uppercase tracking-widest text-[var(--color-text-brand)]">{article.status}</p>
+            {article.status ? <p className="mb-3 text-badge font-bold uppercase tracking-widest text-[var(--color-text-brand)]">{article.status}</p> : null}
             <p className="text-sm leading-6 text-[var(--color-text-secondary)]">{article.summary}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {article.tags.map((tag) => (
@@ -129,8 +129,12 @@ export function ArticleTile({
         />
       </div>
       <div className={collectionCardBodyClassName}>
-        <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-badge font-bold uppercase tracking-wide text-[var(--color-text-brand)]">{projectStatus ? copy.detail_labels[projectStatus] : article.status}</span>
-        {projectStatus && <p className="layout-tile-category mb-1 text-meta font-semibold text-[var(--color-text-muted)]">{article.status}</p>}
+        {(projectStatus || article.status) && (
+          <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-badge font-bold uppercase tracking-wide text-[var(--color-text-brand)]">
+            {projectStatus ? copy.detail_labels[projectStatus] : article.status}
+          </span>
+        )}
+        {projectStatus && article.status ? <p className="layout-tile-category mb-1 text-meta font-semibold text-[var(--color-text-muted)]">{article.status}</p> : null}
         <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
           {article.title}
         </h3>
@@ -440,9 +444,11 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                       <strong className="block pr-5 text-sm font-semibold leading-relaxed text-[var(--color-text-primary)]">
                         {article.title}
                       </strong>
-                      <span className="mt-1.5 block text-caption text-[var(--color-text-muted)]">
-                        {article.status}
-                      </span>
+                      {article.status ? (
+                        <span className="mt-1.5 block text-caption text-[var(--color-text-muted)]">
+                          {article.status}
+                        </span>
+                      ) : null}
                       <span className="mt-1 block line-clamp-2 text-xs text-[var(--color-text-secondary)]">
                         {article.summary}
                       </span>

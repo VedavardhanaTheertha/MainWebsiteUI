@@ -27,10 +27,11 @@ test("getParentPath calculates correct parent for app and generated routes", () 
   assert.equal(getParentPath("/privacy"), "/");
   assert.equal(getParentPath("/terms"), "/");
   assert.equal(getParentPath("/refund"), "/");
+  assert.equal(getParentPath("/mantra-yajna"), "/");
   assert.equal(getParentPath("/developer-options"), "/");
 
   // Sub-routes and generated pages fall back to their parent section
-  assert.equal(getParentPath("/events/mantra-yajna"), "/events");
+  assert.equal(getParentPath("/events/special"), "/events");
   assert.equal(getParentPath("/albums/daily-worship"), "/albums");
   assert.equal(getParentPath("/learn/vedic-recitation"), "/learn");
   assert.equal(getParentPath("/projects/annadana-hall-construction"), "/projects");

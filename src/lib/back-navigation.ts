@@ -2,7 +2,7 @@
  * Calculates the logical parent route for back navigation fallback.
  *
  * Examples:
- *   /events/mantra-yajna -> /events
+ *   /mantra-yajna -> /
  *   /library/mantra/dvadasha-stotra -> /library/mantra
  *   /history/parampara/madhwacharyaru -> /history/parampara
  *   /library/stories/annadana-as-sadhana -> /library/stories
