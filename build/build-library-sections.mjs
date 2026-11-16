@@ -160,7 +160,9 @@ async function loadSections(resolveImage) {
       }
       const title = requireLocalized(metadata.title, "title", sourceName);
       const summary = requireLocalized(metadata.summary, "summary", sourceName);
-      const status = requireLocalized(metadata.status, "status", sourceName);
+      const status = metadata.status
+        ? requireLocalized(metadata.status, "status", sourceName)
+        : resolveLocalizedValues({}, languageCodes, defaultLanguage);
       const tags = requireLocalizedTags(metadata.tags, sourceName);
       const markdown = splitLocalizedArticleBody(body, sourceName, languageCodes, defaultLanguage, languageMetadata);
       const html = Object.fromEntries(Object.entries(markdown).map(([code, text]) => [code, renderMarkdown(text)]));

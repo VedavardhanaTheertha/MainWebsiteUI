@@ -86,7 +86,7 @@ export default function KnowledgeArticlePage({
         </div>
         <article style={{ fontSize: `${0.95 * readingSize / 100}rem` }}>
           <header className="border-b border-[var(--color-line)] pb-6">
-            <p className="mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{article.status}</p>
+            {article.status ? <p className="mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{article.status}</p> : null}
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">{article.title}</h1>
             <p className="mt-4 text-base leading-8 text-[var(--color-text-secondary)]">{article.summary}</p>
           </header>
@@ -97,7 +97,7 @@ export default function KnowledgeArticlePage({
         <h2 id="knowledge-related-heading" className="font-display text-2xl font-bold">{copy.related_articles}</h2>
         <ul className="mt-4 space-y-3">{related.map((entry) => {
           const relatedArticle = localizeArticle(entry, lang);
-          return <li key={entry.id}><Link href={articleHref(section, entry.id)} className="block min-h-11 rounded-xl border border-[var(--color-line)] bg-white/60 px-4 py-3 font-semibold text-[var(--color-text-brand)] hover:bg-white">{relatedArticle.title}<span className="mt-1 block text-xs font-normal text-[var(--color-text-muted)]">{relatedArticle.status}</span></Link></li>;
+          return <li key={entry.id}><Link href={articleHref(section, entry.id)} className="block min-h-11 rounded-xl border border-[var(--color-line)] bg-white/60 px-4 py-3 font-semibold text-[var(--color-text-brand)] hover:bg-white">{relatedArticle.title}{relatedArticle.status ? <span className="mt-1 block text-xs font-normal text-[var(--color-text-muted)]">{relatedArticle.status}</span> : null}</Link></li>;
         })}</ul>
       </section>}
     </div>

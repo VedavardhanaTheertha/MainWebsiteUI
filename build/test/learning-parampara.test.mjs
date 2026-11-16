@@ -102,7 +102,7 @@ test("owned non-home pages have no literal prose in JSX", () => {
   const files = [
     "src/app/learn/page.tsx", "src/app/volunteer/page.tsx",
     "src/app/panchanga/page.tsx", "src/app/privacy/page.tsx", "src/app/terms/page.tsx",
-    "src/app/refund/page.tsx", "src/app/events/mantra-yajna/page.tsx",
+    "src/app/refund/page.tsx", "src/app/mantra-yajna/page.tsx",
     "src/app/learn/[id]/page.tsx", "src/app/history/parampara/page.tsx",
     "src/app/history/parampara/[id]/page.tsx", "src/components/MantraYajnaPageContent.tsx",
     "src/components/LearningDetailPage.tsx", "src/components/ParamparaBrowser.tsx",

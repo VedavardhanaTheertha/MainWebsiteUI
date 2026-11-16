@@ -13,7 +13,7 @@ import AdvancedFilters from "@/components/AdvancedFilters";
 import { useMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
 import type { MediaAlbum } from "@/lib/content-types";
-import { filterMediaAlbums, mediaCounts, type MediaFilters } from "@/lib/media-utils";
+import { filterMediaAlbums, mediaCounts, mediaSearchDateTerms, type MediaFilters } from "@/lib/media-utils";
 import CollectionEmptyState from "@/components/presentation/CollectionEmptyState";
 import { collectionCardBodyClassName, collectionCardClassName, collectionCardImageClassName } from "@/lib/collection-presentation";
 
@@ -94,7 +94,12 @@ export default function MediaAlbumsBrowser() {
       ...getSearchProfile("mediaAlbums"),
       extractField: (album: MediaAlbum, field: string) => {
         const value = album[field as keyof MediaAlbum];
-        return Array.isArray(value) ? value.join(" ") : String(value ?? "");
+        const text = Array.isArray(value) ? value.join(" ") : String(value ?? "");
+        if (field === "description" && album.date) {
+          const dateTerms = mediaSearchDateTerms(album.date);
+          return dateTerms ? `${text} ${dateTerms}` : text;
+        }
+        return text;
       },
     }),
     [],

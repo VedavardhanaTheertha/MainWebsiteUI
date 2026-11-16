@@ -296,6 +296,9 @@
       },
       "whatsapp": {
         "label": "WhatsApp"
+      },
+      "email": {
+        "label": "Email"
       }
     }
   },
