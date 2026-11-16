@@ -82,8 +82,6 @@ export default function HeroCarousel() {
       className="layout-wide home-hero relative"
       onFocus={() => setFocused(true)}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
-      onMouseEnter={() => setFocused(true)}
-      onMouseLeave={() => setFocused(false)}
     >
       <Link href={href} className="hero-rounded-frame relative block w-full overflow-hidden rounded-b-[22px] bg-[var(--color-paper)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
         <div ref={viewportRef} className="home-hero-viewport relative h-[462px] lg:h-[600px]">

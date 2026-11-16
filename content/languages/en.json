@@ -163,6 +163,10 @@
       "presentation.tileMinHeight": {
         "label": "Tile minimum height (px)",
         "description": "Adjust the minimum height for collection tiles. The default is 360 pixels."
+      },
+      "hero.motion_override": {
+        "label": "Motion preference override (site_motion_override)",
+        "description": "Control animation behavior across Hero and rails: follow OS settings, force animations on, or force reduced motion."
       }
     },
     "choices": {
@@ -171,7 +175,10 @@
       "earliest": "Earliest first",
       "latest": "Latest first",
       "newest": "Newest first",
-      "oldest": "Oldest first"
+      "oldest": "Oldest first",
+      "motion_system": "Follow OS / system setting",
+      "motion_force": "Force animations on (force_motion)",
+      "motion_reduce": "Force reduced motion (reduce)"
     },
     "apply": "Apply and reload",
     "invalid_settings": "Settings were not applied. Check the numbers and the reading-size minimum, maximum, initial value, and step.",
