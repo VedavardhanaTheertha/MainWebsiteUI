@@ -9,6 +9,7 @@ import { UiSettingsError, validateUiElements } from "../../build/ui-settings-sch
 import type { UiElements, UiValue } from "@/lib/ui-settings-types";
 import LocalContentToggle from "@/components/LocalContentToggle";
 import DeveloperContentOverrides from "@/components/DeveloperContentOverrides";
+import { getStoredMotionOverride, setMotionOverride } from "@/hooks/useReducedMotion";
 import {
   getStoredContentOverrides,
   saveContentOverrides,
@@ -80,6 +81,7 @@ export default function DeveloperOptionsPage() {
   const editor = useUiSettingsEditor();
   const [draft, setDraft] = useState<UiElements>(() => editor.values);
   const [overridesDraft, setOverridesDraft] = useState<ContentOverrides>(() => getStoredContentOverrides());
+  const [motionOverride, setMotionOverrideDraft] = useState<"system" | "force_motion" | "reduce">(() => getStoredMotionOverride());
   const [invalid, setInvalid] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
   const formId = useId();
@@ -114,6 +116,7 @@ export default function DeveloperOptionsPage() {
     try {
       const persistentUi = editor.apply(validateUiElements(draft));
       const persistentOverrides = saveContentOverrides(overridesDraft);
+      setMotionOverride(motionOverride);
       if (persistentUi && persistentOverrides) window.location.reload();
       else setStorageWarning(true);
     } catch (error) {
@@ -153,6 +156,32 @@ export default function DeveloperOptionsPage() {
                     </div>
                   );
                 })}
+                {group === "hero" && (
+                  <div key="hero.motion_override">
+                    <label htmlFor={`${formId}-hero-motion-override`} className="flex min-h-11 flex-wrap items-center gap-3 font-semibold text-[var(--color-text-primary)]">
+                      <span id={`${formId}-hero-motion-override-label`} className="min-w-0 flex-1">
+                        {copy.fields["hero.motion_override"]?.label}
+                      </span>
+                      <select
+                        id={`${formId}-hero-motion-override`}
+                        data-name="hero.motion_override"
+                        data-developer-option="site-motion-override"
+                        value={motionOverride}
+                        onChange={(e) => setMotionOverrideDraft(e.target.value as "system" | "force_motion" | "reduce")}
+                        aria-labelledby={`${formId}-hero-motion-override-label`}
+                        aria-describedby={`${formId}-hero-motion-override-description`}
+                        className="min-h-11 max-w-full rounded-lg border border-[var(--color-line-strong)] bg-[var(--color-paper)] px-3 py-2 text-[var(--color-text-primary)]"
+                      >
+                        <option value="system">{copy.choices.motion_system}</option>
+                        <option value="force_motion">{copy.choices.motion_force}</option>
+                        <option value="reduce">{copy.choices.motion_reduce}</option>
+                      </select>
+                    </label>
+                    <p id={`${formId}-hero-motion-override-description`} className="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">
+                      {copy.fields["hero.motion_override"]?.description}
+                    </p>
+                  </div>
+                )}
               </div>
             </fieldset>
           ))}
@@ -173,6 +202,8 @@ export default function DeveloperOptionsPage() {
             setContentMode(defaultContentMode);
             resetContentOverrides();
             setOverridesDraft({});
+            setMotionOverride("system");
+            setMotionOverrideDraft("system");
             if (persistent) window.location.reload();
             else setStorageWarning(true);
           }}

@@ -335,6 +335,10 @@ function pageFixture(defaultMode = "real", persistent = true) {
       "../../build/ui-settings-schema.mjs": schema,
       "@/components/LocalContentToggle": LocalContentToggle,
       "@/components/DeveloperContentOverrides": () => null,
+      "@/hooks/useReducedMotion": {
+        getStoredMotionOverride: () => "system",
+        setMotionOverride: () => {},
+      },
       "@/lib/content-overrides": {
         getStoredContentOverrides: () => ({}),
         saveContentOverrides: () => true,
