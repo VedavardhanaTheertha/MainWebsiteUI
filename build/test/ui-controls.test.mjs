@@ -129,7 +129,7 @@ test("homepage top rail preserves motion and provides separate image and optiona
     "@/components/RailMotionControl": { default: "motion-control" },
   });
   let tree = render({ items: tr.home.top_carousel });
-  assert.deepEqual(calls, [{ count: 6, paused: false }]);
+  assert.deepEqual(calls, [{ count: tr.home.top_carousel.length, paused: false }]);
   const cards = nodes(tree, (node) => node.type === "link");
   assert.ok(cards.every((card) => card.props.className.includes("min-h-80 w-[82vw] max-w-[320px]")));
   assert.ok(cards.every((card) => card.props.className.includes("lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none")));
@@ -141,12 +141,12 @@ test("homepage top rail preserves motion and provides separate image and optiona
   assert.equal(control.props.className, "", "pause control remains available on desktop");
   control.props.onToggle();
   tree = render({ items: tr.home.top_carousel });
-  assert.deepEqual(calls.at(-1), { count: 6, paused: true });
+  assert.deepEqual(calls.at(-1), { count: tr.home.top_carousel.length, paused: true });
   control = nodes(tree, (node) => node.type === "motion-control")[0];
   assert.equal(control.props.paused, true);
   control.props.onToggle();
   render({ items: tr.home.top_carousel });
-  assert.deepEqual(calls.at(-1), { count: 6, paused: false });
+  assert.deepEqual(calls.at(-1), { count: tr.home.top_carousel.length, paused: false });
 });
 
 test("bottom, explore and remedies sections share the event-style grid and preserve configured counts", async () => {
@@ -161,9 +161,9 @@ test("bottom, explore and remedies sections share the event-style grid and prese
   const grids = nodes(links(), (node) => node.type === "page-grid");
   assert.equal(grids.length, 2);
   assert.equal(grids[0].props.items, tr.home.explore_carousel);
-  assert.equal(grids[0].props.items.length, 3);
-  assert.equal(grids[1].props.items, tr.home.remidies_carousel);
-  assert.equal(grids[1].props.items.length, 3);
+  assert.equal(grids[0].props.items.length, tr.home.explore_carousel.length);
+  assert.equal(grids[1].props.items, tr.home.guidance_carousel);
+  assert.equal(grids[1].props.items.length, tr.home.guidance_carousel.length);
 });
 
 test("advanced filters are initially collapsed, icon-only, and reopen without unmounting their controls", async () => {

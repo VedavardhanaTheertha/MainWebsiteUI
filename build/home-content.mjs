@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import { resolveHomeCarousels } from "./home-carousels.mjs";
+import { stripComments } from "./json-utils.mjs";
 
 const homeSchema = {
   explore_label: "string", explore_title: "string", guidance_label: "string", guidance_title: "string",
@@ -41,15 +42,16 @@ function validate(value, schema, source, partial = false) {
 export function loadHomeContent(rootDir, languageCode) {
   const source = "settings/home.json";
   if (typeof languageCode !== "string" || !languageCodePattern.test(languageCode)) fail(source, "invalid language code");
-  const settings = JSON.parse(readFileSync(path.join(rootDir, "settings", "home.json"), "utf8"));
+  const rawSettings = JSON.parse(readFileSync(path.join(rootDir, "settings", "home.json"), "utf8"));
+  const settings = stripComments(rawSettings);
   const config = yaml.load(readFileSync(path.join(rootDir, "config", "site.yml"), "utf8"));
   const defaultLanguage = config?.site?.default_language;
   if (typeof defaultLanguage !== "string" || !languageCodePattern.test(defaultLanguage)) {
     fail("config/site.yml", "site.default_language must be a valid language code");
   }
   if (!object(settings) || Object.keys(settings).some((key) =>
-    !["top_carousel", "icon_carousel", "bottom_carousel", "explore_carousel"].includes(key))) {
-    fail(source, "expected the four configured page-reference carousels only");
+    !["top_carousel", "icon_carousel", "bottom_carousel", "explore_carousel", "guidance_carousel", "hero", "filter"].includes(key))) {
+    fail(source, "expected the configured homepage carousels only");
   }
   return {
     home: {

@@ -732,7 +732,7 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-/** Discovers hero groups from settings/hero.json or default.hero.md. */
+/** Discovers hero groups from settings/home.json (hero) or defaults from library/hero. */
 function loadDefaultHero(imageLookup) {
   const relativeHeroDir = path.join("library", "hero");
   const heroDir = path.join(rootDir, relativeHeroDir);
@@ -740,167 +740,198 @@ function loadDefaultHero(imageLookup) {
     throw new Error(`${relativeHeroDir} is missing — initialize the library submodule and add a hero group.`);
   }
 
-  const heroSettingsPath = path.join(rootDir, "settings", "hero.json");
-  if (existsSync(heroSettingsPath)) {
-    let heroConfig;
+  // Discover all enabled hero markdown files from library/hero
+  const allHeroFiles = readdirSync(heroDir)
+    .filter((file) => file.endsWith(".md") && !file.startsWith("_") && !file.endsWith(".hero.md"))
+    .sort();
+
+  const enabledHeroFiles = allHeroFiles.filter((file) => {
     try {
-      heroConfig = JSON.parse(readFileSync(heroSettingsPath, "utf8"));
-    } catch (err) {
-      throw new Error(`settings/hero.json is not valid JSON — ${err.message}`);
+      const raw = readFileSync(path.join(heroDir, file), "utf8");
+      const { metadata } = parseMarkdownFrontmatter(raw, path.join(relativeHeroDir, file));
+      return metadata && metadata.enabled !== false;
+    } catch {
+      return false;
     }
-
-    let references;
-    if (Array.isArray(heroConfig)) {
-      references = heroConfig;
-    } else if (heroConfig && typeof heroConfig === "object") {
-      const today = new Date().toISOString().slice(0, 10);
-      let matchedOverride = null;
-      if (Array.isArray(heroConfig.overrides)) {
-        for (const override of heroConfig.overrides) {
-          if (!override || typeof override !== "object" || !Array.isArray(override.slides)) continue;
-          const { startsOn, endsOn, date } = override;
-          if (date && date === today) {
-            matchedOverride = override.slides;
-            break;
-          }
-          if (startsOn && endsOn && today >= startsOn && today <= endsOn) {
-            matchedOverride = override.slides;
-            break;
-          }
-          if (startsOn && !endsOn && today >= startsOn) {
-            matchedOverride = override.slides;
-            break;
-          }
-        }
-      }
-      if (!matchedOverride && Array.isArray(heroConfig[today])) {
-        matchedOverride = heroConfig[today];
-      }
-      references = matchedOverride ?? heroConfig.default;
-    }
-
-    if (!Array.isArray(references) || !references.length) {
-      throw new Error(`settings/hero.json must configure a non-empty array of hero markdown file references under "default".`);
-    }
-
-    const slides = references.map((ref, index) => {
-      if (typeof ref !== "string" || !ref.trim()) {
-        throw new Error(`settings/hero.json entry [${index}] must be a non-empty string.`);
-      }
-      const filename = path.basename(ref).endsWith(".md") ? path.basename(ref) : `${path.basename(ref)}.md`;
-      const filePath = path.join(heroDir, filename);
-      if (!existsSync(filePath)) {
-        throw new Error(`settings/hero.json entry [${index}] references "${ref}", but ${path.join(relativeHeroDir, filename)} does not exist.`);
-      }
-      const raw = readFileSync(filePath, "utf8");
-      const parsed = parseMarkdownFrontmatter(raw, path.join(relativeHeroDir, filename));
-      const hero = parsed.metadata;
-
-      const titles = resolveHeroTitles(hero, languageCodes, defaultLang, path.join(relativeHeroDir, filename));
-      if (typeof hero.href !== "string" || !hero.href.trim()) {
-        throw new Error(`${path.join(relativeHeroDir, filename)} needs a non-empty "href" string.`);
-      }
-
-      let imageObj;
-      if (typeof hero.image === "string") {
-        imageObj = { landscape: hero.image, portrait: hero.image };
-      } else if (hero.image && typeof hero.image === "object") {
-        const landscape = hero.image.landscape ?? hero.image.portrait;
-        const portrait = hero.image.portrait ?? hero.image.landscape;
-        imageObj = { landscape, portrait };
-      } else if (Array.isArray(hero.images) && hero.images.length) {
-        imageObj = { landscape: hero.images[0], portrait: hero.images[0] };
-      }
-
-      for (const variant of ["landscape", "portrait"]) {
-        const img = imageObj?.[variant];
-        if (typeof img !== "string" || (!img.startsWith("http://") && !img.startsWith("https://") && !img.startsWith("@image."))) {
-          throw new Error(`${path.join(relativeHeroDir, filename)} image.${variant} must be an HTTP URL or @image reference.`);
-        }
-        if (img.startsWith("@image.") && !imageLookup.has(img)) {
-          throw new Error(`${path.join(relativeHeroDir, filename)} image.${variant} references unknown image "${img}".`);
-        }
-      }
-
-      return {
-        titles,
-        title_en: titles.en ?? titles[defaultLang],
-        title_kn: titles.kn ?? titles[defaultLang],
-        href: hero.href,
-        image: imageObj,
-        images: [imageObj.landscape],
-        enabled: hero.enabled ?? false,
-      };
-    });
-
-    console.log(`[content] hero slides=${slides.length} configured in settings/hero.json`);
-    const firstSlide = slides[0];
-    return {
-      slides,
-      images: slides.map((s) => s.image.landscape),
-      href: firstSlide.href,
-      titles: firstSlide.titles,
-      title_en: firstSlide.title_en,
-      title_kn: firstSlide.title_kn,
-    };
-  }
-
-  const groupFiles = readdirSync(heroDir).filter((file) => file.endsWith(".hero.md") || file.endsWith(".hero.json")).sort();
-  const defaultFile = existsSync(path.join(heroDir, "default.hero.md"))
-    ? "default.hero.md"
-    : "default.hero.json";
-  if (!existsSync(path.join(heroDir, defaultFile))) {
-    throw new Error(`${path.join(relativeHeroDir, defaultFile)} or settings/hero.json is required — it configures the hero carousel.`);
-  }
-
-  const file = path.join(heroDir, defaultFile);
-  let hero;
-  if (defaultFile.endsWith(".json")) {
-    try {
-      hero = JSON.parse(readFileSync(file, "utf8"));
-    } catch (err) {
-      throw new Error(`${path.join(relativeHeroDir, defaultFile)} is not valid JSON — ${err.message}`);
-    }
-  } else {
-    const raw = readFileSync(file, "utf8");
-    const parsed = parseMarkdownFrontmatter(raw, path.join(relativeHeroDir, defaultFile));
-    hero = parsed.metadata;
-  }
-
-  const titles = resolveHeroTitles(hero, languageCodes, defaultLang, path.join(relativeHeroDir, defaultFile));
-  for (const key of ["href"]) {
-    if (typeof hero[key] !== "string" || !hero[key].trim()) {
-      throw new Error(`${path.join(relativeHeroDir, defaultFile)} needs a non-empty "${key}" string.`);
-    }
-  }
-  if (!Array.isArray(hero.images) || !hero.images.length) {
-    throw new Error(`${path.join(relativeHeroDir, defaultFile)} needs a non-empty "images" array.`);
-  }
-
-  const images = hero.images.map((image, index) => {
-    if (typeof image !== "string" || (!image.startsWith("http://") && !image.startsWith("https://") && !image.startsWith("@image."))) {
-      throw new Error(`${path.join(relativeHeroDir, defaultFile)} images[${index}] must be an HTTP URL or @image reference.`);
-    }
-    if (image.startsWith("@image.") && !imageLookup.has(image)) {
-      throw new Error(`${path.join(relativeHeroDir, defaultFile)} images[${index}] references unknown image "${image}".`);
-    }
-    return image;
   });
 
-  const slides = images.map((image) => ({
-    titles,
-    title_en: titles.en ?? titles[defaultLang],
-    title_kn: titles.kn ?? titles[defaultLang],
-    href: hero.href,
-    image,
-    images: [image],
-  }));
+  const homeSettingsPath = path.join(rootDir, "settings", "home.json");
+  let heroConfig;
+  if (existsSync(homeSettingsPath)) {
+    try {
+      const homeConfig = JSON.parse(readFileSync(homeSettingsPath, "utf8"));
+      if (homeConfig.hero) {
+        heroConfig = homeConfig.hero;
+      }
+    } catch (err) {
+      throw new Error(`settings/home.json is not valid JSON — ${err.message}`);
+    }
+  }
 
-  console.log(`[content] hero groups=[${groupFiles.map((name) => name.replace(/\.hero\.(md|json)$/, "")).join(", ")}] selected=default`);
+  // Strip $comment / comment tags recursively if heroConfig is present
+  if (heroConfig && typeof heroConfig === "object") {
+    function strip(val) {
+      if (!val || typeof val !== "object") return val;
+      if (Array.isArray(val)) return val.map(strip);
+      const out = {};
+      for (const [k, v] of Object.entries(val)) {
+        if (k === "$comment" || k === "comment" || k.startsWith("//")) continue;
+        out[k] = strip(v);
+      }
+      return out;
+    }
+    heroConfig = strip(heroConfig);
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  let references = [];
+
+  if (heroConfig && typeof heroConfig === "object") {
+    // 1. Calendar overrides
+    let matchedOverride = null;
+    if (Array.isArray(heroConfig.overrides)) {
+      for (const override of heroConfig.overrides) {
+        if (!override || typeof override !== "object") continue;
+        const { startsOn, endsOn, date, slides } = override;
+        if (date && date === today && Array.isArray(slides)) {
+          matchedOverride = override;
+          break;
+        }
+        if (startsOn && endsOn && today >= startsOn && today <= endsOn && Array.isArray(slides)) {
+          matchedOverride = override;
+          break;
+        }
+        if (startsOn && !endsOn && today >= startsOn && Array.isArray(slides)) {
+          matchedOverride = override;
+          break;
+        }
+      }
+    }
+
+    if (matchedOverride && Array.isArray(matchedOverride.slides)) {
+      references = matchedOverride.slides;
+    } else if (Array.isArray(heroConfig.default) && heroConfig.default.length > 0) {
+      references = heroConfig.default;
+    } else {
+      // Dynamic slot resolution: count, pinned, and auto-pool from enabledHeroFiles
+      const targetCount = Number.isSafeInteger(heroConfig.count) ? heroConfig.count : enabledHeroFiles.length;
+      const slots = new Array(targetCount).fill(null);
+      const pinnedList = [];
+      if (matchedOverride && Array.isArray(matchedOverride.pinned)) {
+        pinnedList.push(...matchedOverride.pinned);
+      }
+      if (Array.isArray(heroConfig.pinned)) {
+        pinnedList.push(...heroConfig.pinned);
+      }
+
+      const seen = new Set();
+      for (const entry of pinnedList) {
+        let item;
+        let targetIndex = null;
+        if (typeof entry === "string") {
+          item = entry;
+        } else if (entry && typeof entry === "object") {
+          item = entry.item || entry.slide || entry.file;
+          if (Number.isSafeInteger(entry.index) && entry.index >= 0 && entry.index < targetCount) {
+            targetIndex = entry.index;
+          }
+        }
+        if (typeof item !== "string") continue;
+        const norm = item.endsWith(".md") ? item : `${item}.md`;
+        if (!enabledHeroFiles.includes(norm) || seen.has(norm)) continue;
+        if (targetIndex !== null && slots[targetIndex] === null) {
+          slots[targetIndex] = norm;
+          seen.add(norm);
+        } else if (targetIndex === null) {
+          const freeIdx = slots.indexOf(null);
+          if (freeIdx !== -1) {
+            slots[freeIdx] = norm;
+            seen.add(norm);
+          }
+        }
+      }
+
+      // Backfill empty slots from enabledHeroFiles pool
+      const pool = enabledHeroFiles.filter((f) => !seen.has(f));
+      let poolIdx = 0;
+      for (let i = 0; i < targetCount; i++) {
+        if (slots[i] === null && poolIdx < pool.length) {
+          slots[i] = pool[poolIdx++];
+        }
+      }
+      references = slots.filter(Boolean);
+    }
+  } else {
+    references = enabledHeroFiles;
+  }
+
+  if (!references.length) {
+    references = enabledHeroFiles;
+  }
+
+  if (!Array.isArray(references) || !references.length) {
+    throw new Error(`library/hero contains no enabled hero markdown slides.`);
+  }
+
+  const slides = references.map((ref, index) => {
+    if (typeof ref !== "string" || !ref.trim()) {
+      throw new Error(`Hero carousel configuration entry [${index}] must be a non-empty string.`);
+    }
+    const filename = path.basename(ref).endsWith(".md") ? path.basename(ref) : `${path.basename(ref)}.md`;
+    const filePath = path.join(heroDir, filename);
+    if (!existsSync(filePath)) {
+      throw new Error(`Hero carousel entry [${index}] references "${ref}", but ${path.join(relativeHeroDir, filename)} does not exist.`);
+    }
+    const raw = readFileSync(filePath, "utf8");
+    const parsed = parseMarkdownFrontmatter(raw, path.join(relativeHeroDir, filename));
+    const hero = parsed.metadata;
+
+    const titles = resolveHeroTitles(hero, languageCodes, defaultLang, path.join(relativeHeroDir, filename));
+    if (typeof hero.href !== "string" || !hero.href.trim()) {
+      throw new Error(`${path.join(relativeHeroDir, filename)} needs a non-empty "href" string.`);
+    }
+
+    let imageObj;
+    if (typeof hero.image === "string") {
+      imageObj = { landscape: hero.image, portrait: hero.image };
+    } else if (hero.image && typeof hero.image === "object") {
+      const landscape = hero.image.landscape ?? hero.image.portrait;
+      const portrait = hero.image.portrait ?? hero.image.landscape;
+      imageObj = { landscape, portrait };
+    } else if (Array.isArray(hero.images) && hero.images.length) {
+      imageObj = { landscape: hero.images[0], portrait: hero.images[0] };
+    }
+
+    for (const variant of ["landscape", "portrait"]) {
+      const img = imageObj?.[variant];
+      if (typeof img !== "string" || (!img.startsWith("http://") && !img.startsWith("https://") && !img.startsWith("@image."))) {
+        throw new Error(`${path.join(relativeHeroDir, filename)} image.${variant} must be an HTTP URL or @image reference.`);
+      }
+      if (img.startsWith("@image.") && !imageLookup.has(img)) {
+        throw new Error(`${path.join(relativeHeroDir, filename)} image.${variant} references unknown image "${img}".`);
+      }
+    }
+
+    return {
+      titles,
+      title_en: titles.en ?? titles[defaultLang],
+      title_kn: titles.kn ?? titles[defaultLang],
+      href: hero.href,
+      image: imageObj,
+      images: [imageObj.landscape],
+      enabled: hero.enabled ?? false,
+    };
+  });
+
+  console.log(`[content] hero slides=${slides.length} configured in settings/home.json (hero)`);
+  const firstSlide = slides[0];
   return {
-    ...hero, images, slides,
-    title_en: titles.en ?? titles[defaultLang],
-    title_kn: titles.kn ?? titles[defaultLang],
+    slides,
+    images: slides.map((s) => s.image.landscape),
+    href: firstSlide.href,
+    titles: firstSlide.titles,
+    title_en: firstSlide.title_en,
+    title_kn: firstSlide.title_kn,
   };
 }
 

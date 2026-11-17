@@ -507,6 +507,7 @@
   "pages": {
     "local_copy": {
       "volunteer_register": "Register as Volunteer",
+      "volunteer_contribute_portal": "Content Contributor Portal",
       "yajna_register": "Register Your Sankalpa",
       "yajna_name": "Full Name *",
       "yajna_name_placeholder": "Your name",

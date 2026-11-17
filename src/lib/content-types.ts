@@ -17,6 +17,7 @@ export interface HomePageCard {
   page_type: string;
   url: string;
   footnote: string;
+  item_type?: string;
   enabled?: boolean;
 }
 
@@ -38,7 +39,7 @@ export interface HomeShape {
   icon_carousel: HomeIconCard[];
   bottom_carousel: HomePageCard[];
   explore_carousel: HomePageCard[];
-  remidies_carousel: HomePageCard[];
+  guidance_carousel: HomePageCard[];
   explore_label: string;
   explore_title: string;
   guidance_label: string;

@@ -57,6 +57,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   await mkdir(path.join(root, "build"));
   await mkdir(path.join(root, "settings"));
   const script = path.join(root, "build", "build-ui-settings.mjs");
+  await copyFile(new URL("../json-utils.mjs", import.meta.url), path.join(root, "build", "json-utils.mjs"));
   await copyFile(new URL("../build-ui-settings.mjs", import.meta.url), script);
   await copyFile(new URL("../workspace-lock.mjs", import.meta.url), path.join(root, "build", "workspace-lock.mjs"));
   await copyFile(new URL("../ui-settings.mjs", import.meta.url), path.join(root, "build", "ui-settings.mjs"));

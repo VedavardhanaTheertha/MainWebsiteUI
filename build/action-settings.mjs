@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { stripComments } from "./json-utils.mjs";
 
 const actionNames = ["headerWhatsApp", "subscribe", "donationEmail", "payment", "volunteer", "yajna"];
 const source = "settings/public_actions.json";
@@ -26,7 +27,8 @@ function requireDestination(value, action) {
   return value;
 }
 
-export function parseActionSettings(parsed) {
+export function parseActionSettings(rawParsed) {
+  const parsed = stripComments(rawParsed);
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
     throw new Error(`${source} must define an object.`);
   }

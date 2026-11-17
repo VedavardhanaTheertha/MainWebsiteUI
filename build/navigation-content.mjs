@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { stripComments } from "./json-utils.mjs";
 
 const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 function internalRoute(value, source) {
@@ -11,7 +12,8 @@ function internalRoute(value, source) {
 
 export function loadNavigation(rootDir) {
   const source = "settings/navigation.json";
-  const settings = JSON.parse(readFileSync(path.join(rootDir, source), "utf8"));
+  const raw = JSON.parse(readFileSync(path.join(rootDir, source), "utf8"));
+  const settings = stripComments(raw);
   if (!object(settings) || !object(settings.footer) || !object(settings.routes)) {
     throw new Error(`${source}: menu, footer and routes are required.`);
   }

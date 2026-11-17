@@ -1,0 +1,233 @@
+backend:
+  name: github
+  repo: ShiroorMatha/MainWebsiteUI
+  branch: main
+  base_url: https://shiroormatha.org
+  auth_endpoint: api/auth
+
+# Media storage disabled for contributors - contributors reference remote assets via URL/CDN
+# media_folder: public/images/uploads
+# public_folder: /images/uploads
+
+# Editorial workflow: immediate publish or draft reviews
+publish_mode: simple
+
+collections:
+  # ==========================================
+  # 1. Devotional Songs & Bhakti (library/dasasahitya)
+  # ==========================================
+  - name: bhakti
+    label: Devotional Songs (Bhakti)
+    folder: library/dasasahitya
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Kannada Title, widget: string }
+      - { name: raga, label: Raga, widget: string, required: false }
+      - { name: tala, label: Tala, widget: string, required: false }
+      - { name: composer, label: Composer (Haridasa), widget: string, required: false }
+      - { name: deity, label: Deity, widget: string, required: false }
+      - { name: body, label: Lyrics & Transliteration (Markdown), widget: markdown }
+
+  # ==========================================
+  # 2. Events & Utsavas (library/events)
+  # ==========================================
+  - name: events
+    label: Events & Festivals
+    folder: library/events
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Event Title (EN), widget: string }
+      - { name: date, label: Start Date, widget: date }
+      - { name: end_date, label: End Date, widget: date, required: false }
+      - { name: time, label: Time, widget: string, required: false }
+      - { name: location, label: Location / Venue, widget: string, required: false }
+      - { name: category, label: Category, widget: select, options: [utsava, pooja, cultural, lecture, seva] }
+      - { name: image, label: Banner / Poster Image URL (External CDN/R2), widget: string, required: false }
+      - { name: body, label: Description & Program Schedule, widget: markdown }
+
+  # ==========================================
+  # 3. Sevas & Offerings (library/sevas)
+  # ==========================================
+  - name: sevas
+    label: Sevas & Offerings
+    folder: library/sevas
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Seva Title (EN), widget: string }
+      - { name: amount, label: Suggested Amount (INR), widget: number, value_type: int }
+      - { name: deity, label: Deity, widget: string, required: false }
+      - { name: frequency, label: Frequency, widget: select, options: [daily, weekly, monthly, annual, special], required: false }
+      - { name: featured, label: Featured on Home / Highlights, widget: boolean, default: false }
+      - { name: body, label: Seva Significance & Procedure, widget: markdown }
+
+  # ==========================================
+  # 4. Spiritual Guidance & Remedies (library/remedies)
+  # ==========================================
+  - name: remedies
+    label: Guidance & Remedies
+    folder: library/remedies
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Guidance / Remedy Title, widget: string }
+      - { name: concern, label: Spiritual / Astrological Concern, widget: string, required: false }
+      - { name: status, label: Status, widget: select, options: [published, draft], default: published }
+      - { name: body, label: Guidance, Stotra & Pooja Recommendation, widget: markdown }
+
+  # ==========================================
+  # 5. Articles, Dharma & Shastra (library/dharma, library/shastra, library/articles)
+  # ==========================================
+  - name: dharma
+    label: Dharma Articles
+    folder: library/dharma
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Article Title, widget: string }
+      - { name: author, label: Author / Scholar, widget: string, required: false }
+      - { name: summary, label: Summary / Brief, widget: text, required: false }
+      - { name: body, label: Full Article Text, widget: markdown }
+
+  # ==========================================
+  # 6. Homepage & Presentation Settings (settings)
+  # ==========================================
+  - name: settings
+    label: Website Settings
+    delete: false
+    files:
+      - name: home_settings
+        label: Homepage Freshness & Carousel Controls
+        file: settings/home.json
+        fields:
+          - name: top_carousel
+            label: Top Carousel Configuration
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 8 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Page Markdown (e.g. albums.md, sevas.md), widget: string }
+              - name: overrides
+                label: Date / Festival Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index (0-based), widget: number }
+                      - { name: item, label: Page Markdown, widget: string }
+
+          - name: explore_carousel
+            label: Explore Carousel (Dynamic Library Items)
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 6 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Page / Article Slug, widget: string }
+              - name: overrides
+                label: Date / Festival Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index, widget: number }
+                      - { name: item, label: Page / Article Slug, widget: string }
+
+          - name: guidance_carousel
+            label: Guidance Carousel (Dynamic Sevas & Remedies)
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 6 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Seva or Remedy Slug, widget: string }
+              - name: overrides
+                label: Date / Festival Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index, widget: number }
+                      - { name: item, label: Seva or Remedy Slug, widget: string }
+
+          - name: bottom_carousel
+            label: Bottom Carousel Configuration
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 6 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots), widget: list, required: false
+                fields:
+                  - { name: index, label: Slot Index, widget: number }
+                  - { name: item, label: Page Markdown, widget: string }
+              - name: overrides
+                label: Date / Festival Overrides, widget: list, required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date, widget: list
+                    fields:
+                      - { name: index, label: Slot Index, widget: number }
+                      - { name: item, label: Page Markdown, widget: string }
+
+          - name: hero
+            label: Hero Carousel Configuration & Overrides
+            widget: object
+            fields:
+              - { name: count, label: Number of hero slides to display, widget: number, default: 8 }
+              - name: pinned
+                label: Pinned Slides (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Hero Slide Markdown (e.g. sacred-alankara-sri-krishna.md), widget: string }
+              - name: overrides
+                label: Special Date Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Special Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned slides for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index, widget: number }
+                      - { name: item, label: Hero Slide Markdown, widget: string }

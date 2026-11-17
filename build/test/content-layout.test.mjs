@@ -32,11 +32,21 @@ test("Sevas page strings belong to language files and retired Blog strings stay 
   assert.equal(loadEditorialContent(root, "en").blog_title, undefined);
 });
 
-test("hero order lives in settings/hero.json and items live in library/hero/", () => {
-  assert.ok(exists("settings/hero.json"));
+test("hero order lives in settings/home.json and items live in library/hero/", () => {
+  const homePath = path.join(root, "settings", "home.json");
+  assert.ok(exists("settings/home.json"));
   assert.equal(exists("settings/default.hero.md"), false);
-  const heroConfig = JSON.parse(readFileSync(path.join(root, "settings", "hero.json"), "utf8"));
-  const heroList = Array.isArray(heroConfig) ? heroConfig : heroConfig.default;
+  const homeJson = JSON.parse(readFileSync(homePath, "utf8"));
+  const heroConfig = homeJson.hero;
+  assert.ok(heroConfig);
+  let heroList = [];
+  if (Array.isArray(heroConfig)) {
+    heroList = heroConfig;
+  } else if (heroConfig.pinned && Array.isArray(heroConfig.pinned)) {
+    heroList = heroConfig.pinned.map((p) => typeof p === "string" ? p : p.item);
+  } else if (Array.isArray(heroConfig.default)) {
+    heroList = heroConfig.default;
+  }
   assert.ok(Array.isArray(heroList) && heroList.length > 0);
   for (const ref of heroList) {
     assert.ok(exists(path.join("library", "hero", ref)));

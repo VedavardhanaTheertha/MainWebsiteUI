@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { parseUiSettings, validateUiElements } from "./ui-settings-schema.mjs";
+import { stripComments } from "./json-utils.mjs";
 export { parseUiSettings } from "./ui-settings-schema.mjs";
 
 function object(value, source, field) {
@@ -57,9 +58,9 @@ export function loadUiSettings() {
 }
 
 export function loadUiElements() {
-  return validateUiElements(JSON.parse(readFileSync(new URL("../settings/ui_elements.json", import.meta.url), "utf8")));
+  return validateUiElements(stripComments(JSON.parse(readFileSync(new URL("../settings/ui_elements.json", import.meta.url), "utf8"))));
 }
 
 export function loadAnnouncementSettings() {
-  return parseAnnouncementSettings(JSON.parse(readFileSync(new URL("../settings/announcements.json", import.meta.url), "utf8")));
+  return parseAnnouncementSettings(stripComments(JSON.parse(readFileSync(new URL("../settings/announcements.json", import.meta.url), "utf8"))));
 }

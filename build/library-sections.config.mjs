@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseMarkdownFrontmatter } from "./content-utils.mjs";
+import { stripComments } from "./json-utils.mjs";
 
 const sectionDefinitions = [
   { id: "mantra", route: "/library/mantra" },
@@ -32,7 +33,8 @@ export function loadSectionImages(pagesDir = new URL("../library/pages", import.
   return imagesByRoute;
 }
 
-export function parseKnowledgeSections(settings, sourceName = "settings/knowledge_sections.json") {
+export function parseKnowledgeSections(rawSettings, sourceName = "settings/knowledge_sections.json") {
+  const settings = stripComments(rawSettings);
   if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
     throw new Error(`${sourceName} must define an object keyed by section ID.`);
   }

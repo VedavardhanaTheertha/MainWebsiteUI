@@ -1,6 +1,6 @@
 import path from "node:path";
 
-const ERROR_DOCUMENTS = new Set(["404.html", "_not-found.html"]);
+const ERROR_DOCUMENTS = new Set(["404.html", "_not-found.html", "contribute/index.html", "admin/index.html"]);
 
 /** Returns the public route represented by a Next.js static-export HTML file. */
 export function routeForHtml(outDir, file) {

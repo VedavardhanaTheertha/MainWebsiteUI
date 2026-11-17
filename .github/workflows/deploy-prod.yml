@@ -1,0 +1,63 @@
+# Builds and publishes the production site to Cloudflare Pages.
+#
+# Deliberately thin: all build logic lives in build/build.mjs so it can be run
+# and debugged locally. See docs/ARCHITECTURE.md (Build and deployment).
+name: Deploy production site
+
+on:
+  # Daily builds refresh date-sensitive upcoming/past event partitions and seeded carousels.
+  schedule:
+    - cron: "0 21 * * *"
+
+  # Rebuild automatically when upstream library or settings submodules receive commits.
+  repository_dispatch:
+    types: [submodule-updated, promote-prod]
+
+  # Allows a production build to be triggered manually from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-prod
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SITE_ENV: prod
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          submodules: recursive
+          persist-credentials: false
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Pull latest submodule revisions
+        run: git submodule update --init --recursive --remote
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate content, lint, typecheck, and unit tests
+        run: npm run check
+
+      - name: Build production site
+        run: npm run build:prod
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: shiroor-matha
+          directory: out
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

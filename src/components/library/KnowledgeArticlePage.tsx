@@ -6,6 +6,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useUiSettings } from "@/context/UiSettingsContext";
 import { placeholderLibrarySections, realLibrarySections } from "@/gen/library/data";
 import { libraryContentLoaders } from "@/gen/library/loaders";
+import { Copy, Printer } from "lucide-react";
 import { articleHref, localizeArticle, relatedArticles } from "@/lib/knowledge";
 import { copyReaderLink } from "@/lib/reader-utils";
 import KnowledgeBody from "./KnowledgeBody";
@@ -51,9 +52,11 @@ export default function KnowledgeArticlePage({
   return (
     <div className="layout-reading layout-section mx-auto max-w-4xl px-4 pt-3.5 pb-8 sm:px-6 sm:pt-4 sm:pb-12">
       <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
-        <div className="library-reading-controls flex flex-wrap items-center gap-3 border-b border-[var(--color-line-soft)] py-3 mb-5 text-sm">
+        <div className="library-reading-controls flex flex-wrap items-center justify-end gap-3 border-b border-[var(--color-line-soft)] pb-3 mb-5 text-sm">
           <label className="flex min-h-11 items-center gap-2">
-            {tr.bhakti_controls?.reading_size}
+            <span className="sr-only sm:not-sr-only text-xs text-[var(--color-text-secondary)]">
+              {tr.bhakti_controls?.reading_size}
+            </span>
             <input
               type="range"
               min={readingSettings.minSize}
@@ -61,16 +64,19 @@ export default function KnowledgeArticlePage({
               step={readingSettings.step}
               value={readingSize}
               onChange={(event) => setReadingSize(Number(event.target.value))}
-              className="min-h-11 w-28"
+              aria-label={tr.bhakti_controls?.reading_size}
+              className="min-h-11 w-24 sm:w-28"
             />
-            <output>{readingSize}%</output>
+            <output className="text-xs text-[var(--color-text-secondary)]">{readingSize}%</output>
           </label>
           <button
             type="button"
             onClick={() => window.print()}
-            className="min-h-11 rounded border border-[var(--color-line)] px-3"
+            aria-label={copy.print}
+            title={copy.print}
+            className="flex min-h-11 min-w-11 items-center justify-center rounded border border-[var(--color-line)] p-2 text-[var(--color-text-brand)] hover:bg-white/60"
           >
-            {copy.print}
+            <Printer className="size-4" aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -78,11 +84,13 @@ export default function KnowledgeArticlePage({
               const copied = await copyReaderLink(window.location.href);
               setLinkStatus(copied ? (tr.bhakti_controls?.copied ?? "") : (tr.bhakti_controls?.copy_failed ?? ""));
             }}
-            className="min-h-11 rounded border border-[var(--color-line)] px-3"
+            aria-label={tr.bhakti_controls?.copy_link}
+            title={tr.bhakti_controls?.copy_link}
+            className="flex min-h-11 min-w-11 items-center justify-center rounded border border-[var(--color-line)] p-2 text-[var(--color-text-brand)] hover:bg-white/60"
           >
-            {tr.bhakti_controls?.copy_link}
+            <Copy className="size-4" aria-hidden="true" />
           </button>
-          <p role="status">{linkStatus}</p>
+          {linkStatus && <p role="status" className="text-xs text-[var(--color-text-secondary)]">{linkStatus}</p>}
         </div>
         <article style={{ fontSize: `${0.95 * readingSize / 100}rem` }}>
           <header className="border-b border-[var(--color-line)] pb-6">

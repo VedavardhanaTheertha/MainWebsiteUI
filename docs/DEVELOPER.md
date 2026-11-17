@@ -102,7 +102,7 @@ defaults to checked) and changes immediately.
 (one for Section Page & Navigation Route, and one for Section Content Items). This allows
 developers to preview disabled sections (such as knowledge sections or events) and test
 navigation filtering locally without editing Markdown files. Any tiles referencing disabled pages
-in `top_carousel`, `icon_carousel`, `bottom_carousel`, `explore_carousel`, `remidies_carousel`, or hero
+in `top_carousel`, `icon_carousel`, `bottom_carousel`, `explore_carousel`, `guidance_carousel`, or hero
 slides are automatically disabled/hidden, and re-appear immediately when the corresponding section is
 enabled in Developer Options. The Reset button restores both
 UI element preferences and content overrides to their default states.
@@ -203,7 +203,7 @@ segment-prefetch URLs from the matching nested export files.
 | Short UI labels or a language descriptor | `content/languages/<code>.json` |
 | Topic prose, page metadata, learning content, or an article | Canonical `library/<topic>/` Markdown |
 | Homepage copy and card selection | `settings/home.json` and referenced `library/pages/*.md` |
-| Hero slides and configuration | `settings/hero.json` and referenced `library/hero/*.md` |
+| Hero slides and configuration | `settings/home.json` (hero) and referenced `library/hero/*.md` |
 | Menus/footer destinations | `settings/navigation.json` |
 | Official channels and verified contact data | `library/connect/` and `library/branches/` |
 | Public action routing | `settings/public_actions.json` and the owning topic source |
@@ -241,10 +241,10 @@ validated during generation. Preserve attribution, citations, review status, and
 source IDs. Raw HTML is disabled and rendered Markdown is sanitized.
 
 Homepage lists resolve `library/pages/` filenames: top six, icons five, bottom six,
-and explore three. Card prose and images belong in page-reference Markdown. The
-generated `remidies_carousel` selects three distinct remedies once per generation;
-keep at least four eligible articles and do not add that generated list to settings.
-Keep hero slide selection separate from card curation.
+and explore items. Card prose and images belong in page-reference Markdown. The
+guidance carousel (`guidance_carousel`) dynamically selects enabled sevas and remedies
+or uses overrides configured in `settings/home.json`.
+Keep hero slide configuration in `settings/home.json` under `"hero"`.
 
 Keep all five `icon_carousel` links visible together, without horizontal scrolling,
 at widths of 320px and above on mobile and tablet viewports (hidden at desktop widths

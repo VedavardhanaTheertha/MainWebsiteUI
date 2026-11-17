@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { stripComments } from "./json-utils.mjs";
 import path from "node:path";
 
 const source = "settings/theme.json";
@@ -39,7 +40,8 @@ function validShadow(value) {
     (dimensions.length < 3 || !dimensions[2].startsWith("-"));
 }
 
-export function parseThemeSettings(parsed) {
+export function parseThemeSettings(rawParsed) {
+  const parsed = stripComments(rawParsed);
   object(parsed, "root");
   if (Object.keys(parsed).some((key) => key !== "tokens")) {
     throw new Error(`${source} contains unknown fields; only tokens is supported.`);
