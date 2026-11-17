@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveImageUrl } from "./image-resolution.mjs";
+import { stripComments } from "./json-utils.mjs";
 
 const source = "settings/common.json";
 
@@ -126,7 +127,8 @@ export function parseFontSizeSettings(parsedFontSize) {
 
 export const parseFontSettings = parseFontSizeSettings;
 
-export function parseCommonSettings(parsed) {
+export function parseCommonSettings(rawParsed) {
+  const parsed = stripComments(rawParsed);
   object(parsed, "a common settings");
   const backgroundSource = parsed.background ?? parsed;
   const background = parseBackgroundSettings(backgroundSource);

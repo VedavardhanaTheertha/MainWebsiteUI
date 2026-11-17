@@ -50,20 +50,6 @@ await writeFile(
   "utf8",
 );
 
-// Synchronize settings/toplibrary.json to prevent config drift
-const topLibPath = path.join(projectRoot, "settings", "toplibrary.json");
-if (existsSync(topLibPath)) {
-  try {
-    const topLib = JSON.parse(readFileSync(topLibPath, "utf8"));
-    if (topLib?.sections) {
-      topLib.sections.album = topAlbumIds;
-      writeFileSync(topLibPath, JSON.stringify(topLib, null, 2) + "\n", "utf8");
-    }
-  } catch {
-    // Ignore if toplibrary.json cannot be parsed
-  }
-}
-
 console.log(
   `Built media album settings (${topAlbumIds.length} top, ${recentAlbumIds.length} recent from ${albums.length} albums).`,
 );

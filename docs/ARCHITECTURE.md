@@ -10,6 +10,39 @@ External services handle registration, payments, and official communication.
 
 Contributor commands are in [DEVELOPER.md](DEVELOPER.md).
 
+### Architecture Overview
+
+```mermaid
+flowchart TD
+    subgraph Contributors["Non-Technical & Technical Contributors"]
+        AUTH[Scholars, Admins & Editors]
+        AUTH -->|Web CMS Forms & Drafts| CMS[Git-Backed CMS: Sveltia / Decap]
+        CMS -->|Direct Commits / PRs| REPOS[Submodule Repositories]
+    end
+
+    subgraph Repositories["Source Repositories"]
+        REPOS --> L[WebsiteLibrary Submodule]
+        REPOS --> S[WebsiteConfiguration Submodule]
+        L -->|on push: repository_dispatch| CI[GitHub Actions Pipeline]
+        S -->|on push: repository_dispatch| CI
+    end
+
+    subgraph WebsiteEngine["MainWebsiteUI Build Engine"]
+        CRON["Daily Schedule (00:00 IST)"] --> CI
+        CI --> FETCH["Remote Tracking: git submodule update --remote"]
+        FETCH --> FRESH["Freshness Engine: Seeded Dynamic Pool & Index Pinning"]
+        FRESH --> COMPACT["Compact Cards: explore_carousel & guidance_carousel"]
+        COMPACT --> DOCK["Desktop Bottom-Left Action Dock & Mobile Bottom Bar"]
+        DOCK --> BUILD["Build & Static Export (npm run build)"]
+        BUILD --> VERIFY["Verification Suite (build/verify.mjs)"]
+    end
+
+    subgraph Deployment["Hosting Environments"]
+        VERIFY -->|SITE_ENV=dev| GHP["GitHub Pages (Dev / Testing)"]
+        VERIFY -->|SITE_ENV=prod| CF["Cloudflare Pages (Production: shiroormatha.org)"]
+    end
+```
+
 ## 2. Source ownership
 
 | Source | Responsibility |
@@ -27,6 +60,27 @@ Contributor commands are in [DEVELOPER.md](DEVELOPER.md).
 `library/` and `settings/` are separate Git submodules. A website commit records their
 commit references, not uncommitted files inside them. Publish reviewed submodule
 changes before updating the website references.
+
+### Submodule automation and remote tracking
+
+To allow editorial updates in `library/` (articles, events, devotional texts) and `settings/`
+(carousels, hero slides, UI configuration) to publish immediately without requiring a
+manual bump commit to `MainWebsiteUI`:
+
+1. **Remote-tracking builds**: Continuous integration workflows invoke
+   `git submodule update --init --recursive --remote` to check out the current `HEAD` of
+   the configured tracking branch (`main`) for each submodule rather than stopping at the
+   recorded commit tree reference.
+2. **Repository dispatches**: Upstream push workflows in `WebsiteLibrary` and
+   `WebsiteConfiguration` transmit a `repository_dispatch` event (`submodule-updated`)
+   to `MainWebsiteUI`, initiating verification, development preview publishing, and
+   production deployment automatically.
+3. **Non-technical contribution via CMS**: Non-technical authors and temple administrators
+   contribute through a browser-based, Git-backed CMS (such as Sveltia CMS or Decap CMS).
+   The CMS binds structured form fields directly to Markdown collections in `library/`
+   and JSON files in `settings/`. Saving or publishing an entry creates reviewed Git
+   commits or pull requests directly in the submodule repositories, triggering the
+   dispatch pipeline without requiring Git CLI commands.
 
 ### Content is data
 
@@ -187,29 +241,88 @@ cards retain authored status, and homepage remedy footnotes expose it too.
 
 ## 4. Homepage and navigation
 
-`settings/home.json` selects page-reference records from `library/pages/`. The
-homepage has six top cards, five icon cards, six bottom cards, and three explore
-cards. Card titles, descriptions, images, types, destinations, and footnotes belong
-in those multilingual Markdown records, not repeated in settings.
+`settings/home.json` configures the homepage composition, including `top_carousel`,
+`icon_carousel`, `bottom_carousel`, and compact dynamic showcases. Card titles,
+descriptions, images, types, destinations, and footnotes belong in their canonical
+Markdown records, rather than repeated in settings.
 If a referenced page is disabled (either via authored `enabled: false` or via Developer Options),
 its corresponding tile across `top_carousel`, `icon_carousel`, `bottom_carousel`, `explore_carousel`,
-`remidies_carousel`, or hero slides is disabled/hidden. Enabling the section in Developer Options
+`guidance_carousel`, or hero slides is disabled/hidden. Enabling the section in Developer Options
 dynamically re-enables its tiles.
 
-The five `icon_carousel` links use equal-width grid columns without horizontal
-scrolling, fixed at the bottom of the home screen on mobile and tablet viewports
-(hidden on desktop at `80rem` and above where the full top navigation bar is active).
-Each item displays a rounded icon tile with its localized title label below.
-Icons scale from 44px on narrow phones to 54px on larger screens, with accessible
-labels and touch-friendly targets. The six-card `bottom_carousel` is a separate collection.
+### Dynamic Freshness Engine and Index Pinning
 
-The generated `remidies_carousel` contains three distinct remedies drawn from
-`library/remedies/` per content generation. Selection is shared by all languages and
-content variants for that generation; keep at least four eligible remedy articles.
-The existing key spelling is part of the data contract. When remedies or its items are
-disabled, the remedies section and its tiles are hidden.
+Carousels on the homepage (`top_carousel`, `bottom_carousel`, `explore_carousel`, and hero slides)
+support dynamic daily rotation alongside deterministic index-specific pinning:
 
-Hero carousel slides live in individual Markdown files under `library/hero/*.md`, with presentation order defined by `settings/hero.json`.
+1. **Configurable Structure**: Settings can be authored either as simple lists of Markdown
+   filenames or as dynamic rotation objects declaring a `count`, a candidate `pool`,
+   explicit `pinned` items, and calendar `overrides`:
+   ```json
+   {
+     "count": 6,
+     "pinned": [
+       { "index": 0, "item": "events.md" },
+       { "index": 3, "item": "sevas.md" }
+     ],
+     "pool": [
+       "projects.md", "story.md", "history--parampara.md",
+       "albums.md", "volunteer.md", "krishna-mantra-yajna.md"
+     ],
+     "overrides": [
+       {
+         "date": "2026-08-25",
+         "pinned": [
+           { "index": 0, "item": "festival-krishna-janmashtami.md" }
+         ]
+       }
+     ]
+   }
+   ```
+2. **Specific Index Pinning**: Items can be pinned to exact target positions (e.g., slot 0
+   or slot 3). During build generation, pinned slots are filled first.
+3. **Daily Seeded Selection**: Remaining unpinned slots are filled from `pool` using a
+   pseudo-random shuffle deterministically seeded by the build date (`YYYY-MM-DD`). This
+   ensures all daily visitors receive an identical curated view, while daily builds
+   automatically rotate fresh content without manual commits.
+4. **Calendar Overrides**: Date-specific or range-based (`startsOn` to `endsOn`) override
+   blocks take precedence on matching days, pinning festival or occasion-specific pages
+   to their designated indices.
+
+### Compact Showcases: Explore and Guidance Carousels
+
+`explore_carousel` and `guidance_carousel` (Guidance) present individual library items
+(drawn from across all knowledge topics, remedies, and sevas) using a compact, image-free layout:
+
+* **Text-Focused Density**: Unlike collection tiles, compact cards omit thumbnail images
+  and display only the topic badge (`page_type`), bilingual title, and 2-line summary.
+* **Full-Surface Navigation**: The entire card surface serves as the clickable link;
+  redundant standalone arrow icons or links are intentionally omitted.
+* **Corpus Sampling**: Content generation draws from all eligible Markdown articles across
+  `library/` (e.g. hymns, philosophy, pilgrim guides, remedies, and sevas), allowing
+  specific devotional or educational pieces to be showcased directly on the homepage.
+
+### Responsive Action Navigation: Mobile Bar and Desktop Floating Dock
+
+The five `icon_carousel` links adapt to viewport size:
+
+* **Mobile and Tablet (`xl:hidden`)**: A fixed bottom navigation dock with equal-width
+  grid columns (`fixed bottom-0 inset-x-0`), touch-friendly 44px–54px rounded icon tiles,
+  and localized labels below each icon.
+* **Desktop (`hidden xl:flex`)**: A compact, floating vertical action dock pinned to the
+  **bottom-left edge** (`fixed bottom-6 left-6 z-40`). Styled as an elevated translucent
+  card (`bg-[var(--color-cream-card)]/90 backdrop-blur-md border border-[var(--color-line)]`),
+  icons scale on hover and reveal accessible flyout title tooltips to the right without
+  cluttering the main header or obscuring the bottom-right announcement widget.
+
+The six-card `bottom_carousel` remains a separate collection.
+
+The generated `guidance_carousel` contains distinct guidance items drawn from
+`library/sevas/` and `library/remedies/` per content generation. Selection is shared by all languages and
+content variants for that generation, supporting count, slot pinning, and date overrides. When guidance or its items are
+disabled, the guidance section and its tiles are hidden.
+
+Hero carousel slides live in individual Markdown files under `library/hero/*.md`, with presentation order defined by `settings/home.json` under `"hero"`.
 Slides whose target destinations point to disabled pages/routes are conditionally hidden,
 reappearing when the target section is enabled in Developer Options. Preserve image resolution and controls.
 
@@ -395,6 +508,27 @@ GitHub workflows verify pull requests and `main`; the development workflow publi
 the reviewed `main` export to GitHub Pages. The production configuration targets a
 root-hosted static site. Deployment credentials and hosting setup are operational
 concerns, not visitor-facing settings.
+
+### Automated Production Deployment to Cloudflare Pages
+
+Production hosting for `shiroormatha.org` is provided by Cloudflare Pages:
+
+1. **Dual-Environment Pipeline**:
+   * **Development (`SITE_ENV=dev`)**: Automatically built and published to GitHub Pages
+     on push to `main` and daily schedule for preview and QA testing.
+   * **Production (`SITE_ENV=prod`)**: Built using `node build/build.mjs prod` (invoked via
+     `npm run build:prod`) with canonical production URLs, enabled indexing, and real
+     authored copy. Static files in `out/` are uploaded to Cloudflare Pages via GitHub Actions
+     (`cloudflare/pages-action` or Wrangler).
+2. **Triggering Mechanisms**:
+   * **Submodule Dispatches**: Upstream changes in `WebsiteLibrary` or `WebsiteConfiguration`
+     emit `repository_dispatch` triggers (`submodule-updated`) to deploy updated content
+     instantly.
+   * **Daily Automated Midnight Refresh**: Scheduled GitHub Actions run daily at 00:00 IST
+     (`0 21 * * *` UTC), refreshing date-sensitive event partitions, seeded carousel pools,
+     and holiday overrides without requiring manual commits.
+   * **Manual Promotion**: Authorized maintainers can run `workflow_dispatch` with an optional
+     target environment input.
 
 A passing working-directory build is not sufficient evidence for CI: required files
 must be tracked and submodule commits available to the checkout. The clean-checkout

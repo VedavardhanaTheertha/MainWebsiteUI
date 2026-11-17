@@ -414,46 +414,6 @@ h6 {
   text-decoration: underline;
 }
 
-/* Generated article Markdown, scoped to its reading body. */
-.blog-body p {
-  margin-bottom: 1.15rem;
-  line-height: 1.75;
-}
-
-.blog-body h2,
-.blog-body h3 {
-  font-family: var(--font-localized, var(--font-display));
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-}
-
-.blog-body h2 {
-  font-size: 1.4rem;
-}
-
-.blog-body h3 {
-  font-size: 1.15rem;
-}
-
-.blog-body ul {
-  list-style: disc;
-  padding-left: 1.35rem;
-  margin-bottom: 1.15rem;
-}
-
-.blog-body li {
-  margin-bottom: 0.4rem;
-  line-height: 1.7;
-}
-
-.blog-body a {
-  color: var(--color-text-brand);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
   /* Fixed bottom icon_carousel spacing for footer and floating widgets on homepage (mobile and tablet only) */
   @media (max-width: 79.99rem) {
     body:has([data-carousel="icon_carousel"]) footer {

@@ -58,5 +58,5 @@ export default function HomeTiles() {
           </section>
         </div>
       </div>
-      );
+  );
 }

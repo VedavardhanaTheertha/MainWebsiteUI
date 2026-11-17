@@ -1,10 +1,9 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import path from "node:path";
 import { randomInt } from "node:crypto";
 import { assertSafeSourceFile, parseMarkdownFrontmatter } from "./content-utils.mjs";
 import { librarySections } from "./library-sections.config.mjs";
 
-const selectionCache = new Map();
 const textFields = ["title", "description", "page_type", "footnote"];
 const iconNames = new Set(["calendar", "hand-heart", "sparkles", "book-open", "video", "home", "users"]);
 const tones = new Set(["saffron", "green", "amber", "rose", "plum"]);
@@ -49,7 +48,7 @@ export function loadPageReferences(rootDir, defaultLanguage) {
     const { metadata, body } = parseMarkdownFrontmatter(readFileSync(path.join(directory, file), "utf8"), source);
     if (metadata.kind !== "page-reference" || body) fail(source, "expected a metadata-only page-reference record");
     for (const key of Object.keys(metadata)) {
-      if (!["kind", "enabled", "fields", ...textFields, "image", "url"].includes(key)) fail(source, `unknown field ${key}`);
+      if (!["kind", "enabled", "fields", ...textFields, "image", "url", "$comment", "comment"].includes(key)) fail(source, `unknown field ${key}`);
     }
     for (const field of textFields) languageMap(metadata[field], `${source}.${field}`, defaultLanguage, field === "footnote");
     safeLocation(metadata.image, `${source}.image`, true);
@@ -73,18 +72,52 @@ function localizedCard(record, language, defaultLanguage) {
 
 export function sampleUnique(items, count, draw = randomInt) {
   if (!Number.isSafeInteger(count) || count < 1 || items.length < count) {
-    fail("remidies_carousel", `requires at least ${count} distinct remedy articles`);
+    fail("guidance_carousel", `requires at least ${count} distinct items`);
   }
   const shuffled = [...items];
   for (let i = 0; i < count; i++) {
     const offset = draw(shuffled.length - i);
     if (!Number.isSafeInteger(offset) || offset < 0 || offset >= shuffled.length - i) {
-      fail("remidies_carousel", "random selection returned an invalid index");
+      fail("guidance_carousel", "random selection returned an invalid index");
     }
     const j = i + offset;
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled.slice(0, count);
+}
+
+export function sampleBalanced(items, count, draw = randomInt, getGroup = (item) => item.item_type || "default") {
+  if (!Number.isSafeInteger(count) || count < 1 || items.length < count) {
+    return sampleUnique(items, count, draw);
+  }
+  const groups = new Map();
+  for (const item of items) {
+    const groupKey = getGroup(item);
+    if (!groups.has(groupKey)) groups.set(groupKey, []);
+    groups.get(groupKey).push(item);
+  }
+  // Shuffle each group internally
+  for (const [key, list] of groups.entries()) {
+    groups.set(key, sampleUnique(list, list.length, draw));
+  }
+  // Shuffle the group order
+  const groupKeys = sampleUnique([...groups.keys()], groups.size, draw);
+  const selected = [];
+  let round = 0;
+  while (selected.length < count) {
+    let anyAdded = false;
+    for (const key of groupKeys) {
+      const list = groups.get(key);
+      if (round < list.length) {
+        selected.push(list[round]);
+        anyAdded = true;
+        if (selected.length === count) break;
+      }
+    }
+    if (!anyAdded) break;
+    round++;
+  }
+  return selected;
 }
 
 export function loadRemedyCarouselCandidates(rootDir, language, defaultLanguage, pages = loadPageReferences(rootDir, defaultLanguage)) {
@@ -112,10 +145,382 @@ export function loadRemedyCarouselCandidates(rootDir, language, defaultLanguage,
   });
 }
 
+export function createSeededRandom(seedString) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < seedString.length; i++) {
+    h = Math.imul(h ^ seedString.charCodeAt(i), 0x01000193);
+  }
+  let s = h >>> 0;
+  return function seededRandomInt(max) {
+    if (max <= 0) return 0;
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s % max;
+  };
+}
+
+export function resolveDynamicList(key, config, expectedCount, pages, excludeFiles = new Set()) {
+  const count = config.count ?? expectedCount;
+  if (!Number.isSafeInteger(count) || count < 1) {
+    fail(`settings/home.json.${key}`, "expected a positive integer for count");
+  }
+  const slots = new Array(count).fill(null);
+  const today = new Date().toISOString().slice(0, 10);
+
+  // 1. Resolve calendar overrides
+  let activeOverride = null;
+  if (Array.isArray(config.overrides)) {
+    for (const override of config.overrides) {
+      if (!override || typeof override !== "object") continue;
+      const { date, startsOn, endsOn } = override;
+      if (date && date === today) {
+        activeOverride = override;
+        break;
+      }
+      if (startsOn && endsOn && today >= startsOn && today <= endsOn) {
+        activeOverride = override;
+        break;
+      }
+      if (startsOn && !endsOn && today >= startsOn) {
+        activeOverride = override;
+        break;
+      }
+    }
+  }
+
+  // 2. Place pinned items
+  const pinnedList = [];
+  if (activeOverride && Array.isArray(activeOverride.pinned)) {
+    pinnedList.push(...activeOverride.pinned);
+  }
+  if (Array.isArray(config.pinned)) {
+    pinnedList.push(...config.pinned);
+  }
+
+  const seenItems = new Set();
+  for (const entry of pinnedList) {
+    let item;
+    let targetIndex = null;
+    if (typeof entry === "string") {
+      item = entry;
+    } else if (entry && typeof entry === "object") {
+      item = entry.item || entry.page || entry.file;
+      if (Number.isSafeInteger(entry.index) && entry.index >= 0 && entry.index < count) {
+        targetIndex = entry.index;
+      }
+    }
+    if (typeof item !== "string" || !pages.has(item) || seenItems.has(item) || excludeFiles.has(item)) continue;
+
+    if (targetIndex !== null && slots[targetIndex] === null) {
+      slots[targetIndex] = item;
+      seenItems.add(item);
+    } else if (targetIndex === null) {
+      const freeIdx = slots.indexOf(null);
+      if (freeIdx !== -1) {
+        slots[freeIdx] = item;
+        seenItems.add(item);
+      }
+    }
+  }
+
+  // 3. Fill remaining slots from candidate pool (prioritizing enabled pages over disabled pages)
+  const candidatePool = (Array.isArray(config.pool) && config.pool.length > 0 ? config.pool : [...pages.keys()])
+    .filter((file) => typeof file === "string" && pages.has(file) && !seenItems.has(file) && !excludeFiles.has(file));
+
+  const emptyIndices = [];
+  for (let i = 0; i < count; i++) {
+    if (slots[i] === null) emptyIndices.push(i);
+  }
+
+  if (emptyIndices.length > 0) {
+    if (candidatePool.length < emptyIndices.length) {
+      fail(`settings/home.json.${key}`, `pool has fewer items than required empty slots (${candidatePool.length} < ${emptyIndices.length})`);
+    }
+    const rng = createSeededRandom(`${today}-${key}`);
+    const enabledPool = candidatePool.filter((file) => pages.get(file)?.enabled === true);
+    const disabledPool = candidatePool.filter((file) => pages.get(file)?.enabled !== true);
+
+    const needed = emptyIndices.length;
+    const drawFromEnabled = Math.min(needed, enabledPool.length);
+    const selectedFromEnabled = drawFromEnabled > 0 ? sampleUnique(enabledPool, drawFromEnabled, rng) : [];
+
+    const remainingNeeded = needed - selectedFromEnabled.length;
+    const selectedFromDisabled = remainingNeeded > 0 ? sampleUnique(disabledPool, remainingNeeded, rng) : [];
+
+    const selected = [...selectedFromEnabled, ...selectedFromDisabled];
+    for (let i = 0; i < emptyIndices.length; i++) {
+      slots[emptyIndices[i]] = selected[i];
+    }
+  }
+
+  return slots;
+}
+
+export function loadAllLibraryCandidates(rootDir, language, defaultLanguage, pages = loadPageReferences(rootDir, defaultLanguage)) {
+  const sectionMap = new Map(librarySections.map((s) => [s.id, s]));
+  const candidates = [];
+  for (const [sectionId, section] of sectionMap.entries()) {
+    const dir = path.join(rootDir, "library", sectionId);
+    if (!existsSync(dir)) continue;
+    const collection = [...pages.values()].find(({ url }) => url === section.route);
+    const pageType = collection ? (collection.title?.[language] ?? collection.title?.[defaultLanguage] ?? sectionId) : sectionId;
+    let files;
+    try {
+      files = readdirSync(dir).filter((file) => file.endsWith(".md") && file !== "_index.md").sort();
+    } catch {
+      continue;
+    }
+    for (const file of files) {
+      const source = `library/${sectionId}/${file}`;
+      try {
+        const raw = readFileSync(path.join(dir, file), "utf8");
+        const { metadata } = parseMarkdownFrontmatter(raw, source);
+        if (!metadata || metadata.enabled === false) continue;
+        const id = metadata.id || file.slice(0, -3);
+        const title = metadata.title?.[language] ?? metadata.title?.[defaultLanguage] ?? (typeof metadata.title === "string" ? metadata.title : id);
+        const description = metadata.summary?.[language] ?? metadata.summary?.[defaultLanguage] ?? (typeof metadata.summary === "string" ? metadata.summary : "");
+        const footnote = metadata.status?.[language] ?? metadata.status?.[defaultLanguage] ?? (typeof metadata.status === "string" ? metadata.status : "");
+        candidates.push({
+          id: `${sectionId}--${id}`,
+          file: `${sectionId}/${file}`,
+          key: file,
+          title,
+          description,
+          page_type: pageType,
+          footnote,
+          item_type: sectionId,
+          image: metadata.image || "",
+          url: `${section.route}/${id}`,
+          enabled: true,
+        });
+      } catch {
+        // Skip unparseable files
+      }
+    }
+  }
+
+  // Bhakti / Dasasahitya compositions
+  const bhaktiDir = path.join(rootDir, "library", "dasasahitya");
+  if (existsSync(bhaktiDir)) {
+    let files = [];
+    try {
+      files = readdirSync(bhaktiDir).filter((file) => file.endsWith(".md")).sort();
+    } catch {}
+    for (const file of files) {
+      try {
+        const raw = readFileSync(path.join(bhaktiDir, file), "utf8");
+        const { metadata } = parseMarkdownFrontmatter(raw, `library/dasasahitya/${file}`);
+        if (!metadata || metadata.enabled === false) continue;
+        const id = metadata.id || file.slice(0, -3);
+        const lines = raw.split("\n");
+        const englishHeaderIdx = lines.findIndex((l) => l.includes("Lyrics transliterated to english"));
+        let translitTitle = "";
+        if (englishHeaderIdx !== -1) {
+          const nextLine = lines.slice(englishHeaderIdx + 1).map((l) => l.trim()).find(Boolean) || "";
+          translitTitle = nextLine.split("||")[0].split("|")[0].trim();
+        }
+        const knTitle = metadata.title || "";
+        const enTitle = translitTitle || metadata.kruti || id;
+        const composerKn = metadata["kruti-kn"] || "";
+        const composerEn = metadata.kruti || "";
+        candidates.push({
+          id: `bhakti--${id}`,
+          file: `dasasahitya/${file}`,
+          key: file,
+          title: language === "kn" ? (knTitle || enTitle) : (enTitle || knTitle),
+          description: language === "kn" ? (composerKn || composerEn) : (composerEn || composerKn),
+          page_type: language === "kn" ? "ಭಕ್ತಿ ಗಾನ" : "Bhakti Gāna",
+          footnote: language === "kn" ? (metadata["ankita-kn"] || "") : (metadata.ankita || ""),
+          item_type: "bhakti",
+          image: "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/bhakti-gana.avif",
+          url: "/library/bhakti",
+          enabled: true,
+        });
+      } catch {
+        // Skip unparseable files
+      }
+    }
+  }
+  return candidates;
+}
+
+export function loadAllGuidanceCandidates(rootDir, language, defaultLanguage) {
+  const candidates = [];
+  // 1. Remedies
+  const remediesDir = path.join(rootDir, "library", "remedies");
+  if (existsSync(remediesDir)) {
+    let files = [];
+    try {
+      files = readdirSync(remediesDir).filter((file) => file.endsWith(".md") && file !== "_index.md").sort();
+    } catch {}
+    for (const file of files) {
+      try {
+        const raw = readFileSync(path.join(remediesDir, file), "utf8");
+        const { metadata } = parseMarkdownFrontmatter(raw, `library/remedies/${file}`);
+        if (!metadata) continue;
+        const id = metadata.id || file.slice(0, -3);
+        const title = metadata.title?.[language] ?? metadata.title?.[defaultLanguage] ?? (typeof metadata.title === "string" ? metadata.title : id);
+        const description = metadata.summary?.[language] ?? metadata.summary?.[defaultLanguage] ?? (typeof metadata.summary === "string" ? metadata.summary : "");
+        const footnote = metadata.status?.[language] ?? metadata.status?.[defaultLanguage] ?? (typeof metadata.status === "string" ? metadata.status : "");
+        candidates.push({
+          id: `remedies--${id}`,
+          file: `remedies/${file}`,
+          key: file,
+          title,
+          description,
+          page_type: language === "kn" ? "ಮಾರ್ಗದರ್ಶನ" : "Guidance",
+          footnote,
+          item_type: "remedies",
+          image: metadata.image || "",
+          url: `/library/remedies/${id}`,
+          enabled: true,
+        });
+      } catch {}
+    }
+  }
+
+  // 2. Sevas
+  const sevasDir = path.join(rootDir, "library", "sevas");
+  if (existsSync(sevasDir)) {
+    let files = [];
+    try {
+      files = readdirSync(sevasDir).filter((file) => file.endsWith(".md")).sort();
+    } catch {}
+    for (const file of files) {
+      try {
+        const raw = readFileSync(path.join(sevasDir, file), "utf8");
+        const { metadata } = parseMarkdownFrontmatter(raw, `library/sevas/${file}`);
+        if (!metadata || metadata.enabled === false) continue;
+        const id = metadata.id || file.slice(0, -3);
+        const title = metadata.title?.[language] ?? metadata.title?.[defaultLanguage] ?? (typeof metadata.title === "string" ? metadata.title : id);
+        const description = metadata.description?.[language] ?? metadata.description?.[defaultLanguage] ?? metadata.summary?.[language] ?? "";
+        const category = metadata.category?.[language] ?? metadata.category?.[defaultLanguage] ?? (language === "kn" ? "ಸೇವೆ" : "Seva");
+        const amount = metadata.formatted_amount?.[language] ?? metadata.formatted_amount?.[defaultLanguage] ?? (metadata.amount ? `₹${metadata.amount}` : "");
+        candidates.push({
+          id: `seva--${id}`,
+          file: `sevas/${file}`,
+          key: file,
+          title,
+          description,
+          page_type: category,
+          footnote: amount,
+          item_type: "seva",
+          image: metadata.image || "",
+          url: "/sevas",
+          enabled: true,
+        });
+      } catch {}
+    }
+  }
+  return candidates;
+}
+
+export function resolveCandidateList(key, config, candidates, defaultCount = 6) {
+  const count = config?.count ?? defaultCount;
+  const slots = new Array(count).fill(null);
+  const today = new Date().toISOString().slice(0, 10);
+  const byKey = new Map();
+  for (const c of candidates) {
+    byKey.set(c.id, c);
+    if (c.file) byKey.set(c.file, c);
+    if (c.key) {
+      byKey.set(c.key, c);
+      if (c.key.endsWith(".md")) byKey.set(c.key.slice(0, -3), c);
+    }
+  }
+
+  // 1. Calendar overrides
+  let activeOverride = null;
+  if (Array.isArray(config?.overrides)) {
+    for (const ov of config.overrides) {
+      if (!ov || typeof ov !== "object") continue;
+      const { date, startsOn, endsOn } = ov;
+      if (date && date === today) { activeOverride = ov; break; }
+      if (startsOn && endsOn && today >= startsOn && today <= endsOn) { activeOverride = ov; break; }
+      if (startsOn && !endsOn && today >= startsOn) { activeOverride = ov; break; }
+    }
+  }
+
+  // 2. Pinned items
+  const pinnedList = [];
+  if (activeOverride && Array.isArray(activeOverride.pinned)) pinnedList.push(...activeOverride.pinned);
+  if (Array.isArray(config?.pinned)) pinnedList.push(...config.pinned);
+
+  const seenIds = new Set();
+  for (const entry of pinnedList) {
+    let itemKey;
+    let targetIndex = null;
+    if (typeof entry === "string") {
+      itemKey = entry;
+    } else if (entry && typeof entry === "object") {
+      itemKey = entry.item || entry.page || entry.file || entry.id;
+      if (Number.isSafeInteger(entry.index) && entry.index >= 0 && entry.index < count) {
+        targetIndex = entry.index;
+      }
+    }
+    const matched = byKey.get(itemKey);
+    if (!matched || seenIds.has(matched.id)) continue;
+    if (targetIndex !== null && slots[targetIndex] === null) {
+      slots[targetIndex] = matched;
+      seenIds.add(matched.id);
+    } else if (targetIndex === null) {
+      const freeIdx = slots.indexOf(null);
+      if (freeIdx !== -1) {
+        slots[freeIdx] = matched;
+        seenIds.add(matched.id);
+      }
+    }
+  }
+
+  // 3. Pool backfill
+  let pool = candidates.filter((c) => !seenIds.has(c.id));
+  if (Array.isArray(config?.pool) && config.pool.length > 0) {
+    const configuredSet = new Set(config.pool);
+    const filtered = pool.filter((c) => configuredSet.has(c.id) || configuredSet.has(c.file) || configuredSet.has(c.key));
+    if (filtered.length > 0) pool = filtered;
+  }
+
+  const emptyIndices = [];
+  for (let i = 0; i < count; i++) {
+    if (slots[i] === null) emptyIndices.push(i);
+  }
+
+  if (emptyIndices.length > 0 && pool.length > 0) {
+    const needed = Math.min(emptyIndices.length, pool.length);
+    const rng = createSeededRandom(`${today}-${key}`);
+    const enabledPool = pool.filter((c) => c.enabled === true);
+    const disabledPool = pool.filter((c) => c.enabled !== true);
+    const drawFromEnabled = Math.min(needed, enabledPool.length);
+    const selectedFromEnabled = drawFromEnabled > 0
+      ? sampleBalanced(enabledPool, drawFromEnabled, rng, (item) => item.item_type || "default")
+      : [];
+    const remainingNeeded = needed - selectedFromEnabled.length;
+    const selectedFromDisabled = remainingNeeded > 0
+      ? sampleBalanced(disabledPool, remainingNeeded, rng, (item) => item.item_type || "default")
+      : [];
+    const selected = [...selectedFromEnabled, ...selectedFromDisabled];
+    for (let i = 0; i < selected.length; i++) {
+      slots[emptyIndices[i]] = selected[i];
+    }
+  }
+
+  return slots.filter(Boolean);
+}
+
 export function resolveHomeCarousels(rootDir, settings, language, defaultLanguage) {
   const pages = loadPageReferences(rootDir, defaultLanguage);
-  function resolveList(key, expectedCount) {
-    const list = settings[key];
+  function resolveList(key, defaultExpectedCount, excludeFiles = new Set()) {
+    const raw = settings[key];
+    const expectedCount = (raw && typeof raw === "object" && !Array.isArray(raw) && Number.isSafeInteger(raw.count))
+      ? raw.count
+      : defaultExpectedCount;
+    let list;
+    if (Array.isArray(raw)) {
+      list = raw;
+    } else if (raw && typeof raw === "object") {
+      list = resolveDynamicList(key, raw, expectedCount, pages, excludeFiles);
+    } else {
+      fail(`settings/home.json.${key}`, expectedCount ? `expected exactly ${expectedCount} page references` : "expected page references");
+    }
     if (!Array.isArray(list) || !list.length || (expectedCount && list.length !== expectedCount)) {
       fail(`settings/home.json.${key}`, expectedCount ? `expected exactly ${expectedCount} page references` : "expected page references");
     }
@@ -136,23 +541,37 @@ export function resolveHomeCarousels(rootDir, settings, language, defaultLanguag
       return { ...card, icon: entry.icon, tone: entry.tone };
     });
   }
-  const top = resolveList("top_carousel", 6);
-  const bottom = resolveList("bottom_carousel", 6);
+  const globalFilter = new Set(Array.isArray(settings.filter) ? settings.filter : []);
+  const top = resolveList("top_carousel", 6, new Set(globalFilter));
+  const topFiles = new Set([...top.map(({ id }) => `${id}.md`), ...globalFilter]);
+  const bottom = resolveList("bottom_carousel", 6, topFiles);
   const topIds = new Set(top.map(({ id }) => id));
   if (bottom.some(({ id }) => topIds.has(id))) fail("settings/home.json.bottom_carousel", "must reference six different pages from top_carousel");
-  const candidates = loadRemedyCarouselCandidates(rootDir, language, defaultLanguage, pages);
-  const signature = candidates.map(({ id }) => id).join("\0");
-  let selection = selectionCache.get(rootDir);
-  if (!selection || selection.signature !== signature) {
-    selection = { signature, ids: sampleUnique(candidates, 3).map(({ id }) => id) };
-    selectionCache.set(rootDir, selection);
+
+  // Dynamic Explore Carousel (all eligible library items across collections, including Bhakti)
+  let explore;
+  const rawExplore = settings.explore_carousel;
+  if (Array.isArray(rawExplore) && rawExplore.length > 0 && typeof rawExplore[0] === "string" && pages.has(rawExplore[0])) {
+    explore = resolveList("explore_carousel");
+  } else {
+    const exploreCandidates = loadAllLibraryCandidates(rootDir, language, defaultLanguage, pages);
+    const targetCount = (rawExplore && typeof rawExplore === "object" && Number.isSafeInteger(rawExplore.count)) ? rawExplore.count : 6;
+    explore = resolveCandidateList("explore_carousel", rawExplore, exploreCandidates, targetCount);
   }
-  const byId = new Map(candidates.map((card) => [card.id, card]));
+
+  // Dynamic Guidance Carousel (Sevas & Remedies, supporting pinning and overrides)
+  const guidanceConfig = settings.guidance_carousel;
+  const guidanceCandidates = loadAllGuidanceCandidates(rootDir, language, defaultLanguage);
+  const targetGuidanceCount = (typeof guidanceConfig === "object" && Number.isSafeInteger(guidanceConfig.count))
+    ? guidanceConfig.count
+    : 6;
+  const guidance = resolveCandidateList("guidance_carousel", guidanceConfig, guidanceCandidates, targetGuidanceCount);
+
   return {
     top_carousel: top,
     icon_carousel: resolveList("icon_carousel"),
     bottom_carousel: bottom,
-    explore_carousel: resolveList("explore_carousel"),
-    remidies_carousel: selection.ids.map((id) => byId.get(id)),
+    explore_carousel: explore,
+    guidance_carousel: guidance,
   };
 }

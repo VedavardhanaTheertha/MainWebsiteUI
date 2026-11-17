@@ -56,6 +56,35 @@ function run(label, scriptPath, args = []) {
   }
 }
 
+/**
+ * Runs Next.js static build with an automatic retry if the Next.js security
+ * upgrade recommendation prompt stops the first invocation.
+ */
+function runNextBuild(label, scriptPath, args = []) {
+  console.log(`\n[build] ${label}`);
+  let result = spawnSync(process.execPath, [scriptPath, ...args], {
+    cwd: rootDir,
+    stdio: "inherit",
+    env: { ...process.env, SITE_ENV: envName },
+  });
+  if (result.status !== 0) {
+    console.log(`\n[build] retrying static site build...`);
+    result = spawnSync(process.execPath, [scriptPath, ...args], {
+      cwd: rootDir,
+      stdio: "inherit",
+      env: { ...process.env, SITE_ENV: envName },
+    });
+  }
+  if (result.error) {
+    console.error(`\n[build] FAILED at: ${label}\n  could not start: ${result.error.message}`);
+    process.exit(1);
+  }
+  if (result.status !== 0) {
+    console.error(`\n[build] FAILED at: ${label}`);
+    process.exit(result.status ?? 1);
+  }
+}
+
 /** Reads config/site.yml so the build can report what it is about to produce. */
 function loadConfig() {
   const file = path.join(rootDir, "config", "site.yml");
@@ -86,7 +115,7 @@ console.log("─".repeat(70));
 run("cleaning stale output", path.join(rootDir, "build", "clean.mjs"));
 patchNextFont(rootDir);
 generateContent((script) => run(script, path.join(rootDir, script)));
-run("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build", "--webpack"]);
+runNextBuild("building static site", path.join(rootDir, "node_modules", "next", "dist", "bin", "next"), ["build", "--webpack"]);
 run("normalizing canonical URLs", path.join(rootDir, "build", "write-canonicals.mjs"));
 run("verifying output", path.join(rootDir, "build", "verify.mjs"));
 

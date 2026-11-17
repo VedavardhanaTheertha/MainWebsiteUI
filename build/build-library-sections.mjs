@@ -223,46 +223,8 @@ async function loadSections(resolveImage) {
   }));
 }
 
-async function applyFeaturedSettings(sections) {
-  const sourceName = "settings/toplibrary.json";
-  const parsed = JSON.parse(await readFile(path.join(projectRoot, sourceName), "utf8"));
-  const configuredSections = parsed?.sections;
-  if (!configuredSections || typeof configuredSections !== "object" || Array.isArray(configuredSections)) {
-    throw new Error(`${sourceName} must define a sections object.`);
-  }
-
-  const knownSectionIds = new Set(sections.map((section) => section.id));
-  const sharedCollectionIds = new Set(["album", "sevas"]);
-  for (const configuredId of Object.keys(configuredSections)) {
-    if (!knownSectionIds.has(configuredId) && !sharedCollectionIds.has(configuredId)) {
-      throw new Error(`${sourceName} references unknown section "${configuredId}".`);
-    }
-  }
-
-  return sections.map((section) => {
-    const featuredItemIds = configuredSections[section.id];
-    if (!Array.isArray(featuredItemIds) || featuredItemIds.length === 0) {
-      throw new Error(`${sourceName} must configure at least one item for section "${section.id}".`);
-    }
-
-    const knownItemIds = new Set(section.items.map((item) => item.id));
-    const seen = new Set();
-    for (const itemId of featuredItemIds) {
-      if (typeof itemId !== "string" || !knownItemIds.has(itemId)) {
-        throw new Error(`${sourceName} section "${section.id}" references unknown item "${itemId}".`);
-      }
-      if (seen.has(itemId)) {
-        throw new Error(`${sourceName} section "${section.id}" contains duplicate item "${itemId}".`);
-      }
-      seen.add(itemId);
-    }
-
-    return { ...section, featuredItemIds };
-  });
-}
-
 const resolveImage = loadImageResolver();
-const realSections = (await applyFeaturedSettings(await loadSections(resolveImage)))
+const realSections = (await loadSections(resolveImage))
   .sort((a, b) => a.order - b.order);
 const sectionIds = new Set();
 const sectionRoutes = new Set();
@@ -393,7 +355,6 @@ export interface LibrarySection {
   image: string;
   metadataTitle: string;
   metadataDescription: string;
-  featuredItemIds: string[];
   items: LibraryArticle[];
 }
 

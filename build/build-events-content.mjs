@@ -27,9 +27,9 @@ const eventsSourceDir = path.join(rootDir, "library", "events");
 const outputDir = path.join(rootDir, "src", "gen", "events");
 const { codes: languageCodes, defaultLanguage } = discoverLanguageContent(rootDir);
 
-function localizeEventField(metadata, field, legacy, fallback = "") {
+function localizeEventField(metadata, field, initialValues = {}, fallback = "") {
   const authored = metadata[field];
-  const values = { ...legacy };
+  const values = { ...initialValues };
   for (const code of languageCodes) {
     if (code in values) continue;
     const value = metadata[`${field}_${code}`] ??

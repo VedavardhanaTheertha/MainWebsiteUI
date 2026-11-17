@@ -112,15 +112,25 @@ export default function VolunteerPage() {
             <LocalizedCopy path={["vol_ready_body"]} />
           </p>
 
-          <a
-            href={actionDestinations.volunteer}
-            className="inline-flex items-center gap-2 font-body font-semibold text-white bg-gradient-to-r from-[var(--color-saffron-600)] to-[var(--color-saffron-600)] rounded-full px-8 py-3.5 text-base hover:shadow-lg hover:scale-[1.02] transition-all focus-visible:outline-white focus-visible:outline-2"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <LocalizedCopy path={["pages", "local_copy", "volunteer_register"]} />
-            <span aria-hidden="true">→</span>
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={actionDestinations.volunteer}
+              className="inline-flex items-center gap-2 font-body font-semibold text-white bg-gradient-to-r from-[var(--color-saffron-600)] to-[var(--color-saffron-600)] rounded-full px-8 py-3.5 text-base hover:shadow-lg hover:scale-[1.02] transition-all focus-visible:outline-white focus-visible:outline-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <LocalizedCopy path={["pages", "local_copy", "volunteer_register"]} />
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <a
+              href="/contribute/"
+              className="inline-flex items-center gap-2 font-body font-semibold text-[var(--color-text-primary)] bg-[var(--color-cream-soft)] border border-[var(--color-line)] rounded-full px-7 py-3.5 text-base hover:bg-[var(--color-cream-medium)] hover:scale-[1.02] transition-all focus-visible:outline-[var(--color-saffron-600)]"
+            >
+              <LocalizedCopy path={["pages", "local_copy", "volunteer_contribute_portal"]} />
+              <span aria-hidden="true">✍</span>
+            </a>
+          </div>
 
           <p className="font-body text-xs text-[var(--color-text-brand)]/40 mt-4">
             {/* TODO: Replace with real contact info from management */}

@@ -1,14 +1,9 @@
 "use client";
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import ContentImage from "@/components/presentation/ContentImage";
-import Link from "next/link";
-import { ChevronDown, Search, X } from "lucide-react";
+import { ChevronDown, Copy, Printer, Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
-import { useDialog } from "@/hooks/useDialog";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import RailMotionControl from "@/components/RailMotionControl";
 import AdvancedFilters from "@/components/AdvancedFilters";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
@@ -22,130 +17,10 @@ import {
   type LibraryArticleContent,
 } from "@/gen/library/loaders";
 import { useUiSettings } from "@/context/UiSettingsContext";
-import { articleHref, knowledgeReadingTime, knowledgeText, localizeArticle, type DisplayArticle } from "@/lib/knowledge";
+import { knowledgeText, localizeArticle, type DisplayArticle } from "@/lib/knowledge";
 import { copyReaderLink } from "@/lib/reader-utils";
 import KnowledgeBody from "./KnowledgeBody";
-import CollectionEmptyState from "@/components/presentation/CollectionEmptyState";
-import { collectionCardBodyClassName, collectionCardClassName, collectionCardImageClassName } from "@/lib/collection-presentation";
 import "./bhakti-print.css";
-
-function ArticleModal({
-  article,
-  closeLabel,
-  onClose,
-  sectionId,
-  href,
-  openLabel,
-}: {
-  article: DisplayArticle;
-  closeLabel: string;
-  onClose: () => void;
-  sectionId: string;
-  href: string;
-  openLabel: string;
-}) {
-  const dialogRef = useDialog(true, onClose);
-
-  return (
-    <div
-      ref={dialogRef}
-      tabIndex={-1}
-      className="fixed inset-0 z-[10000] flex items-end justify-center bg-[var(--color-ink-900)]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="library-article-dialog-title"
-      onClick={onClose}
-    >
-      <div
-        className="relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <header className="flex shrink-0 items-start gap-4 border-b border-[var(--color-line)] p-5 sm:px-7">
-          <h2 id="library-article-dialog-title" className="min-w-0 flex-1 font-display text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">{article.title}</h2>
-          <button type="button" onClick={onClose} aria-label={closeLabel} className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full bg-[var(--color-cream-soft)] text-[var(--color-text-primary)]">
-            <X size={20} />
-          </button>
-        </header>
-
-        <div className="overflow-y-auto">
-          <div className="relative h-48 overflow-hidden sm:h-64">
-            <ContentImage
-              src={article.image}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 100vw, 768px"
-            />
-          </div>
-
-          <div className="p-5 sm:p-7">
-            {article.status ? <p className="mb-3 text-badge font-bold uppercase tracking-widest text-[var(--color-text-brand)]">{article.status}</p> : null}
-            <p className="text-sm leading-6 text-[var(--color-text-secondary)]">{article.summary}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {article.tags.map((tag) => (
-                <span key={tag} className="rounded-full bg-[var(--color-saffron-50)] px-3 py-1 text-badge text-[var(--color-text-brand)]">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <Link href={href} className="mt-5 inline-flex min-h-11 items-center rounded-full border border-[var(--color-line)] px-5 font-semibold text-[var(--color-text-brand)]">{openLabel}</Link>
-            <KnowledgeBody article={article} sectionId={sectionId} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function ArticleTile({
-  article,
-  sectionId,
-  featured = false,
-  onOpen,
-}: {
-  article: DisplayArticle;
-  sectionId: string;
-  featured?: boolean;
-  onOpen: () => void;
-}) {
-  const { tr } = useLang();
-  const { readingSettings } = useUiSettings();
-  const copy = tr.library_browser;
-  const projectStatus = article.knowledge?.project?.status;
-  const readingTime = sectionId === "stories" || article.knowledge?.readMinutes ? knowledgeReadingTime(article, readingSettings) : undefined;
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className={`${collectionCardClassName(featured ? "featured" : "collection", true)} ${
-        featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : "w-full"
-      }`}
-    >
-      <div className={collectionCardImageClassName}>
-        <ContentImage
-          src={article.image}
-          alt=""
-          fill
-          sizes={featured ? "(max-width: 768px) 82vw, 320px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-        />
-      </div>
-      <div className={collectionCardBodyClassName}>
-        {(projectStatus || article.status) && (
-          <span className="layout-tile-category visual-tile-badge mb-2 block w-fit rounded-full bg-[var(--color-cream-soft)] px-2.5 py-1 text-badge font-bold uppercase tracking-wide text-[var(--color-text-brand)]">
-            {projectStatus ? copy.detail_labels[projectStatus] : article.status}
-          </span>
-        )}
-        {projectStatus && article.status ? <p className="layout-tile-category mb-1 text-meta font-semibold text-[var(--color-text-muted)]">{article.status}</p> : null}
-        <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">
-          {article.title}
-        </h3>
-        <p className="layout-tile-summary mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
-          {article.summary}
-        </p>
-        {readingTime && <p className="layout-tile-footer layout-tile-reading-time mt-2 text-sm text-[var(--color-text-secondary)]">{(readingTime.estimated ? copy.estimated_read_minutes : copy.read_minutes).replace("{count}", String(readingTime.minutes))}</p>}
-      </div>
-    </button>
-  );
-}
 
 export default function LibrarySectionBrowser({ sectionId }: { sectionId: string }) {
   const { lang, contentMode, tr, isSectionPageEnabled, isSectionItemsEnabled } = useLang();
@@ -157,7 +32,6 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
     : realLibrarySections;
   const section = sections.find((entry) => entry.id === sectionId);
   const sectionCopy = tr.library_sections[sectionId];
-  const isLiterature = ["mantra", "shastra", "jnana", "dharma"].includes(sectionId);
   const pageEnabled = isSectionPageEnabled ? isSectionPageEnabled(sectionId, section?.enabled ?? false) : true;
   const itemsEnabled = isSectionItemsEnabled ? isSectionItemsEnabled(sectionId, section?.enabled ?? false) : true;
 
@@ -169,7 +43,6 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
   const deferredQuery = useDeferredValue(query);
   const [visibleCount, setVisibleCount] = useState<number>(collectionPagination.initialVisible);
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
-  const [paused, setPaused] = useState(false);
   const [loadedContent, setLoadedContent] = useState<Record<string, LibraryArticleContent>>({});
   const [loadFailures, setLoadFailures] = useState<Record<string, boolean>>({});
   const pendingLoads = useRef(new Map<string, Promise<void>>());
@@ -265,14 +138,6 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
     if (!loadedContent[id]) loadArticleContent(id);
   }, [loadedContent, loadArticleContent]);
 
-  const featured = useMemo(
-    () => section?.featuredItemIds
-      .map((id) => localizedItems.find((item) => item.id === id))
-      .filter((item): item is DisplayArticle => Boolean(item)) ?? [],
-    [localizedItems, section],
-  );
-  const featuredScrollRef = useAutoScrollRail(featured.length, paused || Boolean(selectedArticle));
-
   const glossary = useMemo(() => localizedItems.flatMap((article) =>
     article.knowledge?.glossary?.map((entry) => ({
       term: knowledgeText(entry.term, lang),
@@ -282,7 +147,6 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
   ).sort((a, b) => a.term.localeCompare(b.term, lang)), [localizedItems, lang]);
 
   useEffect(() => {
-    if (!isLiterature) return;
     const selectFromHash = () => {
       let id = "";
       try {
@@ -300,7 +164,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
     selectFromHash();
     window.addEventListener("hashchange", selectFromHash);
     return () => window.removeEventListener("hashchange", selectFromHash);
-  }, [isLiterature, localizedItems, loadArticleContent]);
+  }, [localizedItems, loadArticleContent]);
 
   const selectArticle = (article: DisplayArticle) => {
     returnToId.current = article.id;
@@ -322,115 +186,116 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
 
   if (!section || !sectionCopy) return <p role="status" className="mx-auto max-w-3xl p-8 text-base leading-7">{copy.unavailable}</p>;
 
-  if (isLiterature) {
-    return (
-      <div className="library-reader-page bg-transparent px-4 pt-3.5 pb-4 text-[var(--color-text-primary)] sm:px-6 sm:pt-4">
-        <section className="mx-auto max-w-[820px] px-16 text-center sm:px-20 lg:px-8">
-          <p className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">
-            {sectionCopy.eyebrow}
-          </p>
-          <h1 className="mt-1 font-display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight">
-            {sectionCopy.title}
-          </h1>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-            {sectionCopy.description}
-          </p>
-          <div className="mx-auto mt-3 max-w-[690px]">
-            <AdvancedFilters
-              active={Boolean(selectedTag)}
-              search={
-                <label className="flex h-11 items-center gap-3 rounded-full border border-[var(--color-line-strong)] bg-white/80 px-4 shadow-sm focus-within:border-[var(--color-saffron-400)] focus-within:ring-2 focus-within:ring-[var(--color-saffron-100)]">
-                  <span className="sr-only">{copy.search_label}</span>
-                  <Search aria-hidden="true" className="size-4 text-[var(--color-text-brand)]" />
-                  <input
-                    type="search"
-                    value={query}
-                    onFocus={ensureLoaded}
-                    onChange={(event) => {
-                      ensureLoaded();
-                      setQuery(event.target.value);
-                      setVisibleCount(collectionPagination.initialVisible);
-                    }}
-                    placeholder={copy.search_placeholder}
-                    className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-text-muted)]"
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      onClick={() => setQuery("")}
-                      className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-                      aria-label={copy.clear_search}
-                    >
-                      <X className="size-4" />
-                    </button>
-                  )}
-                </label>
-              }
-            >
-              <div className="flex flex-wrap gap-3 text-left text-sm">
-                <label className="flex-1 min-w-40">
-                  <span className="block mb-1">{copy.tag}</span>
-                  <select
-                    value={selectedTag}
-                    onChange={(event) => setSelectedTag(event.target.value)}
-                    className="min-h-11 w-full rounded border border-[var(--color-line)] bg-white px-2"
-                  >
-                    <option value="">{tr.bhakti_controls.all}</option>
-                    {allTags.map((tag) => (
-                      <option key={tag} value={tag}>
-                        {tag}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {(query || selectedTag) && (
+  return (
+    <div className="library-reader-page bg-transparent px-4 pt-3.5 pb-4 text-[var(--color-text-primary)] sm:px-6 sm:pt-4">
+      <section className="mx-auto max-w-[820px] px-16 text-center sm:px-20 lg:px-8">
+        <p className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">
+          {sectionCopy.eyebrow}
+        </p>
+        <h1 className="mt-1 font-display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight">
+          {sectionCopy.title}
+        </h1>
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+          {sectionCopy.description}
+        </p>
+        <div className="mx-auto mt-3 max-w-[690px]">
+          <AdvancedFilters
+            active={Boolean(selectedTag)}
+            search={
+              <label className="flex h-11 items-center gap-3 rounded-full border border-[var(--color-line-strong)] bg-white/80 px-4 shadow-sm focus-within:border-[var(--color-saffron-400)] focus-within:ring-2 focus-within:ring-[var(--color-saffron-100)]">
+                <span className="sr-only">{copy.search_label}</span>
+                <Search aria-hidden="true" className="size-4 text-[var(--color-text-brand)]" />
+                <input
+                  type="search"
+                  value={query}
+                  onFocus={ensureLoaded}
+                  onChange={(event) => {
+                    ensureLoaded();
+                    setQuery(event.target.value);
+                    setVisibleCount(collectionPagination.initialVisible);
+                  }}
+                  placeholder={copy.search_placeholder}
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-text-muted)]"
+                />
+                {query && (
                   <button
                     type="button"
-                    className="min-h-11 px-3 underline"
-                    onClick={() => {
-                      setQuery("");
-                      setSelectedTag("");
-                    }}
+                    onClick={() => setQuery("")}
+                    className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                    aria-label={copy.clear_search}
                   >
-                    {tr.bhakti_controls.clear_filters}
+                    <X className="size-4" />
                   </button>
                 )}
-              </div>
-            </AdvancedFilters>
-          </div>
-        </section>
+              </label>
+            }
+          >
+            <div className="flex flex-wrap gap-3 text-left text-sm">
+              <label className="flex-1 min-w-40">
+                <span className="block mb-1">{copy.tag}</span>
+                <select
+                  value={selectedTag}
+                  onChange={(event) => setSelectedTag(event.target.value)}
+                  className="min-h-11 w-full rounded border border-[var(--color-line)] bg-white px-2"
+                >
+                  <option value="">{tr.bhakti_controls?.all ?? ""}</option>
+                  {allTags.map((tag) => (
+                    <option key={tag} value={tag}>
+                      {tag}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {(query || selectedTag) && (
+                <button
+                  type="button"
+                  className="min-h-11 px-3 underline"
+                  onClick={() => {
+                    setQuery("");
+                    setSelectedTag("");
+                  }}
+                >
+                  {tr.bhakti_controls?.clear_filters ?? ""}
+                </button>
+              )}
+            </div>
+          </AdvancedFilters>
+        </div>
+      </section>
 
-        <section
-          id="library-results"
-          tabIndex={-1}
-          aria-label={copy.all_items}
-          className="mx-auto mt-4 max-w-6xl border-t border-[var(--color-line-strong)] pt-3 scroll-mt-28"
-        >
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-              {copy.all_items}
-            </h2>
-            <button
-              type="button"
-              onClick={() => setExpanded((value) => !value)}
-              aria-expanded={expanded}
-              className="flex min-h-11 items-center gap-1.5 rounded-full border border-[var(--color-line-strong)] bg-white/50 px-3 py-1.5 text-xs text-[var(--color-text-secondary)] hover:bg-white"
-            >
-              {expanded ? copy.collapse : copy.expand}
-              <ChevronDown className={`size-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-            </button>
-          </div>
+      <section
+        id="library-results"
+        tabIndex={-1}
+        aria-label={copy.all_items}
+        className="mx-auto mt-4 max-w-6xl border-t border-[var(--color-line-strong)] pt-3 scroll-mt-28"
+      >
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
+            {copy.all_items}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setExpanded((value) => !value)}
+            aria-expanded={expanded}
+            className="flex min-h-11 items-center gap-1.5 rounded-full border border-[var(--color-line-strong)] bg-white/50 px-3 py-1.5 text-xs text-[var(--color-text-secondary)] hover:bg-white"
+          >
+            {expanded ? copy.collapse : copy.expand}
+            <ChevronDown className={`size-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
+          </button>
+        </div>
 
-          {expanded && (
-            <>
-              <p className="my-2 text-xs text-[var(--color-text-secondary)]">
-                {copy.showing_template
-                  .replace("{shown}", String(visible.length))
-                  .replace("{total}", String(filtered.length))}
-              </p>
-              {visible.length ? (
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {visible.map((article) => (
+        {expanded && (
+          <>
+            <p className="my-2 text-xs text-[var(--color-text-secondary)]">
+              {copy.showing_template
+                .replace("{shown}", String(visible.length))
+                .replace("{total}", String(filtered.length))}
+            </p>
+            {visible.length ? (
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {visible.map((article) => {
+                  const projectStatus = article.knowledge?.project?.status;
+                  return (
                     <button
                       key={article.id}
                       data-article-id={article.id}
@@ -444,63 +309,61 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                       <strong className="block pr-5 text-sm font-semibold leading-relaxed text-[var(--color-text-primary)]">
                         {article.title}
                       </strong>
-                      {article.status ? (
+                      {(projectStatus || article.status) && (
                         <span className="mt-1.5 block text-caption text-[var(--color-text-muted)]">
+                          {projectStatus ? copy.detail_labels[projectStatus] : article.status}
+                        </span>
+                      )}
+                      {projectStatus && article.status ? (
+                        <span className="mt-0.5 block text-caption text-[var(--color-text-muted)]">
                           {article.status}
                         </span>
                       ) : null}
                       <span className="mt-1 block line-clamp-2 text-xs text-[var(--color-text-secondary)]">
                         {article.summary}
                       </span>
-                      <span
-                        aria-hidden="true"
-                        className="absolute bottom-3 right-3 grid size-5 place-items-center rounded-full bg-[var(--color-saffron-600)] text-xs text-white"
-                      >
-                        →
-                      </span>
                     </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="rounded-lg border border-[var(--color-line)] bg-white/50 p-8 text-center text-sm text-[var(--color-text-secondary)]">
-                  {copy.no_results}
-                </p>
-              )}
-              {filtered.length > visibleCount && (
-                <button
-                  type="button"
-                  onClick={() => setVisibleCount((prev) => prev + collectionPagination.loadIncrement)}
-                  className="mx-auto mt-3 block min-h-11 rounded-full border border-[var(--color-line-strong)] px-4 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
-                >
-                  {copy.show_more}
-                </button>
-              )}
-            </>
-          )}
-        </section>
-
-        {selectedArticle && (
-          <section
-            id="library-reading"
-            tabIndex={-1}
-            aria-label={selectedArticle.title}
-            className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
-          >
-            <div className="library-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)] pb-3">
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="rounded-lg border border-[var(--color-line)] bg-white/50 p-8 text-center text-sm text-[var(--color-text-secondary)]">
+                {copy.no_results}
+              </p>
+            )}
+            {filtered.length > visibleCount && (
               <button
                 type="button"
-                onClick={backToResults}
-                className="min-h-11 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:underline"
+                onClick={() => setVisibleCount((prev) => prev + collectionPagination.loadIncrement)}
+                className="mx-auto mt-3 block min-h-11 rounded-full border border-[var(--color-line-strong)] px-4 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
               >
-                ← {copy.back_collection}
+                {copy.show_more}
               </button>
-              <span className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">
-                {copy.reading}
-              </span>
-            </div>
-            <div className="library-reading-controls flex flex-wrap items-center gap-3 border-b border-[var(--color-line-soft)] py-3 mb-5 text-sm">
+            )}
+          </>
+        )}
+      </section>
+
+      {selectedArticle && (
+        <section
+          id="library-reading"
+          tabIndex={-1}
+          aria-label={selectedArticle.title}
+          className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
+        >
+          <div className="library-reading-controls flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-line-strong)] pb-3 mb-5">
+            <button
+              type="button"
+              onClick={backToResults}
+              className="min-h-11 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:underline"
+            >
+              ← {copy.back_collection}
+            </button>
+            <div className="flex flex-wrap items-center gap-3 text-sm">
               <label className="flex min-h-11 items-center gap-2">
-                {tr.bhakti_controls.reading_size}
+                <span className="sr-only sm:not-sr-only text-xs text-[var(--color-text-secondary)]">
+                  {tr.bhakti_controls.reading_size}
+                </span>
                 <input
                   type="range"
                   min={readingSettings.minSize}
@@ -508,16 +371,19 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                   step={readingSettings.step}
                   value={readingSize}
                   onChange={(event) => setReadingSize(Number(event.target.value))}
-                  className="min-h-11 w-28"
+                  aria-label={tr.bhakti_controls.reading_size}
+                  className="min-h-11 w-24 sm:w-28"
                 />
-                <output>{readingSize}%</output>
+                <output className="text-xs text-[var(--color-text-secondary)]">{readingSize}%</output>
               </label>
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="min-h-11 rounded border border-[var(--color-line)] px-3"
+                aria-label={copy.print}
+                title={copy.print}
+                className="flex min-h-11 min-w-11 items-center justify-center rounded border border-[var(--color-line)] p-2 text-[var(--color-text-brand)] hover:bg-white/60"
               >
-                {copy.print}
+                <Printer className="size-4" aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -527,216 +393,83 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                   const copied = await copyReaderLink(directUrl);
                   setLinkStatus(copied ? tr.bhakti_controls.copied : tr.bhakti_controls.copy_failed);
                 }}
-                className="min-h-11 rounded border border-[var(--color-line)] px-3"
+                aria-label={tr.bhakti_controls.copy_link}
+                title={tr.bhakti_controls.copy_link}
+                className="flex min-h-11 min-w-11 items-center justify-center rounded border border-[var(--color-line)] p-2 text-[var(--color-text-brand)] hover:bg-white/60"
               >
-                {tr.bhakti_controls.copy_link}
+                <Copy className="size-4" aria-hidden="true" />
               </button>
-              <p role="status">{linkStatus}</p>
+              {linkStatus && <p role="status" className="text-xs text-[var(--color-text-secondary)]">{linkStatus}</p>}
             </div>
-            {(() => {
-              const activeChunk = selectedArticle ? loadedContent[selectedArticle.id] : null;
-              const chunkHtml = activeChunk
-                ? (contentMode === "placeholder" ? activeChunk.placeholderHtml?.[lang] : activeChunk.realHtml?.[lang])
-                  || activeChunk.html?.[lang]
-                  || Object.values(activeChunk.html ?? {})[0]
-                : null;
-              const currentHtml = chunkHtml || selectedArticle.html || "";
-              return (
-                <article
-                  className="library-reading-content"
-                  style={{ fontSize: `${(0.95 * readingSize) / 100}rem` }}
-                >
-                  <h2 className="mb-4 font-display text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
-                    {selectedArticle.title}
-                  </h2>
-                  {loadFailures[selectedArticle.id] ? (
-                    <div className="my-6 rounded-lg border border-[var(--color-line)] p-4 text-center">
-                      <p className="text-sm text-[var(--color-text-secondary)]">{copy.unavailable}</p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          pendingLoads.current.delete(selectedArticle.id);
-                          loadArticleContent(selectedArticle.id);
-                        }}
-                        className="mt-3 inline-flex min-h-11 items-center rounded-full border border-[var(--color-line-strong)] px-4 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
-                      >
-                        {tr.bhakti_controls.retry}
-                      </button>
-                    </div>
-                  ) : (
-                    <KnowledgeBody article={{ ...selectedArticle, html: currentHtml }} sectionId={sectionId} />
-                  )}
-                </article>
-              );
-            })()}
-          </section>
-        )}
-
-        {sectionId === "jnana" && (
-          <section
-            className="layout-reading layout-section mx-auto mt-8 max-w-4xl rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
-            aria-labelledby="knowledge-glossary-heading"
-          >
-            <h2
-              id="knowledge-glossary-heading"
-              className="font-display text-2xl font-bold"
-            >
-              {copy.detail_labels.glossary}
-            </h2>
-            {glossary.length ? (
-              <dl className="mt-5 grid gap-5 sm:grid-cols-2">
-                {glossary.map((entry, index) => (
-                  <div key={`${entry.articleId}-${index}`}>
-                    <dt className="font-semibold">
-                      <Link
-                        href={articleHref(section, entry.articleId)}
-                        className="inline-flex min-h-11 items-center text-[var(--color-text-brand)] underline underline-offset-4"
-                      >
-                        {entry.term}
-                      </Link>
-                    </dt>
-                    <dd className="text-base leading-8">{entry.definition}</dd>
-                  </div>
-                ))}
-              </dl>
-            ) : (
-              <p role="status" className="mt-4 text-base leading-8">
-                {copy.unavailable}
-              </p>
-            )}
-          </section>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <header className="bg-transparent px-16 pt-3.5 pb-2 text-center sm:px-20 sm:pt-4 sm:pb-3 lg:px-8">
-        <p className="text-badge font-semibold uppercase tracking-widest text-[var(--color-text-brand)]">
-          {sectionCopy.eyebrow}
-        </p>
-        <h1 className="mt-2 font-display text-3xl font-bold text-[var(--color-text-primary)] lg:text-5xl">
-          {sectionCopy.title}
-        </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-[var(--color-text-brand)]/75 lg:text-base">
-          {sectionCopy.description}
-        </p>
-      </header>
-
-      {featured.length > 0 && (
-        <section className="layout-section bg-transparent px-5 pt-4 pb-4 lg:px-8 lg:pt-6 lg:pb-6" aria-labelledby="featured-library-title">
-          <div className="layout-wide mx-auto max-w-7xl">
-            <div className="flex items-center justify-between gap-4">
-              <h2 id="featured-library-title" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-                {copy.featured_title}
-              </h2>
-            </div>
-            <div className="relative mt-5">
-              {featured.length > 1 && <RailMotionControl paused={paused} onToggle={() => setPaused((current) => !current)} />}
-              <div
-                ref={featuredScrollRef}
-                className="layout-carousel-track -mx-5 flex gap-5 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0"
-                style={{
-                  WebkitOverflowScrolling: "touch",
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-                }}
+          </div>
+          {(() => {
+            const activeChunk = selectedArticle ? loadedContent[selectedArticle.id] : null;
+            const chunkHtml = activeChunk
+              ? (contentMode === "placeholder" ? activeChunk.placeholderHtml?.[lang] : activeChunk.realHtml?.[lang])
+                || activeChunk.realHtml?.[lang]
+                || activeChunk.html?.[lang]
+                || Object.values(activeChunk.realHtml ?? {})[0]
+                || Object.values(activeChunk.html ?? {})[0]
+              : null;
+            const currentHtml = chunkHtml || selectedArticle.html || "";
+            return (
+              <article
+                className="library-reading-content"
+                style={{ fontSize: `${(0.95 * readingSize) / 100}rem` }}
               >
-                {featured.map((article) => (
-                  <ArticleTile
-                    key={article.id}
-                    article={article}
-                    sectionId={sectionId}
-                    featured
-                    onOpen={() => setSelectedArticleId(article.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+                <h2 className="mb-4 font-display text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
+                  {selectedArticle.title}
+                </h2>
+                {loadFailures[selectedArticle.id] ? (
+                  <div className="my-6 rounded-lg border border-[var(--color-line)] p-4 text-center">
+                    <p className="text-sm text-[var(--color-text-secondary)]">{copy.unavailable}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        pendingLoads.current.delete(selectedArticle.id);
+                        loadArticleContent(selectedArticle.id);
+                      }}
+                      className="mt-3 inline-flex min-h-11 items-center rounded-full border border-[var(--color-line-strong)] px-4 text-xs font-semibold text-[var(--color-text-brand)] hover:bg-white/60"
+                    >
+                      {tr.bhakti_controls.retry}
+                    </button>
+                  </div>
+                ) : (
+                  <KnowledgeBody article={{ ...selectedArticle, html: currentHtml }} sectionId={sectionId} />
+                )}
+              </article>
+            );
+          })()}
         </section>
       )}
 
-      <div className="layout-collection layout-section mx-auto max-w-7xl px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:pb-12">
-        <section aria-labelledby="library-collection-heading">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <h2 id="library-collection-heading" className="font-display text-2xl font-bold text-[var(--color-text-primary)] lg:text-3xl">
-              {copy.all_items}
-            </h2>
-
-            <label className="relative block w-full sm:max-w-md">
-              <span className="sr-only">{copy.search_label}</span>
-              <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
-              <input
-                type="search"
-                value={query}
-                onFocus={ensureLoaded}
-                onChange={(event) => {
-                  ensureLoaded();
-                  setQuery(event.target.value);
-                }}
-                placeholder={copy.search_placeholder}
-                className="min-h-11 w-full rounded-xl border border-[var(--color-line-strong)] bg-white py-2.5 pl-10 pr-12 text-base text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-saffron-600)] focus:ring-2 focus:ring-[var(--color-saffron-100)]"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  className="absolute right-1 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-                  aria-label={copy.clear_search}
-                >
-                  <X className="size-4" />
-                </button>
-              )}
-            </label>
-          </div>
-
-          <p role="status" aria-live="polite" className="my-4 text-sm text-[var(--color-text-secondary)]">
-            {copy.showing_template
-              .replace("{shown}", String(visible.length))
-              .replace("{total}", String(filtered.length))}
-          </p>
-
-          {visible.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {visible.map((article) => (
-                <ArticleTile
-                  key={article.id}
-                  article={article}
-                  sectionId={sectionId}
-                  onOpen={() => setSelectedArticleId(article.id)}
-                />
+      {sectionId === "jnana" && (
+        <section
+          className="layout-reading layout-section mx-auto mt-8 max-w-4xl rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8"
+          aria-labelledby="knowledge-glossary-heading"
+        >
+          <h2
+            id="knowledge-glossary-heading"
+            className="font-display text-2xl font-bold"
+          >
+            {copy.detail_labels.glossary}
+          </h2>
+          {glossary.length ? (
+            <dl className="mt-4 space-y-4">
+              {glossary.map((entry, index) => (
+                <div key={index}>
+                  <dt className="font-bold text-[var(--color-text-primary)]">{entry.term}</dt>
+                  <dd className="text-sm text-[var(--color-text-secondary)]">{entry.definition}</dd>
+                </div>
               ))}
-            </div>
+            </dl>
           ) : (
-            <CollectionEmptyState>
-              {copy.no_results}
-            </CollectionEmptyState>
-          )}
-
-          {filtered.length > visibleCount && (
-            <button
-              type="button"
-              onClick={() => setVisibleCount((current) => current + collectionPagination.loadIncrement)}
-              className="mx-auto mt-7 block min-h-11 rounded-full border border-[var(--color-line-strong)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--color-text-brand)] hover:border-[var(--color-saffron-600)]"
-            >
-              {copy.show_more}
-            </button>
+            <p role="status" className="mt-4 text-base leading-8">
+              {copy.unavailable}
+            </p>
           )}
         </section>
-      </div>
-
-      {selectedArticle && (
-        <ArticleModal
-          article={selectedArticle}
-          sectionId={sectionId}
-          href={articleHref(section, selectedArticle.id)}
-          openLabel={copy.open_article}
-          closeLabel={copy.close_article}
-          onClose={() => setSelectedArticleId(null)}
-        />
       )}
-    </>
+    </div>
   );
 }

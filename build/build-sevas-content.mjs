@@ -178,38 +178,6 @@ function placeholderSeva(seva, index) {
   return placeholder;
 }
 
-async function loadFeaturedIds(sevaIds) {
-  const settingsFile = path.join(projectRoot, "settings", "toplibrary.json");
-
-  try {
-    await access(settingsFile);
-  } catch (error) {
-    if (error?.code === "ENOENT") return defaultFeaturedIds;
-    throw error;
-  }
-
-  const parsed = JSON.parse(await readFile(settingsFile, "utf8"));
-  const configured = parsed?.sections?.sevas;
-  const featuredIds = Array.isArray(configured) && configured.length > 0
-    ? configured
-    : defaultFeaturedIds;
-
-  const seen = new Set();
-  for (const id of featuredIds) {
-    if (typeof id !== "string" || !id.trim()) {
-      throw new Error(`${path.relative(projectRoot, settingsFile)} contains an invalid seva id.`);
-    }
-    if (!sevaIds.has(id)) {
-      throw new Error(`${path.relative(projectRoot, settingsFile)} references unknown seva "${id}".`);
-    }
-    if (seen.has(id)) {
-      throw new Error(`${path.relative(projectRoot, settingsFile)} contains duplicate seva "${id}".`);
-    }
-    seen.add(id);
-  }
-  return featuredIds;
-}
-
 const files = (await readdir(sourceDir))
   .filter((file) => file.toLowerCase().endsWith(".md"))
   .sort((a, b) => a.localeCompare(b, "en"));
@@ -227,7 +195,7 @@ for (const file of files) {
 }
 
 sevas.sort((a, b) => a.code - b.code || a.id.localeCompare(b.id, "en"));
-const featuredSevaIds = await loadFeaturedIds(ids);
+const featuredSevaIds = defaultFeaturedIds.filter((id) => ids.has(id));
 
 const realSevas = sevas;
 const placeholderSevas = sevas.map(placeholderSeva);

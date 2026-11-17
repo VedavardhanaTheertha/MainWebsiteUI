@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Copy, Printer, Search } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useLazyMiniSearch } from "@/hooks/useMiniSearch";
 import { getSearchProfile } from "@/lib/search";
@@ -267,7 +267,6 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
                     <span className="mt-2 block pr-6 text-caption text-[var(--color-text-brand)]">
                       {copy.ankita}: {display(item).ankita}
                     </span>
-                    <span aria-hidden="true" className="absolute bottom-3 right-3 grid size-5 place-items-center rounded-full bg-[var(--color-saffron-600)] text-xs text-white">→</span>
                   </button>
                 ))}
               </div>
@@ -289,23 +288,28 @@ export default function BhaktiBrowser({ items }: { items: BhaktiItem[] }) {
 
       {selected && (
         <section id="bhakti-reading" tabIndex={-1} aria-label={display(selected).title} className="mx-auto mt-4 max-w-4xl scroll-mt-28 rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
-          <div className="bhakti-reading-controls flex items-center justify-between border-b border-[var(--color-line-strong)] pb-3">
+          <div className="bhakti-reading-controls flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-line-strong)] pb-3 mb-5">
             <button type="button" onClick={backToResults} className="min-h-11 py-2 text-xs font-semibold text-[var(--color-text-brand)] hover:underline">← {copy.back}</button>
-            <span className="text-micro font-bold uppercase tracking-[.18em] text-[var(--color-text-brand)]">{copy.reading}</span>
-          </div>
-          <div className="bhakti-reading-controls flex flex-wrap items-center gap-3 border-b border-[var(--color-line-soft)] py-3 mb-5 text-sm">
-            <label className="flex min-h-11 items-center gap-2">
-              {controls.reading_size}
-              <input type="range" min={readingSettings.minSize} max={readingSettings.maxSize} step={readingSettings.step} value={readingSize}
-                onChange={(event) => setReadingSize(Number(event.target.value))} className="min-h-11 w-28" />
-              <output>{readingSize}%</output>
-            </label>
-            <button type="button" disabled={!currentHtml} onClick={() => window.print()}
-              className="min-h-11 rounded border border-[var(--color-line)] px-3 disabled:opacity-50">{controls.print}</button>
-            <button type="button" onClick={async () => setLinkStatus(
-              await copyReaderLink(window.location.href) ? controls.copied : controls.copy_failed,
-            )} className="min-h-11 rounded border border-[var(--color-line)] px-3">{controls.copy_link}</button>
-            <p role="status">{linkStatus}</p>
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <label className="flex min-h-11 items-center gap-2">
+                <span className="sr-only sm:not-sr-only text-xs text-[var(--color-text-secondary)]">{controls.reading_size}</span>
+                <input type="range" min={readingSettings.minSize} max={readingSettings.maxSize} step={readingSettings.step} value={readingSize}
+                  onChange={(event) => setReadingSize(Number(event.target.value))} aria-label={controls.reading_size} className="min-h-11 w-24 sm:w-28" />
+                <output className="text-xs text-[var(--color-text-secondary)]">{readingSize}%</output>
+              </label>
+              <button type="button" disabled={!currentHtml} onClick={() => window.print()}
+                aria-label={controls.print} title={controls.print}
+                className="flex min-h-11 min-w-11 items-center justify-center rounded border border-[var(--color-line)] p-2 text-[var(--color-text-brand)] hover:bg-white/60 disabled:opacity-50">
+                <Printer className="size-4" aria-hidden="true" />
+              </button>
+              <button type="button" onClick={async () => setLinkStatus(
+                await copyReaderLink(window.location.href) ? controls.copied : controls.copy_failed,
+              )} aria-label={controls.copy_link} title={controls.copy_link}
+                className="flex min-h-11 min-w-11 items-center justify-center rounded border border-[var(--color-line)] p-2 text-[var(--color-text-brand)] hover:bg-white/60">
+                <Copy className="size-4" aria-hidden="true" />
+              </button>
+              {linkStatus && <p role="status" className="text-xs text-[var(--color-text-secondary)]">{linkStatus}</p>}
+            </div>
           </div>
           {currentHtml ? (
             <article

@@ -8,7 +8,7 @@ Choose the canonical owner before editing:
 | Topic prose, page metadata, articles, and collection introductions | `library/<topic>/` Markdown |
 | Homepage copy and card selection | `settings/home.json` |
 | Homepage card metadata | `library/pages/*.md` |
-| Hero slides and configuration | `settings/hero.json` and `library/hero/*.md` |
+| Hero slides and configuration | `settings/home.json` (hero) and `library/hero/*.md` |
 | Behavior, navigation, search, images, and theme | Relevant `settings/` JSON |
 
 `library/` and `settings/` are separate repositories checked out as Git submodules.
@@ -73,10 +73,9 @@ six top cards, five icon cards, six bottom cards, and three explore cards. Title
 descriptions, image references, destinations, types, and footnotes live in the
 multilingual page-reference Markdown.
 
-Do not author `remidies_carousel` in settings. Generation selects three distinct
-remedy articles and shares the selection across language/content variants; maintain
-at least four eligible articles. Configure hero carousel order in `settings/hero.json`,
-referencing individual slide files in `library/hero/*.md`.
+Configure `guidance_carousel` in `settings/home.json` if custom counts, overrides, or
+pinned items are needed; by default it dynamically selects enabled sevas and remedies.
+Configure hero carousel in `settings/home.json` under `"hero"`, referencing individual slide files in `library/hero/*.md`.
 
 ## Accuracy, dates, and actions
 

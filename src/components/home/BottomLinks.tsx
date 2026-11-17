@@ -9,9 +9,10 @@ export default function BottomLinks() {
   const exploreItems = isRouteEnabled
     ? home.explore_carousel.filter((item) => (item.enabled !== false) && isRouteEnabled(item.url))
     : home.explore_carousel;
-  const remediesItems = isRouteEnabled
-    ? (home.remidies_carousel ?? []).filter((item) => (item.enabled !== false) && isRouteEnabled(item.url))
-    : (home.remidies_carousel ?? []);
+  const guidanceList = home.guidance_carousel ?? [];
+  const guidanceItems = isRouteEnabled
+    ? guidanceList.filter((item) => (item.enabled !== false) && isRouteEnabled(item.url))
+    : guidanceList;
   return (
     <div className="w-full bg-transparent pt-3 pb-6 sm:pb-8">
       <div className="layout-wide max-w-7xl mx-auto px-4 lg:px-8">
@@ -24,13 +25,13 @@ export default function BottomLinks() {
             <HomePageGrid items={exploreItems} />
           </section>
         )}
-        {remediesItems.length > 0 && (
-          <section data-carousel="remidies_carousel" aria-labelledby="home-remedies-title" className="layout-section">
+        {guidanceItems.length > 0 && (
+          <section data-carousel="guidance_carousel" aria-labelledby="home-guidance-title" className="layout-section">
             <header className="layout-section-header text-center mb-4">
               <p className="font-body text-micro tracking-[.2em] uppercase text-[var(--color-text-brand)] font-bold mb-1">{home.guidance_label}</p>
-              <h2 id="home-remedies-title" className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-3xl leading-tight">{home.guidance_title}</h2>
+              <h2 id="home-guidance-title" className="font-display font-bold text-[var(--color-text-primary)] text-2xl sm:text-3xl leading-tight">{home.guidance_title}</h2>
             </header>
-            <HomePageGrid items={remediesItems} showFootnotes={false} />
+            <HomePageGrid items={guidanceItems} showFootnotes={true} />
           </section>
         )}
       </div>
