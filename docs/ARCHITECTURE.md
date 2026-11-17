@@ -70,7 +70,8 @@ manual bump commit to `MainWebsiteUI`:
 1. **Remote-tracking builds**: Continuous integration workflows invoke
    `git submodule update --init --recursive --remote` to check out the current `HEAD` of
    the configured tracking branch (`main`) for each submodule rather than stopping at the
-   recorded commit tree reference.
+   recorded commit tree reference. Deployment workflows retain deploy key credentials
+   across the checkout step to authenticate with private submodule remotes before cleanup.
 2. **Repository dispatches**: Upstream push workflows in `WebsiteLibrary` and
    `WebsiteConfiguration` transmit a `repository_dispatch` event (`submodule-updated`)
    to `MainWebsiteUI`, initiating verification, development preview publishing, and

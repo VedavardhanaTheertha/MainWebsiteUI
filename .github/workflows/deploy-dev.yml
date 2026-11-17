@@ -41,7 +41,7 @@ jobs:
         with:
           ref: main
           submodules: recursive
-          persist-credentials: false
+          persist-credentials: true
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
       - name: Pull latest submodule revisions
