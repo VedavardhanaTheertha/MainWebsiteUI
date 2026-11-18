@@ -38,7 +38,7 @@ function render(file, props, tr) {
     "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings, ...({ collectionPagination: { initialVisible: 10 } }) }) },
     "@/gen/settings/ui-elements": { collectionPagination: { initialVisible: 10 } },
     "@/lib/knowledge": {
-      articleHref: (collection, id) => `${collection.route}/${id}`,
+      articleHref: (collection, id) => `${collection.route}#${id}`,
       localizeArticle: (article) => article,
       relatedArticles: () => [second],
       knowledgeReadingTime: () => undefined,

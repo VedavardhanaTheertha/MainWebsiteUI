@@ -139,7 +139,7 @@ export function loadRemedyCarouselCandidates(rootDir, language, defaultLanguage,
     return localizedCard({
       id: metadata.id, title: metadata.title, description: metadata.summary,
       page_type: collection.title, footnote: metadata.status,
-      image: metadata.image, url: `${section.route}/${metadata.id}`,
+      image: metadata.image, url: `${section.route}#${metadata.id}`,
       enabled: (section?.enabled ?? false) && (metadata.enabled ?? false),
     }, language, defaultLanguage);
   });
@@ -289,7 +289,7 @@ export function loadAllLibraryCandidates(rootDir, language, defaultLanguage, pag
           footnote,
           item_type: sectionId,
           image: metadata.image || "",
-          url: `${section.route}/${id}`,
+          url: `${section.route}#${id}`,
           enabled: true,
         });
       } catch {
@@ -332,7 +332,7 @@ export function loadAllLibraryCandidates(rootDir, language, defaultLanguage, pag
           footnote: language === "kn" ? (metadata["ankita-kn"] || "") : (metadata.ankita || ""),
           item_type: "bhakti",
           image: "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/bhakti-gana.avif",
-          url: "/library/bhakti",
+          url: `/library/bhakti#${id}`,
           enabled: true,
         });
       } catch {
@@ -371,7 +371,7 @@ export function loadAllGuidanceCandidates(rootDir, language, defaultLanguage) {
           footnote,
           item_type: "remedies",
           image: metadata.image || "",
-          url: `/library/remedies/${id}`,
+          url: `/library/remedies#${id}`,
           enabled: true,
         });
       } catch {}
@@ -405,7 +405,7 @@ export function loadAllGuidanceCandidates(rootDir, language, defaultLanguage) {
           footnote: amount,
           item_type: "seva",
           image: metadata.image || "",
-          url: "/sevas",
+          url: `/sevas#${id}`,
           enabled: true,
         });
       } catch {}

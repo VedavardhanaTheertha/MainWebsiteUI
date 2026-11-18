@@ -5,10 +5,7 @@ import { librarySections } from "@/gen/library/data";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const libraryRoutes = librarySections.flatMap((section) => [
-    section.route,
-    ...section.items.map((item) => `${section.route}/${item.id}`),
-  ]);
+  const libraryRoutes = librarySections.map((section) => section.route);
   const albumRoutes = content[defaultLang].media.albums.map(
     (album) => `/albums/${album.id}`,
   );

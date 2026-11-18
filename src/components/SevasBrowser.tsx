@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import ContentImage from "@/components/presentation/ContentImage";
 import { Search, X } from "lucide-react";
@@ -227,6 +227,38 @@ export default function SevasBrowser() {
   }
   const activeSevas = contentMode === "placeholder" ? placeholderSevas : realSevas;
 
+  useEffect(() => {
+    const selectFromHash = () => {
+      let id = "";
+      try {
+        id = decodeURIComponent(window.location.hash.slice(1));
+      } catch {
+        /* Ignore malformed external links. */
+      }
+      if (id) {
+        const found = activeSevas.find((seva) => seva.id === id);
+        if (found) {
+          setSelectedSeva(found);
+          return;
+        }
+      }
+      setSelectedSeva(null);
+    };
+    selectFromHash();
+    window.addEventListener("hashchange", selectFromHash);
+    return () => window.removeEventListener("hashchange", selectFromHash);
+  }, [activeSevas]);
+
+  const handleOpenSeva = (seva: SevaRecord) => {
+    setSelectedSeva(seva);
+    window.history.replaceState(null, "", `#${encodeURIComponent(seva.id)}`);
+  };
+
+  const handleCloseSeva = () => {
+    setSelectedSeva(null);
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+  };
+
   const featured = useMemo(
     () => featuredSevaIds.map((id) => activeSevas.find((seva) => seva.id === id)).filter((seva): seva is SevaRecord => Boolean(seva)),
     [activeSevas],
@@ -290,7 +322,7 @@ export default function SevasBrowser() {
                 <button
                   type="button"
                   key={seva.id}
-                  onClick={() => setSelectedSeva(seva)}
+                  onClick={() => handleOpenSeva(seva)}
                   className={`${collectionCardClassName("featured", true)} w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none !h-auto min-h-0`}
                 >
                   <SevaImage title={title} image={seva.image} featured />
@@ -397,7 +429,7 @@ export default function SevasBrowser() {
                   seva={seva}
                   lang={lang}
                   anyAmount={tr.sevas_any_amount}
-                  onOpen={() => setSelectedSeva(seva)}
+                  onOpen={() => handleOpenSeva(seva)}
                 />
               ))}
             </div>
@@ -422,7 +454,7 @@ export default function SevasBrowser() {
         )}
       </section>
 
-      {selectedSeva && <SevaModal seva={selectedSeva} lang={lang} onClose={() => setSelectedSeva(null)} />}
+      {selectedSeva && <SevaModal seva={selectedSeva} lang={lang} onClose={handleCloseSeva} />}
     </>
   );
 }

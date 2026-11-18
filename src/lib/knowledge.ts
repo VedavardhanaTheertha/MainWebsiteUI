@@ -45,7 +45,7 @@ export function knowledgeReadingTime(
 }
 
 export function articleHref(section: Pick<LibrarySection, "route">, id: string): string {
-  return `${section.route}/${id}`;
+  return `${section.route}#${id}`;
 }
 
 export function relatedArticles(section: LibrarySection, article: KnowledgeArticle): KnowledgeArticle[] {

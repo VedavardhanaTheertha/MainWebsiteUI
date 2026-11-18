@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ImageListCards from "@/components/ImageListCards";
 import LocalizedCopy from "@/components/LocalizedCopy";
-import { content, defaultLang } from "@/gen/content";
+import { content, defaultLang, siteConfig } from "@/gen/content";
 import { actionDestinations } from "@/gen/settings/actions";
 
 export const metadata: Metadata = content[defaultLang].page_metadata.volunteer;
@@ -124,7 +124,7 @@ export default function VolunteerPage() {
             </a>
 
             <a
-              href="/contribute/"
+              href={`${siteConfig.basePath}/contribute/`}
               className="inline-flex items-center gap-2 font-body font-semibold text-[var(--color-text-primary)] bg-[var(--color-cream-soft)] border border-[var(--color-line)] rounded-full px-7 py-3.5 text-base hover:bg-[var(--color-cream-medium)] hover:scale-[1.02] transition-all focus-visible:outline-[var(--color-saffron-600)]"
             >
               <LocalizedCopy path={["pages", "local_copy", "volunteer_contribute_portal"]} />
