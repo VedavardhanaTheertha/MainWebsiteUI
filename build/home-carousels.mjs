@@ -134,11 +134,11 @@ export function loadRemedyCarouselCandidates(rootDir, language, defaultLanguage,
     }
     languageMap(metadata.title, `${source}.title`, defaultLanguage);
     languageMap(metadata.summary, `${source}.summary`, defaultLanguage);
-    languageMap(metadata.status, `${source}.status`, defaultLanguage);
+    if (metadata.status) languageMap(metadata.status, `${source}.status`, defaultLanguage);
     safeLocation(metadata.image, `${source}.image`, true);
     return localizedCard({
       id: metadata.id, title: metadata.title, description: metadata.summary,
-      page_type: collection.title, footnote: metadata.status,
+      page_type: collection.title, footnote: metadata.status || { [defaultLanguage]: "", [language]: "" },
       image: metadata.image, url: `${section.route}#${metadata.id}`,
       enabled: (section?.enabled ?? false) && (metadata.enabled ?? false),
     }, language, defaultLanguage);
