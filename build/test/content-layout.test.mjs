@@ -61,7 +61,7 @@ test("project details reside in the corresponding article Markdown, not a pages 
   assert.equal(exists("library/projects/pages"), false);
   const project = document("projects/matha-gopura-renovation.md");
   assert.match(project.body, /Restored the 200-year-old gopura/);
-  assert.match(project.metadata.status.en, /2024/);
+  assert.equal(project.metadata.id, "matha-gopura-renovation");
   assert.match(document("projects/go-shala-expansion.md").body, /50 additional Gir cows/);
   const copy = loadEditorialContent(root, "en").pages.projects;
   assert.ok(copy.vision);
