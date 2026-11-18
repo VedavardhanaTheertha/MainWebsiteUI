@@ -31,6 +31,12 @@ export default function KnowledgeArticlePage({
   const [linkStatus, setLinkStatus] = useState("");
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.location.replace(`${section?.route ?? `/library/${sectionId}`}#${articleId}`);
+    }
+  }, [section, sectionId, articleId]);
+
+  useEffect(() => {
     if (loadedHtml || item?.html) return;
     const loader = libraryContentLoaders[`${sectionId}/${articleId}`];
     if (!loader) return;

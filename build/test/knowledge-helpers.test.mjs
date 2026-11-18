@@ -38,9 +38,9 @@ test("localization honors selected language, then generated default, then availa
   assert.equal(localized.knowledge.readMinutes, 2);
 });
 
-test("article links use collection routes rather than an invented global slug space", () => {
+test("article links use collection routes with anchor rather than an invented global slug space", () => {
   for (const route of ["/projects", "/library/mantra", "/library/articles"]) {
-    assert.equal(articleHref({ route }, "entry"), `${route}/entry`);
+    assert.equal(articleHref({ route }, "entry"), `${route}#entry`);
   }
 });
 
@@ -86,7 +86,7 @@ test("sitemap includes every knowledge article and the canonical Connect route",
   const urls = Array.from(sitemapExports.default(), ({ url }) => url);
   assert.equal(urls.some((url) => url === "https://example.org/contact"), false);
   assert.equal(urls.some((url) => url === "https://example.org/connect"), true);
-  for (const route of ["/library/mantra/chant", "/library/articles/reading", "/projects/work"]) {
+  for (const route of ["/library/mantra", "/library/articles", "/projects"]) {
     assert.equal(urls.includes(`https://example.org${route}`), true);
   }
   assert.equal(urls.filter((url) => url === "https://example.org/projects").length, 1);

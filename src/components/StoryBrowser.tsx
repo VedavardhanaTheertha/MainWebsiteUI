@@ -112,9 +112,12 @@ export default function StoryBrowser({ initialTab = "mathas" }: { initialTab?: S
     setSelectedId(null);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
-      url.pathname = "/story";
-      url.searchParams.set("tab", tab);
-      window.history.replaceState(null, "", url.pathname + url.search);
+      if (tab === initialTab) {
+        url.searchParams.delete("tab");
+      } else {
+        url.searchParams.set("tab", tab);
+      }
+      window.history.replaceState(null, "", url.pathname + url.search + url.hash);
     }
   };
 

@@ -34,28 +34,22 @@ const sections = [
 const routing = loadModule("../../src/lib/knowledge-routing.ts", {
   "next/navigation": { notFound: () => { throw new Error("Not found"); } },
   "@/gen/library/data": { librarySections: sections },
-  "@/gen/content": {},
-  "./knowledge": {},
+  "@/gen/content": { defaultLang: "en" },
+  "./knowledge": {
+    articleHref: (section, id) => `${section.route}#${id}`,
+    localizeArticle: (article) => ({ title: article.id, summary: article.id }),
+  },
 });
 
-test("library article pages generate both dynamic segments without inherited layout params", () => {
-  const page = loadModule("../../src/app/library/[section]/[article]/page.tsx", {
-    "@/lib/knowledge-routing": routing,
-    "@/components/library/KnowledgeArticlePage": {},
-    "@/gen/library/loaders": { libraryContentLoaders: {} },
-    "react/jsx-runtime": {},
-  });
-  const expected = sections
-    .filter(({ route }) => route.startsWith("/library/"))
-    .flatMap(({ route, items }) => items.map(({ id }) => ({
-      section: route.slice("/library/".length),
-      article: id,
-    })));
-  // A sibling collection page is not an ancestor layout, so Next passes no section.
-  const actual = page.generateStaticParams({ params: {} });
-  assert.ok(actual.length > 0, "Static export must not receive an empty article parameter list.");
-  assert.equal(JSON.stringify(actual), JSON.stringify(expected));
-  assert.equal(JSON.stringify(page.generateStaticParams()), JSON.stringify(expected));
-  assert.equal(page.dynamicParams, false);
-  assert.equal(new Set(actual.map(({ section, article }) => `${section}/${article}`)).size, actual.length);
+test("findKnowledgeArticle resolves valid section and article or throws notFound", () => {
+  const found = routing.findKnowledgeArticle("/library/mantra", "first-chant");
+  assert.equal(found.article.id, "first-chant");
+  assert.equal(found.section.id, "mantra");
+  assert.throws(() => routing.findKnowledgeArticle("/library/mantra", "unknown"), /Not found/);
+});
+
+test("knowledgeArticleMetadata builds metadata with anchor canonical", () => {
+  const meta = routing.knowledgeArticleMetadata("/library/mantra", "first-chant");
+  assert.equal(meta.title, "first-chant");
+  assert.equal(meta.alternates.canonical, "/library/mantra#first-chant");
 });

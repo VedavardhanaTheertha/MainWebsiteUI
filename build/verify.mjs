@@ -87,8 +87,9 @@ const authoredCopy = loadAuthoredLanguage(rootDir, defaultLanguage, config.conte
 const remedyCandidates = loadRemedyCarouselCandidates(rootDir, defaultLanguage, defaultLanguage);
 const exportedRoutes = new Set(sitemapEligibleHtmlFiles.map((file) => routeForHtml(outDir, file)));
 const homeCards = Object.entries(authoredCopy.home).filter(([key]) => key.endsWith("_carousel")).flatMap(([, cards]) => cards);
-for (const url of new Set([...homeCards, ...remedyCandidates].map((card) => card.url))) {
-  if (!exportedRoutes.has(url)) problems.push(`homepage carousel destination ${url} has no exported page.`);
+for (const rawUrl of new Set([...homeCards, ...remedyCandidates].map((card) => card.url))) {
+  const url = rawUrl.split("#")[0];
+  if (!exportedRoutes.has(url)) problems.push(`homepage carousel destination ${rawUrl} has no exported page.`);
 }
 
 // ── Check 2: web manifest is generated for the selected environment ─────────

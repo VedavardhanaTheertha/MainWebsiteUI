@@ -159,6 +159,9 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
         setSelectedArticleId(id);
         setExpanded(false);
         loadArticleContent(id);
+      } else if (!id) {
+        setSelectedArticleId(null);
+        setExpanded(true);
       }
     };
     selectFromHash();
@@ -389,7 +392,7 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
                 type="button"
                 onClick={async () => {
                   const origin = window.location.origin;
-                  const directUrl = `${origin}${section.route}/${selectedArticle.id}`;
+                  const directUrl = `${origin}${section.route}#${selectedArticle.id}`;
                   const copied = await copyReaderLink(directUrl);
                   setLinkStatus(copied ? tr.bhakti_controls.copied : tr.bhakti_controls.copy_failed);
                 }}

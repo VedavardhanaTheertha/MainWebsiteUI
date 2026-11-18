@@ -302,6 +302,9 @@ support dynamic daily rotation alongside deterministic index-specific pinning:
 * **Corpus Sampling**: Content generation draws from all eligible Markdown articles across
   `library/` (e.g. hymns, philosophy, pilgrim guides, remedies, and sevas), allowing
   specific devotional or educational pieces to be showcased directly on the homepage.
+  Links resolve directly to specific item anchors (e.g. `/library/dharma#chaturmasya-vrata`,
+  `/library/bhakti#<id>`, `/library/remedies#<id>`, and `/sevas#<id>`), routing readers
+  directly into the full interactive reading or modal view of the selected item.
 
 ### Responsive Action Navigation: Mobile Bar and Desktop Floating Dock
 
