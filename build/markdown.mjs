@@ -52,8 +52,10 @@ function hasSafeHref(href) {
 
 function matchPatternSegment(pattern, actual) {
   if (pattern === "**") return true;
-  const regex = new RegExp("^" + pattern.replace(/\./g, "\\.").replace(/\*/g, "[^/]*") + "$");
-  return regex.test(actual);
+  const escaped = pattern
+    .replace(/[\\^$.*+?()[\]{}|]/g, "\\$&")
+    .replace(/\\\*/g, "[^/]*");
+  return new RegExp("^" + escaped + "$").test(actual);
 }
 
 function isAllowedImageSrc(src) {
