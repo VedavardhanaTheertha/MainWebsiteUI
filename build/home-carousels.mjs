@@ -331,7 +331,7 @@ export function loadAllLibraryCandidates(rootDir, language, defaultLanguage, pag
           page_type: language === "kn" ? "ಭಕ್ತಿ ಗಾನ" : "Bhakti Gāna",
           footnote: language === "kn" ? (metadata["ankita-kn"] || "") : (metadata.ankita || ""),
           item_type: "bhakti",
-          image: "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/bhakti-gana.avif",
+          image: "https://pub-80e0aeff507a41da90321eb9ff4616c7.r2.dev/pages/bhakti-gana.avif",
           url: `/library/bhakti#${id}`,
           enabled: true,
         });
