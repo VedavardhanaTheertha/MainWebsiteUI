@@ -17,7 +17,7 @@ test("knowledge settings preserve default presentation and code-owned routes", (
   ]);
   assert.deepEqual(librarySections.map(({ order }) => order), Array.from({ length: 11 }, (_, i) => i + 1));
   assert.equal(librarySections.find(({ id }) => id === "pilgrim").route, "/library/pilgrim-guide");
-  assert.equal(librarySections.find(({ id }) => id === "science").image, "https://pub-0b8a6620d6eb460aaa020636cb2c7784.r2.dev/vedic-science-philosophy.avif");
+  assert.equal(librarySections.find(({ id }) => id === "science").image, "https://pub-80e0aeff507a41da90321eb9ff4616c7.r2.dev/pages/vedic-science-philosophy.avif");
 });
 
 test("knowledge settings reject incomplete, unknown, malformed and conflicting configuration", () => {
