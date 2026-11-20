@@ -30,7 +30,7 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
   const performers = localized(event.performers, lang);
   const description = localizedText(event.description, lang);
   const details = localizedText(event.details, lang);
-  const imgUrl = event.image || "/icons/event-placeholder.svg";
+  const imgUrl = event.image || "/icons/ph/event.svg";
   const detailUrl = () => eventDetailUrl(window.location.href, event.slug, `${siteConfig.basePath}/events/`);
   const shareEvent = async (nativeShare: boolean) => {
     const url = detailUrl();

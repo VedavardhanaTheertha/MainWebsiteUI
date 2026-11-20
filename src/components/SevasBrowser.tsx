@@ -36,7 +36,7 @@ function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
 }
 
 function SevaImage({ title, image, featured = false }: { title: string; image: string; featured?: boolean }) {
-  const placeholderSrc = `${siteConfig.basePath}/icons/seva-placeholder.svg`;
+  const placeholderSrc = `${siteConfig.basePath}/icons/ph/seva.svg`;
   const source = image.startsWith("/") ? `${siteConfig.basePath}${image}` : image;
   const [triedFallback, setTriedFallback] = useState<string | null>(null);
   const [failedSource, setFailedSource] = useState<string | null>(null);
