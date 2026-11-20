@@ -5,7 +5,10 @@ import { assertSafeSourceFile, parseMarkdownFrontmatter } from "./content-utils.
 import { librarySections } from "./library-sections.config.mjs";
 
 const textFields = ["title", "description", "page_type", "footnote"];
-const iconNames = new Set(["calendar", "hand-heart", "sparkles", "book-open", "video", "home", "users"]);
+const iconNames = new Set([
+  "home", "volunteer", "lekhana-yajna", "library", "seva",
+  "events", "media", "story", "projects", "learn", "connect", "panchanga",
+]);
 const tones = new Set(["saffron", "green", "amber", "rose", "plum"]);
 const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 

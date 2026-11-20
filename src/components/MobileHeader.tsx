@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef, useId } from "react";
 import { lockPageScroll, useDialogsOpen } from "@/hooks/useDialog";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { navigationRoutes, siteConfig, type Lang } from "@/gen/content";
 import type { NavItem } from "@/lib/nav-types";
@@ -104,7 +104,14 @@ export default function MobileHeader() {
           <button ref={toggleRef} type="button" onClick={() => setOpen((o) => !o)}
             className="min-w-11 min-h-11 grid place-items-center p-1 rounded-full hover:bg-[var(--color-saffron-100)] transition-colors text-[var(--color-text-primary)] focus-visible:outline-[var(--color-saffron-600)] focus-visible:outline-2"
             aria-label={isMenuOpen ? tr.ui.close_menu : tr.ui.open_menu} aria-expanded={isMenuOpen} aria-controls="mobile-nav">
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            <img
+              src={`${siteConfig.basePath}/icons/menu/${isMenuOpen ? "close.svg" : "menu.svg"}`}
+              alt=""
+              width={20}
+              height={20}
+              className="size-5 object-contain select-none pointer-events-none"
+              aria-hidden="true"
+            />
           </button>
         </div>
       </div>

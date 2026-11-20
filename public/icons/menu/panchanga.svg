@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Panchanga">
+  <circle cx="12" cy="12" r="9"/>
+  <path d="M12 3C7 3 3 7 3 12C3 17 7 21 12 21C9 18 9 6 12 3Z" fill="#f59e0b" fill-opacity="0.25"/>
+  <line x1="12" y1="1" x2="12" y2="3"/>
+  <line x1="12" y1="21" x2="12" y2="23"/>
+  <line x1="1" y1="12" x2="3" y2="12"/>
+  <line x1="21" y1="12" x2="23" y2="12"/>
+</svg>

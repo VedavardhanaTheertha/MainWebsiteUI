@@ -65,7 +65,7 @@ export default function EventsAccordion() {
           const description = localizedText(ev.description, lang);
           const primaryCat = ev.categories?.[0];
           const catLabel = localizedText(primaryCat, lang);
-          const imgUrl = ev.image || "/icons/event-placeholder.svg";
+          const imgUrl = ev.image || "/icons/ph/event.svg";
 
           return (
             <div
@@ -161,7 +161,7 @@ export default function EventsAccordion() {
           const description = localizedText(ev.description, lang);
           const primaryCat = ev.categories?.[0];
           const catLabel = localizedText(primaryCat, lang);
-          const imgUrl = ev.image || "/icons/event-placeholder.svg";
+          const imgUrl = ev.image || "/icons/ph/event.svg";
 
           return (
             <article

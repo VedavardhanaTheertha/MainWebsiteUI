@@ -150,7 +150,7 @@ test("homepage icons use five shrinkable columns with accessible icon links and 
   const items = Array.from({ length: 5 }, (_, index) => ({
     id: `page-${index}`,
     url: `/page-${index}`,
-    icon: "calendar",
+    icon: "events",
     tone: "saffron",
     title: `Provided complete localized label ${index}`,
   }));

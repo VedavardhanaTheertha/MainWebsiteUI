@@ -344,7 +344,7 @@ export default function EventsExact() {
             const location = localizedText(item.location, lang);
             const performers = localized(item.performers, lang);
             const description = localizedText(item.description, lang);
-            const imgUrl = item.image || "/icons/event-placeholder.svg";
+            const imgUrl = item.image || "/icons/ph/event.svg";
 
             return (
               <article

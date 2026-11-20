@@ -22,7 +22,19 @@ export interface HomePageCard {
 }
 
 export interface HomeIconCard extends HomePageCard {
-  icon: "calendar" | "hand-heart" | "sparkles" | "book-open" | "video" | "home" | "users";
+  icon:
+    | "home"
+    | "volunteer"
+    | "lekhana-yajna"
+    | "library"
+    | "seva"
+    | "events"
+    | "media"
+    | "story"
+    | "projects"
+    | "learn"
+    | "connect"
+    | "panchanga";
   tone: "saffron" | "green" | "amber" | "rose" | "plum";
 }
 
