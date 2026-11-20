@@ -17,13 +17,13 @@ name: Verify build
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
 
-  # Run on PRs into main as well, so a change is checked before it merges
+  # Run on PRs into main or dev, so a change is checked before it merges
   # rather than after. docs/GUIDELINE_SOURCE_CODE.md §7 expects review to
   # happen before merge; this gives the reviewer a build result to look at.
   pull_request:
-    branches: [main]
+    branches: [main, dev]
 
   workflow_dispatch:
 
@@ -39,6 +39,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Ensure PR to main comes only from dev
+        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        run: |
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "::error::Pull requests targeting 'main' are only allowed from the 'dev' branch. Head ref was '${{ github.head_ref }}'."
+            exit 1
+          fi
+
       # The Bhakti generator reads the library submodule, so every checkout must
       # initialize nested content recursively.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
