@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   sync:
@@ -15,12 +16,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          ref: main
+          ref: dev
           submodules: recursive
           persist-credentials: true
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
       - name: Update submodules to latest remote HEAD
+        id: update
         run: |
           git submodule update --init --recursive --remote
           git config user.name "github-actions[bot]"
@@ -28,7 +30,22 @@ jobs:
           git add library settings
           if git diff --staged --quiet; then
             echo "Submodules already up to date."
+            echo "changed=false" >> $GITHUB_OUTPUT
           else
-            git commit -m "chore(submodules): auto-update settings and library pointers"
-            git push origin main
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or update PR to dev
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="chore/sync-submodule-pointers"
+          git checkout -B "$BRANCH_NAME"
+          git commit -m "chore(submodules): auto-update settings and library pointers"
+          git push -f origin "$BRANCH_NAME"
+          if ! gh pr view "$BRANCH_NAME" --base dev >/dev/null 2>&1; then
+            gh pr create --base dev --head "$BRANCH_NAME" \
+              --title "chore(submodules): auto-update settings and library pointers" \
+              --body "Automated submodule pointer sync triggered by upstream submodule updates."
           fi

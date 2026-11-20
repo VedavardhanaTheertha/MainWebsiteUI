@@ -376,9 +376,11 @@ check.
 
 ## Deployment
 
-GitHub Actions verifies pull requests and `main` with lint, type checking, unit tests,
-and development/production builds. The development deployment workflow publishes
-reviewed `main` to GitHub Pages under the configured base path.
+GitHub Actions verifies pull requests and branches (`dev` and `main`) with lint, type checking,
+unit tests, and development/production builds. Pull requests target `dev`; the development
+deployment workflow publishes reviewed `dev` to GitHub Pages under the configured base path.
+Production deploys to Cloudflare Pages from `main`, with promotions to `main` restricted strictly
+to pull requests from `dev`.
 
 Deploy the verified static export, not `.next/` or a development server. Production
 uses the root base path and the canonical URL in `config/site.yml`; maintainers must
