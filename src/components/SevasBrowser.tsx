@@ -23,7 +23,6 @@ import { filterAndSortSevas } from "@/lib/seva-filtering";
 import RailMotionControl from "./RailMotionControl";
 import AdvancedFilters from "./AdvancedFilters";
 import CollectionEmptyState from "./presentation/CollectionEmptyState";
-import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/collection-presentation";
 
 function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
   if (seva.amount <= 0) return anyAmount;
