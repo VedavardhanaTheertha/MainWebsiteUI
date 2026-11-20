@@ -12,7 +12,7 @@ import { testUiSettings } from "./helpers/ui-settings.mjs";
 const defaults = {
   collections: { initialVisible: 6, loadIncrement: 9 },
   autoScroll: { enabled: true, pixelsPerSecond: 36, returnDurationMs: 2200, resumeDelayMs: 1500 },
-  hero: { autoplay: true, intervalMs: 4500, fadeDurationMs: 900 },
+  hero: { autoplay: true, intervalMs: 4500, fadeDurationMs: 900, heightMobilePx: 400, heightDesktopPx: 600 },
   upcomingEvents: { lookAheadDays: 30, maxCards: 6 },
   interaction: { dropdownCloseDelayMs: 120, modalResetDelayMs: 400, searchPreloadDelayMs: 300 },
   reading: { wordsPerMinute: 200, initialSize: 100, minSize: 85, maxSize: 150, step: 5 },
@@ -84,7 +84,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   const generated = await readFile(path.join(root, "src", "gen", "settings", "ui-elements.ts"), "utf8");
   assert.match(generated, /collectionPagination = \{"initialVisible":6,"loadIncrement":9\} as const/);
   assert.match(generated, /railAutoScroll = \{"enabled":true,"pixelsPerSecond":12.5,"returnDurationMs":900,"resumeDelayMs":1500\} as const/);
-  assert.match(generated, /heroSettings = \{"autoplay":true,"intervalMs":4500,"fadeDurationMs":900\}/);
+  assert.match(generated, /heroSettings = \{"autoplay":true,"intervalMs":4500,"fadeDurationMs":900,"heightMobilePx":400,"heightDesktopPx":600\}/);
   assert.match(generated, /interactionSettings = \{"dropdownCloseDelayMs":120,"modalResetDelayMs":400,"searchPreloadDelayMs":300\}/);
   assert.match(generated, /upcomingEventSettings = \{"lookAheadDays":30,"maxCards":6\}/);
   for (const name of ["readingSettings", "mediaViewerSettings", "browserDefaults"]) {
@@ -304,7 +304,7 @@ test("saved preferences inherit only missing fields and clean up obsolete option
 
 test("UI settings validate configurable behavior and allow zero delays", () => {
   const custom = structuredClone(defaults);
-  custom.hero = { autoplay: false, intervalMs: 7000, fadeDurationMs: 0 };
+  custom.hero = { autoplay: false, intervalMs: 7000, fadeDurationMs: 0, heightMobilePx: 400, heightDesktopPx: 600 };
   custom.autoScroll.enabled = false;
   custom.autoScroll.resumeDelayMs = 0;
   custom.upcomingEvents = { lookAheadDays: 0, maxCards: 2 };

@@ -7,7 +7,7 @@ import type { KnowledgeText } from "@/lib/knowledge-types";
 import { ImageBackdrop } from "@/components/presentation/ContentImage";
 import { useUiSettings } from "@/context/UiSettingsContext";
 
-const prose = "mt-6 max-w-none space-y-5 text-base leading-8 text-[var(--color-text-secondary)] [&_a]:underline [&_a]:underline-offset-4 [&_a]:break-words [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_h1]:hidden [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_img]:max-w-full [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_th]:border [&_th]:border-[var(--color-line)] [&_th]:bg-[var(--color-cream-soft)] [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_th]:text-[var(--color-text-primary)] [&_td]:border [&_td]:border-[var(--color-line)] [&_td]:px-4 [&_td]:py-2";
+const prose = "mt-6 max-w-none space-y-5 leading-[1.8] text-[var(--color-text-secondary)] [&_a]:underline [&_a]:underline-offset-4 [&_a]:break-words [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_h1]:hidden [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-[1.5em] [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-[1.25em] [&_h3]:font-semibold [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_img]:max-w-full [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_th]:border [&_th]:border-[var(--color-line)] [&_th]:bg-[var(--color-cream-soft)] [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_th]:text-[var(--color-text-primary)] [&_td]:border [&_td]:border-[var(--color-line)] [&_td]:px-4 [&_td]:py-2";
 
 export default function KnowledgeBody({ article, sectionId }: { article: DisplayArticle; sectionId: string }) {
   const { lang, tr } = useLang();
@@ -21,13 +21,13 @@ export default function KnowledgeBody({ article, sectionId }: { article: Display
   const label = (key: string) => copy.detail_labels[key];
   const heading = (key: string, body: React.ReactNode) => (
     <section key={key} className="mt-6">
-      <h3 className="mb-3 font-display text-xl font-semibold text-[var(--color-text-primary)]">{label(key)}</h3>
+      <h3 className="mb-3 font-display text-[1.25em] font-semibold text-[var(--color-text-primary)]">{label(key)}</h3>
       {body}
     </section>
   );
   const image = details?.illustration;
   return (
-    <div className="text-base leading-8 text-[var(--color-text-secondary)]">
+    <div className="leading-[1.8] text-[var(--color-text-secondary)]">
       {sectionId === "remedies" && <aside className="mt-5 rounded-xl border border-[var(--color-line)] bg-[var(--color-cream-soft)] p-5">{copy.devotional_context}</aside>}
       {details && <dl className="mt-5 grid gap-x-6 gap-y-2 sm:grid-cols-2">
         {(["author", "reviewer", "publishedOn", "reviewedOn", "verifiedOn"] as const).map((key) => {

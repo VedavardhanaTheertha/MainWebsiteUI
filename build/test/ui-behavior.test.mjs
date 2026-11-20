@@ -12,7 +12,7 @@ const authoredCopy = loadAuthoredLanguage(fileURLToPath(new URL("../../", import
 const announcementDefaults = {
   enabled: true, delayMs: 1800, pages: [], startsOn: null, endsOn: null, dismissal: "session",
 };
-const heroDefaults = { autoplay: true, intervalMs: 4500, fadeDurationMs: 900 };
+const heroDefaults = { autoplay: true, intervalMs: 4500, fadeDurationMs: 900, heightMobilePx: 400, heightDesktopPx: 600 };
 
 async function mountComponent(file, options = {}) {
   let now = options.now ?? Date.parse("2026-10-17T12:00:00Z");

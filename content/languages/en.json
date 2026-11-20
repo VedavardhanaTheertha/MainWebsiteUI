@@ -98,6 +98,12 @@
       "hero.fadeDurationMs": {
         "label": "Fade duration (ms)"
       },
+      "hero.heightMobilePx": {
+        "label": "Hero height on mobile (px)"
+      },
+      "hero.heightDesktopPx": {
+        "label": "Hero height on desktop (px)"
+      },
       "upcomingEvents.lookAheadDays": {
         "label": "Look ahead (days)"
       },

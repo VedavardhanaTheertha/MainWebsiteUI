@@ -99,6 +99,12 @@
       "hero.fadeDurationMs": {
         "label": "ಚಿತ್ರ ಬದಲಾವಣೆಯ ಅವಧಿ (ಮಿ.ಸೆ.)"
       },
+      "hero.heightMobilePx": {
+        "label": "ಮೊಬೈಲ್‌ನಲ್ಲಿ ಹೀರೋ ಚಿತ್ರದ ಎತ್ತರ (ಪಿಕ್ಸೆಲ್)"
+      },
+      "hero.heightDesktopPx": {
+        "label": "ಡೆಸ್ಕ್‌ಟಾಪ್‌ನಲ್ಲಿ ಹೀರೋ ಚಿತ್ರದ ಎತ್ತರ (ಪಿಕ್ಸೆಲ್)"
+      },
       "upcomingEvents.lookAheadDays": {
         "label": "ಮುಂದಿನ ದಿನಗಳ ವ್ಯಾಪ್ತಿ"
       },

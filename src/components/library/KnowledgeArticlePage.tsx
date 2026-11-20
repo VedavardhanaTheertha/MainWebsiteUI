@@ -56,7 +56,7 @@ export default function KnowledgeArticlePage({
   const article = localizeArticle({ ...item, html: activeHtmlMap }, lang);
   const related = relatedArticles(section, item);
   return (
-    <div className="layout-reading layout-section mx-auto max-w-4xl px-4 pt-3.5 pb-8 sm:px-6 sm:pt-4 sm:pb-12">
+    <div className="library-reader-page layout-reading layout-section mx-auto max-w-4xl px-4 pt-3.5 pb-8 sm:px-6 sm:pt-4 sm:pb-12">
       <div className="rounded-2xl border border-[var(--color-line-strong)] bg-[var(--color-cream-soft)]/92 p-5 shadow-sm backdrop-blur-md sm:p-8">
         <div className="library-reading-controls flex flex-wrap items-center justify-end gap-3 border-b border-[var(--color-line-soft)] pb-3 mb-5 text-sm">
           <label className="flex min-h-11 items-center gap-2">
@@ -98,11 +98,11 @@ export default function KnowledgeArticlePage({
           </button>
           {linkStatus && <p role="status" className="text-xs text-[var(--color-text-secondary)]">{linkStatus}</p>}
         </div>
-        <article style={{ fontSize: `${0.95 * readingSize / 100}rem` }}>
+        <article lang={lang} style={{ fontSize: `${0.95 * readingSize / 100}rem` }}>
           <header className="border-b border-[var(--color-line)] pb-6">
             {article.status ? <p className="mt-2 text-sm font-semibold text-[var(--color-text-brand)]">{article.status}</p> : null}
-            <h1 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">{article.title}</h1>
-            <p className="mt-4 text-base leading-8 text-[var(--color-text-secondary)]">{article.summary}</p>
+            <h1 className="mt-3 font-display text-[1.6em] font-bold leading-tight sm:text-[2em]">{article.title}</h1>
+            <p className="mt-4 leading-[1.8] text-[var(--color-text-secondary)]">{article.summary}</p>
           </header>
           <KnowledgeBody article={article} sectionId={sectionId} />
         </article>
