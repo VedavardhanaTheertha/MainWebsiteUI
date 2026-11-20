@@ -10,7 +10,13 @@ export type UiFieldDefinition = { group: string; key: string } & (
 export interface UiSettings {
   collectionPagination: { initialVisible: number; loadIncrement: number };
   railAutoScroll: { enabled: boolean; pixelsPerSecond: number; returnDurationMs: number; resumeDelayMs: number };
-  heroSettings: { autoplay: boolean; intervalMs: number; fadeDurationMs: number };
+  heroSettings: {
+    autoplay: boolean;
+    intervalMs: number;
+    fadeDurationMs: number;
+    heightMobilePx: number;
+    heightDesktopPx: number;
+  };
   upcomingEventSettings: { lookAheadDays: number; maxCards: number };
   readingSettings: { wordsPerMinute: number; initialSize: number; minSize: number; maxSize: number; step: number };
   mediaViewerSettings: { swipeThresholdPx: number; videoControlExclusionPx: number; wrap: boolean };

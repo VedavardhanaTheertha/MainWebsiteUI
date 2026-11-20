@@ -161,7 +161,7 @@ function preferencesFixture({ denied = false } = {}) {
 test("every UI setting has a typed editor definition and localized labels", () => {
   const actual = Object.entries(uiDefaults).flatMap(([group, fields]) => Object.keys(fields).map((key) => `${group}.${key}`));
   const defined = schema.uiFieldDefinitions.map(({ group, key }) => `${group}.${key}`);
-  assert.equal(defined.length, 30);
+  assert.equal(defined.length, 32);
   assert.deepEqual(defined.toSorted(), actual.toSorted());
   assert.equal(new Set(defined).size, defined.length);
   for (const language of ["en", "kn"]) {
@@ -179,7 +179,7 @@ test("runtime UI settings persist all field types, remount initial-state consume
   const defaults = fixture.render();
   const custom = structuredClone(uiDefaults);
   custom.collections = { initialVisible: 3, loadIncrement: 2 };
-  custom.hero = { autoplay: false, intervalMs: 12000, fadeDurationMs: 0 };
+  custom.hero = { autoplay: false, intervalMs: 12000, fadeDurationMs: 0, heightMobilePx: 400, heightDesktopPx: 600 };
   custom.reading = { wordsPerMinute: 200, minSize: 90, initialSize: 110, maxSize: 170, step: 10 };
   custom.browserDefaults.lineageView = "timeline";
   custom.presentation = { ...custom.presentation, tileOverlayOpacity: 40, tileCornerRadius: 20, tileMinHeight: 360 };
@@ -357,7 +357,7 @@ function pageFixture(defaultMode = "real", persistent = true) {
 
 test("the editor covers every setting, keeps edits as drafts and applies typed values only on submit", () => {
   const page = pageFixture();
-  assert.equal(page.controls().filter((node) => node.props.name).length, 30);
+  assert.equal(page.controls().filter((node) => node.props.name).length, 32);
   page.field("collections.initialVisible").props.onChange({ target: { value: "3", valueAsNumber: 3 } });
   page.field("browserDefaults.lineageView").props.onChange({ target: { value: "timeline" } });
   page.field("presentation.tileOverlayOpacity").props.onChange({ target: { value: "75", valueAsNumber: 75 } });
@@ -523,7 +523,7 @@ function standaloneHero(denied = false, uiValue = null, reduced = true) {
 
 test("the standalone hero applies validated UI overrides for fitting, fades, interval and autoplay", () => {
   const custom = structuredClone(uiDefaults);
-  custom.hero = { autoplay: true, intervalMs: 1234, fadeDurationMs: 42 };
+  custom.hero = { autoplay: true, intervalMs: 1234, fadeDurationMs: 42, heightMobilePx: 400, heightDesktopPx: 600 };
   custom.presentation.tileCornerRadius = 0;
   const hero = standaloneHero(false, JSON.stringify(custom), false);
   assert.equal(hero.styles.get("--hero-fade-duration"), "42ms");

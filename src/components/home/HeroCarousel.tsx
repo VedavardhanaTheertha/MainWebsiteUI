@@ -84,7 +84,14 @@ export default function HeroCarousel() {
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
     >
       <Link href={href} className="hero-rounded-frame relative block w-full overflow-hidden rounded-b-[22px] bg-[var(--color-paper)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]">
-        <div ref={viewportRef} className="home-hero-viewport relative h-[462px] lg:h-[600px]">
+        <div
+          ref={viewportRef}
+          className="home-hero-viewport relative h-[var(--hero-height-mobile,400px)] lg:h-[var(--hero-height-desktop,600px)]"
+          style={{
+            ["--hero-height-mobile" as string]: `${heroSettings.heightMobilePx}px`,
+            ["--hero-height-desktop" as string]: `${heroSettings.heightDesktopPx}px`,
+          }}
+        >
           {Array.from({ length: imageCount }).map((_, k) => {
             const src = getImageSrc(k);
             const isRendered = k <= maxVisited || k === current || k === (current + 1) % imageCount;
