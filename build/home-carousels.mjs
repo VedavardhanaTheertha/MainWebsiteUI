@@ -5,6 +5,7 @@ import { assertSafeSourceFile, parseMarkdownFrontmatter } from "./content-utils.
 import { librarySections } from "./library-sections.config.mjs";
 
 const textFields = ["title", "description", "page_type", "footnote"];
+const optionalTextFields = ["icon_title"];
 const iconNames = new Set([
   "home", "volunteer", "lekhana-yajna", "library", "seva",
   "events", "media", "story", "projects", "learn", "connect", "panchanga",
@@ -51,9 +52,12 @@ export function loadPageReferences(rootDir, defaultLanguage) {
     const { metadata, body } = parseMarkdownFrontmatter(readFileSync(path.join(directory, file), "utf8"), source);
     if (metadata.kind !== "page-reference" || body) fail(source, "expected a metadata-only page-reference record");
     for (const key of Object.keys(metadata)) {
-      if (!["kind", "enabled", "fields", ...textFields, "image", "url", "$comment", "comment"].includes(key)) fail(source, `unknown field ${key}`);
+      if (!["kind", "enabled", "fields", ...textFields, ...optionalTextFields, "image", "url", "$comment", "comment"].includes(key)) fail(source, `unknown field ${key}`);
     }
     for (const field of textFields) languageMap(metadata[field], `${source}.${field}`, defaultLanguage, field === "footnote");
+    for (const field of optionalTextFields) {
+      if (metadata[field] !== undefined) languageMap(metadata[field], `${source}.${field}`, defaultLanguage, false);
+    }
     safeLocation(metadata.image, `${source}.image`, true);
     safeLocation(metadata.url, `${source}.url`);
     if (urls.has(metadata.url)) fail(source, `duplicate page URL ${metadata.url}`);
@@ -64,13 +68,17 @@ export function loadPageReferences(rootDir, defaultLanguage) {
 }
 
 function localizedCard(record, language, defaultLanguage) {
-  return {
+  const card = {
     id: record.id,
     ...Object.fromEntries(textFields.map((field) => [field, record[field][language] ?? record[field][defaultLanguage]])),
     image: record.image,
     url: record.url,
     enabled: record.enabled ?? false,
   };
+  if (record.icon_title) {
+    card.icon_title = record.icon_title[language] ?? record.icon_title[defaultLanguage];
+  }
+  return card;
 }
 
 export function sampleUnique(items, count, draw = randomInt) {

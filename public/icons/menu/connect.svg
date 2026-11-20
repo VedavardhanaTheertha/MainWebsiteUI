@@ -1,67 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Connect Temple Gateway &amp; Welcoming Pranam">
-  <defs>
-    <radialGradient id="con_aura" cx="50%" cy="35%" r="55%">
-      <stop offset="0%" stop-color="#FEF08A" stop-opacity="0.85" />
-      <stop offset="50%" stop-color="#FED7AA" stop-opacity="0.3" />
-      <stop offset="100%" stop-color="#FFFBEB" stop-opacity="0" />
-    </radialGradient>
-    <linearGradient id="con_gold" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FEF08A" />
-      <stop offset="40%" stop-color="#F59E0B" />
-      <stop offset="80%" stop-color="#D97706" />
-      <stop offset="100%" stop-color="#78350F" />
-    </linearGradient>
-    <linearGradient id="con_arch" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#EA580C" />
-      <stop offset="50%" stop-color="#B71C1C" />
-      <stop offset="100%" stop-color="#EA580C" />
-    </linearGradient>
-    <linearGradient id="con_hands" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FFF7ED" />
-      <stop offset="50%" stop-color="#FDBA74" />
-      <stop offset="100%" stop-color="#EA580C" />
-    </linearGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#ea580c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Connect with Matha">
+  <!-- Sacred Kalasha / Gopuram Pinnacle on Top -->
+  <path d="M 32 6 L 35 11 H 29 Z" fill="#ea580c"/>
+  <circle cx="32" cy="13" r="2.5" fill="#ea580c" stroke="none"/>
 
-  <!-- Welcoming Celestial Radiance -->
-  <circle cx="32" cy="30" r="24" fill="url(#con_aura)" />
+  <!-- Grand Matha / Temple Gateway Arch (Mahadwara) -->
+  <path d="M 10 56 V 26 C 10 14 54 14 54 26 V 56" fill="#ea580c" fill-opacity="0.08" stroke-width="4.5"/>
+  <line x1="6" y1="56" x2="58" y2="56" stroke-width="4.5"/>
 
-  <!-- Connecting Community Orbital Wave Rings (Worldwide Devotee Network) -->
-  <ellipse cx="32" cy="36" rx="28" ry="12" fill="none" stroke="#F59E0B" stroke-width="1.2" stroke-dasharray="3 3.5" opacity="0.75" />
-  <circle cx="6" cy="34" r="1.8" fill="#FDE047" stroke="#B45309" stroke-width="0.5" />
-  <circle cx="58" cy="34" r="1.8" fill="#FDE047" stroke="#B45309" stroke-width="0.5" />
+  <!-- Divine Connection / Darshan Rays from Above Sanctum -->
+  <line x1="32" y1="18" x2="32" y2="24" stroke-width="3"/>
+  <line x1="24" y1="21" x2="26" y2="26" stroke-width="3"/>
+  <line x1="40" y1="21" x2="38" y2="26" stroke-width="3"/>
 
-  <!-- Grand Welcoming Temple Mahadwara Archway (Entrance Portal) -->
-  <path d="M 12 56 V 28 C 12 14 52 14 52 28 V 56" fill="none" stroke="url(#con_arch)" stroke-width="3.5" stroke-linecap="round" />
-  <path d="M 16 56 V 29 C 16 18 48 18 48 29 V 56" fill="none" stroke="url(#con_gold)" stroke-width="1.4" stroke-linecap="round" />
-
-  <!-- Archway Peak Kalasha Finial -->
-  <circle cx="32" cy="11.5" r="2.8" fill="url(#con_gold)" stroke="#78350F" stroke-width="0.6" />
-  <path d="M 32 6.5 L 34 10 L 30 10 Z" fill="#FDE047" />
-
-  <!-- Festive Welcoming Mango Leaf & Marigold Torana Hanging from Arch -->
-  <path d="M 16 26 Q 32 32 48 26" fill="none" stroke="#EA580C" stroke-width="1.2" />
-  <circle cx="21" cy="27.5" r="2" fill="#15803D" />
-  <circle cx="27" cy="29.2" r="2.2" fill="#F59E0B" />
-  <circle cx="32" cy="29.8" r="2.6" fill="#B71C1C" />
-  <circle cx="37" cy="29.2" r="2.2" fill="#F59E0B" />
-  <circle cx="43" cy="27.5" r="2" fill="#15803D" />
-
-  <!-- Hands in Warm Welcoming Namaskara / Pranam (Greeting Devotees) -->
+  <!-- Hands in Anjali Mudra / Pranam (Devotee in Reverent Connection with Matha & Deity) -->
   <g transform="translate(32, 42)">
-    <!-- Left Hand Palm & Fingers -->
-    <path d="M -9 15 C -9 9 -6 3 -1.5 -10 C -0.8 -12 0 -12 0 -10 C 0 3 0 9 0 15 Z" fill="url(#con_hands)" stroke="#9A3412" stroke-width="0.8" stroke-linejoin="round" />
-    <!-- Right Hand Palm & Fingers -->
-    <path d="M 9 15 C 9 9 6 3 1.5 -10 C 0.8 -12 0 -12 0 -10 C 0 3 0 9 0 15 Z" fill="url(#con_hands)" stroke="#9A3412" stroke-width="0.8" stroke-linejoin="round" />
-    <!-- Center Line of Folded Palms -->
-    <line x1="0" y1="-10" x2="0" y2="15" stroke="#9A3412" stroke-width="1" />
-
-    <!-- Sacred Golden Bangle on Wrists -->
-    <ellipse cx="-4.5" cy="12" rx="4.5" ry="1.4" fill="url(#con_gold)" stroke="#78350F" stroke-width="0.5" />
-    <ellipse cx="4.5" cy="12" rx="4.5" ry="1.4" fill="url(#con_gold)" stroke="#78350F" stroke-width="0.5" />
+    <!-- Folded Hands Shape -->
+    <path d="M 0 -14 C 4 -6 9 3 9 14 H -9 C -9 3 -4 -6 0 -14 Z" fill="#ea580c" fill-opacity="0.22" stroke-width="4"/>
+    <!-- Center Line of Joined Palms -->
+    <line x1="0" y1="-14" x2="0" y2="14" stroke-width="3"/>
   </g>
-
-  <!-- Sacred Lotus Flower Base Supporting the Gateway -->
-  <path d="M 18 57 C 22 53 27 53 32 55 C 37 53 42 53 46 57 Z" fill="#E11D48" stroke="#9F1239" stroke-width="0.7" />
-  <path d="M 8 57 L 56 57 L 58 60 L 6 60 Z" fill="url(#con_gold)" stroke="#78350F" stroke-width="0.7" />
 </svg>

@@ -59,7 +59,7 @@ export default function HomeTiles() {
                     />
                   </span>
                   <span className="mt-1 text-center font-body text-[10px] min-[360px]:text-[11px] sm:text-xs text-[var(--color-text-primary)] font-medium leading-tight whitespace-nowrap max-w-full">
-                    {t.title}
+                    {t.icon_title ?? t.title}
                   </span>
                 </Link>
               );

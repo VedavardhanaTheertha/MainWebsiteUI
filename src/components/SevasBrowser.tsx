@@ -23,7 +23,6 @@ import { filterAndSortSevas } from "@/lib/seva-filtering";
 import RailMotionControl from "./RailMotionControl";
 import AdvancedFilters from "./AdvancedFilters";
 import CollectionEmptyState from "./presentation/CollectionEmptyState";
-import { collectionCardBodyClassName, collectionCardClassName } from "@/lib/collection-presentation";
 
 function amountLabel(seva: SevaRecord, lang: string, anyAmount: string) {
   if (seva.amount <= 0) return anyAmount;
@@ -58,7 +57,7 @@ function SevaImage({ title, image, featured = false }: { title: string; image: s
   };
 
   return (
-    <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "visual-tile-art h-40 w-full" : "h-20 w-20 rounded-lg"}`}>
+    <div className={`relative shrink-0 overflow-hidden bg-[var(--color-saffron-100)] ${featured ? "h-full w-full" : "h-20 w-20 rounded-lg"}`}>
       {showPlaceholder ? (
         <Image src={placeholderSrc} alt="" fill sizes={sizes} className="object-contain" />
       ) : (
@@ -74,39 +73,56 @@ function SevaCard({
   lang,
   anyAmount,
   onOpen,
+  featured = false,
 }: {
   seva: SevaRecord;
   lang: string;
   anyAmount: string;
   onOpen: () => void;
+  featured?: boolean;
 }) {
   const title = localized(seva.title, lang);
   const amount = amountLabel(seva, lang, anyAmount);
+  const deity = localized(seva.deity, lang);
 
   return (
     <button
       type="button"
       onClick={onOpen}
-      className={`${collectionCardClassName("collection", true)} w-full !h-auto min-h-0`}
+      className={`group relative flex h-[180px] w-full min-w-0 flex-col justify-between overflow-hidden rounded-[18px] border border-[var(--color-line)] bg-[var(--color-paper)] p-3.5 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[var(--color-saffron-600)] ${
+        featured ? "w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none" : ""
+      }`}
     >
-      <SevaImage title={title} image={seva.image} featured />
-      <div className={collectionCardBodyClassName}>
-        <p className="layout-tile-category text-badge font-semibold uppercase tracking-wide text-[var(--color-text-brand)]">
-          {localized(seva.deity, lang)}
-        </p>
-        <h3 className="layout-tile-title mt-1 line-clamp-2 font-display text-lg font-bold leading-snug text-[var(--color-text-primary)]">
+      {/* Background Image Container */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-[var(--color-saffron-100)] transition-transform duration-500 group-hover:scale-105">
+        <SevaImage title={title} image={seva.image} featured />
+      </div>
+
+      {/* Dark Readability Gradient Overlay */}
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/85 via-black/45 to-black/25" />
+
+      {/* Top Bar Badges: Deity on Left, Price on Right */}
+      <div className="relative z-20 flex w-full items-start justify-between gap-2">
+        {deity ? (
+          <span className="inline-block max-w-[65%] truncate rounded-full bg-black/50 px-2.5 py-0.5 text-badge font-semibold uppercase tracking-wide text-white/95 backdrop-blur-md border border-white/20">
+            {deity}
+          </span>
+        ) : <span />}
+        {amount && (
+          <span className="shrink-0 rounded-full bg-[var(--color-saffron-600)]/90 px-2.5 py-0.5 font-body text-xs font-bold text-white shadow-sm backdrop-blur-sm border border-white/20">
+            {amount}
+          </span>
+        )}
+      </div>
+
+      {/* Bottom Text: Title and Summary Overlaid */}
+      <div className="relative z-20 mt-auto pt-2">
+        <h3 className="line-clamp-1 font-display text-base sm:text-lg font-bold leading-snug text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           {title}
         </h3>
-        <p className="layout-tile-summary mt-1 line-clamp-2 text-sm leading-6 text-[var(--color-text-secondary)]">
+        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
           {localized(seva.description, lang)}
         </p>
-        <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-2">
-          {amount && (
-            <p className="layout-tile-price font-body font-bold text-[var(--color-text-brand)]">
-              {amount}
-            </p>
-          )}
-        </div>
       </div>
     </button>
   );
@@ -315,27 +331,16 @@ export default function SevasBrowser() {
               msOverflowStyle: "none",
             }}
           >
-            {featured.map((seva) => {
-              const title = localized(seva.title, lang);
-              const amount = amountLabel(seva, lang, tr.sevas_any_amount);
-              return (
-                <button
-                  type="button"
-                  key={seva.id}
-                  onClick={() => handleOpenSeva(seva)}
-                  className={`${collectionCardClassName("featured", true)} w-[82vw] max-w-[320px] shrink-0 md:w-auto md:max-w-none !h-auto min-h-0`}
-                >
-                  <SevaImage title={title} image={seva.image} featured />
-                  <div className={collectionCardBodyClassName}>
-                    <h3 className="layout-tile-title line-clamp-2 font-display text-lg font-bold text-[var(--color-text-primary)]">{title}</h3>
-                    <p className="layout-tile-summary mt-1 line-clamp-2 text-sm text-[var(--color-text-secondary)]">{localized(seva.description, lang)}</p>
-                    <div className="layout-tile-footer mt-auto flex items-end justify-between gap-3 pt-2">
-                      {amount && <p className="layout-tile-price font-bold text-[var(--color-text-brand)]">{amount}</p>}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+            {featured.map((seva) => (
+              <SevaCard
+                key={seva.id}
+                seva={seva}
+                lang={lang}
+                anyAmount={tr.sevas_any_amount}
+                onOpen={() => handleOpenSeva(seva)}
+                featured
+              />
+            ))}
           </div>
           </div>
         </div>
