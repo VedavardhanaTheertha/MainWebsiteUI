@@ -418,9 +418,10 @@ export default function LibrarySectionBrowser({ sectionId }: { sectionId: string
             return (
               <article
                 className="library-reading-content"
+                lang={lang}
                 style={{ fontSize: `${(0.95 * readingSize) / 100}rem` }}
               >
-                <h2 className="mb-4 font-display text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
+                <h2 className="mb-4 font-display text-[1.5em] font-bold text-[var(--color-text-primary)] sm:text-[1.75em]">
                   {selectedArticle.title}
                 </h2>
                 {loadFailures[selectedArticle.id] ? (

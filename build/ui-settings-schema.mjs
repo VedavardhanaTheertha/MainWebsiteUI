@@ -11,6 +11,7 @@ export const uiFieldDefinitions = [
   { ...number("autoScroll", "pixelsPerSecond", 0), integer: false, exclusiveMinimum: true },
   number("autoScroll", "returnDurationMs"), number("autoScroll", "resumeDelayMs", 0, timerMaximum),
   flag("hero", "autoplay"), number("hero", "intervalMs", 1, timerMaximum), number("hero", "fadeDurationMs", 0),
+  number("hero", "heightMobilePx", 100, 2000), number("hero", "heightDesktopPx", 100, 2000),
   number("upcomingEvents", "lookAheadDays", 0, 365000), number("upcomingEvents", "maxCards"),
   number("reading", "wordsPerMinute"),
   ...["initialSize", "minSize", "maxSize", "step"].map((key) => number("reading", key)),
@@ -138,6 +139,14 @@ export function validateUiPreferences(value, defaults) {
       if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.reading[key];
     }
     value = { ...value, reading: migrated };
+  }
+  const hero = value?.hero;
+  if (hero && typeof hero === "object" && !Array.isArray(hero)) {
+    const migrated = { ...hero };
+    for (const key of ["heightMobilePx", "heightDesktopPx"]) {
+      if (!Object.hasOwn(migrated, key)) migrated[key] = defaults.hero[key];
+    }
+    value = { ...value, hero: migrated };
   }
   const presentation = value?.presentation;
   if (presentation && typeof presentation === "object" && !Array.isArray(presentation)) {
