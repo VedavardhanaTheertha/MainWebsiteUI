@@ -60,31 +60,37 @@ export default function ConnectBrowser() {
             {copy.branches_intro}
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3.5 sm:grid-cols-2">
           {activeBranches.map((branch) => (
             <button
               key={branch.id}
               type="button"
               onClick={() => setSelectedId(branch.id)}
-              className="group flex min-h-64 flex-col rounded-[18px] border border-[var(--color-line)] bg-[var(--color-paper)] p-5 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+              className="group flex flex-col justify-between rounded-[18px] border border-[var(--color-line)] bg-[var(--color-paper)] p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
               aria-label={`${copy.view_details}: ${localized(branch.title, lang)}`}
             >
-              <span className="mb-4 grid size-11 place-items-center rounded-full bg-[var(--color-saffron-100)] text-[var(--color-saffron-800)]">
-                <Landmark size={21} aria-hidden="true" />
-              </span>
-              <span className="font-display text-xl font-bold text-[var(--color-text-primary)]">
-                {localized(branch.title, lang)}
-              </span>
-              <span className="mt-1 font-body text-badge font-semibold uppercase tracking-wider text-[var(--color-text-brand)]">
-                {localized(branch.branchType, lang)}
-              </span>
-              <span className="mt-4 flex items-start gap-2 font-body text-sm leading-6 text-[var(--color-text-secondary)]">
-                <MapPin size={16} className="mt-1 shrink-0 text-[var(--color-saffron-700)]" aria-hidden="true" />
-                {localized(branch.address, lang)}
-              </span>
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--color-saffron-100)] text-[var(--color-saffron-800)]">
+                    <Landmark size={20} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate font-display text-lg font-bold text-[var(--color-text-primary)]">
+                      {localized(branch.title, lang)}
+                    </span>
+                    <span className="block font-body text-badge font-semibold uppercase tracking-wider text-[var(--color-text-brand)]">
+                      {localized(branch.branchType, lang)}
+                    </span>
+                  </div>
+                </div>
+                <span className="mt-3 flex items-start gap-2 font-body text-sm leading-snug text-[var(--color-text-secondary)]">
+                  <MapPin size={15} className="mt-0.5 shrink-0 text-[var(--color-saffron-700)]" aria-hidden="true" />
+                  <span className="line-clamp-2">{localized(branch.address, lang)}</span>
+                </span>
+              </div>
               {branch.phone && (
-                <span className="mt-3 flex items-center gap-2 font-body text-sm font-semibold text-[var(--color-text-primary)]">
-                  <Phone size={15} className="shrink-0 text-[var(--color-saffron-700)]" aria-hidden="true" />
+                <span className="mt-2.5 flex items-center gap-2 font-body text-xs sm:text-sm font-semibold text-[var(--color-text-primary)]">
+                  <Phone size={14} className="shrink-0 text-[var(--color-saffron-700)]" aria-hidden="true" />
                   {branch.phone}
                 </span>
               )}
