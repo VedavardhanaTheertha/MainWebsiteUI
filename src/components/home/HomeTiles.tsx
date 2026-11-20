@@ -52,9 +52,9 @@ export default function HomeTiles() {
                     <img
                       src={iconSrc}
                       alt=""
-                      width={22}
-                      height={22}
-                      className="size-[22px] min-[360px]:size-6 sm:size-7 object-contain select-none pointer-events-none"
+                      width={36}
+                      height={36}
+                      className="size-9 min-[360px]:size-10 sm:size-[46px] object-contain select-none pointer-events-none"
                       aria-hidden="true"
                     />
                   </span>

@@ -1,7 +1,83 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Media">
-  <rect x="2" y="3" width="20" height="15" rx="3" ry="3"/>
-  <circle cx="12" cy="10.5" r="3.5"/>
-  <circle cx="12" cy="10.5" r="1.5" fill="#f59e0b" stroke="none"/>
-  <circle cx="18" cy="6.5" r="1" fill="#ea580c" stroke="none"/>
-  <path d="M7 21L12 18L17 21"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Media Photos Videos &amp; Gallery">
+  <defs>
+    <radialGradient id="med_lens" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="35%" stop-color="#1D4ED8" />
+      <stop offset="70%" stop-color="#1E3A8A" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </radialGradient>
+    <linearGradient id="med_gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="35%" stop-color="#F59E0B" />
+      <stop offset="75%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#78350F" />
+    </linearGradient>
+    <linearGradient id="med_body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C" />
+      <stop offset="45%" stop-color="#EA580C" />
+      <stop offset="100%" stop-color="#9A3412" />
+    </linearGradient>
+    <linearGradient id="med_film" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#78350F" />
+      <stop offset="50%" stop-color="#451A03" />
+      <stop offset="100%" stop-color="#78350F" />
+    </linearGradient>
+  </defs>
+
+  <!-- Film Strip Reel Arc (Curving Behind the Camera) -->
+  <path d="M 6 43 C 4 28 8 18 16 11 L 20 14 C 13 20 10 28 12 43 Z" fill="url(#med_film)" stroke="url(#med_gold)" stroke-width="0.8" />
+  <!-- Film Sprocket Holes (Left) -->
+  <circle cx="10" cy="20" r="1.2" fill="#FEF08A" />
+  <circle cx="9" cy="27" r="1.2" fill="#FEF08A" />
+  <circle cx="9" cy="34" r="1.2" fill="#FEF08A" />
+
+  <path d="M 58 43 C 60 28 56 18 48 11 L 44 14 C 51 20 54 28 52 43 Z" fill="url(#med_film)" stroke="url(#med_gold)" stroke-width="0.8" />
+  <!-- Film Sprocket Holes (Right) -->
+  <circle cx="54" cy="20" r="1.2" fill="#FEF08A" />
+  <circle cx="55" cy="27" r="1.2" fill="#FEF08A" />
+  <circle cx="55" cy="34" r="1.2" fill="#FEF08A" />
+
+  <!-- Camera Top Housing / Pentaprism Turret -->
+  <path d="M 23 18 L 27 12 L 37 12 L 41 18 Z" fill="url(#med_gold)" stroke="#78350F" stroke-width="0.8" />
+  <!-- Auspicious Ruby Center Gem on Pentaprism -->
+  <circle cx="32" cy="15" r="2.2" fill="#B71C1C" stroke="#FEF08A" stroke-width="0.6" />
+
+  <!-- Shutter Button (Left) & Dial (Right) -->
+  <rect x="14" y="15" width="6" height="3" rx="1" fill="url(#med_gold)" stroke="#78350F" stroke-width="0.6" />
+  <rect x="44" y="15" width="7" height="3" rx="1" fill="url(#med_gold)" stroke="#78350F" stroke-width="0.6" />
+
+  <!-- Main Camera Body -->
+  <rect x="9" y="18" width="46" height="35" rx="7" fill="url(#med_body)" stroke="url(#med_gold)" stroke-width="1.8" />
+
+  <!-- Saffron & Gold Decorative Engraved Leatherette Band -->
+  <rect x="12" y="24" width="40" height="23" rx="4" fill="#B45309" stroke="#78350F" stroke-width="0.7" opacity="0.9" />
+
+  <!-- Golden Bezel Outer Ring of the Lens -->
+  <circle cx="32" cy="35.5" r="15" fill="url(#med_gold)" stroke="#78350F" stroke-width="1.2" />
+  <circle cx="32" cy="35.5" r="13" fill="#451A03" />
+
+  <!-- Lotus Petal Aperture Rings Inside Lens -->
+  <circle cx="32" cy="35.5" r="11.5" fill="url(#med_gold)" stroke="#9A3412" stroke-width="0.6" />
+  <!-- Lotus Petals (8 Radial Aperture Blades) -->
+  <path d="M 32 24 C 34 27 34 31 32 35.5 C 30 31 30 27 32 24 Z" fill="#FDE047" opacity="0.6" />
+  <path d="M 32 47 C 34 44 34 40 32 35.5 C 30 40 30 44 32 47 Z" fill="#FDE047" opacity="0.6" />
+  <path d="M 20.5 35.5 C 23.5 37.5 27.5 37.5 32 35.5 C 27.5 33.5 23.5 33.5 20.5 35.5 Z" fill="#FDE047" opacity="0.6" />
+  <path d="M 43.5 35.5 C 40.5 37.5 36.5 37.5 32 35.5 C 36.5 33.5 40.5 33.5 43.5 35.5 Z" fill="#FDE047" opacity="0.6" />
+
+  <!-- Deep Krishna Blue Glass Lens Core -->
+  <circle cx="32" cy="35.5" r="9" fill="url(#med_lens)" />
+
+  <!-- Play Symbol / Media Glyphs Inside Lens Glass -->
+  <polygon points="30,30.5 38,35.5 30,40.5" fill="#FEF08A" stroke="#B45309" stroke-width="0.5" />
+
+  <!-- Glistening Lens Reflection Flashes -->
+  <circle cx="28.5" cy="32" r="2.2" fill="#FFFFFF" opacity="0.85" />
+  <circle cx="35.5" cy="39" r="1.1" fill="#FFFFFF" opacity="0.6" />
+
+  <!-- Camera Flash / Sensor Element (Top-Right) -->
+  <circle cx="47" cy="23" r="2.4" fill="#FEF08A" stroke="#78350F" stroke-width="0.6" />
+  <circle cx="47" cy="23" r="1.2" fill="#FFFFFF" />
+
+  <!-- Divine Sparkle Star (Top Left) -->
+  <polygon points="12,12 13.5,8 15,12 19,13.5 15,15 13.5,19 12,15 8,13.5" fill="#FDE047" stroke="#D97706" stroke-width="0.5" />
 </svg>

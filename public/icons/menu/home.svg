@@ -1,6 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Home">
-  <path d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z"/>
-  <path d="M9 21V13C9 12.45 9.45 12 10 12H14C14.55 12 15 12.45 15 13V21"/>
-  <path d="M12 3V1.5" stroke-width="2"/>
-  <circle cx="12" cy="1.2" r="0.8" fill="#f59e0b" stroke="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Home Temple Sanctum">
+  <defs>
+    <linearGradient id="home_gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="45%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+    <linearGradient id="home_saffron" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C" />
+      <stop offset="40%" stop-color="#EA580C" />
+      <stop offset="100%" stop-color="#991B1B" />
+    </linearGradient>
+    <linearGradient id="home_wall" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="50%" stop-color="#FEF3C7" />
+      <stop offset="100%" stop-color="#FDE68A" />
+    </linearGradient>
+    <radialGradient id="home_flameGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="50%" stop-color="#F59E0B" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#EA580C" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Golden Kalasha (Temple Spire Peak) -->
+  <path d="M 32 3 L 33.5 7 L 30.5 7 Z" fill="#FDE047" />
+  <circle cx="32" cy="8.5" r="2.2" fill="url(#home_gold)" />
+  <path d="M 29 11 C 29 9.5 35 9.5 35 11 L 36.5 13 L 27.5 13 Z" fill="url(#home_gold)" />
+
+  <!-- Shikhara Top Tier -->
+  <path d="M 26 14 L 38 14 L 39.5 19 L 24.5 19 Z" fill="url(#home_saffron)" />
+  <rect x="23" y="19" width="18" height="2.2" rx="1" fill="url(#home_gold)" />
+
+  <!-- Shikhara Middle Tier with Ornate Arches -->
+  <path d="M 20 22 L 44 22 L 47 29 L 17 29 Z" fill="url(#home_saffron)" />
+  <path d="M 28 25 C 28 23 36 23 36 25 L 37 28 L 27 28 Z" fill="url(#home_gold)" />
+  <circle cx="23" cy="26" r="1.2" fill="#FEF08A" />
+  <circle cx="41" cy="26" r="1.2" fill="#FEF08A" />
+  <rect x="15" y="29.2" width="34" height="2.8" rx="1.2" fill="url(#home_gold)" />
+
+  <!-- Mandapa Cornice / Eaves -->
+  <path d="M 12 32.5 C 18 31 46 31 52 32.5 L 54 36.5 L 10 36.5 Z" fill="url(#home_saffron)" stroke="#78350F" stroke-width="0.6" />
+  <!-- Eaves Decorative Pearls -->
+  <circle cx="15" cy="35" r="0.9" fill="#FEF08A" />
+  <circle cx="21" cy="35" r="0.9" fill="#FEF08A" />
+  <circle cx="27" cy="35" r="0.9" fill="#FEF08A" />
+  <circle cx="33" cy="35" r="0.9" fill="#FEF08A" />
+  <circle cx="39" cy="35" r="0.9" fill="#FEF08A" />
+  <circle cx="45" cy="35" r="0.9" fill="#FEF08A" />
+  <circle cx="49" cy="35" r="0.9" fill="#FEF08A" />
+
+  <!-- Sanctum Walls (Garbhagriha Outer Structure) -->
+  <rect x="14" y="37" width="36" height="19" fill="url(#home_wall)" stroke="url(#home_saffron)" stroke-width="1.2" />
+
+  <!-- Carved Stone Pillars on Sides -->
+  <rect x="15.5" y="38" width="4.5" height="17" fill="url(#home_gold)" rx="0.8" />
+  <rect x="44" y="38" width="4.5" height="17" fill="url(#home_gold)" rx="0.8" />
+
+  <!-- Sanctum Inner Doorway (Garbhagriha Portal) -->
+  <path d="M 24 56 V 43 C 24 38.5 40 38.5 40 43 V 56 Z" fill="#451A03" />
+  <path d="M 25.5 56 V 44 C 25.5 40 38.5 40 38.5 44 V 56 Z" stroke="url(#home_gold)" stroke-width="1.2" fill="#1C0A00" />
+
+  <!-- Sanctum Inner Glowing Akhanda Diya (Sacred Flame) -->
+  <circle cx="32" cy="48" r="6" fill="url(#home_flameGlow)" />
+  <ellipse cx="32" cy="51" rx="3.5" ry="1.2" fill="url(#home_gold)" />
+  <path d="M 32 45 C 33.5 47 33.5 49 32 50 C 30.5 49 30.5 47 32 45 Z" fill="#FFFBEB" />
+  <path d="M 32 46.5 C 33 48 33 49 32 49.8 C 31 49 31 48 32 46.5 Z" fill="#F59E0B" />
+
+  <!-- Stepped Base Plinth (Adhisthana) -->
+  <path d="M 10 56.5 L 54 56.5 L 56 60 L 8 60 Z" fill="url(#home_saffron)" />
+  <rect x="7" y="60" width="50" height="2" rx="0.8" fill="url(#home_gold)" />
 </svg>
