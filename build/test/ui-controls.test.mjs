@@ -78,7 +78,7 @@ test("homepage hero and feature tiles are single links with no separate CTA butt
     const buttons = nodes(tree, (node) => node.type === "button");
     assert.equal(buttons.length, 0, "event-style cards are single links without buttons");
     assert.match(tree.props.className, /grid gap-5 sm:grid-cols-2 lg:grid-cols-3/);
-    assert.ok(links.every((link) => link.props.className.includes("h-[360px]")));
+    assert.ok(links.every((link) => link.props.className.includes("collection-tile")));
     assert.ok(links.every((link) => nodes(link, (node) => node.props?.className?.includes("relative h-40")).length === 1));
     const hero = await mount("home/HeroCarousel", true, {
       "@/context/LanguageContext": language,
@@ -131,7 +131,7 @@ test("homepage top rail preserves motion and provides separate image and optiona
   let tree = render({ items: tr.home.top_carousel });
   assert.deepEqual(calls, [{ count: tr.home.top_carousel.length, paused: false }]);
   const cards = nodes(tree, (node) => node.type === "link");
-  assert.ok(cards.every((card) => card.props.className.includes("min-h-80 w-[82vw] max-w-[320px]")));
+  assert.ok(cards.every((card) => card.props.className.includes("collection-tile") && card.props.className.includes("w-[82vw] max-w-[320px]")));
   assert.ok(cards.every((card) => card.props.className.includes("lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none")));
   assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className === "visual-tile-art relative h-44 w-full shrink-0").length === 1));
   assert.ok(cards.every((card) => nodes(card, (node) => node.props?.className?.includes("absolute inset-x-0 bottom-0")).length === 0), "captions do not cover artwork");

@@ -4,8 +4,8 @@ const cardBase = "collection-tile group flex min-w-0 flex-col overflow-hidden ro
 
 export function collectionCardClassName(variant: CollectionCardVariant, imageBacked = false): string {
   return `${cardBase}${imageBacked ? " visual-tile" : ""} ${variant === "featured"
-    ? "h-80 border-[var(--color-saffron-600)]"
-    : "h-[360px] border-[var(--color-line)]"}`;
+    ? "border-[var(--color-saffron-600)]"
+    : "border-[var(--color-line)]"}`;
 }
 
 export const collectionCardBodyClassName = "visual-tile-body flex min-h-0 min-w-0 flex-1 flex-col p-3 sm:p-3.5";

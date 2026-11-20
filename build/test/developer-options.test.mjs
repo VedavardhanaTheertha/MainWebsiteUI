@@ -221,7 +221,7 @@ test("existing complete saved preferences inherit the new tile default without l
   assert.equal(fixture.render().settings.collectionPagination.initialVisible, 3);
   assert.equal(fixture.render().settings.presentationSettings.tileOverlayOpacity, 40);
   assert.equal(fixture.render().settings.presentationSettings.tileCornerRadius, 20);
-  assert.equal(fixture.render().settings.presentationSettings.tileMinHeight, 360);
+  assert.equal(fixture.render().settings.presentationSettings.tileMinHeight, uiDefaults.presentation.tileMinHeight);
   assert.equal(fixture.warnings.length, 0);
   assert.throws(() => schema.validateUiElements(previous), schema.UiSettingsError);
   assert.equal(schema.validateUiPreferences(previous, uiDefaults).presentation.tileOverlayOpacity, 40);

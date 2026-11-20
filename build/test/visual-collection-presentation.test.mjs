@@ -57,13 +57,11 @@ test("unknown and inherited category names receive the same explicit fallback", 
   }
 });
 
-test("featured and collection card heights remain distinct", () => {
-  assert.match(cards.collectionCardClassName("featured"), /(?:^| )h-80(?: |$)/);
-  assert.doesNotMatch(cards.collectionCardClassName("featured"), /h-\[360px\]/);
-  assert.match(cards.collectionCardClassName("collection"), /h-\[360px\]/);
-  assert.doesNotMatch(cards.collectionCardClassName("collection"), /(?:^| )h-80(?: |$)/);
+test("featured and collection card borders remain distinct while sharing min-height", () => {
   assert.match(cards.collectionCardClassName("featured"), /border-\[var\(--color-saffron-600\)\]/);
   assert.match(cards.collectionCardClassName("collection"), /border-\[var\(--color-line\)\]/);
+  assert.doesNotMatch(cards.collectionCardClassName("featured"), /border-\[var\(--color-line\)\]/);
+  assert.doesNotMatch(cards.collectionCardClassName("collection"), /border-\[var\(--color-saffron-600\)\]/);
 });
 
 test("card chrome preserves focus feedback and leaves rail widths to callers", () => {

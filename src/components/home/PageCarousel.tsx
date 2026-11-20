@@ -7,6 +7,8 @@ import { useAutoScrollRail } from "@/hooks/useAutoScrollRail";
 import type { HomePageCard } from "@/lib/content-types";
 import RailMotionControl from "@/components/RailMotionControl";
 
+import { collectionCardClassName } from "@/lib/collection-presentation";
+
 export default function PageCarousel({
   items,
   dataCarousel = "top_carousel",
@@ -73,7 +75,7 @@ export default function PageCarousel({
       >
         {items.map((item) => (
           <Link key={item.id} href={item.url}
-            className="collection-tile visual-tile group relative flex min-h-80 w-[82vw] max-w-[320px] shrink-0 flex-col overflow-hidden rounded-[18px] bg-[var(--color-paper)] border border-[var(--color-line)] shadow-sm hover:shadow-md hover:border-[var(--color-saffron-500)] hover:-translate-y-0.5 transition-all duration-300 lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+            className={`${collectionCardClassName("collection", true)} relative w-[82vw] max-w-[320px] shrink-0 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 lg:w-[calc((100%-2.5rem)/3)] lg:max-w-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]`}
           >
             <div className="visual-tile-art relative h-44 w-full shrink-0">
               <ContentImage src={item.image} alt="" fill sizes="(min-width: 1280px) 400px, (min-width: 1024px) 33vw, (min-width: 391px) 320px, 82vw" />
