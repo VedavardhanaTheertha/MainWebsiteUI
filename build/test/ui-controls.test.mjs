@@ -274,6 +274,20 @@ test("Bhakti reader range uses configured initial size and bounds", async () => 
   assert.equal(range.props.step, 10);
 });
 
+test("KnowledgeBody does not hardcode text-base so it inherits reader font size", async () => {
+  const tr = { library_browser: { detail_labels: {} } };
+  const render = await mount("library/KnowledgeBody", true, {
+    "@/context/LanguageContext": { useLang: () => ({ lang: "en", tr }) },
+    "@/context/UiSettingsContext": { useUiSettings: () => ({ ...testUiSettings }) },
+    "@/lib/knowledge": { knowledgeReadingTime: () => undefined, knowledgeText: (val) => val },
+    "@/components/presentation/ContentImage": { ImageBackdrop: "span" },
+  });
+  const tree = render({ article: { id: "article-1", title: "Article", tags: [], html: "<p>Content</p>" }, sectionId: "stories" });
+  assert.equal(tree.props.className.includes("text-base"), false);
+  const proseDiv = nodes(tree, (n) => n.props?.dangerouslySetInnerHTML)[0];
+  assert.equal(proseDiv.props.className.includes("text-base"), false);
+});
+
 test("rail control is an accessible right-edge pause/play icon and honors the disabled setting", async () => {
   const render = await mount("RailMotionControl");
   let toggled = false;
