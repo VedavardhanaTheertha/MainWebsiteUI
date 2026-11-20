@@ -107,9 +107,9 @@ export default function MobileHeader() {
             <img
               src={`${siteConfig.basePath}/icons/menu/${isMenuOpen ? "close.svg" : "menu.svg"}`}
               alt=""
-              width={20}
-              height={20}
-              className="size-5 object-contain select-none pointer-events-none"
+              width={24}
+              height={24}
+              className="size-6 object-contain select-none pointer-events-none"
               aria-hidden="true"
             />
           </button>
