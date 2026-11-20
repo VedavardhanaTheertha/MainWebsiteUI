@@ -17,6 +17,7 @@ export interface HomePageCard {
   page_type: string;
   url: string;
   footnote: string;
+  icon_title?: string;
   item_type?: string;
   enabled?: boolean;
 }

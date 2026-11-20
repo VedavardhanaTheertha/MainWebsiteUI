@@ -1,64 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Library Sacred Grantha">
-  <defs>
-    <linearGradient id="lib_gold" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FDE047" />
-      <stop offset="50%" stop-color="#D4AF37" />
-      <stop offset="100%" stop-color="#9A7D0A" />
-    </linearGradient>
-    <linearGradient id="lib_woodCover" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#B45309" />
-      <stop offset="50%" stop-color="#78350F" />
-      <stop offset="100%" stop-color="#451A03" />
-    </linearGradient>
-    <linearGradient id="lib_parchment" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#FFFBEB" />
-      <stop offset="40%" stop-color="#FEF3C7" />
-      <stop offset="100%" stop-color="#FDE68A" />
-    </linearGradient>
-    <linearGradient id="lib_sutra" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#DC2626" />
-      <stop offset="50%" stop-color="#EF4444" />
-      <stop offset="100%" stop-color="#991B1B" />
-    </linearGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#ea580c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Library">
+  <!-- Shelf Base Line -->
+  <line x1="6" y1="56" x2="58" y2="56" stroke-width="5"/>
 
-  <!-- Open Sacred Vedic Book / Grantha Base -->
-  <!-- Top Stack (Leaves Spreading) -->
-  <path d="M 6 18 Q 18 13 32 17 Q 46 13 58 18 L 56 46 Q 44 42 32 46 Q 20 42 8 46 Z" fill="url(#lib_parchment)" stroke="#D97706" stroke-width="1.2" />
+  <!-- Book 1 (Tall Left Volume with Bookmark) -->
+  <rect x="10" y="12" width="11" height="44" rx="2.5" fill="#ea580c" fill-opacity="0.1"/>
+  <line x1="10" y1="20" x2="21" y2="20" stroke-width="3.5"/>
+  <line x1="10" y1="46" x2="21" y2="46" stroke-width="3.5"/>
+  <!-- Bookmark Ribbon -->
+  <path d="M 15.5 12 V 24 L 18 21.5 L 20.5 24 V 12" fill="#ea580c" stroke-width="1"/>
 
-  <!-- Multiple Layered Folios (Pages Stack Effect) -->
-  <path d="M 6.8 21 Q 18.5 16.5 32 20.2 Q 45.5 16.5 57.2 21" fill="none" stroke="#D7B180" stroke-width="0.8" />
-  <path d="M 7.4 24 Q 18.8 19.8 32 23.5 Q 45.2 19.8 56.6 24" fill="none" stroke="#D7B180" stroke-width="0.8" />
+  <!-- Book 2 (Middle Volume) -->
+  <rect x="24" y="19" width="11" height="37" rx="2.5" fill="#ea580c" fill-opacity="0.1"/>
+  <line x1="24" y1="27" x2="35" y2="27" stroke-width="3.5"/>
+  <circle cx="29.5" cy="38" r="2" fill="#ea580c" stroke="none"/>
 
-  <!-- Heavy Bottom Teak Wood Cover (Patali) -->
-  <path d="M 7 46.5 Q 19 42.5 32 46.5 Q 45 42.5 57 46.5 L 56 52.5 Q 44 48.5 32 52.5 Q 20 48.5 8 52.5 Z" fill="url(#lib_woodCover)" stroke="url(#lib_gold)" stroke-width="1" />
-
-  <!-- Center Spine Groove -->
-  <line x1="32" y1="17" x2="32" y2="52.5" stroke="#78350F" stroke-width="1.8" />
-
-  <!-- Sanskrit Sacred Mantras Inscribed on Pages -->
-  <!-- Left Page Script Lines -->
-  <line x1="12" y1="26" x2="27" y2="24" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-  <line x1="11" y1="31" x2="28" y2="29" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-  <line x1="13" y1="36" x2="26" y2="34" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-  <line x1="12" y1="41" x2="25" y2="39" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-
-  <!-- Right Page Script Lines -->
-  <line x1="37" y1="24" x2="52" y2="26" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-  <line x1="36" y1="29" x2="53" y2="31" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-  <line x1="38" y1="34" x2="51" y2="36" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-  <line x1="39" y1="39" x2="52" y2="41" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" />
-
-  <!-- Ornate Brass Corner Clasps on Book -->
-  <path d="M 6 18 L 13 16.5 L 11 23 L 6 18 Z" fill="url(#lib_gold)" stroke="#78350F" stroke-width="0.5" />
-  <path d="M 58 18 L 51 16.5 L 53 23 L 58 18 Z" fill="url(#lib_gold)" stroke="#78350F" stroke-width="0.5" />
-
-  <!-- Sacred Silk Bookmark Ribbon (Sutra Ribbon with Gold Tassel) -->
-  <path d="M 32 17 C 32 10 26 6 20 8 C 16 9 14 13 16 16 L 32 17 Z" fill="url(#lib_sutra)" />
-  <path d="M 32 46.5 C 32 55 35 59 38 61 L 34 62 C 31 59 30 55 32 46.5 Z" fill="url(#lib_sutra)" />
-  <polygon points="36,59 40,62 36,63" fill="url(#lib_gold)" />
-
-  <!-- Auspicious Saraswati Golden Lotus Crest in Center Crest -->
-  <circle cx="32" cy="17" r="4.2" fill="url(#lib_gold)" stroke="#991B1B" stroke-width="0.8" />
-  <circle cx="32" cy="17" r="1.8" fill="#B71C1C" />
+  <!-- Book 3 (Tilted Right Volume) -->
+  <g transform="translate(37, 56) rotate(16)">
+    <rect x="0" y="-39" width="11" height="39" rx="2.5" fill="#ea580c" fill-opacity="0.1"/>
+    <line x1="0" y1="-31" x2="11" y2="-31" stroke-width="3.5"/>
+    <line x1="0" y1="-10" x2="11" y2="-10" stroke-width="3.5"/>
+  </g>
 </svg>

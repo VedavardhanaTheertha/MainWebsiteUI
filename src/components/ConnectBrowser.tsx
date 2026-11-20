@@ -102,37 +102,40 @@ export default function ConnectBrowser() {
             {copy.connect_intro}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {activeConnectLinks.map((link) => (
             <a
               key={link.id}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-52 flex-col items-center justify-center rounded-[18px] border border-[var(--color-line)] bg-[var(--color-paper)] p-5 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
+              className="flex items-center gap-3 rounded-[16px] border border-[var(--color-line)] bg-[var(--color-paper)] p-3 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-saffron-500)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-saffron-600)]"
             >
               <Image
                 src={link.icon}
                 alt={localized(link.platform, lang)}
-                width={56}
-                height={56}
-                className="size-14 rounded-full shadow-sm"
+                width={40}
+                height={40}
+                className="size-10 shrink-0 rounded-full shadow-sm"
               />
-              <strong className="mt-3 font-body text-sm text-[var(--color-text-primary)]">
-                {localized(link.platform, lang)}
-              </strong>
-              <span className="mt-1 break-all font-body text-caption" style={{ color: link.brandColor }}>
-                {localized(link.handle, lang)}
-              </span>
+              <div className="min-w-0 flex-1">
+                <strong className="block truncate font-body text-xs sm:text-sm font-semibold text-[var(--color-text-primary)]">
+                  {localized(link.platform, lang)}
+                </strong>
+                <span className="block truncate font-body text-micro text-[var(--color-text-secondary)]">
+                  {localized(link.handle, lang)}
+                </span>
+              </div>
               {link.audience && (
-                <>
-                  <span className="mt-4 font-display text-2xl font-bold text-[var(--color-text-primary)]">
-                    {link.audience}
-                  </span>
-                  <span className="mt-1 font-body text-micro uppercase tracking-widest text-[var(--color-text-muted)]">
-                    {copy.audience}
-                  </span>
-                </>
+                <span
+                  className="shrink-0 rounded-full px-2 py-0.5 font-display text-[11px] font-bold"
+                  style={{
+                    backgroundColor: `${link.brandColor}15`,
+                    color: link.brandColor,
+                  }}
+                >
+                  {link.audience}
+                </span>
               )}
             </a>
           ))}

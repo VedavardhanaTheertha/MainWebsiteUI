@@ -1,65 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Projects Temple Architecture Mandapa">
-  <defs>
-    <linearGradient id="pro_gold" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FEF08A" />
-      <stop offset="40%" stop-color="#F59E0B" />
-      <stop offset="80%" stop-color="#D97706" />
-      <stop offset="100%" stop-color="#78350F" />
-    </linearGradient>
-    <linearGradient id="pro_stone" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#FFFBEB" />
-      <stop offset="45%" stop-color="#FEF3C7" />
-      <stop offset="100%" stop-color="#FDE68A" />
-    </linearGradient>
-    <linearGradient id="pro_saffron" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FB923C" />
-      <stop offset="50%" stop-color="#EA580C" />
-      <stop offset="100%" stop-color="#991B1B" />
-    </linearGradient>
-    <linearGradient id="pro_lotus" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#BE123C" />
-      <stop offset="100%" stop-color="#FDA4AF" />
-    </linearGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#ea580c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Projects">
+  <!-- Stepped Foundation Plinth -->
+  <line x1="6" y1="56" x2="58" y2="56" stroke-width="5"/>
+  <line x1="10" y1="50" x2="54" y2="50" stroke-width="4"/>
 
-  <!-- Temple Flag (Dhvaja / Sacred Pennant) on Top Mast -->
-  <line x1="32" y1="3" x2="32" y2="15" stroke="url(#pro_gold)" stroke-width="1.8" />
-  <!-- Double-Forked Saffron Dhvaja (Temple Banner) -->
-  <path d="M 32 4 L 47 8 L 41 11 L 47 14 L 32 14 Z" fill="url(#pro_saffron)" />
-  <circle cx="32" cy="3.5" r="1.5" fill="#FEF08A" />
+  <!-- Three Architectural Pillars / Columns -->
+  <line x1="17" y1="24" x2="17" y2="50" stroke-width="4.5"/>
+  <line x1="32" y1="24" x2="32" y2="50" stroke-width="4.5"/>
+  <line x1="47" y1="24" x2="47" y2="50" stroke-width="4.5"/>
 
-  <!-- Upper Capital / Cornice Beam (Uttira & Potika / Bracket Capital) -->
-  <rect x="12" y="15" width="40" height="4.5" rx="1.5" fill="url(#pro_saffron)" stroke="#78350F" stroke-width="0.8" />
-  <rect x="16" y="19.5" width="32" height="3" fill="url(#pro_gold)" stroke="#78350F" stroke-width="0.7" />
+  <!-- Entablature Beam -->
+  <line x1="10" y1="24" x2="54" y2="24" stroke-width="4.5"/>
 
-  <!-- Carved Stone Pillars (Monolithic Mandapa Sthambhas) -->
-  <!-- Left Pillar -->
-  <rect x="18" y="22.5" width="7" height="25" fill="url(#pro_stone)" stroke="url(#pro_gold)" stroke-width="0.8" />
-  <!-- Left Fluted Pillar Details & Molded Rings -->
-  <line x1="20.3" y1="23" x2="20.3" y2="47" stroke="#D7B180" stroke-width="0.8" />
-  <line x1="22.7" y1="23" x2="22.7" y2="47" stroke="#D7B180" stroke-width="0.8" />
-  <rect x="17" y="27" width="9" height="1.8" rx="0.5" fill="url(#pro_gold)" />
-  <rect x="17" y="41" width="9" height="1.8" rx="0.5" fill="url(#pro_gold)" />
+  <!-- Temple Pediment / Gable Roof -->
+  <path d="M 8 24 L 32 8 L 56 24 Z" fill="#ea580c" fill-opacity="0.12"/>
 
-  <!-- Right Pillar -->
-  <rect x="39" y="22.5" width="7" height="25" fill="url(#pro_stone)" stroke="url(#pro_gold)" stroke-width="0.8" />
-  <!-- Right Fluted Pillar Details & Molded Rings -->
-  <line x1="41.3" y1="23" x2="41.3" y2="47" stroke="#D7B180" stroke-width="0.8" />
-  <line x1="43.7" y1="23" x2="43.7" y2="47" stroke="#D7B180" stroke-width="0.8" />
-  <rect x="38" y="27" width="9" height="1.8" rx="0.5" fill="url(#pro_gold)" />
-  <rect x="38" y="41" width="9" height="1.8" rx="0.5" fill="url(#pro_gold)" />
-
-  <!-- Central Arched Mandapa Vault Portal -->
-  <path d="M 25 47.5 V 33 C 25 28 39 28 39 33 V 47.5 Z" fill="#FFFBEB" stroke="#D97706" stroke-width="1.2" />
-  <!-- Auspicious Kalasha in Arch -->
-  <circle cx="32" cy="35" r="3.2" fill="url(#pro_gold)" />
-  <path d="M 32 30 L 33.5 33 L 30.5 33 Z" fill="#FDE047" />
-
-  <!-- Stepped Lotus Foundation (Upana & Padma Pitha) -->
-  <!-- Carved Lotus Petal Base Band -->
-  <path d="M 13 48 C 17 47 21 47 25 48 C 29 47 35 47 39 48 C 43 47 47 47 51 48 L 53 53 L 11 53 Z" fill="url(#pro_lotus)" stroke="#991B1B" stroke-width="0.7" />
-
-  <!-- Heavy Molded Granite Base Plinth -->
-  <path d="M 9 53.5 L 55 53.5 L 57 58 L 7 58 Z" fill="url(#pro_saffron)" stroke="#78350F" stroke-width="0.8" />
-  <rect x="6" y="58" width="52" height="3" rx="1" fill="url(#pro_gold)" stroke="#78350F" stroke-width="0.7" />
+  <!-- Golden Spire Finials -->
+  <circle cx="32" cy="6.5" r="2.2" fill="#ea580c" stroke="none"/>
+  <circle cx="32" cy="18" r="2" fill="#ea580c" stroke="none"/>
 </svg>
