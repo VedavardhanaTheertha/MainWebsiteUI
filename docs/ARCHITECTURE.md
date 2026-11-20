@@ -508,10 +508,10 @@ language literals can escape that check. Review source for display strings too.
 Sitemap verification compares exact canonical route membership and rejects duplicate,
 missing, and unexpected URLs rather than relying only on a URL count.
 
-GitHub workflows verify pull requests and `main`; the development workflow publishes
-the reviewed `main` export to GitHub Pages. The production configuration targets a
-root-hosted static site. Deployment credentials and hosting setup are operational
-concerns, not visitor-facing settings.
+GitHub workflows verify pull requests and both `dev` and `main` branches; the development
+workflow publishes the reviewed `dev` export to GitHub Pages. The production configuration
+targets a root-hosted static site on Cloudflare Pages deployed on pushes to `main`.
+Deployment credentials and hosting setup are operational concerns, not visitor-facing settings.
 
 ### Automated Production Deployment to Cloudflare Pages
 
@@ -519,19 +519,20 @@ Production hosting for `shiroormatha.org` is provided by Cloudflare Pages:
 
 1. **Dual-Environment Pipeline**:
    * **Development (`SITE_ENV=dev`)**: Automatically built and published to GitHub Pages
-     on push to `main` and daily schedule for preview and QA testing.
+     on push to `dev` (when pull requests merge) and on submodule update dispatches (`submodule-updated`).
+     Pull requests target `dev`. It does not build on daily schedule.
    * **Production (`SITE_ENV=prod`)**: Built using `node build/build.mjs prod` (invoked via
      `npm run build:prod` or auto-detected in Cloudflare Pages builds via `CF_PAGES`) with canonical production URLs,
-     enabled indexing, and real authored copy. Static files in `out/` (and mirrored to `dist/` for platforms
-     expecting that output folder) are uploaded to Cloudflare Pages via direct Git integration or GitHub Actions
-     (`cloudflare/pages-action` or Wrangler with `wrangler.toml`).
+     enabled indexing, and real authored copy. Deployed on push to `main` (restricted strictly to PRs promoted from `dev`)
+     and daily automated midnight schedule to refresh date-sensitive event partitions. Production does not build on raw
+     submodule updates. Static files in `out/` (and mirrored to `dist/` for platforms expecting that output folder)
+     are uploaded to Cloudflare Pages via direct Git integration or GitHub Actions (`cloudflare/pages-action` or Wrangler with `wrangler.toml`).
 2. **Triggering Mechanisms**:
    * **Submodule Dispatches**: Upstream changes in `WebsiteLibrary` or `WebsiteConfiguration`
-     emit `repository_dispatch` triggers (`submodule-updated`) to deploy updated content
-     instantly.
-   * **Daily Automated Midnight Refresh**: Scheduled GitHub Actions run daily at 00:00 IST
+     emit `repository_dispatch` triggers (`submodule-updated`) to deploy updated preview content to `dev`.
+   * **Daily Automated Midnight Refresh**: Scheduled GitHub Actions run daily on `main` at 00:00 IST
      (`0 21 * * *` UTC), refreshing date-sensitive event partitions, seeded carousel pools,
-     and holiday overrides without requiring manual commits.
+     and holiday overrides on the production site without requiring manual commits.
    * **Manual Promotion**: Authorized maintainers can run `workflow_dispatch` with an optional
      target environment input.
 

@@ -5,13 +5,18 @@
 name: Deploy production site
 
 on:
+  # Deploy production automatically on push to main (e.g. when PR from dev merges).
+  push:
+    branches: [main]
+
   # Daily builds refresh date-sensitive upcoming/past event partitions and seeded carousels.
   schedule:
     - cron: "0 21 * * *"
 
-  # Rebuild automatically when upstream library or settings submodules receive commits.
+  # Production does NOT rebuild on raw submodule updates; it updates only via PR from dev.
+  # Manual promotion dispatch is preserved.
   repository_dispatch:
-    types: [submodule-updated, promote-prod]
+    types: [promote-prod]
 
   # Allows a production build to be triggered manually from the Actions tab.
   workflow_dispatch:
