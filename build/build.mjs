@@ -20,6 +20,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { spawnSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
+import { cp } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import yaml from "js-yaml";
@@ -28,7 +29,8 @@ import { holdWorkspaceLock } from "./workspace-lock.mjs";
 import { patchNextFont } from "../scripts/patch-next-font.mjs";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const envName = process.argv[2] || process.env.SITE_ENV || "dev";
+const isCloudflare = Boolean(process.env.CF_PAGES);
+const envName = process.argv[2] || process.env.SITE_ENV || (isCloudflare ? "prod" : "dev");
 process.env.SITE_ENV = envName;
 holdWorkspaceLock(`export build (${envName})`);
 
@@ -119,4 +121,7 @@ runNextBuild("building static site", path.join(rootDir, "node_modules", "next", 
 run("normalizing canonical URLs", path.join(rootDir, "build", "write-canonicals.mjs"));
 run("verifying output", path.join(rootDir, "build", "verify.mjs"));
 
-console.log(`\n[build] done — static site written to out/`);
+const distDir = path.join(rootDir, "dist");
+await cp(path.join(rootDir, "out"), distDir, { recursive: true, force: true });
+
+console.log(`\n[build] done — static site written to out/ and dist/`);

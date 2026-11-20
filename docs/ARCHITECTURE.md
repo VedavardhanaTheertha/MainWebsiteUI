@@ -521,9 +521,10 @@ Production hosting for `shiroormatha.org` is provided by Cloudflare Pages:
    * **Development (`SITE_ENV=dev`)**: Automatically built and published to GitHub Pages
      on push to `main` and daily schedule for preview and QA testing.
    * **Production (`SITE_ENV=prod`)**: Built using `node build/build.mjs prod` (invoked via
-     `npm run build:prod`) with canonical production URLs, enabled indexing, and real
-     authored copy. Static files in `out/` are uploaded to Cloudflare Pages via GitHub Actions
-     (`cloudflare/pages-action` or Wrangler).
+     `npm run build:prod` or auto-detected in Cloudflare Pages builds via `CF_PAGES`) with canonical production URLs,
+     enabled indexing, and real authored copy. Static files in `out/` (and mirrored to `dist/` for platforms
+     expecting that output folder) are uploaded to Cloudflare Pages via direct Git integration or GitHub Actions
+     (`cloudflare/pages-action` or Wrangler with `wrangler.toml`).
 2. **Triggering Mechanisms**:
    * **Submodule Dispatches**: Upstream changes in `WebsiteLibrary` or `WebsiteConfiguration`
      emit `repository_dispatch` triggers (`submodule-updated`) to deploy updated content
