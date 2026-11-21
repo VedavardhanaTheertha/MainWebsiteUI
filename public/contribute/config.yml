@@ -21,12 +21,17 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title}} — {{kruti}}"
     fields:
-      - { name: title, label: Kannada Title, widget: string }
+      - { name: id, label: Song Identifier, widget: string, required: false }
+      - { name: title, label: Song Title (Kannada), widget: string }
+      - { name: kruti, label: Composer (English), widget: string, required: false }
+      - { name: kruti-kn, label: Composer (Kannada), widget: string, required: false }
+      - { name: ankita, label: Ankita (English), widget: string, required: false }
+      - { name: ankita-kn, label: Ankita (Kannada), widget: string, required: false }
       - { name: raga, label: Raga, widget: string, required: false }
       - { name: tala, label: Tala, widget: string, required: false }
-      - { name: composer, label: Composer (Haridasa), widget: string, required: false }
-      - { name: deity, label: Deity, widget: string, required: false }
+      - { name: enabled, label: Enabled, widget: boolean, default: true }
       - { name: body, label: Lyrics & Transliteration (Markdown), widget: markdown }
 
   # ==========================================
@@ -39,13 +44,26 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{start_date}})"
     fields:
-      - { name: title, label: Event Title (EN), widget: string }
-      - { name: date, label: Start Date, widget: datetime, type: date }
+      - name: title
+        label: Event Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - { name: start_date, label: Start Date, widget: datetime, type: date }
       - { name: end_date, label: End Date, widget: datetime, type: date, required: false }
-      - { name: time, label: Time, widget: string, required: false }
-      - { name: location, label: Location / Venue, widget: string, required: false }
-      - { name: category, label: Category, widget: select, options: [utsava, pooja, cultural, lecture, seva] }
+      - { name: start_time, label: Start Time, widget: string, required: false }
+      - { name: end_time, label: End Time, widget: string, required: false }
+      - name: location
+        label: Location / Venue
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Location, widget: string }
+          - { name: kn, label: Kannada Location, widget: string }
+      - { name: category, label: Category, widget: select, options: [utsava, pooja, cultural, lecture, seva], required: false }
       - { name: image, label: Banner / Poster Image URL (External CDN/R2), widget: string, required: false }
       - { name: body, label: Description & Program Schedule, widget: markdown }
 
@@ -59,11 +77,24 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}}) — ₹{{amount}}"
     fields:
-      - { name: title, label: Seva Title (EN), widget: string }
+      - { name: id, label: Seva ID, widget: string, required: false }
+      - name: title
+        label: Seva Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
       - { name: amount, label: Suggested Amount (INR), widget: number, value_type: int }
-      - { name: deity, label: Deity, widget: string, required: false }
-      - { name: frequency, label: Frequency, widget: select, options: [daily, weekly, monthly, annual, special], required: false }
+      - name: category
+        label: Category
+        widget: object
+        required: false
+        fields:
+          - { name: code, label: Category Code, widget: string }
+          - { name: en, label: Category (English), widget: string }
+          - { name: kn, label: Category (Kannada), widget: string }
       - { name: featured, label: Featured on Home / Highlights, widget: boolean, default: false }
       - { name: body, label: Seva Significance & Procedure, widget: markdown }
 
@@ -77,10 +108,24 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
     fields:
-      - { name: title, label: Guidance / Remedy Title, widget: string }
-      - { name: concern, label: Spiritual / Astrological Concern, widget: string, required: false }
-      - { name: status, label: Status, widget: select, options: [published, draft], default: published }
+      - { name: id, label: Remedy ID, widget: string, required: false }
+      - name: title
+        label: Guidance / Remedy Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Brief
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: image, label: Image URL (External CDN/R2), widget: string, required: false }
+      - { name: enabled, label: Enabled on Website, widget: boolean, default: true }
       - { name: body, label: Guidance, Stotra & Pooja Recommendation, widget: markdown }
 
   # ==========================================
@@ -93,10 +138,22 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
     fields:
-      - { name: title, label: Article Title, widget: string }
-      - { name: author, label: Author / Scholar, widget: string, required: false }
-      - { name: summary, label: Summary / Brief, widget: text, required: false }
+      - { name: id, label: Article ID, widget: string, required: false }
+      - name: title
+        label: Article Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Brief
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
       - { name: body, label: Full Article Text, widget: markdown }
 
   - name: articles
@@ -106,9 +163,22 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
     fields:
-      - { name: title, label: Article Title, widget: string }
-      - { name: author, label: Author, widget: string, required: false }
+      - { name: id, label: Article ID, widget: string, required: false }
+      - name: title
+        label: Article Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Brief
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
       - { name: body, label: Article Content, widget: markdown }
 
   # ==========================================
@@ -121,7 +191,20 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
     fields:
-      - { name: title, label: Slide Title, widget: string }
-      - { name: image, label: Background Image URL, widget: string }
-      - { name: body, label: Slide Text & Content, widget: markdown }
+      - name: title
+        label: Slide Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - { name: href, label: Target Link (e.g. /sevas, /events), widget: string, required: false }
+      - name: image
+        label: Images
+        widget: object
+        fields:
+          - { name: landscape, label: Landscape Image URL, widget: string }
+          - { name: portrait, label: Portrait Image URL, widget: string }
+      - { name: enabled, label: Enabled in Hero Carousel, widget: boolean, default: true }
+      - { name: body, label: Slide Text & Content, widget: markdown, required: false }
