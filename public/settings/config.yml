@@ -12,12 +12,15 @@ publish_mode: simple
 
 collections:
   # ==========================================
-  # Homepage Freshness & Carousel Settings
+  # Website Configuration Files
   # ==========================================
   - name: settings
     label: Website Configuration
     delete: false
     files:
+      # ------------------------------------------
+      # 1. Homepage Freshness & Carousel Controls
+      # ------------------------------------------
       - name: home_settings
         label: Homepage Freshness & Carousel Controls
         file: home.json
@@ -146,3 +149,305 @@ collections:
                     fields:
                       - { name: index, label: Slot Index, widget: number }
                       - { name: item, label: Page Markdown, widget: string }
+
+      # ------------------------------------------
+      # 2. Global Announcements & Banner
+      # ------------------------------------------
+      - name: announcements_settings
+        label: Global Announcements & Banner
+        file: announcements.json
+        fields:
+          - { name: enabled, label: Announcement Active, widget: boolean, default: true }
+          - { name: delayMs, label: Popup Delay (Milliseconds), widget: number, default: 1800 }
+          - { name: startsOn, label: Start Date (Optional), widget: datetime, type: date, required: false }
+          - { name: endsOn, label: End Date (Optional), widget: datetime, type: date, required: false }
+          - { name: dismissal, label: Dismissal Behavior, widget: select, options: [session, persistent, none], default: session }
+          - name: pages
+            label: Allowed Pages (Leave empty for all pages)
+            widget: list
+            required: false
+            field: { name: page, label: Route (e.g. /events), widget: string }
+
+      # ------------------------------------------
+      # 3. Public Actions & Gateway Links
+      # ------------------------------------------
+      - name: public_actions_settings
+        label: Public Actions & Gateway Links
+        file: public_actions.json
+        fields:
+          - name: payment
+            label: Payment Gateway (Sevas & Kanike)
+            widget: object
+            fields:
+              - { name: url, label: Gateway URL, widget: string }
+          - name: volunteer
+            label: Volunteer Portal
+            widget: object
+            fields:
+              - { name: url, label: Volunteer Registration URL, widget: string }
+          - name: yajna
+            label: Mantra Lekhana Yajna Portal
+            widget: object
+            fields:
+              - { name: url, label: Yajna Portal URL, widget: string }
+          - name: headerWhatsApp
+            label: Header WhatsApp Channel
+            widget: object
+            fields:
+              - { name: connectId, label: Target Channel ID (e.g. whatsapp), widget: string }
+          - name: subscribe
+            label: YouTube Channel Subscribe
+            widget: object
+            fields:
+              - { name: connectId, label: Target Channel ID (e.g. youtube), widget: string }
+          - name: donationEmail
+            label: Donation Query Email
+            widget: object
+            fields:
+              - { name: connectId, label: Target Channel ID (e.g. email), widget: string }
+
+      # ------------------------------------------
+      # 4. Navigation Menu & Footer Links
+      # ------------------------------------------
+      - name: navigation_settings
+        label: Navigation Menu & Footer Links
+        file: navigation.json
+        fields:
+          - name: menu
+            label: Main Header Menu Links
+            widget: list
+            fields:
+              - { name: key, label: Menu Key Identifier, widget: string }
+              - { name: href, label: Route Target (e.g. /story), widget: string }
+          - name: footer
+            label: Footer Links
+            widget: object
+            fields:
+              - name: policies
+                label: Legal & Policy Documents
+                widget: list
+                fields:
+                  - { name: key, label: Policy Key, widget: string }
+                  - { name: href, label: Policy Route (e.g. /privacy), widget: string }
+              - name: social
+                label: Social Media Links
+                widget: list
+                fields:
+                  - { name: key, label: Social Platform Name, widget: string }
+                  - { name: connectId, label: Target Channel ID (e.g. instagram), widget: string }
+          - name: routes
+            label: Named Route Aliases
+            widget: object
+            fields:
+              - { name: home, label: Home Route, widget: string, default: "/" }
+              - { name: panchanga, label: Panchanga Route, widget: string, default: "/panchanga" }
+              - { name: announcement, label: Announcement Target Route, widget: string, default: "/mantra-yajna" }
+
+      # ------------------------------------------
+      # 5. Media Album Rankings & Display
+      # ------------------------------------------
+      - name: album_config_settings
+        label: Media Album Rankings & Display
+        file: album_config.json
+        fields:
+          - name: recent
+            label: Recent Albums Section
+            widget: object
+            fields:
+              - { name: count, label: Number of Recent Albums Shown, widget: number, default: 3 }
+          - name: top_library
+            label: Top Library Albums Ranking
+            widget: object
+            fields:
+              - { name: count, label: Number of Top Albums Shown, widget: number, default: 3 }
+              - { name: recency_weight, label: Recency Weight (0.0 to 1.0), widget: number, value_type: float, step: 0.1, default: 0.5 }
+              - { name: image_count_weight, label: Photo Count Weight (0.0 to 1.0), widget: number, value_type: float, step: 0.1, default: 0.5 }
+
+      # ------------------------------------------
+      # 6. Knowledge Sections Sequence
+      # ------------------------------------------
+      - name: knowledge_sections_settings
+        label: Knowledge Sections Sequence
+        file: knowledge_sections.json
+        fields:
+          - name: mantra
+            label: 1. Mantras & Stotras
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: shastra
+            label: 2. Shastra & Canonical Texts
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: jnana
+            label: 3. Philosophy & Knowledge
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: dharma
+            label: 4. Dharma Articles
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: projects
+            label: 5. Paryaya Projects
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: stories
+            label: 6. Stories & Chronicles
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: articles
+            label: 7. General Articles
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: symbolism
+            label: 8. Sacred Symbols
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: remedies
+            label: 9. Spiritual Guidance & Remedies
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: science
+            label: 10. Science & Wellbeing
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+          - name: pilgrim
+            label: 11. Pilgrim Guides
+            widget: object
+            fields: [{ name: order, label: Sort Order, widget: number }]
+
+      # ------------------------------------------
+      # 7. UI Animation, Hero & Event Timings
+      # ------------------------------------------
+      - name: ui_elements_settings
+        label: UI Animation, Hero & Event Timings
+        file: ui_elements.json
+        fields:
+          - name: hero
+            label: Hero Banner Carousel Behavior
+            widget: object
+            fields:
+              - { name: autoplay, label: Autoplay Enabled, widget: boolean, default: true }
+              - { name: intervalMs, label: Slide Interval (Milliseconds), widget: number, default: 4500 }
+              - { name: fadeDurationMs, label: Transition Duration (Milliseconds), widget: number, default: 900 }
+              - { name: heightMobilePx, label: Mobile Height (Pixels), widget: number, default: 400 }
+              - { name: heightDesktopPx, label: Desktop Height (Pixels), widget: number, default: 600 }
+          - name: autoScroll
+            label: Carousel Smooth Auto-Scroll
+            widget: object
+            fields:
+              - { name: enabled, label: Auto-Scroll Enabled, widget: boolean, default: true }
+              - { name: pixelsPerSecond, label: Speed (Pixels / Second), widget: number, default: 36 }
+              - { name: resumeDelayMs, label: Resume Delay After Touch (Milliseconds), widget: number, default: 1500 }
+          - name: upcomingEvents
+            label: Upcoming Events Rail
+            widget: object
+            fields:
+              - { name: lookAheadDays, label: Lookahead Window (Days), widget: number, default: 30 }
+              - { name: maxCards, label: Maximum Cards Shown, widget: number, default: 6 }
+          - name: reading
+            label: Reading Experience
+            widget: object
+            fields:
+              - { name: wordsPerMinute, label: Estimated Words Per Minute, widget: number, default: 200 }
+              - { name: initialSize, label: Base Text Size (%), widget: number, default: 100 }
+          - name: collections
+            label: Pagination & Listing Batches
+            widget: object
+            fields:
+              - { name: initialVisible, label: Initial Items Visible, widget: number, default: 6 }
+              - { name: loadIncrement, label: Batch Size On Load More, widget: number, default: 9 }
+
+      # ------------------------------------------
+      # 8. Brand Design Tokens & Colors
+      # ------------------------------------------
+      - name: theme_settings
+        label: Brand Design Tokens & Colors
+        file: theme.json
+        fields:
+          - name: tokens
+            label: Design System Colors & Variables
+            widget: object
+            fields:
+              - { name: "--color-saffron-500", label: Brand Saffron Primary, widget: string }
+              - { name: "--color-saffron-600", label: Brand Saffron Dark, widget: string }
+              - { name: "--color-gold-500", label: Accent Gold Primary, widget: string }
+              - { name: "--color-ink-900", label: Deep Ink Text, widget: string }
+              - { name: "--color-cream", label: Cream Surface Background, widget: string }
+              - { name: "--color-paper", label: Pure White Paper Surface, widget: string }
+
+      # ------------------------------------------
+      # 9. Global Layout, Background & Fonts
+      # ------------------------------------------
+      - name: common_settings
+        label: Global Layout, Background & Fonts
+        file: common.json
+        fields:
+          - name: background
+            label: Global Wallpaper Artwork
+            widget: object
+            fields:
+              - { name: backgroundImage, label: Background Image Path, widget: string }
+              - { name: opacity, label: Artwork Opacity (0.0 to 1.0), widget: number, value_type: float, step: 0.01, default: 0.12 }
+              - { name: size, label: Background Size (e.g. cover), widget: string, default: cover }
+              - { name: repeat, label: Repeat Pattern (e.g. no-repeat), widget: string, default: no-repeat }
+          - name: fontFamily
+            label: Typography Font Families
+            widget: object
+            fields:
+              - { name: display, label: Display Headings Font, widget: string }
+              - { name: body, label: Body Prose Font, widget: string }
+              - { name: sanskrit, label: Devanagari / Sanskrit Font, widget: string }
+              - { name: kannada, label: Kannada Font, widget: string }
+
+      # ------------------------------------------
+      # 10. Search Weights & Engine Tuning
+      # ------------------------------------------
+      - name: search_settings
+        label: Search Weights & Engine Tuning
+        file: search.json
+        fields:
+          - { name: prefix, label: Prefix Search Enabled, widget: boolean, default: true }
+          - { name: fuzzyTolerance, label: Fuzzy Tolerance (0.0 to 1.0), widget: number, value_type: float, step: 0.05, default: 0.2 }
+          - { name: multiwordOrFallback, label: Multi-word Fallback Enabled, widget: boolean, default: true }
+          - name: profiles
+            label: Search Scoring Profiles
+            widget: object
+            fields:
+              - name: bhakti
+                label: Bhakti Devotional Songs Scoring
+                widget: object
+                fields:
+                  - { name: title, label: Kannada Title Weight, widget: number, default: 3 }
+                  - { name: titleEn, label: English Title Weight, widget: number, default: 3 }
+                  - { name: kruti, label: Composer Weight, widget: number, default: 1.5 }
+                  - { name: ankita, label: Ankita Weight, widget: number, default: 2 }
+              - name: events
+                label: Events Scoring
+                widget: object
+                fields:
+                  - { name: titleEn, label: Event Title (EN) Weight, widget: number, default: 3 }
+                  - { name: titleKn, label: Event Title (KN) Weight, widget: number, default: 3 }
+                  - { name: categoriesText, label: Categories Weight, widget: number, default: 2 }
+              - name: knowledge
+                label: Knowledge Articles Scoring
+                widget: object
+                fields:
+                  - { name: title, label: Article Title Weight, widget: number, default: 3 }
+                  - { name: tags, label: Tags Weight, widget: number, default: 2 }
+                  - { name: summary, label: Summary Weight, widget: number, default: 1.5 }
+
+      # ------------------------------------------
+      # 11. Image Optimization & CDN Whitelist
+      # ------------------------------------------
+      - name: image_policy_settings
+        label: Image Optimization & CDN Whitelist
+        file: image_policy.json
+        fields:
+          - { name: unoptimized, label: Allow External Image Delivery, widget: boolean, default: true }
+          - name: remotePatterns
+            label: Allowed Remote CDN Domains
+            widget: list
+            fields:
+              - { name: protocol, label: Protocol, widget: string, default: https }
+              - { name: hostname, label: Hostname (e.g. pub-*.r2.dev), widget: string }
+              - { name: pathname, label: Pathname Pattern, widget: string, default: "/**" }
