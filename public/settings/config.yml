@@ -417,24 +417,24 @@ collections:
                 label: Bhakti Devotional Songs Scoring
                 widget: object
                 fields:
-                  - { name: title, label: Kannada Title Weight, widget: number, default: 3 }
-                  - { name: titleEn, label: English Title Weight, widget: number, default: 3 }
-                  - { name: kruti, label: Composer Weight, widget: number, default: 1.5 }
-                  - { name: ankita, label: Ankita Weight, widget: number, default: 2 }
+                  - { name: title, label: Kannada Title Weight, widget: number, value_type: float, step: 0.1, default: 3 }
+                  - { name: titleEn, label: English Title Weight, widget: number, value_type: float, step: 0.1, default: 3 }
+                  - { name: kruti, label: Composer Weight, widget: number, value_type: float, step: 0.1, default: 1.5 }
+                  - { name: ankita, label: Ankita Weight, widget: number, value_type: float, step: 0.1, default: 2 }
               - name: events
                 label: Events Scoring
                 widget: object
                 fields:
-                  - { name: titleEn, label: Event Title (EN) Weight, widget: number, default: 3 }
-                  - { name: titleKn, label: Event Title (KN) Weight, widget: number, default: 3 }
-                  - { name: categoriesText, label: Categories Weight, widget: number, default: 2 }
+                  - { name: titleEn, label: Event Title (EN) Weight, widget: number, value_type: float, step: 0.1, default: 3 }
+                  - { name: titleKn, label: Event Title (KN) Weight, widget: number, value_type: float, step: 0.1, default: 3 }
+                  - { name: categoriesText, label: Categories Weight, widget: number, value_type: float, step: 0.1, default: 2 }
               - name: knowledge
                 label: Knowledge Articles Scoring
                 widget: object
                 fields:
-                  - { name: title, label: Article Title Weight, widget: number, default: 3 }
-                  - { name: tags, label: Tags Weight, widget: number, default: 2 }
-                  - { name: summary, label: Summary Weight, widget: number, default: 1.5 }
+                  - { name: title, label: Article Title Weight, widget: number, value_type: float, step: 0.1, default: 3 }
+                  - { name: tags, label: Tags Weight, widget: number, value_type: float, step: 0.1, default: 2 }
+                  - { name: summary, label: Summary Weight, widget: number, value_type: float, step: 0.1, default: 1.5 }
 
       # ------------------------------------------
       # 11. Image Optimization & CDN Whitelist
