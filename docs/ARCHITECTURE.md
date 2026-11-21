@@ -526,7 +526,7 @@ Production hosting for `shiroormatha.org` is provided by Cloudflare Pages:
      enabled indexing, and real authored copy. Deployed on push to `main` (restricted strictly to PRs promoted from `dev`)
      and daily automated midnight schedule to refresh date-sensitive event partitions. Production does not build on raw
      submodule updates. Static files in `out/` (and mirrored to `dist/` for platforms expecting that output folder)
-     are uploaded to Cloudflare Pages via direct Git integration or GitHub Actions (`cloudflare/pages-action` or Wrangler with `wrangler.toml`).
+     are deployed to Cloudflare Pages via direct Git integration (with Wrangler available for local developer deployments using `wrangler.toml`).
 2. **Triggering Mechanisms**:
    * **Submodule Dispatches**: Upstream changes in `WebsiteLibrary` or `WebsiteConfiguration`
      emit `repository_dispatch` triggers (`submodule-updated`) to deploy updated preview content to `dev`.
