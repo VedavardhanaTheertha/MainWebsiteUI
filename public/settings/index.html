@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Website Settings Manager</title>
+  <style>
+    /* Hide Assets / Media navigation from sidebar */
+    a[href*="#/assets"],
+    a[href*="#/media"],
+    [data-route^="assets"],
+    [data-route^="media"] {
+      display: none !important;
+    }
+
+    /* Hide any file upload controls, dropzones, or upload buttons */
+    input[type="file"],
+    button[aria-label*="Upload" i],
+    button[aria-label*="upload" i],
+    button[title*="Upload" i],
+    button[title*="upload" i],
+    button[aria-label*="Insert Image" i],
+    button[title*="Insert Image" i],
+    button[aria-label*="image" i],
+    .upload-button,
+    .dropzone,
+    [data-action="upload"] {
+      display: none !important;
+    }
+  </style>
+  <script>
+    // Disallow navigating to the assets / media upload view
+    function preventMediaView() {
+      if (window.location.hash.startsWith('#/assets') || window.location.hash.startsWith('#/media')) {
+        window.location.hash = '#/collections';
+      }
+    }
+    window.addEventListener('hashchange', preventMediaView);
+    window.addEventListener('DOMContentLoaded', preventMediaView);
+    preventMediaView();
+
+    // Prevent drag-and-drop file uploads into the CMS window
+    window.addEventListener('dragover', (e) => e.preventDefault(), false);
+    window.addEventListener('drop', (e) => e.preventDefault(), false);
+  </script>
+  <!-- Sveltia CMS: Lightweight, fast Git-based CMS with full GitHub & Decap CMS schema compatibility -->
+  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+</head>
+<body>
+</body>
+</html>

@@ -1,233 +1,664 @@
 backend:
   name: github
-  repo: ShiroorMatha/MainWebsiteUI
+  repo: VedavardhanaTheertha/WebsiteLibrary
   branch: main
-  base_url: https://shiroormatha.org
-  auth_endpoint: api/auth
 
-# Media storage disabled for contributors - contributors reference remote assets via URL/CDN
-# media_folder: public/images/uploads
-# public_folder: /images/uploads
+# Media storage configuration required by Sveltia CMS
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
 
 # Editorial workflow: immediate publish or draft reviews
 publish_mode: simple
 
 collections:
   # ==========================================
-  # 1. Devotional Songs & Bhakti (library/dasasahitya)
+  # 1. Devotional Songs & Bhakti (dasasahitya)
   # ==========================================
   - name: bhakti
     label: Devotional Songs (Bhakti)
-    folder: library/dasasahitya
+    folder: dasasahitya
     create: true
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title}} — {{kruti}}"
     fields:
-      - { name: title, label: Kannada Title, widget: string }
+      - { name: id, label: Song Identifier, widget: string, required: false }
+      - { name: title, label: Song Title (Kannada), widget: string }
+      - { name: kruti, label: Composer (English), widget: string, required: false }
+      - { name: kruti-kn, label: Composer (Kannada), widget: string, required: false }
+      - { name: ankita, label: Ankita (English), widget: string, required: false }
+      - { name: ankita-kn, label: Ankita (Kannada), widget: string, required: false }
       - { name: raga, label: Raga, widget: string, required: false }
       - { name: tala, label: Tala, widget: string, required: false }
-      - { name: composer, label: Composer (Haridasa), widget: string, required: false }
-      - { name: deity, label: Deity, widget: string, required: false }
+      - { name: enabled, label: Enabled, widget: boolean, default: true }
       - { name: body, label: Lyrics & Transliteration (Markdown), widget: markdown }
 
   # ==========================================
-  # 2. Events & Utsavas (library/events)
+  # 2. Events & Festivals (events)
   # ==========================================
   - name: events
     label: Events & Festivals
-    folder: library/events
+    folder: events
     create: true
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{start_date}})"
     fields:
-      - { name: title, label: Event Title (EN), widget: string }
-      - { name: date, label: Start Date, widget: date }
-      - { name: end_date, label: End Date, widget: date, required: false }
-      - { name: time, label: Time, widget: string, required: false }
-      - { name: location, label: Location / Venue, widget: string, required: false }
-      - { name: category, label: Category, widget: select, options: [utsava, pooja, cultural, lecture, seva] }
+      - name: title
+        label: Event Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - { name: start_date, label: Start Date, widget: datetime, type: date }
+      - { name: end_date, label: End Date, widget: datetime, type: date, required: false }
+      - { name: start_time, label: Start Time, widget: string, required: false }
+      - { name: end_time, label: End Time, widget: string, required: false }
+      - name: location
+        label: Location / Venue
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Location, widget: string }
+          - { name: kn, label: Kannada Location, widget: string }
+      - { name: category, label: Category, widget: select, options: [utsava, pooja, cultural, lecture, seva], required: false }
       - { name: image, label: Banner / Poster Image URL (External CDN/R2), widget: string, required: false }
       - { name: body, label: Description & Program Schedule, widget: markdown }
 
   # ==========================================
-  # 3. Sevas & Offerings (library/sevas)
+  # 3. Sevas & Offerings (sevas)
   # ==========================================
   - name: sevas
     label: Sevas & Offerings
-    folder: library/sevas
+    folder: sevas
     create: true
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}}) — ₹{{amount}}"
     fields:
-      - { name: title, label: Seva Title (EN), widget: string }
+      - { name: id, label: Seva ID, widget: string, required: false }
+      - name: title
+        label: Seva Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
       - { name: amount, label: Suggested Amount (INR), widget: number, value_type: int }
-      - { name: deity, label: Deity, widget: string, required: false }
-      - { name: frequency, label: Frequency, widget: select, options: [daily, weekly, monthly, annual, special], required: false }
+      - name: category
+        label: Category
+        widget: object
+        required: false
+        fields:
+          - { name: code, label: Category Code, widget: string }
+          - { name: en, label: Category (English), widget: string }
+          - { name: kn, label: Category (Kannada), widget: string }
       - { name: featured, label: Featured on Home / Highlights, widget: boolean, default: false }
       - { name: body, label: Seva Significance & Procedure, widget: markdown }
 
   # ==========================================
-  # 4. Spiritual Guidance & Remedies (library/remedies)
+  # 4. Spiritual Guidance & Remedies (remedies)
   # ==========================================
   - name: remedies
     label: Guidance & Remedies
-    folder: library/remedies
+    folder: remedies
     create: true
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
     fields:
-      - { name: title, label: Guidance / Remedy Title, widget: string }
-      - { name: concern, label: Spiritual / Astrological Concern, widget: string, required: false }
-      - { name: status, label: Status, widget: select, options: [published, draft], default: published }
+      - { name: id, label: Remedy ID, widget: string, required: false }
+      - name: title
+        label: Guidance / Remedy Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Brief
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: image, label: Image URL (External CDN/R2), widget: string, required: false }
+      - { name: enabled, label: Enabled on Website, widget: boolean, default: true }
       - { name: body, label: Guidance, Stotra & Pooja Recommendation, widget: markdown }
 
   # ==========================================
-  # 5. Articles, Dharma & Shastra (library/dharma, library/shastra, library/articles)
+  # 5. Dharma Articles (dharma)
   # ==========================================
   - name: dharma
     label: Dharma Articles
-    folder: library/dharma
+    folder: dharma
     create: true
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
     fields:
-      - { name: title, label: Article Title, widget: string }
-      - { name: author, label: Author / Scholar, widget: string, required: false }
-      - { name: summary, label: Summary / Brief, widget: text, required: false }
+      - { name: id, label: Article ID, widget: string, required: false }
+      - name: title
+        label: Article Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Brief
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
       - { name: body, label: Full Article Text, widget: markdown }
 
   # ==========================================
-  # 6. Homepage & Presentation Settings (settings)
+  # 6. General & Cultural Articles (articles)
   # ==========================================
-  - name: settings
-    label: Website Settings
-    delete: false
-    files:
-      - name: home_settings
-        label: Homepage Freshness & Carousel Controls
-        file: settings/home.json
+  - name: articles
+    label: General & Cultural Articles
+    folder: articles
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Article ID, widget: string, required: false }
+      - name: title
+        label: Article Title
+        widget: object
         fields:
-          - name: top_carousel
-            label: Top Carousel Configuration
-            widget: object
-            fields:
-              - { name: count, label: Number of items to display, widget: number, default: 8 }
-              - name: pinned
-                label: Pinned Items (Fixed Slots)
-                widget: list
-                required: false
-                fields:
-                  - { name: index, label: Slot Index (0-based), widget: number }
-                  - { name: item, label: Page Markdown (e.g. albums.md, sevas.md), widget: string }
-              - name: overrides
-                label: Date / Festival Overrides
-                widget: list
-                required: false
-                fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
-                  - name: pinned
-                    label: Pinned items for this date
-                    widget: list
-                    fields:
-                      - { name: index, label: Slot Index (0-based), widget: number }
-                      - { name: item, label: Page Markdown, widget: string }
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Brief
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: body, label: Article Content, widget: markdown }
 
-          - name: explore_carousel
-            label: Explore Carousel (Dynamic Library Items)
-            widget: object
-            fields:
-              - { name: count, label: Number of items to display, widget: number, default: 6 }
-              - name: pinned
-                label: Pinned Items (Fixed Slots)
-                widget: list
-                required: false
-                fields:
-                  - { name: index, label: Slot Index (0-based), widget: number }
-                  - { name: item, label: Page / Article Slug, widget: string }
-              - name: overrides
-                label: Date / Festival Overrides
-                widget: list
-                required: false
-                fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
-                  - name: pinned
-                    label: Pinned items for this date
-                    widget: list
-                    fields:
-                      - { name: index, label: Slot Index, widget: number }
-                      - { name: item, label: Page / Article Slug, widget: string }
+  # ==========================================
+  # 7. Hero Slides (hero)
+  # ==========================================
+  - name: hero_slides
+    label: Hero Slides
+    folder: hero
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - name: title
+        label: Slide Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - { name: href, label: Target Link (e.g. /sevas, /events), widget: string, required: false }
+      - name: image
+        label: Images
+        widget: object
+        fields:
+          - { name: landscape, label: Landscape Image URL, widget: string }
+          - { name: portrait, label: Portrait Image URL, widget: string }
+      - { name: enabled, label: Enabled in Hero Carousel, widget: boolean, default: true }
+      - { name: body, label: Slide Text & Content, widget: markdown, required: false }
 
-          - name: guidance_carousel
-            label: Guidance Carousel (Dynamic Sevas & Remedies)
-            widget: object
-            fields:
-              - { name: count, label: Number of items to display, widget: number, default: 6 }
-              - name: pinned
-                label: Pinned Items (Fixed Slots)
-                widget: list
-                required: false
-                fields:
-                  - { name: index, label: Slot Index (0-based), widget: number }
-                  - { name: item, label: Seva or Remedy Slug, widget: string }
-              - name: overrides
-                label: Date / Festival Overrides
-                widget: list
-                required: false
-                fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
-                  - name: pinned
-                    label: Pinned items for this date
-                    widget: list
-                    fields:
-                      - { name: index, label: Slot Index, widget: number }
-                      - { name: item, label: Seva or Remedy Slug, widget: string }
+  # ==========================================
+  # 8. Guru Parampara (parampara)
+  # ==========================================
+  - name: parampara
+    label: Guru Parampara
+    folder: parampara
+    create: true
+    slug: "{{position}}-{{id}}"
+    extension: md
+    format: frontmatter
+    summary: "{{position}}. {{name-en}} ({{name-kn}})"
+    fields:
+      - { name: position, label: Lineage Position (Order), widget: number, value_type: int }
+      - { name: id, label: Identifier, widget: string }
+      - { name: name-en, label: Pontiff Name (English), widget: string }
+      - { name: name-kn, label: Pontiff Name (Kannada), widget: string }
+      - { name: timePeriod-en, label: Time Period (English), widget: string, required: false }
+      - { name: timePeriod-kn, label: Time Period (Kannada), widget: string, required: false }
+      - { name: aradhana-en, label: Aradhana Tithi (English), widget: string, required: false }
+      - { name: aradhana-kn, label: Aradhana Tithi (Kannada), widget: string, required: false }
+      - { name: vrindavanaKshetra-en, label: Vrindavana Kshetra (English), widget: string, required: false }
+      - { name: vrindavanaKshetra-kn, label: Vrindavana Kshetra (Kannada), widget: string, required: false }
+      - { name: summary-en, label: Biography / Significance (English), widget: text, required: false }
+      - { name: summary-kn, label: Biography / Significance (Kannada), widget: text, required: false }
+      - { name: thumbnailImage, label: Portrait / Thumbnail Image URL, widget: string, required: false }
+      - { name: fullImage, label: Full Image URL, widget: string, required: false }
+      - { name: body, label: Extended Biography & History, widget: markdown, required: false }
 
-          - name: bottom_carousel
-            label: Bottom Carousel Configuration
-            widget: object
-            fields:
-              - { name: count, label: Number of items to display, widget: number, default: 6 }
-              - name: pinned
-                label: Pinned Items (Fixed Slots), widget: list, required: false
-                fields:
-                  - { name: index, label: Slot Index, widget: number }
-                  - { name: item, label: Page Markdown, widget: string }
-              - name: overrides
-                label: Date / Festival Overrides, widget: list, required: false
-                fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
-                  - name: pinned
-                    label: Pinned items for this date, widget: list
-                    fields:
-                      - { name: index, label: Slot Index, widget: number }
-                      - { name: item, label: Page Markdown, widget: string }
+  # ==========================================
+  # 9. Paryaya Projects (projects)
+  # ==========================================
+  - name: projects
+    label: Paryaya Projects
+    folder: projects
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Project Identifier, widget: string }
+      - name: title
+        label: Project Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Vision
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: image, label: Project Image URL, widget: string, required: false }
+      - { name: enabled, label: Enabled on Website, widget: boolean, default: true }
+      - { name: body, label: Project Details & Goals, widget: markdown, required: false }
 
-          - name: hero
-            label: Hero Carousel Configuration & Overrides
+  # ==========================================
+  # 10. Pilgrim Sanctums & Guides (pilgrim)
+  # ==========================================
+  - name: pilgrim
+    label: Pilgrim Sanctums & Guides
+    folder: pilgrim
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Sanctuary Identifier, widget: string }
+      - name: title
+        label: Sanctuary / Guide Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Significance
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: image, label: Image URL, widget: string, required: false }
+      - { name: body, label: Sanctuary Guide & Darshan Info, widget: markdown }
+
+  # ==========================================
+  # 11. Philosophy & Knowledge (jnana)
+  # ==========================================
+  - name: jnana
+    label: Philosophy & Knowledge (Jnana)
+    folder: jnana
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Treatise Identifier, widget: string }
+      - name: title
+        label: Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Philosophical Essence
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: body, label: Philosophical Treatise, widget: markdown }
+
+  # ==========================================
+  # 12. Shastra & Canonical Texts (shastra)
+  # ==========================================
+  - name: shastra
+    label: Shastra & Canonical Texts
+    folder: shastra
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Text Identifier, widget: string }
+      - name: title
+        label: Canonical Text Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary / Overview
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: body, label: Shastric Exposition, widget: markdown }
+
+  # ==========================================
+  # 13. Science & Wellbeing (science)
+  # ==========================================
+  - name: science
+    label: Science & Wellbeing
+    folder: science
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Topic Identifier, widget: string }
+      - name: title
+        label: Topic Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Summary
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: body, label: Science & Wellbeing Exposition, widget: markdown }
+
+  # ==========================================
+  # 14. Sacred Marks & Symbols (symbolism)
+  # ==========================================
+  - name: symbolism
+    label: Sacred Marks & Symbols
+    folder: symbolism
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Symbol Identifier, widget: string }
+      - name: title
+        label: Sacred Symbol Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Symbolic Meaning & Scriptural Context
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: body, label: Sacred Symbolism Exposition, widget: markdown }
+
+  # ==========================================
+  # 15. Matha & Puranic Stories (stories)
+  # ==========================================
+  - name: stories
+    label: Matha & Puranic Stories
+    folder: stories
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Story Identifier, widget: string }
+      - name: title
+        label: Story Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Story Synopsis
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: body, label: Story Narrative, widget: markdown }
+
+  # ==========================================
+  # 16. Stotras & Mantras (mantra)
+  # ==========================================
+  - name: mantra
+    label: Stotras & Mantras
+    folder: mantra
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Stotra / Mantra Identifier, widget: string }
+      - name: title
+        label: Stotra Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: summary
+        label: Significance & Phala-shruti
+        widget: object
+        fields:
+          - { name: en, label: English Summary, widget: text }
+          - { name: kn, label: Kannada Summary, widget: text }
+      - { name: body, label: Stotra Verses & Meaning, widget: markdown }
+
+  # ==========================================
+  # 17. Presiding Deities (deities)
+  # ==========================================
+  - name: deities
+    label: Presiding Deities
+    folder: deities
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Deity Identifier, widget: string, required: false }
+      - name: title
+        label: Deity Name
+        widget: object
+        fields:
+          - { name: en, label: English Name, widget: string }
+          - { name: kn, label: Kannada Name, widget: string }
+      - name: subtitle
+        label: Subtitle / Attribute
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Subtitle, widget: string }
+          - { name: kn, label: Kannada Subtitle, widget: string }
+      - name: attributes
+        label: Iconography & Sacred Attributes
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Attributes, widget: string }
+          - { name: kn, label: Kannada Attributes, widget: string }
+      - { name: body, label: Sacred Lore & Worship Tradition, widget: markdown }
+
+  # ==========================================
+  # 18. Matha Branches (branches)
+  # ==========================================
+  - name: branches
+    label: Matha Branches
+    folder: branches
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Branch Identifier, widget: string }
+      - name: title
+        label: Branch Name
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: branch_type
+        label: Branch Type
+        widget: object
+        fields:
+          - { name: en, label: English Type, widget: string }
+          - { name: kn, label: Kannada Type, widget: string }
+      - name: address
+        label: Postal Address
+        widget: object
+        fields:
+          - { name: en, label: English Address, widget: string }
+          - { name: kn, label: Kannada Address, widget: string }
+      - { name: body, label: Branch History & Activities, widget: markdown, required: false }
+
+  # ==========================================
+  # 19. Udupi Ashta Mathas (mathas)
+  # ==========================================
+  - name: mathas
+    label: Udupi Ashta Mathas
+    folder: mathas
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Matha Identifier, widget: string, required: false }
+      - name: title
+        label: Matha Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: subtitle
+        label: Subtitle
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Subtitle, widget: string }
+          - { name: kn, label: Kannada Subtitle, widget: string }
+      - name: era
+        label: Era / Founding Era
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Era, widget: string }
+          - { name: kn, label: Kannada Era, widget: string }
+      - name: deity
+        label: Presiding Deities
+        widget: object
+        required: false
+        fields:
+          - { name: en, label: English Deities, widget: string }
+          - { name: kn, label: Kannada Deities, widget: string }
+      - { name: body, label: Matha Heritage & Lineage, widget: markdown, required: false }
+
+  # ==========================================
+  # 20. Social & Connect Channels (connect)
+  # ==========================================
+  - name: connect
+    label: Social & Connect Channels
+    folder: connect
+    create: true
+    slug: "{{order}}-{{id}}"
+    extension: md
+    format: frontmatter
+    summary: "{{platform}} — {{handle}}"
+    fields:
+      - { name: id, label: Channel ID, widget: string }
+      - { name: order, label: Sort Order, widget: number, value_type: int }
+      - { name: platform, label: Platform Name, widget: string }
+      - { name: handle, label: Handle / Username, widget: string }
+      - { name: url, label: Profile / Channel URL, widget: string }
+      - { name: audience, label: Followers / Audience, widget: string, required: false }
+      - { name: brand_color, label: Brand Color Code, widget: string, required: false }
+      - { name: enabled, label: Enabled on Connect Page, widget: boolean, default: true }
+      - { name: body, label: Additional Channel Details, widget: markdown, required: false }
+
+  # ==========================================
+  # 21. Photo Albums (albums)
+  # ==========================================
+  - name: albums
+    label: Photo Albums & Galleries
+    folder: albums
+    create: true
+    slug: "{{date}}-{{id}}"
+    extension: md
+    format: frontmatter
+    summary: "{{date}} — {{title.en}} ({{title.kn}})"
+    fields:
+      - { name: id, label: Album Identifier, widget: string }
+      - { name: date, label: Event Date, widget: datetime, type: date }
+      - { name: cover, label: Cover Image URL (R2 CDN), widget: string }
+      - name: title
+        label: Album Title
+        widget: object
+        fields:
+          - { name: en, label: English Title, widget: string }
+          - { name: kn, label: Kannada Title, widget: string }
+      - name: description
+        label: Album Description
+        widget: object
+        fields:
+          - { name: en, label: English Description, widget: string }
+          - { name: kn, label: Kannada Description, widget: string }
+      - name: items
+        label: Photo Gallery Items
+        widget: list
+        required: false
+        fields:
+          - { name: small-webp, label: Thumbnail URL (small), widget: string }
+          - { name: large-webp, label: Full Photo URL (large), widget: string }
+      - { name: body, label: Notes & Context, widget: markdown, required: false }
+
+  # ==========================================
+  # 22. Learn & Courses (learn)
+  # ==========================================
+  - name: learn
+    label: Learn & Courses
+    folder: learn
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{translations.en.title}} ({{translations.kn.title}})"
+    fields:
+      - { name: id, label: Subject Identifier, widget: string }
+      - name: translations
+        label: Translations
+        widget: object
+        fields:
+          - name: en
+            label: English Details
             widget: object
             fields:
-              - { name: count, label: Number of hero slides to display, widget: number, default: 8 }
-              - name: pinned
-                label: Pinned Slides (Fixed Slots)
-                widget: list
-                required: false
-                fields:
-                  - { name: index, label: Slot Index (0-based), widget: number }
-                  - { name: item, label: Hero Slide Markdown (e.g. sacred-alankara-sri-krishna.md), widget: string }
-              - name: overrides
-                label: Special Date Overrides
-                widget: list
-                required: false
-                fields:
-                  - { name: date, label: Special Date (YYYY-MM-DD), widget: date }
-                  - name: pinned
-                    label: Pinned slides for this date
-                    widget: list
-                    fields:
-                      - { name: index, label: Slot Index, widget: number }
-                      - { name: item, label: Hero Slide Markdown, widget: string }
+              - { name: title, label: Subject Title, widget: string }
+              - { name: sub, label: Subtitle, widget: string, required: false }
+              - { name: description, label: Description, widget: text }
+              - { name: img, label: Image URL, widget: string, required: false }
+          - name: kn
+            label: Kannada Details
+            widget: object
+            fields:
+              - { name: title, label: Subject Title, widget: string }
+              - { name: sub, label: Subtitle, widget: string, required: false }
+              - { name: description, label: Description, widget: text }
+              - { name: img, label: Image URL, widget: string, required: false }
+      - { name: enabled, label: Enabled on Website, widget: boolean, default: true }
+      - { name: body, label: Course Curriculum & Lessons, widget: markdown, required: false }
