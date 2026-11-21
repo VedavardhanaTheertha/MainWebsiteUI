@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
 import { pageExtensionsForEnvironment } from "./build/developer-options.mjs";
 
 interface SiteEnvironment {
@@ -99,9 +100,7 @@ function loadImagePolicy(): NonNullable<NextConfig["images"]> {
   return { unoptimized: policy.unoptimized, remotePatterns };
 }
 
-import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
-
-export default (phase: string): NextConfig => {
+const createNextConfig = (phase: string): NextConfig => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
 
   const config: NextConfig = {
@@ -137,3 +136,5 @@ export default (phase: string): NextConfig => {
 
   return config;
 };
+
+export default createNextConfig;
