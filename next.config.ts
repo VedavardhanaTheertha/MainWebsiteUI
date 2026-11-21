@@ -99,20 +99,41 @@ function loadImagePolicy(): NonNullable<NextConfig["images"]> {
   return { unoptimized: policy.unoptimized, remotePatterns };
 }
 
-const nextConfig: NextConfig = {
-  output: "export",
-  pageExtensions: pageExtensionsForEnvironment(process.env.SITE_ENV || "dev"),
-  env: {
-    SITE_ENV: process.env.SITE_ENV || "dev",
-  },
-  turbopack: {
-    root: process.cwd(),
-  },
-  // Static export has no server, so next/image's optimization API route isn't
-  // available — serve pre-optimized WebP/AVIF assets as-is instead (see
-  // content decision: images are pre-optimized at authoring time).
-  images: loadImagePolicy(),
-  ...(basePath ? { basePath, assetPrefix: basePath } : {}),
-};
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
 
-export default nextConfig;
+export default (phase: string): NextConfig => {
+  const isDev = phase === PHASE_DEVELOPMENT_SERVER;
+
+  const config: NextConfig = {
+    output: "export",
+    pageExtensions: pageExtensionsForEnvironment(process.env.SITE_ENV || "dev"),
+    env: {
+      SITE_ENV: process.env.SITE_ENV || "dev",
+    },
+    turbopack: {
+      root: process.cwd(),
+    },
+    // Static export has no server, so next/image's optimization API route isn't
+    // available — serve pre-optimized WebP/AVIF assets as-is instead (see
+    // content decision: images are pre-optimized at authoring time).
+    images: loadImagePolicy(),
+    ...(basePath ? { basePath, assetPrefix: basePath } : {}),
+  };
+
+  // During local development, rewrite directory paths to their static HTML index files
+  // so URLs like /contribute and /settings resolve cleanly without typing /index.html.
+  if (isDev) {
+    config.rewrites = async () => [
+      {
+        source: "/contribute",
+        destination: "/contribute/index.html",
+      },
+      {
+        source: "/settings",
+        destination: "/settings/index.html",
+      },
+    ];
+  }
+
+  return config;
+};
