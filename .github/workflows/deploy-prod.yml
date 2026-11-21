@@ -1,4 +1,5 @@
-# Builds and publishes the production site to Cloudflare Pages.
+# Builds and verifies the production site for Cloudflare Pages.
+# Production publishing is handled automatically by Cloudflare Pages' native Git integration.
 #
 # Deliberately thin: all build logic lives in build/build.mjs so it can be run
 # and debugged locally. See docs/ARCHITECTURE.md (Build and deployment).
@@ -58,10 +59,3 @@ jobs:
       - name: Build production site
         run: npm run build:prod
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy out --project-name=shiroor-matha
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
