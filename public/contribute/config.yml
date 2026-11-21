@@ -1,7 +1,7 @@
 backend:
   name: github
-  repo: ShiroorMatha/MainWebsiteUI
-  branch: main
+  repo: VedavardhanaTheertha/MainWebsiteUI
+  branch: dev
   base_url: https://shiroormatha.org
   auth_endpoint: api/auth
 
@@ -193,16 +193,21 @@ collections:
             fields:
               - { name: count, label: Number of items to display, widget: number, default: 6 }
               - name: pinned
-                label: Pinned Items (Fixed Slots), widget: list, required: false
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
                 fields:
                   - { name: index, label: Slot Index, widget: number }
                   - { name: item, label: Page Markdown, widget: string }
               - name: overrides
-                label: Date / Festival Overrides, widget: list, required: false
+                label: Date / Festival Overrides
+                widget: list
+                required: false
                 fields:
                   - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
                   - name: pinned
-                    label: Pinned items for this date, widget: list
+                    label: Pinned items for this date
+                    widget: list
                     fields:
                       - { name: index, label: Slot Index, widget: number }
                       - { name: item, label: Page Markdown, widget: string }
