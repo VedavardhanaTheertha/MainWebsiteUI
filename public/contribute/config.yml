@@ -5,6 +5,10 @@ backend:
   base_url: https://shiroormatha.org
   auth_endpoint: api/auth
 
+# Media storage configuration required by Sveltia CMS
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
 # Editorial workflow: immediate publish or draft reviews
 publish_mode: simple
 
@@ -39,8 +43,8 @@ collections:
     format: frontmatter
     fields:
       - { name: title, label: Event Title (EN), widget: string }
-      - { name: date, label: Start Date, widget: date }
-      - { name: end_date, label: End Date, widget: date, required: false }
+      - { name: date, label: Start Date, widget: datetime, type: date }
+      - { name: end_date, label: End Date, widget: datetime, type: date, required: false }
       - { name: time, label: Time, widget: string, required: false }
       - { name: location, label: Location / Venue, widget: string, required: false }
       - { name: category, label: Category, widget: select, options: [utsava, pooja, cultural, lecture, seva] }

@@ -5,6 +5,10 @@ backend:
   base_url: https://shiroormatha.org
   auth_endpoint: api/auth
 
+# Media storage configuration required by Sveltia CMS
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
 # Editorial workflow: immediate publish or draft reviews
 publish_mode: simple
 
@@ -37,7 +41,7 @@ collections:
                 widget: list
                 required: false
                 fields:
-                  - { name: date, label: Special Date (YYYY-MM-DD), widget: date }
+                  - { name: date, label: Special Date (YYYY-MM-DD), widget: datetime, type: date }
                   - name: pinned
                     label: Pinned slides for this date
                     widget: list
@@ -62,7 +66,7 @@ collections:
                 widget: list
                 required: false
                 fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: datetime, type: date }
                   - name: pinned
                     label: Pinned items for this date
                     widget: list
@@ -87,7 +91,7 @@ collections:
                 widget: list
                 required: false
                 fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: datetime, type: date }
                   - name: pinned
                     label: Pinned items for this date
                     widget: list
@@ -112,7 +116,7 @@ collections:
                 widget: list
                 required: false
                 fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: datetime, type: date }
                   - name: pinned
                     label: Pinned items for this date
                     widget: list
@@ -137,7 +141,7 @@ collections:
                 widget: list
                 required: false
                 fields:
-                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: datetime, type: date }
                   - name: pinned
                     label: Pinned items for this date
                     widget: list
