@@ -1,0 +1,146 @@
+backend:
+  name: github
+  repo: VedavardhanaTheertha/WebsiteConfiguration
+  branch: main
+  base_url: https://shiroormatha.org
+  auth_endpoint: api/auth
+
+# Editorial workflow: immediate publish or draft reviews
+publish_mode: simple
+
+collections:
+  # ==========================================
+  # Homepage Freshness & Carousel Settings
+  # ==========================================
+  - name: settings
+    label: Website Configuration
+    delete: false
+    files:
+      - name: home_settings
+        label: Homepage Freshness & Carousel Controls
+        file: home.json
+        fields:
+          - name: hero
+            label: Hero Carousel Configuration & Overrides
+            widget: object
+            fields:
+              - { name: count, label: Number of hero slides to display, widget: number, default: 8 }
+              - name: pinned
+                label: Pinned Slides (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Hero Slide Markdown (e.g. sacred-alankara-sri-krishna.md), widget: string }
+              - name: overrides
+                label: Special Date Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Special Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned slides for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index, widget: number }
+                      - { name: item, label: Hero Slide Markdown, widget: string }
+
+          - name: top_carousel
+            label: Top Carousel Configuration
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 6 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Page Markdown (e.g. albums.md, sevas.md), widget: string }
+              - name: overrides
+                label: Date / Festival Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index (0-based), widget: number }
+                      - { name: item, label: Page Markdown, widget: string }
+
+          - name: explore_carousel
+            label: Explore Carousel (Dynamic Library Items)
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 6 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Page / Article Slug, widget: string }
+              - name: overrides
+                label: Date / Festival Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index, widget: number }
+                      - { name: item, label: Page / Article Slug, widget: string }
+
+          - name: guidance_carousel
+            label: Guidance Carousel (Dynamic Sevas & Remedies)
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 6 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index (0-based), widget: number }
+                  - { name: item, label: Seva or Remedy Slug, widget: string }
+              - name: overrides
+                label: Date / Festival Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index (0-based), widget: number }
+                      - { name: item, label: Seva or Remedy Slug, widget: string }
+
+          - name: bottom_carousel
+            label: Bottom Carousel Configuration
+            widget: object
+            fields:
+              - { name: count, label: Number of items to display, widget: number, default: 6 }
+              - name: pinned
+                label: Pinned Items (Fixed Slots)
+                widget: list
+                required: false
+                fields:
+                  - { name: index, label: Slot Index, widget: number }
+                  - { name: item, label: Page Markdown, widget: string }
+              - name: overrides
+                label: Date / Festival Overrides
+                widget: list
+                required: false
+                fields:
+                  - { name: date, label: Override Date (YYYY-MM-DD), widget: date }
+                  - name: pinned
+                    label: Pinned items for this date
+                    widget: list
+                    fields:
+                      - { name: index, label: Slot Index, widget: number }
+                      - { name: item, label: Page Markdown, widget: string }
