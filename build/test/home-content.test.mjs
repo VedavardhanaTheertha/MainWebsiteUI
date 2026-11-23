@@ -160,13 +160,17 @@ test("sampling can choose any four distinct candidates, including beyond the fir
 
 test("all remedy candidates are available to verification, and dynamic guidance carousel selects candidates", (t) => {
   const { root, settings, save } = fixture(t);
-  const source = path.join(root, "library", "remedies", "chanting-for-steadiness.md");
+  const initialCandidates = loadRemedyCarouselCandidates(root, language, language);
+  const initialCount = initialCandidates.length;
+  assert.ok(initialCount >= 4, "remedies fixture must have at least 4 remedies");
+  const firstRemedyId = initialCandidates[0].id;
+  const source = path.join(root, "library", "remedies", `${firstRemedyId}.md`);
   const { metadata, body } = parseMarkdownFrontmatter(readFileSync(source, "utf8"), source);
   metadata.id = "additional-remedy";
   metadata.title[language] = "An additional remedy for full-corpus verification";
   writeFileSync(path.join(root, "library", "remedies", `${metadata.id}.md`), `---\n${yaml.dump(metadata)}---\n${body}`);
   const candidates = loadRemedyCarouselCandidates(root, language, language);
-  assert.equal(candidates.length, 5);
+  assert.equal(candidates.length, initialCount + 1);
   assert.equal(candidates.find(({ id }) => id === metadata.id).title, metadata.title[language]);
   settings.guidance_carousel = { count: 3 };
   save();
