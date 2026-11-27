@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { cpSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { rm } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
@@ -21,7 +22,7 @@ const rawBottomCarousel = (Array.isArray(original.bottom_carousel) ? original.bo
 ])).slice(0, 6);
 
 function fixture(t) {
-  const root = mkdtempSync(path.join(repository, "build", ".home-fixture-"));
+  const root = mkdtempSync(path.join(os.tmpdir(), "website-home-fixture-"));
   t.after(() => rm(root, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 }));
   mkdirSync(path.join(root, "settings"));
   mkdirSync(path.join(root, "config"));

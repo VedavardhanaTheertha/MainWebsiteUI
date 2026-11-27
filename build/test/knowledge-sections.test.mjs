@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { copyFile, cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import test from "node:test";
 import { librarySections, parseKnowledgeSections } from "../library-sections.config.mjs";
+import { childProcessImportArgs, registerProjectModulesForTests } from "./helpers/tmp-node-modules.mjs";
 
 const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
 const defaults = JSON.parse(await readFile(new URL("../../settings/knowledge_sections.json", import.meta.url), "utf8"));
@@ -47,7 +49,8 @@ test("knowledge settings reject incomplete, unknown, malformed and conflicting c
 });
 
 test("isolated library generation honors ordering and markdown section images and rejects invalid files", async (t) => {
-  const root = await mkdtemp(path.join(projectRoot, ".knowledge-sections-fixture-"));
+  registerProjectModulesForTests();
+  const root = await mkdtemp(path.join(os.tmpdir(), "website-knowledge-sections-fixture-"));
   t.after(() => rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }));
   await mkdir(path.join(root, "build"));
   await mkdir(path.join(root, "settings"));
@@ -71,7 +74,7 @@ test("isolated library generation honors ordering and markdown section images an
   const run = async (environment = "dev") => {
     await rm(path.join(root, "src", "gen"), { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     return spawnSync(
-      process.execPath, [path.join(root, "build", "build-library-sections.mjs")],
+      process.execPath, [...childProcessImportArgs, path.join(root, "build", "build-library-sections.mjs")],
       { encoding: "utf8", env: { ...process.env, SITE_ENV: environment } },
     );
   };

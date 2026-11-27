@@ -112,6 +112,7 @@ const nextConfig: NextConfig = {
   // available — serve pre-optimized WebP/AVIF assets as-is instead (see
   // content decision: images are pre-optimized at authoring time).
   images: loadImagePolicy(),
+  ...(process.env.SKIP_NEXT_TYPECHECK === "1" ? { typescript: { ignoreBuildErrors: true } } : {}),
   ...(basePath ? { basePath, assetPrefix: basePath } : {}),
 };
 
