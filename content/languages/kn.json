@@ -321,10 +321,6 @@
     "read_minutes": "ಓದಲು {count} ನಿಮಿಷ",
     "estimated_read_minutes": "ಓದಲು ಅಂದಾಜು {count} ನಿಮಿಷ",
     "detail_labels": {
-      "author": "ಲೇಖಕರು",
-      "reviewer": "ಪರಿಶೀಲಕರು",
-      "publishedOn": "ಪ್ರಕಟಣೆ",
-      "reviewedOn": "ಪರಿಶೀಲನೆ",
       "references": "ಆಕರಗಳು",
       "themes": "ವಿಷಯಗಳು",
       "glossary": "ಅಕಾರಾದಿ ಪದಕೋಶ",
@@ -341,15 +337,13 @@
       "guidance": "ಪಠಣ ಮಾರ್ಗದರ್ಶನ",
       "audio": "ಅನುಮೋದಿತ ಧ್ವನಿ",
       "illustration": "ಚಿತ್ರದ ವಿವರಣೆಗಳು",
-      "editorial": "ಸಂಪಾದಕೀಯ ಪರಿಶೀಲನೆ",
       "directions": "ಮಾರ್ಗದರ್ಶನ",
       "hours": "ತೆರೆದಿರುವ ಸಮಯ",
       "accessibility": "ಪ್ರವೇಶ ಸೌಲಭ್ಯ",
       "customs": "ಆಚಾರಗಳು",
       "meals": "ಊಟ",
       "accommodation": "ವಸತಿ",
-      "contacts": "ಸಂಪರ್ಕಗಳು",
-      "verifiedOn": "ಮಾಹಿತಿ ದೃಢೀಕರಣ"
+      "contacts": "ಸಂಪರ್ಕಗಳು"
     },
     "featured_title": "ಪ್ರಮುಖ ಆಯ್ಕೆಗಳು",
     "all_items": "ಸಂಪೂರ್ಣ ಸಂಗ್ರಹ",

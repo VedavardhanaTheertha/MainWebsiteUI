@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import yaml from "js-yaml";
@@ -10,7 +11,7 @@ import { applyNavigation, loadNavigation } from "../navigation-content.mjs";
 const root = path.resolve(import.meta.dirname, "../..");
 
 async function fixture(t) {
-  const directory = await mkdtemp(path.join(root, "build", ".editorial-fixture-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "website-editorial-fixture-"));
   await mkdir(path.join(directory, "library"));
   await mkdir(path.join(directory, "settings"));
   t.after(() => rm(directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }));

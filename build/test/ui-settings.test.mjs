@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
@@ -8,6 +9,7 @@ import ts from "typescript";
 import { parseUiSettings, parseAnnouncementSettings } from "../ui-settings.mjs";
 import { validateUiPreferences } from "../ui-settings-schema.mjs";
 import { testUiSettings } from "./helpers/ui-settings.mjs";
+import { childProcessImportArgs } from "./helpers/tmp-node-modules.mjs";
 
 const defaults = {
   collections: { initialVisible: 6, loadIncrement: 9 },
@@ -52,7 +54,7 @@ test("reader, viewer and browser defaults validate explicit configurable contrac
 });
 
 test("UI settings generation preserves pagination and exports custom scroll settings", async (t) => {
-  const root = await mkdtemp(path.resolve(".ui-settings-test-"));
+  const root = await mkdtemp(path.join(os.tmpdir(), "website-ui-settings-test-"));
   t.after(() => rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }));
   await mkdir(path.join(root, "build"));
   await mkdir(path.join(root, "settings"));
@@ -74,7 +76,7 @@ test("UI settings generation preserves pagination and exports custom scroll sett
   const source = path.join(root, "settings", "ui_elements.json");
   const run = (settings) => {
     return writeFile(source, JSON.stringify(settings)).then(() =>
-      spawnSync(process.execPath, [script], { encoding: "utf8" }),
+      spawnSync(process.execPath, [...childProcessImportArgs, script], { encoding: "utf8" }),
     );
   };
 

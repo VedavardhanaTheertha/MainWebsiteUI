@@ -1,4 +1,4 @@
-import { rm, mkdir, cp } from "node:fs/promises";
+import { rm, mkdir, cp, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -16,7 +16,27 @@ if (existsSync(retriesCache)) {
   await cp(retriesCache, tempRetriesCache, { recursive: true, force: true }).catch(() => {});
 }
 
-const generatedPaths = [".next", "out", "dist", "src/gen", "public/robots.txt"];
+const preserveNextCache = process.env.PRESERVE_NEXT_CACHE === "1";
+const nextDir = path.join(rootDir, ".next");
+const generatedPaths = preserveNextCache
+  ? ["out", "dist", "src/gen", "public/robots.txt"]
+  : [".next", "out", "dist", "src/gen", "public/robots.txt"];
+
+if (preserveNextCache && existsSync(nextDir)) {
+  const entries = await readdir(nextDir);
+  await Promise.all(
+    entries
+      .filter((entry) => entry !== "cache")
+      .map((entry) =>
+        rm(path.join(nextDir, entry), {
+          recursive: true,
+          force: true,
+          maxRetries: 5,
+          retryDelay: 250,
+        }),
+      ),
+  );
+}
 
 await Promise.all(
   generatedPaths.map((entry) =>

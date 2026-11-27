@@ -1,9 +1,5 @@
 export type KnowledgeText = Record<string, string>;
 export interface KnowledgeDetails {
-  author?: KnowledgeText;
-  reviewer?: KnowledgeText;
-  publishedOn?: string;
-  reviewedOn?: string;
   references?: { label: KnowledgeText; url: string }[];
   related?: string[];
   themes?: KnowledgeText[];
@@ -23,7 +19,5 @@ export interface KnowledgeDetails {
     alt: KnowledgeText;
     annotations: { x: number; y: number; label: KnowledgeText; explanation: KnowledgeText }[];
   };
-  editorial?: { reviewer: KnowledgeText; reviewedOn: string };
   practical?: Partial<Record<"directions" | "hours" | "accessibility" | "customs" | "meals" | "accommodation" | "contacts", KnowledgeText>>;
-  verifiedOn?: string;
 }
