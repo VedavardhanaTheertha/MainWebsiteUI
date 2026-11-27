@@ -320,10 +320,6 @@
     "read_minutes": "{count} min read",
     "estimated_read_minutes": "Estimated {count} min read",
     "detail_labels": {
-      "author": "Author",
-      "reviewer": "Reviewer",
-      "publishedOn": "Published",
-      "reviewedOn": "Reviewed",
       "references": "References",
       "themes": "Themes",
       "glossary": "Alphabetical glossary",
@@ -340,15 +336,13 @@
       "guidance": "Recitation guidance",
       "audio": "Approved audio",
       "illustration": "Illustration explanations",
-      "editorial": "Editorial review",
       "directions": "Directions",
       "hours": "Opening hours",
       "accessibility": "Accessibility",
       "customs": "Customs",
       "meals": "Meals",
       "accommodation": "Accommodation",
-      "contacts": "Contacts",
-      "verifiedOn": "Information verified"
+      "contacts": "Contacts"
     },
     "featured_title": "Top selections",
     "all_items": "Complete collection",

@@ -29,12 +29,6 @@ export default function KnowledgeBody({ article, sectionId }: { article: Display
   return (
     <div className="leading-[1.8] text-[var(--color-text-secondary)]">
       {sectionId === "remedies" && <aside className="mt-5 rounded-xl border border-[var(--color-line)] bg-[var(--color-cream-soft)] p-5">{copy.devotional_context}</aside>}
-      {details && <dl className="mt-5 grid gap-x-6 gap-y-2 sm:grid-cols-2">
-        {(["author", "reviewer", "publishedOn", "reviewedOn", "verifiedOn"] as const).map((key) => {
-          const value = details[key];
-          return value ? <div key={key}><dt className="font-semibold">{label(key)}</dt><dd>{typeof value === "string" ? <time dateTime={value}>{value}</time> : text(value)}</dd></div> : null;
-        })}
-      </dl>}
       {sectionId === "projects" && heading("status", <p>{details?.project ? label(details.project.status) : copy.unavailable}</p>)}
       {details?.project && (["milestones", "updates", "outcomes"] as const).map((key) => {
         const entries = details.project?.[key];
@@ -65,8 +59,6 @@ export default function KnowledgeBody({ article, sectionId }: { article: Display
         const value = details?.practical?.[key];
         return heading(key, <p className="whitespace-pre-line">{value ? text(value) : copy.unavailable}</p>);
       })}
-      {details?.editorial && heading("editorial", <p>{text(details.editorial.reviewer)} · <time dateTime={details.editorial.reviewedOn}>{details.editorial.reviewedOn}</time></p>)}
-      {sectionId === "remedies" && !details?.editorial && heading("editorial", <p>{copy.unavailable}</p>)}
       <div className={prose} dangerouslySetInnerHTML={{ __html: article.html }} />
       {details?.references && heading("references", <ul className="list-disc space-y-2 pl-6">{details.references.map((reference, index) => <li key={index}><a className="break-words underline underline-offset-4" href={reference.url}>{text(reference.label)}</a></li>)}</ul>)}
     </div>

@@ -51,17 +51,22 @@ test("unsafe media and reference URLs are rejected", () => {
   assert.equal(parseKnowledge({ references: [{ label: copy, url: "https://example.org/reference" }] }, "articles").references.length, 1);
 });
 
-test("dates must be real calendar dates and review metadata is complete", () => {
-  for (const publishedOn of ["2026-02-29", "2026-13-01", "yesterday", "2026-1-01"]) assert.throws(() => parseKnowledge({ publishedOn }, "articles"));
-  assert.equal(parseKnowledge({ publishedOn: "2024-02-29", author: copy, reviewer: copy, reviewedOn: "2026-01-01" }, "articles").publishedOn, "2024-02-29");
-  assert.deepEqual(parseKnowledge({ editorial: { reviewer: copy, reviewedOn: "2026-01-01" } }, "remedies").editorial, { reviewer: copy, reviewedOn: "2026-01-01" });
-  assert.throws(() => parseKnowledge({ editorial: { reviewedOn: "2026-01-01" } }, "remedies"));
+test("dates must be real calendar dates and removed provenance fields are rejected", () => {
+  for (const invalidDate of ["2026-02-29", "2026-13-01", "yesterday", "2026-1-01"]) {
+    assert.throws(() => parseKnowledge({ project: { status: "active", updates: [{ text: copy, date: invalidDate }] } }, "projects"));
+  }
+  assert.equal(parseKnowledge({ project: { status: "active", updates: [{ text: copy, date: "2024-02-29" }] } }, "projects").project.updates[0].date, "2024-02-29");
+  for (const removed of ["author", "reviewer", "publishedOn", "reviewedOn"]) {
+    assert.throws(() => parseKnowledge({ [removed]: "2026-01-01" }, "articles"));
+  }
+  assert.throws(() => parseKnowledge({ editorial: { reviewer: copy, reviewedOn: "2026-01-01" } }, "remedies"));
+  assert.throws(() => parseKnowledge({ verifiedOn: "2026-01-01" }, "pilgrim"));
 });
 
 test("knowledge text validates default-language sources and inherits missing translations", () => {
   assert.deepEqual(parseKnowledge({ glossary: [{ term: copy, definition: copy }] }, "jnana").glossary, [{ term: copy, definition: copy }]);
   assert.deepEqual(parseKnowledge({ themes: [copy], readMinutes: 4 }, "stories"), { themes: [copy], readMinutes: 4 });
-  assert.deepEqual(parseKnowledge({ practical: { hours: copy, contacts: copy }, verifiedOn: "2026-01-01" }, "pilgrim"), { practical: { hours: copy, contacts: copy }, verifiedOn: "2026-01-01" });
+  assert.deepEqual(parseKnowledge({ practical: { hours: copy, contacts: copy } }, "pilgrim"), { practical: { hours: copy, contacts: copy } });
   assert.throws(() => parseKnowledge({ practical: { inventedField: copy } }, "pilgrim"));
   assert.deepEqual(parseKnowledge({ themes: [{ en: "Default translation" }] }, "stories").themes,
     [{ en: "Default translation", kn: "Default translation" }]);

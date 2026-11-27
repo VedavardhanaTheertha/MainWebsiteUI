@@ -7,8 +7,7 @@ const sectionFields = {
   jnana: ["glossary"],
   stories: ["themes", "readMinutes"],
   symbolism: ["illustration"],
-  remedies: ["editorial"],
-  pilgrim: ["practical", "verifiedOn"],
+  pilgrim: ["practical"],
 };
 
 export function parseKnowledge(value, sectionId, source = "article") {
@@ -53,10 +52,8 @@ export function parseKnowledge(value, sectionId, source = "article") {
     if (!Array.isArray(entry) || !entry.length) fail(field);
     return entry.map((item, index) => parse(item, `${field}[${index}]`));
   };
-  object(value, "", ["author", "reviewer", "publishedOn", "reviewedOn", "references", "related", ...(sectionFields[sectionId] ?? [])]);
+  object(value, "", ["references", "related", ...(sectionFields[sectionId] ?? [])]);
   const result = {};
-  for (const key of ["author", "reviewer"]) if (value[key] !== undefined) result[key] = localized(value[key], key);
-  for (const key of ["publishedOn", "reviewedOn", "verifiedOn"]) if (value[key] !== undefined) result[key] = date(value[key], key);
   if (value.related !== undefined) result.related = list(value.related, "related", (entry, field) => {
     const id = text(entry, field);
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(id)) fail(field);
@@ -109,10 +106,6 @@ export function parseKnowledge(value, sectionId, source = "article") {
         return { x: entry.x, y: entry.y, label: localized(entry.label, `${field}.label`), explanation: localized(entry.explanation, `${field}.explanation`) };
       }),
     };
-  }
-  if (value.editorial !== undefined) {
-    const editorial = object(value.editorial, "editorial", ["reviewer", "reviewedOn"]);
-    result.editorial = { reviewer: localized(editorial.reviewer, "editorial.reviewer"), reviewedOn: date(editorial.reviewedOn, "editorial.reviewedOn") };
   }
   if (value.practical !== undefined) {
     const practical = object(value.practical, "practical", ["directions", "hours", "accessibility", "customs", "meals", "accommodation", "contacts"]);
